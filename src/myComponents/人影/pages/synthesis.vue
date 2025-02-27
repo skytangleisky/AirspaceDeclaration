@@ -108,7 +108,7 @@
     style="z-index:2010"
   ></dialog-plan-request>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
-  <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;"></div>
+  <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;right:300px;"></div>
   <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'retro'"></control-pane>
 </template>
 <script lang="ts" setup>
@@ -122,7 +122,7 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRefs } from "vue";
+import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRef,toRefs } from "vue";
 import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
@@ -130,13 +130,12 @@ import { eventbus } from "~/eventbus/index";
 import ColorSelector from "~/myComponents/colorSelector/index.vue";
 import { Pane } from 'controlpane';
 import ControlPane from '../../controlPane/index.vue';
-const 监控 = toRefs(setting.人影.监控)
 const list = reactive([
   {label:'devtools',type:'folder',expanded:false,children:[
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
     {label:'暗黑主题',value:isDark,type:'checkbox'},
     // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
-    {label:'瓦片地图',value:监控.loadmap,type:'checkbox'},
+    {label:'瓦片地图',value:computed({get:()=>setting.人影.监控.loadmap,set(val){setting.人影.监控.loadmap=val}}),type:'checkbox'},
     {label:'全国行政区划',type:'folder',opened:toRefs(setting.人影.监控).districtOptionsOpened,children:[
       {label:'填充',type:'folder',opened:toRefs(setting.人影.监控.districtOptions).districtOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.districtOptions).district,type:'checkbox'},
@@ -199,16 +198,16 @@ const list = reactive([
         {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).labelOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
       ]}
     ]},
-    {label:'航路航线',value:监控.routeLine,type:'checkbox'},
-    {label:'机场',value:监控.airport,type:'checkbox'},
-    {label:'飞机',value:监控.plane,type:'checkbox'},
-    {label:'作业点',value:监控.zyd,type:'checkbox'},
-    {label:'导航台',value:监控.navigationStation,type:'checkbox'},
-    // {label:'自动站',value:监控.zdz,type:'checkbox'},
-    // {label:'网格点',value:监控.gridPoint,type:'checkbox'},
-    // {label:'网格值',value:监控.gridValue,type:'checkbox'},
-    // {label:'等值线',value:监控.isolines,type:'checkbox'},
-    // {label:'等值带',value:监控.isobands,type:'checkbox'},
+    {label:'航路航线',value:toRefs(setting.人影.监控).routeLine,type:'checkbox'},
+    {label:'机场',value:toRefs(setting.人影.监控).airport,type:'checkbox'},
+    {label:'飞机',value:toRefs(setting.人影.监控).plane,type:'checkbox'},
+    {label:'作业点',value:toRefs(setting.人影.监控).zyd,type:'checkbox'},
+    {label:'导航台',value:toRefs(setting.人影.监控).navigationStation,type:'checkbox'},
+    // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
+    // {label:'网格点',value:toRefs(setting.人影.监控).gridPoint,type:'checkbox'},
+    // {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
+    // {label:'等值线',value:toRefs(setting.人影.监控).isolines,type:'checkbox'},
+    // {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
   ]}
 ]);
 let pane:any

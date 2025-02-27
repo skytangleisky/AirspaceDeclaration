@@ -1,5 +1,6 @@
 import city from './省界.json?url'
 import beijing from './北京市.json?url'
+import beijingBorder from './北京市.geojson?url'
 import { useSettingStore } from '~/stores/setting';
 const setting = useSettingStore()
 export default {
@@ -241,15 +242,15 @@ export default {
 			"range": [2, 20],
 			"color": "hsl(0, 0%, 100%)",
 			"high-color": "hsl(210, 100%, 80%)",
-			"space-color": [
-				"interpolate",
-				["exponential", 1.2],
-				["zoom"],
-				5,
-				"hsl(210, 40%, 30%)",
-				7,
-				"hsl(210, 100%, 80%)"
-			],
+			// "space-color": [
+			// 	"interpolate",
+			// 	["exponential", 1.2],
+			// 	["zoom"],
+			// 	5,
+			// 	"hsl(210, 40%, 30%)",
+			// 	7,
+			// 	"hsl(210, 100%, 80%)"
+			// ],
 			"horizon-blend": [
 				"interpolate",
 				["exponential", 1.2],
@@ -282,6 +283,10 @@ export default {
 		"beijing":{
 			"type":"geojson",
 			"data": beijing
+		},
+		"beijingBorder":{
+			"type":"geojson",
+			"data": beijingBorder
 		},
 		// "composite": {
 		// 		"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
@@ -340,10 +345,10 @@ export default {
 						"interpolate",
 						["linear"],
 						["zoom"],
-						9,
-						"#2b2b2b",
+						0,
+						"#14407f",
 						11,
-						"#2b2b2b"
+						"#14407f"
 					]
 				}
 			},

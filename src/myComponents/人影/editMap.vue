@@ -1095,8 +1095,8 @@ onMounted(() => {
           "text-line-height": 1,
           "text-justify": "center",
           "text-offset": [0, 0],
-          "text-ignore-placement": false,
-          "text-allow-overlap": false,
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
           "text-rotation-alignment": "map",
           "text-max-width": 400,
         },
@@ -1148,6 +1148,37 @@ onMounted(() => {
 					'line-color': `rgba(${setting.人影.监控.beijingOptions.districtLineColor.r},${setting.人影.监控.beijingOptions.districtLineColor.g},${setting.人影.监控.beijingOptions.districtLineColor.b},${setting.人影.监控.beijingOptions.districtLineColor.a})`,
 					'line-width': setting.人影.监控.beijingOptions.districtLineWidth,
           'line-opacity':setting.人影.监控.beijingOptions.districtLineOpacity,
+					// 'line-dasharray': [1,1],
+				}
+			})
+      map.addLayer({
+				'id': 'beijingBorderLineBase',
+				'type': 'line',
+				'source': 'beijingBorder',
+				'layout': {
+					'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': '#085991',
+					'line-width': 20,
+          'line-opacity':1,
+				}
+			})
+      map.addLayer({
+				'id': 'beijingBorderLineOver',
+				'type': 'line',
+				'source': 'beijingBorder',
+				'layout': {
+					'visibility':'visible',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': '#2387bb',
+					'line-width': 6,
+          'line-opacity':1,
 					// 'line-dasharray': [1,1],
 				}
 			})

@@ -1,6 +1,6 @@
 {
-  "name": "my-test-cpm",
-  "version": "1.0.9",
+  "name": "airspace-application",
+  "version": "1.0.0",
   "description": "示例项目",
   "author": "张三",
   "componentChineseName": "示例项目",
