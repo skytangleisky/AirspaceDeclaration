@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>空域申报</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link href="/resources/mapbox-gl.css" async rel="stylesheet">
+  <script src="/resources/mapbox-gl.js" async></script>
   <script src="vue.global.prod.min.js"></script>
   <script src="index.umd.js"></script>
   <link rel="stylesheet" href="style.css">
@@ -15,6 +17,7 @@
       height: 100vh;
       margin: 0;
       padding: 0;
+      font-size: 14px;
     }
     #app {
       width: 100vw;
@@ -46,6 +49,9 @@
         RgyxWorkPoint:index.rgyxWorkPoint
       }
     });
+    app.use(index.pinia)
+    app.directive('dragable',index.dragable)
+    app.directive('resize',index.resize)
     // const app = Vue.createApp(window.index);
     app.mount('#app');
   </script>

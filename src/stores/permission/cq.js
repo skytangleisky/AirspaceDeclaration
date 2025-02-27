@@ -1,0 +1,139 @@
+export default {
+  name:'16d44138-0721-49cf-8f32-49c6894512bd',
+  meta:{
+    label:'重庆测风激光雷达组网系统',
+    roles:['admin','cq','device']
+  },
+  children:[
+    {
+      name:'1c04da9a-a6ab-47c0-b1a4-17358fd4f3bc',
+      meta:{
+        label:'预报员管理界面',
+      },
+      children:[
+        {
+          name:'943642f4-42e6-467a-a561-de178ebf22dd',
+          meta:{
+            label:'左侧列表'
+          },
+          children:[
+            {
+              name:'da4ce7c7-3aa9-4b9b-8d8b-ce44241794d5',
+              checked:true,
+              meta:{
+                label:'重庆组网PPI',
+              }
+            },
+            {
+              name: 'e44f37e1-f642-4dbf-83ca-052313b217f5',
+              checked:false,
+              meta:{
+                label: '重庆组网时间轴',
+              }
+            },
+            {
+              name: '5dd862f4-112f-46cf-a843-98c3f5aba1cf',
+              checked:false,
+              meta:{
+                label: '重庆组网界面-数据融合-格点',
+              }
+            },
+            {
+              name: 'df127f84-1983-42c1-b718-a0d04fc92720',
+              checked:false,
+              meta:{
+                label: '重庆组网界面-数据融合-等值线',
+              }
+            },
+            {
+              name: '182392d2-6928-4add-b006-784e9fde0213',
+              checked:false,
+              meta:{
+                label: '重庆组网界面-数据融合-等值线填充',
+              }
+            },
+          ]
+        },
+        {
+          name:'d1f8d849-3ea9-4ea5-a1e2-6bb7d6e3b41a',
+          meta:{
+            label:'右侧图表',
+          },
+          children:[
+            {
+              name:'2353f2f5-b27b-473c-b281-4aa76858ff51',
+              checked:false,
+              meta:{
+                label:'风廓线'
+              }
+            },
+            {
+              name:'aa0f5674-ca38-4987-9964-f232024f0992',
+              checked:false,
+              meta:{
+                label:'风速风向'
+              }
+            },
+            {
+              name:'ecd5d757-94eb-4b5e-9275-0ffb25a7cbc9',
+              checked:false,
+              meta:{
+                label:'风向廓线'
+              }
+            },
+            {
+              name:'d16bc38f-4b41-4294-b8e6-6230f7633120',
+              checked:false,
+              meta:{
+                label:'高度风速曲线'
+              }
+            },
+            {
+              name:'fc040225-820d-42f0-8e1a-239c9a76058a',
+              checked:false,
+              meta:{
+                label:'高度信噪比曲线'
+              }
+            },
+            {
+              name:'31aba6cc-6da7-432a-87a3-576e4d5f59f2',
+              checked:false,
+              meta:{
+                label:'温湿度曲线'
+              }
+            },
+          ]
+        },
+      ]
+    },
+    {
+      name:'a8770e03-f89f-4028-8722-2da301207da6',
+      meta:{
+        label:'设备管理员界面',
+      },
+      children:[
+        {
+          name:'808b579e-e069-4435-bc85-11f7209c4eb6',
+          checked:false,
+          meta:{
+            label:'告警',
+          }
+        },
+        {
+          name: 'a3a27c58-660f-4d14-a582-6817de2d5079',
+          checked:false,
+          meta:{
+            label: '设置',
+          }
+        },
+        {
+          name: 'f46f5668-75ab-40a4-a578-da2b61c3ed95',
+          checked:false,
+          meta:{
+            label: '菜单',
+          }
+        }
+      ]
+    }
+  ]
+}
