@@ -537,32 +537,15 @@ const loop = ()=>{
 
 }
 let aid = 0;
-onMounted(async() => {
-  const style = (await import("./editMap.js")).default;
-  watch(
-    () => props.tile,
-    (tile) => {
-      if(tile.tileData.length>0){
-        let s = map ? map.getStyle() : style;
-        s.sources["raster-tiles"].url = processTileData(tile.tileData);
-        // s.layers.map((v: any) => {
-        //   if (v.id == "simple-tiles") {
-        //     v.layout.visibility = props.loadmap ? "visible" : "none";
-        //   } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
-        //     // v.layout.visibility = props.district ? "visible" : "none";
-        //   }
-        // });
-        map && map.setStyle(s);
-      }
-    },
-    { deep: true, immediate: true }
-  );
+import getStyle from './editMap.js'
+let style = getStyle()
+onMounted(() => {
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     projection: "globe",
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
-    style: style as mapboxgl.Style,
+    style,
     fadeDuration: 0,
     // dragRotate: false,
     // touchRotate: false,
@@ -2644,6 +2627,24 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch(
+  () => props.tile,
+  (tile) => {
+    if(tile.tileData.length>0){
+      let s = map ? map.getStyle() : style;
+      s.sources["raster-tiles"].url = processTileData(tile.tileData);
+      // s.layers.map((v: any) => {
+      //   if (v.id == "simple-tiles") {
+      //     v.layout.visibility = props.loadmap ? "visible" : "none";
+      //   } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
+      //     // v.layout.visibility = props.district ? "visible" : "none";
+      //   }
+      // });
+      map && map.setStyle(s);
+    }
+  },
+  { deep: true, immediate: true }
+);
 watch(
   () => props.loadmap,
   (newVal) => {

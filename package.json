@@ -1,6 +1,6 @@
 {
   "name": "airspace-application",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "示例项目",
   "author": "张三",
   "componentChineseName": "示例项目",
@@ -33,8 +33,8 @@
     "@sakitam-gis/mapbox-wind": "^2.0.4",
     "@turf/helpers": "^6.5.0",
     "@turf/turf": "5.1.6",
-    "@types/mapbox-gl": "^2.7.17",
     "@types/mapbox__mapbox-gl-draw": "^1.4.6",
+    "@types/mapbox-gl": "^2.7.17",
     "@vue/devtools-api": "^7.7.2",
     "axios": "^1.7.9",
     "cesium": "^1.126.0",
