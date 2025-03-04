@@ -1,8 +1,6 @@
 <template>
-  <!-- <rgyxWorkPoint />
-  <AircraftPos></AircraftPos> -->
-  <el-button>OK</el-button>
-  <el-button type="success">OK</el-button>
+  <rgyxWorkPoint />
+  <AircraftPos></AircraftPos>
 </template>
 <script setup>
 import "~/styles/index.scss";
@@ -10,8 +8,8 @@ import '~/composables';//初始化主题，默认自动主题
 import 'uno.css'
 import "~/styles/element/index.scss"
 // import rgyxWorkPoint from "~/components/rgyx-work-point.vue";
-// import rgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";
-// import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
+import rgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";
+import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
 </script>
 <style>
 html,

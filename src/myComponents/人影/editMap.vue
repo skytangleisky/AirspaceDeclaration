@@ -226,7 +226,6 @@ const props = withDefaults(
     equidistantRing: false,
   }
 );
-import style from "./editMap.js";
 import { isDark } from '~/composables/dark.js';
 // style.layers.map((v: any) => {
 //   if (v.id == "simple-tiles") {
@@ -538,7 +537,26 @@ const loop = ()=>{
 
 }
 let aid = 0;
-onMounted(() => {
+onMounted(async() => {
+  const style = (await import("./editMap.js")).default;
+  watch(
+    () => props.tile,
+    (tile) => {
+      if(tile.tileData.length>0){
+        let s = map ? map.getStyle() : style;
+        s.sources["raster-tiles"].url = processTileData(tile.tileData);
+        // s.layers.map((v: any) => {
+        //   if (v.id == "simple-tiles") {
+        //     v.layout.visibility = props.loadmap ? "visible" : "none";
+        //   } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
+        //     // v.layout.visibility = props.district ? "visible" : "none";
+        //   }
+        // });
+        map && map.setStyle(s);
+      }
+    },
+    { deep: true, immediate: true }
+  );
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -2626,24 +2644,6 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
-watch(
-  () => props.tile,
-  (tile) => {
-    if(tile.tileData.length>0){
-      let s = map ? map.getStyle() : style;
-      s.sources["raster-tiles"].url = processTileData(tile.tileData);
-      // s.layers.map((v: any) => {
-      //   if (v.id == "simple-tiles") {
-      //     v.layout.visibility = props.loadmap ? "visible" : "none";
-      //   } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
-      //     // v.layout.visibility = props.district ? "visible" : "none";
-      //   }
-      // });
-      map && map.setStyle(s);
-    }
-  },
-  { deep: true, immediate: true }
-);
 watch(
   () => props.loadmap,
   (newVal) => {
