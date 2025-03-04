@@ -1,18 +1,12 @@
 <template>
   <div
     class="transport"
-    style="
-      box-sizing: border-box;
-      margin: 10px;
-      height: -webkit-fill-available;
-      overflow: auto;
-    "
   >
     <table class="w-full">
       <thead>
         <tr
-          class="bg-blue z-1"
-          style="box-sizing: border-box; top: 0px; position: sticky"
+          class="z-1"
+          
         >
           <th>站点名称</th>
           <th>站点ID</th>
@@ -27,7 +21,7 @@
           <td>{{ item.strZydID }}</td>
           <td>北京人影指挥中心</td>
           <td>北空</td>
-          <td style="width:300px">{{ item.vecProcess }}</td>
+          <td>{{ item.vecProcess }}</td>
         </tr>
       </tbody>
     </table>
@@ -204,72 +198,72 @@ const 完成 = (item: planDataType) => {
 </script>
 <style lang="scss">
 .transport{
-  table {
-    border-collapse: collapse;
-    overflow: auto;
-    min-width: 100%;
-    tr {
-      line-height: 1rem;
-    }
-    thead {
-      tr {
-        th {
-          border-top: none;
-        }
-        th:first-child {
-          border-left: none;
-        }
-        th:last-child {
-          border-right: none;
-        }
-      }
-    }
-    tbody {
-      tr {
-        &:hover {
-          background: #00000022;
-        }
-        cursor: pointer;
-      }
-      tr.selected {
-        background: #00000066;
-      }
-      td:first-child {
-        border-left: none;
-      }
-      td:last-child {
-        border-right: none;
-      }
-      tr:last-child td {
-        border-bottom: none;
-      }
-    }
-    th,
-    td {
-      text-align: left;
-      border: 1px solid #ccc;
-    }
-  }
+  // table {
+  //   border-collapse: collapse;
+  //   overflow: auto;
+  //   min-width: 100%;
+  //   tr {
+  //     line-height: 1rem;
+  //   }
+  //   thead {
+  //     tr {
+  //       th {
+  //         border-top: none;
+  //       }
+  //       th:first-child {
+  //         border-left: none;
+  //       }
+  //       th:last-child {
+  //         border-right: none;
+  //       }
+  //     }
+  //   }
+  //   tbody {
+  //     tr {
+  //       &:hover {
+  //         background: #00000022;
+  //       }
+  //       cursor: pointer;
+  //     }
+  //     tr.selected {
+  //       background: #00000066;
+  //     }
+  //     td:first-child {
+  //       border-left: none;
+  //     }
+  //     td:last-child {
+  //       border-right: none;
+  //     }
+  //     tr:last-child td {
+  //       border-bottom: none;
+  //     }
+  //   }
+  //   th,
+  //   td {
+  //     text-align: left;
+  //     border: 1px solid #ccc;
+  //   }
+  // }
 }
-.dark .transport{
-  table {
-    tbody{
-      tr {
-        &:hover {
-          background: #ffffff22;
-        }
-        cursor: pointer;
-      }
-      tr.selected {
-        background: #ffffff66;
-      }
-    }
-    th,td {
-      border: 1px solid #2b2b2b;
-    }
-    td {
-      border-top: 0;
-    }
-  }
-}
+// .dark .transport{
+//   table {
+//     tbody{
+//       tr {
+//         &:hover {
+//           background: #ffffff22;
+//         }
+//         cursor: pointer;
+//       }
+//       tr.selected {
+//         background: #ffffff66;
+//       }
+//     }
+//     th,td {
+//       border: 1px solid #2b2b2b;
+//     }
+//     td {
+//       border-top: 0;
+//     }
+//   }
+// }
 </style>

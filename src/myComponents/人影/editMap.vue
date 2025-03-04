@@ -3085,8 +3085,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 <style scoped lang="scss">
 .stationDialog{
   position: absolute;
-  left:10px;
-  top:10px;
+  left:$page-padding;
+  top:$page-padding;
 }
 .mapboxgl-canvas:focus-visible {
   outline: none;

@@ -87,6 +87,14 @@ export default defineConfig({
     },
   },
 
+  css:{
+    preprocessorOptions:{
+      scss:{
+        additionalData: `@use "~/styles/variable.scss" as *;`,
+      }
+    }
+  },
+
   server:{
     // https:{
     //   cert: fs.readFileSync('dev.tanglei.top.pem'),
@@ -96,7 +104,7 @@ export default defineConfig({
     // },
     // open:'http://localhost:5173',
     host:true,
-    port:5173,
+    port:5174,
     strictPort:true,
     proxy:{
       // '/guangheng':{
