@@ -527,10 +527,11 @@ const 完成 = (item: planDataType) => {
             .item-right-bottom {
                 display: flex;
                 height: $item-right-bottom-height;
-                padding: $grid-1;
+                align-items: center;
+                justify-content: center;
+                // padding: $grid-1;
                 .item-right-bottom-item {
                   // background-color: var(--el-bg-color-page);
-                  
                     height: calc(100% - 2 * $grid-1);
                     padding: 0 $grid-1;
                     color: #fff;
