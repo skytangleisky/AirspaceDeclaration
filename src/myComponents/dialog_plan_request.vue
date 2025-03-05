@@ -266,14 +266,14 @@ onBeforeUnmount(() => {
         flex-wrap: wrap;
         .item-box {
             display: flex;
-            width: calc((100% - $grid-2) / 2);
+            width: calc((100% - $grid-3) / 2);
             margin-bottom: $grid-2;
             &:nth-child(2n) {
-                margin-left: $grid-2;
+                margin-left: $grid-3;
             }
             .item-label {
                 width: 100px;
-                text-align: right;
+                // text-align: right;
             }
             .item-value {
                 width: calc(100% - 100px);
