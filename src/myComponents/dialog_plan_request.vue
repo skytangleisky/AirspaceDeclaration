@@ -154,14 +154,9 @@
             /></div
         ></el-col>
       </el-row>
-      <div class="flex flex-row justify-between items-center pl-10px mt-0.5rem mb-0.5rem">
-        <el-button type="default" @mousedown.stop @click="click(data)"
-          >网络上报</el-button
-        >
-        <el-button type="default" style="display: none" @mousedown.stop
-          >电话上报</el-button
-        >
+      <div class="flex flex-row justify-right items-center pl-10px mt-0.5rem mb-0.5rem">
         <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
+        <el-button type="primary" @mousedown.stop @click="click(data)">网络上报</el-button>
       </div>
     </div>
   </div>
@@ -252,7 +247,7 @@ onBeforeUnmount(()=>{
     padding:10px;
     border-radius: 10px;
     box-shadow: 0 0 0 1px #757575, 0 0 0 2px #010201;
-    .ep-row {
+    .el-row {
       padding: 5px;
     }
   }

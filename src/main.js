@@ -6,11 +6,13 @@ import { createApp } from 'vue'
 import { createPinia } from "pinia"
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import piniaReset from './tools/piniaReset'
+import VueDOMPurifyHTML from 'vue-dompurify-html'
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 pinia.use(piniaReset)
 const app = createApp(App)
 app.use(pinia)
+app.use(VueDOMPurifyHTML)
 app.directive('dragable',dragable)
 app.directive('resize',resize)
 app.mount('#app')

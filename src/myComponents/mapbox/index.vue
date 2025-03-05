@@ -3,6 +3,7 @@
   <control-pane style="position: absolute;top:100px" :list="list"></control-pane>
 </template>
 <script lang="ts" setup>
+import mapboxgl from "mapbox-gl_wstd";
 import {layer,windParticles} from "./windRaster";
 import { isDark } from "~/composables/dark.js";
 import { onMounted, ref, onBeforeUnmount, watch, toRefs,reactive } from "vue";
