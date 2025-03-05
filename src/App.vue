@@ -12,8 +12,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 // import rgyxWorkPoint from "~/components/rgyx-work-point.vue";
 import rgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";
 import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
-import rgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";
-import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
 </script>
 <style>
 html,
