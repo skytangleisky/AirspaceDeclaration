@@ -4,14 +4,7 @@
   <el-button type="primary">OK</el-button>
 </template>
 <script setup>
-import "~/styles/index.scss";
-import '~/composables';//初始化主题，默认自动主题
-import 'uno.css'
-import "~/styles/element/index.scss"
-import 'mapbox-gl/dist/mapbox-gl.css';
 // import rgyxWorkPoint from "~/components/rgyx-work-point.vue";
-import rgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";
-import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
 import rgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";
 import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
 </script>
