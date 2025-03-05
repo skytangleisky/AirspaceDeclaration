@@ -456,10 +456,12 @@ const 完成 = (item: planDataType) => {
         ::v-deep .el-tabs__header .el-tabs__item {
             transition-duration: 0s;
         }
+        ::v-deep .el-tabs__content{
+            padding: $grid-2;
+        }
         .el-tab-pane {
             max-height: 360px;
             overflow-y: auto;
-            overflow-x: hidden;
         }
     }
     .item-box {

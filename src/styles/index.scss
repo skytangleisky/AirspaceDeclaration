@@ -19,8 +19,6 @@ code {
 ::-webkit-scrollbar {
     width: $scrollbar-width;
     height: $scrollbar-width;
-
-    // padding: 2px;
 }
 /* 滑块样式 */
 ::-webkit-scrollbar-thumb {
@@ -33,7 +31,7 @@ code {
     background-color: var(--el-fill-color);
     // border: 1px solid var(--el-border-color);
     border-radius: 10px;
-    padding: 2px;
+
   
 }
 
