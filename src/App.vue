@@ -1,6 +1,8 @@
 <template>
-  <rgyxWorkPoint />
-  <AircraftPos></AircraftPos>
+  <div style="position: relative;width: 100%;height: 100%;">
+    <rgyxWorkPoint />
+    <AircraftPos></AircraftPos>
+  </div>
   <!-- <el-button type="primary">OK</el-button> -->
 </template>
 <script setup>

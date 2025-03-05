@@ -21,4 +21,3 @@ app.use(VueDOMPurifyHTML)
 app.directive('dragable',dragable)
 app.directive('resize',resize)
 app.mount('#app')
-export {dragable,resize,pinia}

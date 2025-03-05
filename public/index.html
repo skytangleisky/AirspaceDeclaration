@@ -5,7 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>空域申报</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <script src="vue.global.prod.min.js"></script>
+  <!-- <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.prod.js"></script> -->
+  <!-- <script src="https://unpkg.com/vue-demi"></script> -->
+  <!-- <script src="https://unpkg.com/pinia@2.1.6/dist/pinia.iife.prod.js"></script> -->
+  <script src="vue.global.prod.js"></script>
+  <script src="vue-demi.iife.js"></script>
+  <script src="pinia.iife.prod.js"></script>
+  <script src="pinia-plugin-persistedstate.prod.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
     html,
@@ -32,8 +38,11 @@
   </div>
   <script src="index.umd.js"></script>
   <script type="module">
-    const {rgyxWorkPoint,pinia,dragable,resize} = index
-    const app = Vue.createApp({
+    const {rgyxWorkPoint,resize,dragable} = index;
+    const {createPinia} = Pinia;
+    const {createApp} = Vue;
+    const { createPersistedState } = piniaPluginPersistedstate;
+    const app = createApp({
       setup() {
         const message = Vue.ref('Hello, Vue 3 with setup!');
         const changeMessage = () => {
@@ -49,9 +58,11 @@
         RgyxWorkPoint:rgyxWorkPoint
       }
     });
-    app.use(pinia)
-    app.directive('dragable',dragable)
+    const pinia = createPinia();
+    pinia.use(createPersistedState());
+    app.use(pinia);
     app.directive('resize',resize)
+    app.directive('dragable',dragable)
     app.mount('#app');
   </script>
 

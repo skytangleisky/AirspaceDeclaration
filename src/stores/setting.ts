@@ -1,4 +1,4 @@
-import { defineStore, acceptHMRUpdate2 } from "pinia"
+import { defineStore, acceptHMRUpdate } from "pinia"
 import moment from 'moment'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
@@ -859,5 +859,5 @@ export const useSettingStore = defineStore({
   persist: true
 })
 if(import.meta.hot){
-  import.meta.hot.accept(acceptHMRUpdate2(useSettingStore, import.meta.hot))
+  import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))
 }

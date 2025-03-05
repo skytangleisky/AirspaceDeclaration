@@ -14,7 +14,7 @@
         outline: none;
       "
     ></div>
-    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
+    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`position:absolute;font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
     <Dialog
       v-show="setting.menus"
       class="stationDialog"
@@ -3090,8 +3090,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 <style scoped lang="scss">
 .stationDialog{
   position: absolute;
-  left:$page-padding;
-  top:$page-padding;
+  left:10px;
+  top:10px;
 }
 .mapboxgl-canvas:focus-visible {
   outline: none;

@@ -62,6 +62,7 @@ export default defineConfig({
       output: {
         globals: {
           vue: "Vue",
+          pinia: "Pinia",
         },
       },
     },
@@ -81,7 +82,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": fileURLToPath(new URL("./src", import.meta.url)),
-      pinia: `${__dirname}/packages/pinia/src/index.ts`,
+      // pinia: `${__dirname}/packages/pinia/src/index.ts`,
       '@mapbox/mapbox-gl-draw':`${__dirname}/packages/mapbox-gl-draw`,
       marchingsquares:`${__dirname}/packages/marchingsquares.js/src/main.js`,
     },
