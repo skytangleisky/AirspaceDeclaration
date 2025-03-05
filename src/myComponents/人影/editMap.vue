@@ -1525,8 +1525,7 @@ onMounted(() => {
         },
       });
     })
-    // map.addLayer(new CustomLayer());
-    map.addLayer(CustomLayer);
+    // map.addLayer(CustomLayer);
     map.addLayer({
       id: "maine",
       type: "fill",
