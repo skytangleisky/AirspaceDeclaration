@@ -7,13 +7,17 @@ import resize from '../directive/resize'
 // import {resize,dragable,pinia} from "../main.js";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";
+import "~/styles/index.scss";
+import '~/composables';//初始化主题，默认自动主题
+import 'uno.css'
+import "~/styles/element/index.scss"
+import 'mapbox-gl/dist/mapbox-gl.css';
 import { createPinia } from "pinia"
 const pinia = createPinia()
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import piniaReset from '../tools/piniaReset'
 pinia.use(piniaPluginPersistedstate)
 pinia.use(piniaReset)
-import 'uno.css'
 const coms = [rgyxWorkPoint]; // 将来如果有其它组件,都可以写到这个数组里
 export default {
   install(Vue) {
