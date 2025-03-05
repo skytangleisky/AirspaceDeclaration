@@ -366,7 +366,7 @@ const 批复 = (item: planDataType) => {
         case "作业开始":
             return "bg-#67c23a";
         default:
-        return "bg-#1E3148";
+            return "bg-#1E3148";
     }
 };
 const 开始 = (item: planDataType) => {
@@ -404,47 +404,47 @@ const 完成 = (item: planDataType) => {
 </script>
 <style lang="scss">
 .planPanel {
-    // .el-tabs.el-tabs--border-card {
-    //   --el-border-color: gray;
-    //   --el-border-color-light: gray;
-    //   margin-top: 0;
-    //   & > .el-tabs__header {
-    //     border-bottom: 0;
-    //     background-color: transparent;
-    //   }
-    //   & > .el-tabs__header .el-tabs__item {
-    //     transition-duration: 0s;
-    //     margin-top: 0;
-    //     &.is-active {
-    //       border-radius: 6px 6px 0 0;
-    //       margin-top: 0;
-    //       border-top: 1px solid var(--el-border-color);
-    //       border-left: 1px solid var(--el-border-color);
-    //     }
-    //     &:first-child {
-    //       margin-left: 0;
-    //     }
-    //   }
-    //   & > .el-tabs__content {
-    //     border: 1px solid var(--el-border-color);
-    //     padding: 0;
-    //     height: 400px;
-    //     display: flex;
-    //     border-radius: 0 6px 6px 6px;
-    //     .el-tab-pane {
-    //       width: 100%;
-    //     }
-    //   }
-    // }
+    .el-tabs.el-tabs--border-card {
+        // --el-border-color: gray;
+        // --el-border-color-light: gray;
+        // margin-top: 0;
+        // & > .el-tabs__header {
+        //     border-bottom: 0;
+        //     background-color: transparent;
+        // }
+        // & > .el-tabs__header .el-tabs__item {
+        //     transition-duration: 0s;
+        //     margin-top: 0;
+        //     &.is-active {
+        //         border-radius: 6px 6px 0 0;
+        //         margin-top: 0;
+        //         border-top: 1px solid var(--el-border-color);
+        //         border-left: 1px solid var(--el-border-color);
+        //     }
+        //     &:first-child {
+        //         margin-left: 0;
+        //     }
+        // }
+        // & > .el-tabs__content {
+        //     border: 1px solid var(--el-border-color);
+        //     padding: 0;
+        //     height: 400px;
+        //     display: flex;
+        //     border-radius: 0 6px 6px 6px;
+        //     .el-tab-pane {
+        //         width: 100%;
+        //     }
+        // }
+    }
 }
-.dark .planPanel .el-tabs.el-tabs--border-card {
-    // .el-tabs__item.is-active {
-    //   background: #304156;
-    // }
-    // .el-tab-pane {
-    //   background: #304156;
-    // }
-}
+// .dark .planPanel .el-tabs.el-tabs--border-card {
+//     .el-tabs__item.is-active {
+//         background: #304156;
+//     }
+//     .el-tab-pane {
+//         background: #304156;
+//     }
+// }
 </style>
 <style scoped lang="scss">
 .planPanel {
@@ -453,6 +453,9 @@ const 完成 = (item: planDataType) => {
     top: 300px;
     .el-tabs {
         border-radius: $border-radius-1;
+        ::v-deep .el-tabs__header .el-tabs__item {
+            transition-duration: 0s;
+        }
         .el-tab-pane {
             max-height: 360px;
             overflow-y: auto;
@@ -529,8 +532,8 @@ const 完成 = (item: planDataType) => {
                 height: $item-right-bottom-height;
                 padding: $grid-1;
                 .item-right-bottom-item {
-                  // background-color: var(--el-bg-color-page);
-                  
+                    // background-color: var(--el-bg-color-page);
+
                     height: calc(100% - 2 * $grid-1);
                     padding: 0 $grid-1;
                     color: #fff;
@@ -548,9 +551,4 @@ const 完成 = (item: planDataType) => {
         }
     }
 }
-// .dark .planPanel {
-//   .item {
-//     background: #00000080;
-//   }
-// }
 </style>

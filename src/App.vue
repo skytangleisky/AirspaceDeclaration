@@ -1,7 +1,7 @@
 <template>
   <rgyxWorkPoint />
   <AircraftPos></AircraftPos>
-  <el-button type="primary">OK</el-button>
+  <!-- <el-button type="primary">OK</el-button> -->
 </template>
 <script setup>
 import "~/styles/index.scss";
