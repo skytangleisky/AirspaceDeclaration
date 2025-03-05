@@ -5,10 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>空域申报</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
-  <link href="/resources/mapbox-gl.css" async rel="stylesheet">
-  <script src="/resources/mapbox-gl.js" async></script>
   <script src="vue.global.prod.min.js"></script>
-  <script src="index.umd.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
     html,
@@ -28,31 +25,33 @@
 <body>
   <div id="app">
     <rgyx-work-point></rgyx-work-point>
-    <!-- <div>{{ message }}</div>
-    <button @click="changeMessage">点击我改变消息</button> -->
+    <!-- <div style="position: absolute;top:0;left:0;display: flex;flex-direction: column;">
+      <div>{{ message }}</div>
+      <button @click="changeMessage">点击我改变消息</button>
+    </div> -->
   </div>
-
+  <script src="index.umd.js"></script>
   <script type="module">
+    const {rgyxWorkPoint,pinia,dragable,resize} = index
     const app = Vue.createApp({
       setup() {
-        // const message = Vue.ref('Hello, Vue 3 with setup!');
-        // const changeMessage = () => {
-        //   message.value = '消息已更改！';
-        // }
-        // return {
-        //   message,
-        //   changeMessage,
-        // };
+        const message = Vue.ref('Hello, Vue 3 with setup!');
+        const changeMessage = () => {
+          message.value = '消息已更改！';
+        }
+        return {
+          message,
+          changeMessage,
+        };
       },
       components:{
         // RgyxWorkPoint:index[0],
-        RgyxWorkPoint:index.rgyxWorkPoint
+        RgyxWorkPoint:rgyxWorkPoint
       }
     });
-    app.use(index.pinia)
-    app.directive('dragable',index.dragable)
-    app.directive('resize',index.resize)
-    // const app = Vue.createApp(window.index);
+    app.use(pinia)
+    app.directive('dragable',dragable)
+    app.directive('resize',resize)
     app.mount('#app');
   </script>
 

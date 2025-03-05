@@ -1,3 +1,4 @@
+import mapboxgl from 'mapbox-gl'
 /*
 export default {
     id:'null-island',

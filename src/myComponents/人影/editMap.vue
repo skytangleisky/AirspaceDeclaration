@@ -51,6 +51,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import banSvg from '~/assets/ban.svg?url'
 import planeUrl from "~/assets/飞机.svg?url";
@@ -76,7 +77,7 @@ import moment from "moment";
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
-import { useSettingStore } from "~/stores/setting.js";
+import { useSettingStore,formatUrl } from "~/stores/setting.js";
 const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const dialogOptions = reactive({ menus: [] });
@@ -190,7 +191,7 @@ const props = withDefaults(
     loadmap?: boolean;
     district?: boolean;
     zyd?: boolean;
-    tile?: { index: number; tileData: Array<string> };
+    tile?: { index: number; tileData: Array<object> };
     center?: object;
     zoom?: number;
     pitch?: number;
@@ -210,7 +211,11 @@ const props = withDefaults(
     zyd: true,
     loadmap: true,
     district: true,
-    tile: () => ({ index: 0, tileData: new Array<string>() }),
+    tile: () => ({
+    name: "高德卫星地图",
+    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+  }),
     center: () => [0, 0],
     zoom: 4,
     pitch: 0,
@@ -226,7 +231,6 @@ const props = withDefaults(
     equidistantRing: false,
   }
 );
-import style from "./editMap.js";
 import { isDark } from '~/composables/dark.js';
 // style.layers.map((v: any) => {
 //   if (v.id == "simple-tiles") {
@@ -538,13 +542,15 @@ const loop = ()=>{
 
 }
 let aid = 0;
+import getStyle from './editMap.js'
+let style = getStyle()
 onMounted(() => {
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     projection: "globe",
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
-    style: style as mapboxgl.Style,
+    style,
     fadeDuration: 0,
     // dragRotate: false,
     // touchRotate: false,
@@ -1519,8 +1525,7 @@ onMounted(() => {
         },
       });
     })
-    // map.addLayer(new CustomLayer());
-    map.addLayer(CustomLayer);
+    // map.addLayer(CustomLayer);
     map.addLayer({
       id: "maine",
       type: "fill",

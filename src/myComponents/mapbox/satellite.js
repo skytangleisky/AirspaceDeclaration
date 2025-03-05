@@ -25,6 +25,7 @@ export default {
   "scheme": "xyz",
   "tilejson": "2.2.0",
   "tiles": [
+    // 'https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}'
     // `https://api.weather.com/v3/TileServer/tile?product=temp&ts=1703471700&xyz={x}:{y}:{z}&apiKey=bbd90b15bb534e3c990b15bb53fe3c03`
     'https://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}'
     // "https://api.weather.com/v3/TileServer/tile?product=twcRadarMosaic&ts=1703311500&xyz={x}:{y}:{z}&apiKey=bbd90b15bb534e3c990b15bb53fe3c03"//雷达

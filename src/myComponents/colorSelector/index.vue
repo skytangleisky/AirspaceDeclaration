@@ -1,5 +1,5 @@
 <template>
-  <div class="ColorSelector bg-white dark:bg-#535353" v-dragable>
+  <div class="ColorSelector bg-white dark:bg-#535353">
     <div class="relative w-full h-30px bg-white dark:bg-#333 box-border b-solid b-#000 b-0px b-b-1px flex justify-center items-center font-size-18px">调色板</div>
     <div class="relative w-full h-full" tabindex="-1" @mousedown.stop>
       <div id="cssquareselector"><canvas id="cssquare" width="256" height="256"></canvas><svg id="cssquarecursor" height="268" width="268"><circle cx="7" cy="7" r="5" stroke="black" stroke-width="1" fill="none" /></svg></div>
