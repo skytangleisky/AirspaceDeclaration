@@ -208,7 +208,8 @@
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import moment from "moment";
-import Transport from "./transport.vue";
+import { defineAsyncComponent } from "vue";
+const Transport = defineAsyncComponent(() => import("./transport.vue"));
 const station = useStationStore();
 const click = (item: planDataType) => {
     station.人影界面被选中的设备 = item.strZydID;
@@ -403,40 +404,40 @@ const 完成 = (item: planDataType) => {
 };
 </script>
 <style lang="scss">
-.planPanel {
-    .el-tabs.el-tabs--border-card {
-        // --el-border-color: gray;
-        // --el-border-color-light: gray;
-        // margin-top: 0;
-        // & > .el-tabs__header {
-        //     border-bottom: 0;
-        //     background-color: transparent;
-        // }
-        // & > .el-tabs__header .el-tabs__item {
-        //     transition-duration: 0s;
-        //     margin-top: 0;
-        //     &.is-active {
-        //         border-radius: 6px 6px 0 0;
-        //         margin-top: 0;
-        //         border-top: 1px solid var(--el-border-color);
-        //         border-left: 1px solid var(--el-border-color);
-        //     }
-        //     &:first-child {
-        //         margin-left: 0;
-        //     }
-        // }
-        // & > .el-tabs__content {
-        //     border: 1px solid var(--el-border-color);
-        //     padding: 0;
-        //     height: 400px;
-        //     display: flex;
-        //     border-radius: 0 6px 6px 6px;
-        //     .el-tab-pane {
-        //         width: 100%;
-        //     }
-        // }
-    }
-}
+// .planPanel {
+//     .el-tabs.el-tabs--border-card {
+//         --el-border-color: gray;
+//         --el-border-color-light: gray;
+//         margin-top: 0;
+//         & > .el-tabs__header {
+//             border-bottom: 0;
+//             background-color: transparent;
+//         }
+//         & > .el-tabs__header .el-tabs__item {
+//             transition-duration: 0s;
+//             margin-top: 0;
+//             &.is-active {
+//                 border-radius: 6px 6px 0 0;
+//                 margin-top: 0;
+//                 border-top: 1px solid var(--el-border-color);
+//                 border-left: 1px solid var(--el-border-color);
+//             }
+//             &:first-child {
+//                 margin-left: 0;
+//             }
+//         }
+//         & > .el-tabs__content {
+//             border: 1px solid var(--el-border-color);
+//             padding: 0;
+//             height: 400px;
+//             display: flex;
+//             border-radius: 0 6px 6px 6px;
+//             .el-tab-pane {
+//                 width: 100%;
+//             }
+//         }
+//     }
+// }
 // .dark .planPanel .el-tabs.el-tabs--border-card {
 //     .el-tabs__item.is-active {
 //         background: #304156;
@@ -453,10 +454,10 @@ const 完成 = (item: planDataType) => {
     top: 300px;
     .el-tabs {
         border-radius: $border-radius-1;
-        ::v-deep .el-tabs__header .el-tabs__item {
+        ::v-deep(.el-tabs__header .el-tabs__item) {
             transition-duration: 0s;
         }
-        ::v-deep .el-tabs__content{
+        ::v-deep(.el-tabs__content){
             padding: $grid-2;
         }
         .el-tab-pane {

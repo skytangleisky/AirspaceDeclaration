@@ -167,10 +167,10 @@ export const useSettingStore = defineStore({
         disappear:false,
         bottom_disappear:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       回放:{
         "zoom": 8.882777980661407,
@@ -181,10 +181,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       编辑:{
         "zoom": 8.882777980661407,
@@ -195,10 +195,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       模拟:{
         "zoom": 8.882777980661407,
@@ -209,10 +209,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       }
     },
     组网:{
@@ -231,10 +231,10 @@ export const useSettingStore = defineStore({
         disappear:false,
         bottom_disappear:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       回放:{
         "zoom": 8.882777980661407,
@@ -245,10 +245,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       编辑:{
         "zoom": 8.882777980661407,
@@ -259,10 +259,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       模拟:{
         "zoom": 8.882777980661407,
@@ -273,10 +273,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       }
     },
     风雷达组网:{
@@ -329,10 +329,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       编辑:{
         "zoom": 8.882777980661407,
@@ -343,10 +343,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       模拟:{
         "zoom": 8.882777980661407,
@@ -357,10 +357,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       }
     },
     人影:{
@@ -471,10 +471,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       编辑:{
         "zoom": 8.882777980661407,
@@ -485,10 +485,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       模拟:{
         "zoom": 8.882777980661407,
@@ -499,10 +499,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       }
     },
     珠海:{
@@ -536,10 +536,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       编辑:{
         "zoom": 8.882777980661407,
@@ -550,10 +550,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       },
       模拟:{
         "zoom": 8.882777980661407,
@@ -564,10 +564,10 @@ export const useSettingStore = defineStore({
         district:true,
         loadmap:true,
         tile:{
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  },
+          name: "高德卫星地图",
+          url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+          tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+        },
       }
     },
     webgpu:false,

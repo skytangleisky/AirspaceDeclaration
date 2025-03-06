@@ -20,7 +20,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import editMap from "../editMap.vue";
+import { defineAsyncComponent } from "vue";
+const editMap = defineAsyncComponent(() => import("../editMap.vue"));
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 </script>

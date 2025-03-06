@@ -7,8 +7,8 @@
 </template>
 <script lang="ts" setup>
 import type { Item } from './def'
-import SubItem from './SubItem.vue'
-import { reactive } from 'vue';
+const SubItem = defineAsyncComponent(() => import("./SubItem.vue"));
+import { defineAsyncComponent, reactive } from 'vue';
 const list = defineModel<Item[]>('list',{
   default:()=>reactive([])
 })

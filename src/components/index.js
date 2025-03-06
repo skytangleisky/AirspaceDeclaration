@@ -1,10 +1,11 @@
 // import rgyxWorkPoint from "./rgyx-work-point.vue"; // 引入封装好的组件
-// const rgyxWorkPoint = defineAsyncComponent(()=>import('../App.vue'))
+// const rgyxWorkPoint = defineAsyncComponent(()=>import("../App.vue"))
 import dragable from '../directive/dragable'
 import resize from '../directive/resize'
-import rgyxWorkPoint from "../App.vue";
-// const rgyxWorkPoint = defineAsyncComponent(()=>import('../App.vue'))
-// const rgyxWorkPoint = defineAsyncComponent(()=>import('./rgyx-work-point.vue'))
+// import rgyxWorkPoint from "../App.vue";
+import { defineAsyncComponent } from "vue";
+const rgyxWorkPoint = defineAsyncComponent(()=>import("../App.vue"))
+// const rgyxWorkPoint = defineAsyncComponent(()=>import("./rgyx-work-point.vue"))
 // import {resize,dragable,pinia} from "../main.js";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";

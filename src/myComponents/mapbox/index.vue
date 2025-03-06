@@ -6,8 +6,8 @@
 import mapboxgl from "mapbox-gl_wstd";
 import {layer,windParticles} from "./windRaster";
 import { isDark } from "~/composables/dark.js";
-import { onMounted, ref, onBeforeUnmount, watch, toRefs,reactive } from "vue";
-import ControlPane from '../controlPane/index.vue'
+import { onMounted, ref, onBeforeUnmount, watch, toRefs,reactive, defineAsyncComponent } from "vue";
+const ControlPane = defineAsyncComponent(() => import("../controlPane/index.vue"))
 import uvUrl from "./data/06040808.000?url";
 import plotUrl from "./data/plot/06040802.000?url";
 import irUrl1 from "./data/ir/m/0604091200.000?url";

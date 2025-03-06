@@ -15,13 +15,14 @@
   </li>
 </template>
 <script setup lang="ts">
-import Curve from './curve.vue'
-import Text from './text.vue'
-import Select from './select.vue'
-import Checkbox from './checkbox.vue'
-import Color from './color.vue'
-import Range from './range.vue'
-import Folder from './folder.vue'
+import { defineAsyncComponent } from "vue";
+const Curve = defineAsyncComponent(() => import("./curve.vue"));
+const Text = defineAsyncComponent(() => import("./text.vue"));
+const Select = defineAsyncComponent(() => import("./select.vue"));
+const Checkbox = defineAsyncComponent(() => import("./checkbox.vue"));
+const Color = defineAsyncComponent(() => import("./color.vue"));
+const Range = defineAsyncComponent(() => import("./range.vue"));
+const Folder = defineAsyncComponent(() => import("./folder.vue"));
 import type {Item} from './def'
 const item = defineModel<Item>('item',{
   default:()=>{}
