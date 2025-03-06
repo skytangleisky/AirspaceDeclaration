@@ -347,9 +347,9 @@ export default function(){
 							["linear"],
 							["zoom"],
 							0,
-							"#14407f",
+							"#1E3148",
 							11,
-							"#14407f"
+							"#1E3148"
 						]
 					}
 				},
