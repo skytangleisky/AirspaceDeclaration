@@ -10,7 +10,7 @@ function setConfig(){
     url = 'backend/db/'+tableName+options
   }if(filename=='ry'){
     tableName='zydpara'
-    options = '?host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'
+    options = '?host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat'
     url = 'backend/db/'+tableName+options
   }else{
     tableName = filename
