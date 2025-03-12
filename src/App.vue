@@ -11,3 +11,17 @@ import RgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";//空域�
 // import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue";//烟炉作业
 import Websocket from "~/myComponents/websocket/websocket.vue";
 </script>
+<style>
+html,
+body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+#app {
+  width: 100vw;
+  height: 100vh;
+  font-size: 14px;
+}
+</style>
