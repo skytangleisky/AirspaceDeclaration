@@ -23,7 +23,7 @@
           v-html="checkSvg"
           style="
             position: absolute;
-            font-size: 1.5rem;
+            font-size: 21px;
             right: 5px;
             top: 5px;
             border-radius: 50%;

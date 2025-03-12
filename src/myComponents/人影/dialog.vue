@@ -13,7 +13,7 @@
         class="dropdown"
         style="
           width: 30px;
-          line-height: 1rem;
+          line-height: 14px;
           font-size: 20px;
           display: flex;
           align-items: center;
@@ -46,7 +46,7 @@
                     box-sizing: border-box;
                     position: relative;
                     margin-top: 12px;
-                    scroll-padding-top: 1rem;
+                    scroll-padding-top: 14px;
                 "
             >
                 <table>
@@ -257,35 +257,6 @@ const toggleCollapse = () => {
     display: none;
 }
 
-.operation_filter {
-    // display: block;
-    // padding: 0.1rem 0.2rem;
-    // font-size: 1rem;
-    // line-height: 1.5rem;
-
-    // background-color: #eee;
-    // background-clip: padding-box;
-    // border: 0 solid #c1ccd3;
-    // appearance: none;
-    // border-radius: 0.3rem;
-    // &:focus {
-    //   color: #000;
-    //   background-color: #ddd;
-    //   border-color: #4d90fe;
-    //   outline: 0;
-    // }
-
-    &::-webkit-input-placeholder {
-    }
-    // &:focus{
-    //   border-radius:10px 0 0 0;
-    //   border: #17A1FF solid 2px;
-    //   transition: border 2s;
-    //   border-right:none;
-    //   border-bottom:none;
-    //   padding-bottom:2px;
-    // }
-}
 // .dark .operation_filter {
 //   &::-webkit-input-placeholder {
 //     color: #999;
