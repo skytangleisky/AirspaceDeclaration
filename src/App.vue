@@ -18,10 +18,10 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  font-size: 14px;
 }
 #app {
   width: 100vw;
   height: 100vh;
+  font-size: 14px;
 }
 </style>

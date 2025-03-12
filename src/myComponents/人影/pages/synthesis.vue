@@ -91,7 +91,7 @@
       </div>
       <el-icon
         class="cursor-pointer z-1"
-        style="position: absolute; top: 0; right: 0; font-size: 1.5rem"
+        style="position: absolute; top: 0; right: 0; font-size: 21px"
         v-html="forkSvg"
         @click.stop="setting.人影.监控.bottom_disappear = true"
       ></el-icon>
@@ -783,7 +783,7 @@ $time: 1s;
       .ep-icon {
         cursor: pointer;
         filter: drop-shadow(0 0 8px #000);
-        font-size: 2rem;
+        font-size: 28px;
         color: #fff;
       }
     }

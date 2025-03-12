@@ -203,7 +203,7 @@ const 完成 = (item: planDataType) => {
   //   overflow: auto;
   //   min-width: 100%;
   //   tr {
-  //     line-height: 1rem;
+  //     line-height: 14px;
   //   }
   //   thead {
   //     tr {

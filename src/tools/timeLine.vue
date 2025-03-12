@@ -7,7 +7,7 @@
     <el-icon
       @click="prev"
       class="btn"
-      style="overflow: hidden;font-size: 2rem;transform: rotate(180deg);min-width: 2rem;"
+      style="overflow: hidden;font-size: 28px;transform: rotate(180deg);min-width: 28px;"
       v-dompurify-html="nextSvg"
     />
     <div class="relative h-30px" style="width: 100%">
@@ -42,13 +42,13 @@
     <el-icon
       @click="next"
       class="btn"
-      style="overflow: hidden; font-size: 2rem; min-width: 2rem"
+      style="overflow: hidden; font-size: 28px; min-width: 28px"
       v-dompurify-html="nextSvg"
     />
     <el-icon
       @click="local_status == 'play' ? pause() : play()"
       class="btn"
-      style="overflow: hidden; font-size: 2rem; min-width: 2rem"
+      style="overflow: hidden; font-size: 28px;min-width: 28px"
       v-dompurify-html="local_status == 'play' ? stopSvg : playSvg"
     />
     <span @click="speed">x{{ Math.pow(2, options.times) }}</span>

@@ -68,7 +68,7 @@
         flex: 1;
         box-sizing: border-box;
         overflow: auto;
-        scroll-padding-top: 1rem;
+        scroll-padding-top: 14px;
       "
     >
       <table>
@@ -110,7 +110,7 @@
           flex: 1;
           box-sizing: border-box;
           overflow: auto;
-          scroll-padding-top: 1rem;
+          scroll-padding-top: 14px;
         "
       >
         <template v-for="(item, key) of options.thData">
@@ -160,7 +160,7 @@
                   <span
                     style="
                       font-size: 10px;
-                      min-height: 1rem;
+                      min-height: 14px;
                       opacity: 0.5;
                       white-space: nowrap;
                       display: none;
@@ -695,7 +695,7 @@ const allChange = (val: CheckboxValueType) => {
   }
   .svg {
     padding: 4px;
-    font-size: 1.5rem;
+    font-size: 21px;
     color: ar(--el-text-color-primary);
   }
   .listContainer {
@@ -723,7 +723,7 @@ const allChange = (val: CheckboxValueType) => {
       bottom: 0;
       border-bottom: 1px solid #fff;
       font-weight: bolder;
-      line-height: 1rem;
+      line-height: 14px;
     }
     &{
       .th {
