@@ -13,6 +13,10 @@ export const formatUrl = (url: string) => {
 export const useSettingStore = defineStore({
   id: 'setting',
   state:()=>({
+    在线人数:'',
+    网络状态:'',
+    内存占用:'',
+    devtoolsOpen:false,
     menus:true,
     cesium:()=>useCesiumStore(),
     canvas:{

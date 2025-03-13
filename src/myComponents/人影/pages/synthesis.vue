@@ -96,7 +96,7 @@
         @click.stop="setting.人影.监控.bottom_disappear = true"
       ></el-icon>
       <datatable
-        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat'"
+        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'"
         :table="'zydpara'"
       />
     </div>
@@ -134,7 +134,7 @@ const ColorSelector = defineAsyncComponent(()=>import("~/myComponents/colorSelec
 import { Pane } from 'controlpane';
 const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/index.vue"));
 const list = reactive([
-  {label:'devtools',type:'folder',expanded:false,children:[
+  {label:'devtools',type:'folder',opened:toRefs(setting).devtoolsOpen,children:[
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
     {label:'暗黑主题',value:isDark,type:'checkbox'},
     // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
@@ -206,6 +206,9 @@ const list = reactive([
     {label:'飞机',value:toRefs(setting.人影.监控).plane,type:'checkbox'},
     {label:'作业点',value:toRefs(setting.人影.监控).zyd,type:'checkbox'},
     {label:'导航台',value:toRefs(setting.人影.监控).navigationStation,type:'checkbox'},
+    {label:'在线人数',value:toRefs(setting).在线人数,type:'text'},
+    {label:'网络状态',value:toRefs(setting).网络状态,type:'text'},
+    {label:'内存占用',value:toRefs(setting).内存占用,type:'text'},
     // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
     // {label:'网格点',value:toRefs(setting.人影.监控).gridPoint,type:'checkbox'},
     // {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},

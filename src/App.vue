@@ -1,15 +1,14 @@
 <template>
   <div style="position: relative;width: 100%;height: 100%;">
     <rgyxWorkPoint />
-    <AircraftPos></AircraftPos>
+    <Websocket />
   </div>
-  <!-- <el-button type="primary">OK</el-button> -->
 </template>
 <script setup>
 // import rgyxWorkPoint from "~/components/rgyx-work-point.vue";
 import { defineAsyncComponent } from "vue";
 const rgyxWorkPoint = defineAsyncComponent(()=>import("~/myComponents/人影/pages/synthesis.vue"))
-import AircraftPos from "~/myComponents/websocket/aircraftPosition.vue";
+import Websocket from "~/myComponents/websocket/websocket.vue";
 </script>
 <style>
 html,

@@ -119,9 +119,8 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        // target:'https://websocket.tanglei.top',//替换的服务端地址
-        target:'http://victorysoft.cn:3000',//替换的服务端地址
-        // target:'https://test.tanglei.site',//替换的服务端地址
+        // target:'http://victorysoft.cn:3000',//替换的服务端地址
+        target:'http://192.168.0.114:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径

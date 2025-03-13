@@ -87,8 +87,8 @@ let stationMenu: HTMLDivElement;
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
 
-//const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
-const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
+const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
+// const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=victorysoft.cn&port=3308&user=root&password=mysql";
 function status2value(key:number){
@@ -328,8 +328,8 @@ function 网络上报(data:prevRequestDataType){
         }
       }
       // exec({
-      //   database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat",
-      //   query:{sqls:["INSERT INTO `ryplat`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
+      //   database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
+      //   query:{sqls:["INSERT INTO `ryplat_bjry`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
       // }).then(res=>{
       //   console.log(res.data)
       // })
@@ -1563,7 +1563,7 @@ onMounted(() => {
     //   planProps.今日作业记录 = res.data.data;
     // })
     exec({
-      database: dbUrl+"&database=ryplat",
+      database: dbUrl+"&database=ryplat_bjry",
       query: {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
@@ -1913,7 +1913,7 @@ onMounted(() => {
     })
     let work = ()=>{
       exec({
-        database: dbUrl+"&database=ryplat",
+        database: dbUrl+"&database=ryplat_bjry",
         query: {
           sqls: [
             "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID ORDER BY z.tmBeginApply ASC",
