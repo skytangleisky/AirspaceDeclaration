@@ -281,7 +281,7 @@ onBeforeUnmount(() => {
                 .el-input-number {
                     width: 100%;
                 }
-                ::v-deep .el-date-editor.el-input {
+                ::v-deep(.el-date-editor.el-input) {
                     width: 100%;
                 }
             }

@@ -1,22 +1,22 @@
 {
   "name": "airspace-application",
-  "version": "1.0.3",
-  "description": "示例项目",
-  "author": "张三",
-  "componentChineseName": "示例项目",
+  "version": "1.1.2",
+  "description": "空域申请模块",
+  "author": "tanglei",
+  "componentChineseName": "空域申请模块",
   "componentClassification": "FWC",
   "componentLabel": "SWF",
-  "componentDeveloperTelephone": "18569854578",
+  "componentDeveloperTelephone": "19381952252",
   "componentDeveloperCompany": "国家人影中心",
   "componentMaintainer": "国家人影中心",
-  "componentMaintainerTelephone": "18569854578",
+  "componentMaintainerTelephone": "19381952252",
   "componentMaintainerCompany": "国家人影中心",
   "componentDevelopLanguage": "VUE",
   "componentRuntimeEnvironment": "银河麒麟",
   "componentDependentEnvironment": "Node18以上",
   "componentSystemResources": "无",
   "private": false,
-  "main": "lib/index.umd.js",
+  "main": "lib/index.es.js",
   "files": [
     "lib",
     "package.json"
@@ -33,8 +33,8 @@
     "@sakitam-gis/mapbox-wind": "^2.0.4",
     "@turf/helpers": "^6.5.0",
     "@turf/turf": "5.1.6",
-    "@types/mapbox-gl": "^2.7.17",
     "@types/mapbox__mapbox-gl-draw": "^1.4.6",
+    "@types/mapbox-gl": "^2.7.17",
     "@vue/devtools-api": "^7.7.2",
     "axios": "^1.7.9",
     "cesium": "^1.126.0",
@@ -47,6 +47,7 @@
     "mapbox-gl_wstd": "^3.8.0",
     "moment": "^2.30.1",
     "ol": "^10.0.0",
+    "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^4.2.0",
     "uuid": "^11.1.0",
     "vue": "^3.4.31",
@@ -60,6 +61,6 @@
     "unocss": "^0.58.5",
     "unplugin-auto-import": "^0.18.6",
     "unplugin-vue-components": "^0.27.5",
-    "vite": "^5.3.4"
+    "vite": "^6.0.0"
   }
 }

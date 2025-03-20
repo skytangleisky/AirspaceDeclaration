@@ -96,7 +96,7 @@
         @click.stop="setting.人影.监控.bottom_disappear = true"
       ></el-icon>
       <datatable
-        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'"
+        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat'"
         :table="'zydpara'"
       />
     </div>
@@ -113,7 +113,8 @@
   <control-pane style="top:10px;right:10px;" :list="list" theme="default"></control-pane>
 </template>
 <script lang="ts" setup>
-import editMap from "../editMap.vue";
+import { defineAsyncComponent } from "vue";
+const editMap = defineAsyncComponent(() => import("../editMap.vue"));
 import forkSvg from "~/assets/fork.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
 import warnSvg from "~/assets/warn.svg?raw";
@@ -123,14 +124,15 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRef,toRefs } from "vue";
-import DialogPlanRequest, { prevRequestDataType } from "../../dialog_plan_request.vue";
+import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRef,toRefs, defineAsyncComponent } from "vue";
+import { prevRequestDataType } from "../../dialog_plan_request.vue";
+const DialogPlanRequest = defineAsyncComponent(()=>import("../../dialog_plan_request.vue"));
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { eventbus } from "~/eventbus/index";
-import ColorSelector from "~/myComponents/colorSelector/index.vue";
+const ColorSelector = defineAsyncComponent(()=>import("~/myComponents/colorSelector/index.vue"));
 import { Pane } from 'controlpane';
-import ControlPane from '../../controlPane/index.vue';
+const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/index.vue"));
 const list = reactive([
   {label:'devtools',type:'folder',expanded:false,children:[
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},

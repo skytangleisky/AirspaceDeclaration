@@ -14,7 +14,7 @@
         outline: none;
       "
     ></div>
-    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
+    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`position:absolute;font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
     <Dialog
       v-show="setting.menus"
       class="stationDialog"
@@ -61,9 +61,10 @@ import 火箭弹图标 from '~/assets/火箭弹.svg?url'
 import 高炮图标 from '~/assets/高炮.svg?url'
 import axios from 'axios'
 import { eventbus } from "~/eventbus";
-import { reactive, onMounted, onBeforeUnmount, ref, watch } from "vue";
-import PlanPanel, { planDataType,zyddataType } from "./planPanel.vue";
-import Dialog from "./dialog.vue";
+import { reactive, onMounted, onBeforeUnmount, ref, watch, defineAsyncComponent } from "vue";
+import { planDataType,zyddataType } from "./planPanel.vue";
+const PlanPanel = defineAsyncComponent(() => import("./planPanel.vue"));
+const Dialog = defineAsyncComponent(() => import("./dialog.vue"));
 import { addFeatherImages,View,getLngLat } from "~/tools";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
@@ -86,8 +87,8 @@ let stationMenu: HTMLDivElement;
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
 
-const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
-// const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
+//const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
+const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=victorysoft.cn&port=3308&user=root&password=mysql";
 function status2value(key:number){
@@ -327,8 +328,8 @@ function 网络上报(data:prevRequestDataType){
         }
       }
       // exec({
-      //   database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-      //   query:{sqls:["INSERT INTO `ryplat_bjry`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
+      //   database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat",
+      //   query:{sqls:["INSERT INTO `ryplat`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
       // }).then(res=>{
       //   console.log(res.data)
       // })
@@ -1562,7 +1563,7 @@ onMounted(() => {
     //   planProps.今日作业记录 = res.data.data;
     // })
     exec({
-      database: dbUrl+"&database=ryplat_bjry",
+      database: dbUrl+"&database=ryplat",
       query: {
         sqls: [
           "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
@@ -1912,7 +1913,7 @@ onMounted(() => {
     })
     let work = ()=>{
       exec({
-        database: dbUrl+"&database=ryplat_bjry",
+        database: dbUrl+"&database=ryplat",
         query: {
           sqls: [
             "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID ORDER BY z.tmBeginApply ASC",
@@ -3090,8 +3091,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 <style scoped lang="scss">
 .stationDialog{
   position: absolute;
-  left:$page-padding;
-  top:$page-padding;
+  left:10px;
+  top:10px;
 }
 .mapboxgl-canvas:focus-visible {
   outline: none;

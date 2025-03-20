@@ -42,8 +42,8 @@
 import { useSettingStore } from "~/stores/setting";
 import timeLine from "~/tools/timeLine.vue";
 const setting = useSettingStore();
-import editMap from "../editMap.vue";
-import { ref, reactive } from "vue";
+const editMap = defineAsyncComponent(() => import("../editMap.vue"));
+import { ref, reactive, defineAsyncComponent } from "vue";
 const value2 = ref("");
 const defaultTime2 = [new Date(2000, 1, 1, 12, 0, 0), new Date(2000, 2, 1, 8, 0, 0)];
 const data = reactive([]);
