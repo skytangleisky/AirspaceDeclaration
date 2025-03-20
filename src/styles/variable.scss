@@ -13,3 +13,62 @@ $border-radius-4:16px;
 $border-radius-5:20px;
 
 $scrollbar-width:8px;
+
+
+
+// we can add this to custom namespace, default is 'el'
+// @forward "element-plus/theme-chalk/src/mixins/config.scss" with (
+//   $namespace: "el"
+// );
+
+// You should use them in scss, because we calculate it by sass.
+// comment next lines to use default color
+@forward "element-plus/theme-chalk/src/common/var.scss" with (
+  // do not use same name, it will override.
+  $button-padding-horizontal: ("default": 50px),
+  $colors: (
+    "primary": (
+      "base": #1a8cff,
+    ),
+    "success": (
+      "base": #4dff7f  ,
+    ),
+    "warning": (
+      "base": #ff9900,
+    ),
+    "danger": (
+      "base": #ff0000,
+    ),
+    "error": (
+      "base": #ff0000,
+    ),
+    "info": (
+      "base": #42b8dd,
+    ),
+  ),
+  $bg-color: (
+    'page': #1E3148,
+    '': #071D3B,
+    'overlay': #162842,
+  ),
+  $text-color: (
+    'primary':  #e5eaf3,
+    'regular': #cfd3dc,
+    'secondary': #a3a6ad,
+    'placeholder': #8d9095,
+    'disabled': #6c6e72,
+  ),
+  $border-color: (
+    '': #4c4d4f,
+    'light': #414243,
+    'lighter': #363637,
+    'darker': #636466,
+    'dark': #58585b,
+  ),
+  $fill-color:(
+    '':#1E3148,
+    'blank':transparent,
+    'light':#1B2C41,
+    'lighter':#18273A,
+  ),
+);

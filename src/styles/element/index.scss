@@ -3,16 +3,16 @@ $--colors: (
     "base": #1a8cff,
   ),
   "success": (
-    "base": #55cd95  ,
+    "base": #4dff7f  ,
   ),
   "warning": (
-    "base": #f2711c,
+    "base": #ff9900,
   ),
   "danger": (
-    "base": #db2828,
+    "base": #ff0000,
   ),
   "error": (
-    "base": #db2828,
+    "base": #ff0000,
   ),
   "info": (
     "base": #42b8dd,
@@ -29,11 +29,23 @@ $--colors: (
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
   // do not use same name, it will override.
   $colors: $--colors,
-  $button-padding-horizontal: ("default": 50px)
+  $button-padding-horizontal: ("default": 50px),
+  $bg-color: (
+    'page': #1E3148,
+    '': #071D3B,
+    'overlay': #162842,
+  ),
+  $text-color: (
+    'primary':  #e5eaf3,
+    'regular': #cfd3dc,
+  ),
+  $border-color: (
+    '': #4c4d4f,
+  ),
 );
 
 // if you want to import all
-@use "element-plus/theme-chalk/src/index.scss" as *;
+// @use "element-plus/theme-chalk/src/index.scss" as *;
 
 // You can comment it to hide debug info.
 // @debug $--colors;
