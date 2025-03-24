@@ -1,6 +1,7 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute;">
     <edit-map
+      ref="editMapRef"
       v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
       v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
       style="backdrop-filter: blur(25px)"
@@ -113,8 +114,9 @@
   <control-pane style="top:10px;right:10px;" :list="list" theme="default"></control-pane>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent } from "vue";
-const editMap = defineAsyncComponent(() => import("../editMap.vue"));
+import { defineAsyncComponent,ref } from "vue";
+const EditMap = defineAsyncComponent(() => import("../editMap.vue"));
+const editMapRef = ref()
 import forkSvg from "~/assets/fork.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
 import warnSvg from "~/assets/warn.svg?raw";
@@ -214,7 +216,12 @@ const list = reactive([
     // {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
     // {label:'等值线',value:toRefs(setting.人影.监控).isolines,type:'checkbox'},
     // {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
-  ]}
+    {label:'放大',type:'button',click(){editMapRef.value.zoomIn()}},
+    {label:'缩小',type:'button',click(){editMapRef.value.zoomOut()}},
+    {label:'测距',type:'button',click(){console.log('测距')}},
+    {label:'获取经纬度',type:'button',click(){console.log('经纬度')}},
+    {label:'批量操作',type:'button',click(){console.log('批量操作')}},
+  ]},
 ]);
 let pane:any
 onMounted(()=>{
