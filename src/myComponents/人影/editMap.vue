@@ -11,7 +11,6 @@
         width: 100%;
         height: 100%;
         line-height: 1;
-        outline: none;
       "
     ></div>
     <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`position:absolute;font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
@@ -51,6 +50,9 @@
   </div>
 </template>
 <script lang="ts" setup>
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+// import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
+import theme from './drawTheme/inactive.js'
 import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import banSvg from '~/assets/ban.svg?url'
@@ -422,7 +424,6 @@ function 网络上报(data:prevRequestDataType){
       strID: item.strID,
       color: "transparent",
       fillColor: "transparent",
-      
     });
     //预警圈
     for(let i=0;i<forewarningFeatures.length;i++){
@@ -542,6 +543,12 @@ const loop = ()=>{
   // })
 
 }
+const zoomIn = ()=>map&&map.zoomIn()
+const zoomOut = ()=>map&&map.zoomOut()
+defineExpose({
+  zoomIn,
+  zoomOut,
+})
 let aid = 0;
 import getStyle from './editMap.js'
 let style = getStyle()
@@ -3087,14 +3094,12 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
     }
   }
 }
-</style>
-<style scoped lang="scss">
 .stationDialog{
   position: absolute;
   left:10px;
   top:10px;
 }
-.mapboxgl-canvas:focus-visible {
+.mapboxgl-canvas:focus {
   outline: none;
 }
 </style>

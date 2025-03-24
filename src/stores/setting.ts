@@ -6,7 +6,6 @@ import dev from "./subs/dev.js";
 import zh from "./subs/zh.js";
 import cq from "./subs/cq.js";
 import cq_permission from "./permission/cq.js"
-import { useCesiumStore } from "./cesium.js";
 export const formatUrl = (url: string) => {
   return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
 };
@@ -18,7 +17,6 @@ export const useSettingStore = defineStore({
     内存占用:'',
     devtoolsOpen:false,
     menus:true,
-    cesium:()=>useCesiumStore(),
     canvas:{
       devtoolsOpen:false,
       particleCount:10,
