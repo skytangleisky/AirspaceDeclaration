@@ -7,39 +7,39 @@
 </template>
 <script lang="ts" setup>
 import type { Item } from './def'
-const SubItem = defineAsyncComponent(() => import("./SubItem.vue"));
-import { defineAsyncComponent, reactive } from 'vue';
+import SubItem from './SubItem.vue'
+import { reactive } from 'vue';
 const list = defineModel<Item[]>('list',{
   default:()=>reactive([])
 })
-const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'vivid'>('theme',{
+const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'vivid'|'light'>('theme',{
   default:'default'
 })
 </script>
 <style lang="scss">
 .control-pane{
   &.default{
-    --tp-base-background-color: var(--el-bg-color);
-    --tp-base-shadow-color: var(--el-mask-color-extra-light);
-    --tp-button-background-color: var(--el-color-primary);
-    --tp-button-background-color-active: var(--el-color-primary-dark-2);
-    --tp-button-background-color-focus: var(--el-color-primary-light-5);
-    --tp-button-background-color-hover: var(--el-color-primary-light-3);
-    --tp-button-foreground-color: var(--el-text-color-primary);
-    --tp-container-background-color: var(--el-fill-color);
-    --tp-container-background-color-active: var(--el-fill-color-dark);;
-    --tp-container-background-color-focus: var(--el-fill-color-lighter);
-    --tp-container-background-color-hover: var(--el-fill-color-light);
-    --tp-container-foreground-color: var(--el-text-color-regular);
-    --tp-groove-foreground-color:var(--el-text-color-regular);
-    --tp-input-background-color: var(--el-fill-color);
-    --tp-input-background-color-active: var(--el-fill-color-dark);
-    --tp-input-background-color-focus: var(--el-fill-color-lighter);
-    --tp-input-background-color-hover: var(--el-fill-color-light);
-    --tp-input-foreground-color:var(--el-text-color-regular);
-    --tp-label-foreground-color: var(--el-text-color-regular);
-    --tp-monitor-background-color: var(--el-mask-color);
-    --tp-monitor-foreground-color: var(--el-text-color-regular);
+    --tp-base-background-color: hsla(230, 7%, 17%, 1);
+    --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
+    --tp-button-background-color: hsla(230, 7%, 70%, 1);
+    --tp-button-background-color-active: hsla(230, 7%, 85%, 1);
+    --tp-button-background-color-focus: hsla(230, 7%, 80%, 1);
+    --tp-button-background-color-hover: hsla(230, 7%, 75%, 1);
+    --tp-button-foreground-color: hsla(230, 7%, 17%, 1);
+    --tp-container-background-color: hsla(230, 7%, 75%, 0.1);
+    --tp-container-background-color-active: hsla(230, 7%, 75%, 0.25);
+    --tp-container-background-color-focus: hsla(230, 7%, 75%, 0.2);
+    --tp-container-background-color-hover: hsla(230, 7%, 75%, 0.15);
+    --tp-container-foreground-color: hsla(230, 7%, 75%, 1);
+    --tp-groove-foreground-color: hsla(230, 7%, 75%, 0.1);
+    --tp-input-background-color: hsla(230, 7%, 75%, 0.1);
+    --tp-input-background-color-active: hsla(230, 7%, 75%, 0.25);
+    --tp-input-background-color-focus: hsla(230, 7%, 75%, 0.2);
+    --tp-input-background-color-hover: hsla(230, 7%, 75%, 0.15);
+    --tp-input-foreground-color: hsla(230, 7%, 75%, 1);
+    --tp-label-foreground-color: hsla(230, 7%, 75%, 0.7);
+    --tp-monitor-background-color: hsla(230, 7%, 0%, 0.2);
+    --tp-monitor-foreground-color: hsla(230, 7%, 75%, 0.7);
   }
   &.jetblack{
     --tp-base-background-color: hsla(0, 0%, 0%, 1);
@@ -156,7 +156,6 @@ const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'
     --tp-monitor-background-color: hsla(0, 0%, 0%, 0.5);
     --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.5);
   }
-  
   position: absolute;
   background:var(--tp-base-background-color);
   box-shadow: 0 2px 4px var(--tp-base-shadow-color);
