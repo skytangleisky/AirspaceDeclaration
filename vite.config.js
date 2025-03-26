@@ -120,7 +120,7 @@ export default defineConfig({
       },
       '/backend':{
         // target:'http://victorysoft.cn:3000',//替换的服务端地址
-        target:'http://192.168.0.114:3000',
+        target:'http://tanglei.top:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径

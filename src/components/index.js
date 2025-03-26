@@ -4,7 +4,8 @@ import dragable from '../directive/dragable'
 import resize from '../directive/resize'
 // import rgyxWorkPoint from "../App.vue";
 import { defineAsyncComponent } from "vue";
-const rgyxWorkPoint = defineAsyncComponent(()=>import("../App.vue"))
+const RgyxWorkPoint = defineAsyncComponent(()=>import("../App.vue"))
+const SmokeStove = defineAsyncComponent(()=>import("~/myComponents/smokeStove/smokeStove.vue"))
 // const rgyxWorkPoint = defineAsyncComponent(()=>import("./rgyx-work-point.vue"))
 // import {resize,dragable,pinia} from "../main.js";
 // import ElementPlus from "element-plus";
@@ -27,7 +28,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 export {
   resize,
   dragable,
-  rgyxWorkPoint
+  RgyxWorkPoint,
+  SmokeStove
 }
 // const myPlugin = {
 //     install(app) {
