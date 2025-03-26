@@ -29,7 +29,7 @@ export {
   resize,
   dragable,
   RgyxWorkPoint,
-  SmokeStove
+  SmokeStove,
 }
 // const myPlugin = {
 //     install(app) {
