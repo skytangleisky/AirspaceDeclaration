@@ -1,14 +1,15 @@
 <template>
   <div style="position: relative;width: 100%;height: 100%;">
-    <rgyxWorkPoint />
+    <RgyxWorkPoint />
     <!-- <SmokeStove></SmokeStove> -->
     <Websocket />
   </div>
 </template>
 <script setup>
+import "~/styles/element/index.scss"
 // import rgyxWorkPoint from "~/components/rgyx-work-point.vue";
 import { defineAsyncComponent } from "vue";
-const rgyxWorkPoint = defineAsyncComponent(()=>import("~/myComponents/人影/pages/synthesis.vue"))
+const RgyxWorkPoint = defineAsyncComponent(()=>import("~/myComponents/人影/pages/synthesis.vue"))
 // const SmokeStove = defineAsyncComponent(()=>import("~/myComponents/smokeStove/smokeStove.vue"))
 import Websocket from "~/myComponents/websocket/websocket.vue";
 </script>
@@ -20,6 +21,7 @@ body {
   margin: 0;
   padding: 0;
   font-size: 100px;
+  color: var(--el-text-color-primary);
 }
 #app {
   width: 100vw;

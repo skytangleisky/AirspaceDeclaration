@@ -17,9 +17,9 @@ import {
 export default defineConfig({
   plugins: [
     vue(),
-    // AutoImport({
-    //   resolvers: [ElementPlusResolver()],
-    // }),
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
     Components({
       // allow auto load markdown components under `./src/components/`
       extensions: ['vue', 'md'],
