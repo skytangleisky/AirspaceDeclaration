@@ -60,7 +60,6 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { checkPermission } from "./index.js";
 import { gsap } from "gsap";
 import stopSvg from "~/assets/stop.svg?raw";
 import playSvg from "~/assets/play.svg?raw";

@@ -103,10 +103,7 @@ let circleFeatures: any = [];
 let forewarningFeatures: any = [];
 const batchDialogVisible = ref(false)
 let batchList = reactive([])
-const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
-// const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
-// const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
-// const dbUrl = "host=victorysoft.cn&port=3308&user=root&password=mysql";
+import {华北飞行区域,作业点,机场,作业状态数据} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -165,7 +162,6 @@ let 作业申请 = () => {
   emits("update:prevRequestData", properties);
 };
 import {
-  checkPermission,
   calculateSectorPoints,
   calculateCirclePoints,
 } from "~/tools/index.ts";
@@ -298,175 +294,6 @@ function 网络上报(data:prevRequestDataType){
     console.log(res.data)
   })
   emits('update:prevRequestShow',false)//关闭弹窗
-  return;
-  dialogOptions.menus.map((item: stationData) => {
-    if(item.strID == data.strID){
-      let zyddata:zyddataType = {
-        strWorkID: `RW${data.strID}${moment().format('YYYY-MM-DD-')}${data.beginTime.replace(/:/g,'-')}`,
-        strZydID: data.strID,
-        ubyStatus: 72,
-        ubySendStatus: 3,
-        ubyProcStatus: 3,
-        strCode: data.strCode,
-        strName: data.strName,
-        strWeapon: data.iWeapon.toFixed(),
-        strCurPos: item.strPos,
-        iRange: data.iMaxShotRange,
-        iMaxShotHei: item.iMaxShotHei,
-        strApplyUnit: item.strMgrUnit,
-        tmBeginApply: moment().format("YYYY-MM-DD HH:mm:ss"),
-        iApplyTimeLen: data.duration,
-        tmApplyRev: null,
-        tmApplySend: null,
-        tmApplyCreate: moment().format('YYYY-MM-DD HH:mm:ss'),
-        strApplyMark: "",
-        tmBeginAnswer: null,
-        iAnswerTimeLen: 3,
-        strAnswerUnit: item.strMgrUnit,
-        tmAnswerRev: moment().format('YYYY-MM-DD HH:mm:ss'),
-        tmAnswerSend: moment().format('YYYY-MM-DD HH:mm:ss'),
-        tmAnswerCreate: moment().format('YYYY-MM-DD HH:mm:ss'),
-        strAnswerMark: "",
-        tmUpdate: moment().format('YYYY-MM-DD HH:mm:ss'),
-        strATCUnitID: item.strMgrUnit,
-        vecProcess: ";11:47:06,本地作业申请(电话);11:47:15,电话下发批准;11:47:16,作业自动开始",
-        strUpApplyUnit: item.strMgrUnit,
-        tmBeginActing: moment().format('YYYY-MM-DD HH:mm:ss'),
-        iActingTimeLen: 0,
-        strEndUnit: "",
-        tmEndRev: null,
-        tmEndSend: null,
-        tmEndCreate: null,
-        strEndMark: "",
-        iEndType: 0,
-        bApplyValid: 0,
-        bAnswerValid: 1,
-        bEndValid: 0,
-        iAngleBegin: data.iShotRangeBegin,
-        iAngleEnd: data.iShotRangeEnd,
-        bAnswerAccept: 1,
-        tmEnd: null,
-        bRevOver: null,
-        ubyWorkCat: 0,
-      }
-      let one:planDataType = {
-        ...zyddata,
-        unitName: data.unitName,
-      }
-      planProps.当前作业进度.push(one)
-      let vals = []
-      let key: keyof(zyddataType)
-      for(key in zyddata){
-        let v = zyddata[key]
-        if(v===null){
-          vals.push('NULL')
-        }else if(typeof v == 'string'){
-          vals.push(`'${v}'`)
-        }else {
-          vals.push(v)
-        }
-      }
-      // exec({
-      //   database:"host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry",
-      //   query:{sqls:["INSERT INTO `ryplat_bjry`.`zyddata` ("+Object.keys(zyddata).join(',')+") VALUES ("+vals.join(',')+")"]}
-      // }).then(res=>{
-      //   console.log(res.data)
-      // })
-    }
-    if (data.iShotRangeEnd - data.iShotRangeBegin >= 360) {//可以画成一个圆
-      const center: [number, number] = wgs84togcj02(...getLngLat(data.strPos)) as [
-        number,
-        number
-      ]; // 圆心点的经纬度
-      const radius: number = data.iMaxShotRange; // 半径（单位：米
-      const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-      const units: turf.Units = "meters"; // 半径的单位
-      const sectorPoints: [number, number][] = calculateCirclePoints(
-        center,
-        radius,
-        steps,
-        units
-      );
-      const sectorPolygon = turf.polygon([sectorPoints], {
-        strID: item.strID,
-        color: "transparent",
-        fillColor: "transparent",
-      });
-      for(let i=0;i<circleFeatures.length;i++){
-        if(circleFeatures[i].properties.strID == data.strID){
-          circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
-          circleFeatures[i].properties.ubyStatus = '作业申请待批复'
-        }
-      }
-    } else {//不足一个圆
-      const center: [number, number] = wgs84togcj02(...getLngLat(data.strPos)) as [
-        number,
-        number
-      ]; // 圆心点的经纬度
-      const radius: number = data.iMaxShotRange; // 半径（单位：米
-      const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-      const startAngle: number = data.iShotRangeBegin; // 起始角度（单位：度）
-      const endAngle: number =
-        data.iShotRangeEnd > startAngle
-          ? data.iShotRangeEnd
-          : data.iShotRangeEnd + 360; // 终止角度（单位：度）
-      const units: turf.Units = "meters"; // 半径的单位
-      const sectorPoints: [number, number][] = calculateSectorPoints(
-        center,
-        radius,
-        startAngle,
-        endAngle,
-        steps,
-        units
-      );
-      const sectorPolygon = turf.polygon([sectorPoints], {
-        strID: item.strID,
-        color: "transparent",
-        fillColor: "transparent",
-      });
-      for(let i=0;i<circleFeatures.length;i++){
-        if(circleFeatures[i].properties.strID == data.strID){
-          circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
-          circleFeatures[i].properties.ubyStatus = '作业申请待批复'
-        }
-      }
-    }
-    const center: [number, number] = wgs84togcj02(...getLngLat(data.strPos)) as [
-      number,
-      number
-    ]; // 圆心点的经纬度
-    const radius: number = 20e3; // 半径（单位：米
-    const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-    const units: turf.Units = "meters"; // 半径的单位
-    const sectorPoints: [number, number][] = calculateCirclePoints(
-      center,
-      radius,
-      steps,
-      units
-    );
-    const sectorPolygon = turf.polygon([sectorPoints], {
-      strID: item.strID,
-      color: "transparent",
-      fillColor: "transparent",
-    });
-    //预警圈
-    for(let i=0;i<forewarningFeatures.length;i++){
-      if(forewarningFeatures[i].properties.strID == data.strID){
-        forewarningFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates
-        forewarningFeatures[i].properties.ubyStatus = '作业申请待批复'
-      }
-    }
-    let source = map.getSource("最大射程source");
-    source.setData({
-      type: "FeatureCollection",
-      features: circleFeatures,
-    });
-    source = map.getSource("警戒圈source");
-    source.setData({
-      type: "FeatureCollection",
-      features: forewarningFeatures,
-    });
-  })
 }
 function 处理飞机实时位置(d:Array<{
   "uiTrackNo": 7,
@@ -1004,10 +831,7 @@ onMounted(() => {
       Cy = Cy / (6 * area);
       return { x: Cx, y: Cy };
     }
-    await exec({
-      database:dbUrl+"&database=union",
-      query:{sqls:["select * from `华北飞行区域`"]}
-    }).then(res=>{
+    await 华北飞行区域().then((res)=>{
       let areas = []
       let features = []
       for(let i=0;i<res.data[0].length;i++){
@@ -1485,10 +1309,7 @@ onMounted(() => {
         visibility: props.plane ? "visible" : "none",
       },
     });
-    exec({
-      database:dbUrl+"&database=union",
-      query:{sqls:["select * from `airport`"]}
-    }).then(res=>{
+    机场().then(res=>{
       let data = res.data[0]
       let airports = [];
       for (let i = 0; i < data.length; i++) {
@@ -1599,15 +1420,8 @@ onMounted(() => {
     // getTodayRecords().then((res:any)=>{
     //   planProps.今日作业记录 = res.data.data;
     // })
-    exec({
-      database: dbUrl+"&database=ryplat_bjry",
-      query: {
-        sqls: [
-          "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID",
-        ]
-      },
-    }).then((res) => {
-      dialogOptions.menus = res.data[0].filter((item:stationData)=>item.strID.startsWith('110')&&item.strWeapon!=3);
+    作业点().then((res) => {
+      dialogOptions.menus = res.data[0];
       let features: any = [];
       forewarningFeatures.length = 0;
       circleFeatures.length = 0;
@@ -1887,9 +1701,9 @@ onMounted(() => {
       });
       map.on("contextmenu", (e: any) => {
         e.preventDefault();
-        const fs = map.queryRenderedFeatures(e.point);
-        if(fs.length==0){
-
+        const layers = map.getStyle().layers.filter(layer => layer.id.startsWith('gl-draw')).map(layer=>layer.id)
+        const fs = map.queryRenderedFeatures(e.point, { layers });
+        if(fs.length>0){
           batchMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
           $(batchMenuRef.value as HTMLDivElement).css({display:'block'});
           // $(stationMenu).removeData();
@@ -1961,16 +1775,7 @@ onMounted(() => {
       };
     })
     let work = ()=>{
-      exec({
-        database: dbUrl+"&database=ryplat_bjry",
-        query: {
-          sqls: [
-            "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID ORDER BY z.tmBeginApply ASC",
-            "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply ASC",//当天的数据
-            // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
-          ],
-        },
-      }).then((res) => {
+      作业状态数据().then((res) => {
         function star(feature:any,row:any){
           if(row.ubyStatus == 75||row.ubyStatus == 91){
             const millisecond = moment().diff(moment(row.tmAnswerRev,'YYYY-MM-DD HH:mm:ss'),'ms')

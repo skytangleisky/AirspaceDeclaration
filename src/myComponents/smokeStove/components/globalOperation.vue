@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { ref, reactive, inject, watch } from "vue";
 import type { TabsPaneContext } from "element-plus";
-import { fetchList } from "~/api/stove";
+import { 烟炉数据 } from "~/api/天工";
 let activeName = ref("first"); //当前选择的tab名字
 let smokeStoveList = ref([]); //烟炉数据
 let stoveID = inject("stoveID"); //当前选中的烟炉ID
@@ -73,7 +73,7 @@ function chooseSmokeStove(item) {
 }
 // 获取所有烟炉数据
 function getSmokeStoveList() {
-    fetchList()
+    烟炉数据()
         .then((res) => {
             let data = res.data.results;
             // 给燃烧、已用、可用添加默认值
