@@ -102,7 +102,7 @@ const batchMenuRef = ref<HTMLDivElement>();
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
 const batchDialogVisible = ref(false)
-const batchList = reactive([])
+let batchList = reactive([])
 const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
 // const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
@@ -3115,8 +3115,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 }
 .stationDialog{
   position: absolute;
-  left:10px;
-  top:10px;
+  left:$page-padding;
+  top:$page-padding;
 }
 .mapboxgl-canvas:focus {
   outline: none;
