@@ -54,13 +54,13 @@
             <el-checkbox name="飞机" v-model="setting.人影.监控.plane" label="显示飞机"></el-checkbox>
             <el-checkbox name="机场" v-model="setting.人影.监控.airport" label="显示机场"></el-checkbox>
             <el-checkbox name="导航台" v-model="setting.人影.监控.navigationStation" label="导航台"></el-checkbox>
-            <template v-if="checkPermission(['admin'])">
+            <!-- <template v-if="checkPermission(['admin'])">
               <el-checkbox name="控制自动站" v-model="setting.人影.监控.zdz" label="自动站"></el-checkbox>
               <el-checkbox name="控制网格点" v-model="setting.人影.监控.gridPoint" label="网格点"></el-checkbox>
               <el-checkbox name="控制网格值" v-model="setting.人影.监控.gridValue" label="网格值"></el-checkbox>
               <el-checkbox name="控制等值线" v-model="setting.人影.监控.isolines" label="等值线"></el-checkbox>
               <el-checkbox name="控制等值带" v-model="setting.人影.监控.isobands" label="等值带"></el-checkbox>
-            </template>
+            </template> -->
           </div>
         </fieldset>
         <fieldset class="b-solid b-1px rounded-lg">
@@ -114,7 +114,7 @@
   <control-pane style="top:10px;right:10px;" :list="list" theme="default"></control-pane>
 </template>
 <script lang="ts" setup>
-import { defineAsyncComponent,ref } from "vue";
+import { watch, ref, reactive, computed,onMounted, onBeforeUnmount, toRefs, defineAsyncComponent } from "vue";
 const EditMap = defineAsyncComponent(() => import("../editMap.vue"));
 const editMapRef = ref()
 import forkSvg from "~/assets/fork.svg?raw";
@@ -126,7 +126,6 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { watch, ref, reactive,computed,onMounted, onBeforeUnmount,toRef,toRefs, defineAsyncComponent } from "vue";
 import { prevRequestDataType } from "../../dialog_plan_request.vue";
 const DialogPlanRequest = defineAsyncComponent(()=>import("../../dialog_plan_request.vue"));
 import { useSettingStore } from "~/stores/setting";
@@ -375,7 +374,6 @@ const selectorColor = computed({
   }
 })
 const tweakPaneRef = ref<HTMLElement>();
-import { checkPermission } from "~/tools";
 import { isDark } from "~/composables";
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);

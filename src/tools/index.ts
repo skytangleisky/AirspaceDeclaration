@@ -5,7 +5,6 @@ import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
 import arrowUrl from "~/assets/arrow.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
-import { useUserStore } from '~/stores/user';
 import { useSettingStore } from '~/stores/setting';
 export function hasPermission(permissions:Array<String>){
   let has = false
@@ -28,12 +27,6 @@ export function getLngLat(v:string):[number,number]{
   let lng = v.substring(0, v.indexOf("E"));
   let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
   return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
-}
-export function checkPermission(roles:string[]) {
-  const user = useUserStore()
-  if(user.roles.includes('admin')){
-    return true;
-  }else return intersection(user.roles,roles)
 }
 export const area = (vertices: Array<[number, number]>) => {
   let area = 0;
