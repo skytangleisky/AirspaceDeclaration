@@ -3,7 +3,6 @@
         <el-tabs v-model="activeName" @tab-click="tabClickHandle">
             <el-scrollbar height="100%">
             <el-tab-pane label="烟炉状态" name="first">
-                
                     <div class="smoke-stove-box">
                         <template
                             v-for="(item, index) in smokeStoveList"
@@ -132,7 +131,6 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
             &:nth-child(-n + 8) {
                 margin-top: 0;
             }
-
             .stove-item-top {
                 margin-bottom: $grid-1;
                 text-overflow: ellipsis;
