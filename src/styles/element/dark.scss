@@ -1,36 +1,31 @@
-// import dark theme
-
-
-$--colors: (
-  "primary": (
-    "base": #1a8cff,
-  ),
-  "success": (
-    "base": #4dff7f  ,
-  ),
-  "warning": (
-    "base": #ff9900,
-  ),
-  "danger": (
-    "base": #ff0000,
-  ),
-  "error": (
-    "base": #ff0000,
-  ),
-  "info": (
-    "base": #42b8dd,
-  ),
-);
-
+// only scss variables
 @forward "element-plus/theme-chalk/src/dark/var.scss" with (
-  $colors: $--colors
+  $colors: (
+    "primary": (
+      "base": #1a8cff,
+    ),
+    "success": (
+      "base": #4dff7f  ,
+    ),
+    "warning": (
+      "base": #ff9900,
+    ),
+    "danger": (
+      "base": #ff0000,
+    ),
+    "error": (
+      "base": #ff0000,
+    ),
+    "info": (
+      "base": #42b8dd,
+    ),
+  )
 );
 
 @use "element-plus/theme-chalk/src/dark/css-vars.scss" as *;
 // html.dark {
 //   color-scheme: dark;
-//   // --el-color-primary: #1a8cff;
-//   --el-color-primary: red;
+//   --el-color-primary: #1a8cff;
 //   --el-color-primary-light-3: #177EE5;
 //   --el-color-primary-light-5: #1570CC;
 //   --el-color-primary-light-7: #1262B3;

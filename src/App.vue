@@ -6,12 +6,11 @@
   </div>
 </template>
 <script setup>
-import "~/styles/element/index.scss"
-// import rgyxWorkPoint from "~/components/rgyx-work-point.vue";
-import { defineAsyncComponent } from "vue";
-const RgyxWorkPoint = defineAsyncComponent(()=>import("~/myComponents/人影/pages/synthesis.vue"))
-// const SmokeStove = defineAsyncComponent(()=>import("~/myComponents/smokeStove/smokeStove.vue"))
+// import rgyxWorkPoint from "~/components/rgyx-work-point.vue";//示例
+import RgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue";//空域申请
+// import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue";//烟炉作业
 import Websocket from "~/myComponents/websocket/websocket.vue";
+import "~/styles/element/index.scss"
 </script>
 <style>
 html,
