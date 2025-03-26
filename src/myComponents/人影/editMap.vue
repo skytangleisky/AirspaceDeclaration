@@ -19,6 +19,7 @@
       class="stationDialog"
       v-model:menus="dialogOptions.menus"
     ></Dialog>
+    <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
     <plan-panel
       v-show="setting.menus"
       :当前作业进度="planProps.当前作业进度"
@@ -38,9 +39,18 @@
         :key="k"
       ></el-option>
     </el-select> -->
-    <div class="stationMenu" ref="stationMenuRef" @mousedown.stop>
+    <div class="menu" ref="stationMenuRef" @mousedown.stop>
       <ul>
         <li @click="作业申请()">地面作业申请</li>
+        <!-- <li>查看作业点信息</li> -->
+        <!-- <li>人工批复</li>
+        <li>人工移除</li>
+        <li>手动发结束报</li> -->
+      </ul>
+    </div>
+    <div class="menu" ref="batchMenuRef" @mousedown.stop>
+      <ul>
+        <li @click="批量申请()">批量申请</li>
         <!-- <li>查看作业点信息</li> -->
         <!-- <li>人工批复</li>
         <li>人工移除</li>
@@ -50,9 +60,12 @@
   </div>
 </template>
 <script lang="ts" setup>
+import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import { point, polygon } from "@turf/helpers";
+import BatchDialog from "./batchDialog.vue";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
-import theme from './drawTheme/inactive.js'
+import theme from './drawTheme/theme.js'
 import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import banSvg from '~/assets/ban.svg?url'
@@ -85,10 +98,11 @@ const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const dialogOptions = reactive({ menus: [] });
 const stationMenuRef = ref<HTMLDivElement>();
-let stationMenu: HTMLDivElement;
+const batchMenuRef = ref<HTMLDivElement>();
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
-
+const batchDialogVisible = ref(false)
+const batchList = reactive([])
 const dbUrl = "host=192.168.0.240&port=3306&user=root&password=mysql";
 // const dbUrl = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115";
 // const dbUrl = "host=172.18.7.116&port=3306&user=bjryb&password=ryb115";
@@ -120,9 +134,32 @@ const emits = defineEmits([
   "update:prevRequestShow",
   "update:prevRequestData",
 ]);
+let 批量申请 = () => {
+  let list = []
+  for(let j=0;j<dialogOptions.menus.length;j++){
+    let station = dialogOptions.menus[j];
+    let targetPos = point(wgs84togcj02(...getLngLat((station as any).strPos)))
+    let isInf = false
+    for(let i=0;i<draw.getAll().features.length;i++){
+      const feature = draw.getAll().features[i];
+      const poly = polygon((feature.geometry as any).coordinates)
+      if(booleanPointInPolygon(targetPos,poly)){
+        isInf = true
+        break
+      }
+    }
+    if(isInf){
+      list.push(station)
+    }
+  }
+  batchList.splice(0,batchList.length)
+  batchList.push(...list)
+  batchDialogVisible.value = true
+  $(batchMenuRef.value as HTMLDivElement).css({display:'none'})
+}
 let 作业申请 = () => {
-  let properties = $(stationMenu).data();
-  $(stationMenu).css({display:'none'})
+  let properties = $(stationMenuRef.value as HTMLDivElement).data();
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   emits("update:prevRequestShow", true);
   properties.beginTime = moment().format('HH:mm:ss')
   emits("update:prevRequestData", properties);
@@ -336,21 +373,8 @@ function 网络上报(data:prevRequestDataType){
       //   console.log(res.data)
       // })
     }
-    let v = data.strPos;
-    let lng = v.substring(0, v.indexOf("E"));
-    let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-    let pt = {
-      lng:
-        Number(lng.substring(0, 3)) +
-        Number(lng.substring(3, 5)) / 60 +
-        Number(lng.substring(5, 9)) / 100 / 3600,
-      lat:
-        Number(lat.substring(0, 2)) +
-        Number(lat.substring(2, 4)) / 60 +
-        Number(lat.substring(4, 8)) / 100 / 3600,
-    };
     if (data.iShotRangeEnd - data.iShotRangeBegin >= 360) {//可以画成一个圆
-      const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+      const center: [number, number] = wgs84togcj02(...getLngLat(data.strPos)) as [
         number,
         number
       ]; // 圆心点的经纬度
@@ -375,7 +399,7 @@ function 网络上报(data:prevRequestDataType){
         }
       }
     } else {//不足一个圆
-      const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+      const center: [number, number] = wgs84togcj02(...getLngLat(data.strPos)) as [
         number,
         number
       ]; // 圆心点的经纬度
@@ -407,7 +431,7 @@ function 网络上报(data:prevRequestDataType){
         }
       }
     }
-    const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+    const center: [number, number] = wgs84togcj02(...getLngLat(data.strPos)) as [
       number,
       number
     ]; // 圆心点的经纬度
@@ -503,20 +527,7 @@ function 处理飞机实时位置(d:Array<{
 const flyTo = (item: any) => {
   try {
     active();
-    let v = item.strPos;
-    let lng = v.substring(0, v.indexOf("E"));
-    let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-    let pt = {
-      lng:
-        Number(lng.substring(0, 3)) +
-        Number(lng.substring(3, 5)) / 60 +
-        Number(lng.substring(5, 9)) / 100 / 3600,
-      lat:
-        Number(lat.substring(0, 2)) +
-        Number(lat.substring(2, 4)) / 60 +
-        Number(lat.substring(4, 8)) / 100 / 3600,
-    };
-    let position = wgs84togcj02(pt.lng, pt.lat);
+    let position = wgs84togcj02(...getLngLat(item.strPos));
     map.flyTo({
       center: position, // 新的中心点 [经度, 纬度]
       zoom: item.zoom || 9, // 目标缩放级别
@@ -545,14 +556,24 @@ const loop = ()=>{
 }
 const zoomIn = ()=>map&&map.zoomIn()
 const zoomOut = ()=>map&&map.zoomOut()
+let draw:MapboxDraw;
 defineExpose({
   zoomIn,
   zoomOut,
+  批量操作(){
+    draw.changeMode('draw_polygon')
+  }
 })
 let aid = 0;
 import getStyle from './editMap.js'
 let style = getStyle()
+const keydownFunc = (event) => {
+  if (event.key === 'Delete' || event.key === 'Backspace') {
+    draw&&draw.trash()
+  }
+}
 onMounted(() => {
+  document.addEventListener("keydown", keydownFunc);
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
@@ -1555,9 +1576,18 @@ onMounted(() => {
         "fill-opacity": 0.4,
       },
     });
-    stationMenu = stationMenuRef.value as HTMLDivElement;
     var marker = new Marker({
-      element: stationMenu,
+      element: stationMenuRef.value,
+      draggable: false,
+      // pitchAlignment: "map",
+      // rotationAlignment: "map",
+      anchor: "top-left",
+    })
+      .setLngLat([0, 0])
+      .setOffset([0, 0])
+      .addTo(map);
+    var batchMarker = new Marker({
+      element: batchMenuRef.value,
       draggable: false,
       // pitchAlignment: "map",
       // rotationAlignment: "map",
@@ -1585,21 +1615,8 @@ onMounted(() => {
         if(item.iShortAngelBegin==null){
           item.iShortAngelBegin = 0
         }
-        let v = item.strPos;
-        if (v) {
-          let lng = v.substring(0, v.indexOf("E"));
-          let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-          let pt = {
-            lng:
-              Number(lng.substring(0, 3)) +
-              Number(lng.substring(3, 5)) / 60 +
-              Number(lng.substring(5, 9)) / 100 / 3600,
-            lat:
-              Number(lat.substring(0, 2)) +
-              Number(lat.substring(2, 4)) / 60 +
-              Number(lat.substring(4, 8)) / 100 / 3600,
-          };
-          let position: [number, number] = (wgs84togcj02(pt.lng, pt.lat) as unknown) as [
+        if (item.strPos) {
+          let position: [number, number] = (wgs84togcj02(...getLngLat(item.strPos)) as unknown) as [
             number,
             number
           ];
@@ -1610,7 +1627,7 @@ onMounted(() => {
               type: "站点",
               strCode: item.strCode,
               strName: item.strName,
-              strPos: v,
+              strPos: item.strPos,
               iMaxShotRange: item.iMaxShotRange,
               iMaxShotHei: item.iMaxShotHei,
               iWeapon: Number(item.strWeapon),
@@ -1629,7 +1646,7 @@ onMounted(() => {
             },
           });
           // 有问题
-          // let circle: any = Circle([pt.lng, pt.lat], item.iMaxShotRange, {
+          // let circle: any = Circle(wgs84togcj02(...getLngLat(item.strPos)), item.iMaxShotRange, {
           //   steps: 360,
           //   units: "meters",
           //   properties: {
@@ -1639,7 +1656,7 @@ onMounted(() => {
           // });
           // circleFeatures.push(circle);
           if (item.iShortAngelEnd - item.iShortAngelBegin >= 360) {
-            const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+            const center: [number, number] = wgs84togcj02(...getLngLat(item.strPos)) as [
               number,
               number
             ]; // 圆心点的经纬度
@@ -1658,7 +1675,7 @@ onMounted(() => {
             });
             circleFeatures.push(sectorPolygon);
           } else {
-            const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+            const center: [number, number] = wgs84togcj02(...getLngLat(item.strPos)) as [
               number,
               number
             ]; // 圆心点的经纬度
@@ -1686,7 +1703,7 @@ onMounted(() => {
             circleFeatures.push(sectorPolygon);
           }
           //加入警戒圈
-          const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+          const center: [number, number] = wgs84togcj02(...getLngLat(item.strPos)) as [
             number,
             number
           ]; // 圆心点的经纬度
@@ -1838,6 +1855,19 @@ onMounted(() => {
           filter: ["==", ["get", "type"], "站点"],
         });
       }
+      if(!draw){
+        draw = new MapboxDraw({
+          displayControlsDefault: false,
+          modes:{...MapboxDraw.modes,no_select:{
+            ...MapboxDraw.modes.simple_select,
+            onClick:()=>{},
+            onMouseMove(state, e) {},
+          }},
+          styles:theme,
+          defaultMode: 'no_select',
+        })
+        map.addControl(draw)
+      }
       map.on("contextmenu", "zydLayer", (e: any) => {
         e.preventDefault();
         const fs = map.queryRenderedFeatures(e.point, {
@@ -1851,9 +1881,20 @@ onMounted(() => {
         const feature = fs[0];
         station.人影界面被选中的设备 = feature.properties.strID;
         marker.setLngLat(feature.geometry.coordinates);
-        $(stationMenu).css({display:'block'});
-        $(stationMenu).removeData();
-        $(stationMenu).data(feature.properties);
+        $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+        $(stationMenuRef.value as HTMLDivElement).removeData();
+        $(stationMenuRef.value as HTMLDivElement).data(feature.properties);
+      });
+      map.on("contextmenu", (e: any) => {
+        e.preventDefault();
+        const fs = map.queryRenderedFeatures(e.point);
+        if(fs.length==0){
+
+          batchMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+          $(batchMenuRef.value as HTMLDivElement).css({display:'block'});
+          // $(stationMenu).removeData();
+          // $(stationMenu).data(feature.properties);
+        }
       });
       map.on("click", "zydLayer", (e: any) => {
         const fs = map.queryRenderedFeatures(e.point, {
@@ -1867,7 +1908,8 @@ onMounted(() => {
         active()
       });
       map.on("mousedown", () => {
-        $(stationMenu).css({display:'none'});
+        $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+        $(batchMenuRef.value as HTMLDivElement).css({display:'none'});
       });
       active = () => {
         features = features.map((item: any) => {
@@ -1960,20 +2002,7 @@ onMounted(() => {
                 circleFeatures[i].properties.opacity = 1;
               }
               star(circleFeatures[i],row)
-              let v = row.strCurPos;
-              let lng = v.substring(0, v.indexOf("E"));
-              let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-              let pt = {
-                lng:
-                  Number(lng.substring(0, 3)) +
-                  Number(lng.substring(3, 5)) / 60 +
-                  Number(lng.substring(5, 9)) / 100 / 3600,
-                lat:
-                  Number(lat.substring(0, 2)) +
-                  Number(lat.substring(2, 4)) / 60 +
-                  Number(lat.substring(4, 8)) / 100 / 3600,
-              };
-              const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+              const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
                 number,
                 number
               ]; // 圆心点的经纬度
@@ -1983,7 +2012,7 @@ onMounted(() => {
               const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
               const units: turf.Units = "meters"; // 半径的单位
               if (endAngle - startAngle >= 360) {
-                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
                   number,
                   number
                 ]; // 圆心点的经纬度
@@ -2047,20 +2076,7 @@ onMounted(() => {
                 circleFeatures[i].properties.opacity = 1;
               }
               star(circleFeatures[i],row)
-              let v = row.strCurPos;
-              let lng = v.substring(0, v.indexOf("E"));
-              let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-              let pt = {
-                lng:
-                  Number(lng.substring(0, 3)) +
-                  Number(lng.substring(3, 5)) / 60 +
-                  Number(lng.substring(5, 9)) / 100 / 3600,
-                lat:
-                  Number(lat.substring(0, 2)) +
-                  Number(lat.substring(2, 4)) / 60 +
-                  Number(lat.substring(4, 8)) / 100 / 3600,
-              };
-              const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+              const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
                 number,
                 number
               ]; // 圆心点的经纬度
@@ -2070,7 +2086,7 @@ onMounted(() => {
               const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
               const units: turf.Units = "meters"; // 半径的单位
               if (endAngle - startAngle >= 360) {
-                const center: [number, number] = wgs84togcj02(pt.lng, pt.lat) as [
+                const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
                   number,
                   number
                 ]; // 圆心点的经纬度
@@ -2134,20 +2150,7 @@ onMounted(() => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
     //   dialogOptions.menus.map((item: any) => {
-    //     let v = item.lngLat;
-    //     let lng = v.substring(0, v.indexOf("E"));
-    //     let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-    //     let pt = {
-    //       lng:
-    //         Number(lng.substring(0, 3)) +
-    //         Number(lng.substring(3, 5)) / 60 +
-    //         Number(lng.substring(5, 9)) / 100 / 3600,
-    //       lat:
-    //         Number(lat.substring(0, 2)) +
-    //         Number(lat.substring(2, 4)) / 60 +
-    //         Number(lat.substring(4, 8)) / 100 / 3600,
-    //     };
-    //     let position: [number, number] = (wgs84togcj02(pt.lng, pt.lat) as unknown) as [
+    //     let position: [number, number] = (wgs84togcj02(...getLngLat(item.lngLat)) as unknown) as [
     //       number,
     //       number
     //     ];
@@ -2586,6 +2589,20 @@ onMounted(() => {
       })
     }
   });
+  map.on('draw.create',(e)=>{
+    e.features.map((feature:any)=>{
+      draw.add(feature)
+    })
+  })
+  map.on('draw.update',(e)=>{
+    console.log(e)
+  })
+  map.on('draw.modechange', function(e) {
+    console.log(e.mode)
+    // if (e.mode === 'simple_select') {
+    //   draw.changeMode('no_select')
+    // }
+  });
 
   map.on("zoom", zoomFunc);
   map.on("pitch", pitchFunc);
@@ -2596,6 +2613,7 @@ onMounted(() => {
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
 });
 onBeforeUnmount(() => {
+  document.removeEventListener("keydown", keydownFunc);
   cancelAnimationFrame(aid)
   console.log("onBeforeUnmount");
   clearInterval(timer);
@@ -2993,7 +3011,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 </script>
 
 <style lang="scss">
-.stationMenu {
+.menu {
+  width:fit-content;
   display: none;
   background: #ffffff88;
   border-radius: 10px;
@@ -3029,7 +3048,7 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   }
 }
 
-.dark .stationMenu {
+.dark .menu {
   background: #00000088;
   ul {
     cursor: default;

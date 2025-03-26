@@ -220,7 +220,7 @@ const list = reactive([
     {label:'缩小',type:'button',click(){editMapRef.value.zoomOut()}},
     {label:'测距',type:'button',click(){console.log('测距')}},
     {label:'获取经纬度',type:'button',click(){console.log('经纬度')}},
-    {label:'批量操作',type:'button',click(){console.log('批量操作')}},
+    {label:'批量操作',type:'button',click(){editMapRef.value.批量操作()}},
   ]},
 ]);
 let pane:any
