@@ -173,7 +173,7 @@ const Popup = mapboxgl.Popup;
 const NavigationControl = mapboxgl.NavigationControl;
 const FullscreenControl = mapboxgl.FullscreenControl;
 let timer = 0;
-let taskTimer = 0;
+let taskTimer:any = 0;
 let frameCounter = 0;
 const mapRef = ref<HTMLCanvasElement>();
 // const color = ref("red");
@@ -227,7 +227,11 @@ const props = withDefaults(
     loadmap?: boolean;
     district?: boolean;
     zyd?: boolean;
-    tile?: { index: number; tileData: Array<object> };
+    tile?: { 
+      name: string,
+      url: string,
+      tileData: Array<string>,
+    };
     center?: object;
     zoom?: number;
     pitch?: number;
@@ -248,10 +252,10 @@ const props = withDefaults(
     loadmap: true,
     district: true,
     tile: () => ({
-    name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
-  }),
+      name: "高德卫星地图",
+      url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+      tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+    }),
     center: () => [0, 0],
     zoom: 4,
     pitch: 0,
@@ -406,7 +410,7 @@ onMounted(() => {
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     projection: "globe",
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
-    style,
+    style:style as any,
     fadeDuration: 0,
     // dragRotate: false,
     // touchRotate: false,
@@ -832,8 +836,8 @@ onMounted(() => {
       return { x: Cx, y: Cy };
     }
     await 华北飞行区域().then((res)=>{
-      let areas = []
-      let features = []
+      let areas:any[] = []
+      let features:any[] = []
       for(let i=0;i<res.data[0].length;i++){
         let item = res.data[0][i]
         let strPoints = d.decode(Uint8Array.from(item.points.data).buffer)
@@ -1141,7 +1145,7 @@ onMounted(() => {
             m_strLayerName:utf8Decoder.decode(view.getBytes(view.getUint16())),
             iUnitNum:view.getInt32(),
           }
-          let vecUnit = []
+          let vecUnit:any[] = []
           for(let i=0;i<tagPara.iUnitNum;i++){//tagPara.iUnitNum
             let pUnit = {
               iID: view.getInt32(),//图元ID
@@ -1173,7 +1177,7 @@ onMounted(() => {
             }
             vecUnit.push(pUnit)
           }
-          let features = []
+          let features:any[] = []
           for(let i=0;i<vecUnit.length;i++){
             features.push({
               'type': 'Feature',
@@ -1311,7 +1315,7 @@ onMounted(() => {
     });
     机场().then(res=>{
       let data = res.data[0]
-      let airports = [];
+      let airports:any[] = [];
       for (let i = 0; i < data.length; i++) {
         airports.push({
           type: "Feature",
