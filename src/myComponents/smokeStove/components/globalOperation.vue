@@ -113,6 +113,7 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
             background-color: var(--el-color-primary-opacity-3);
             border-radius: $border-radius-2;
             margin-top: $grid-3;
+            box-sizing: border-box;
             color: var(--el-text-color-primary);
             &:not(:nth-child(8n)) {
                 margin-right: $grid-3;

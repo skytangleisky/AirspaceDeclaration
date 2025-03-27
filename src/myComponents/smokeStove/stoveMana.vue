@@ -65,5 +65,7 @@ const option = ref({
 
 <style lang="scss" scoped>
 .stoveMana {
+    width: 100%;
+    height: 100%;
 }
 </style>
