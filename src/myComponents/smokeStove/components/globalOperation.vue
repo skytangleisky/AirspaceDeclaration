@@ -163,12 +163,12 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
                 }
             }
             &:hover {
-                transform: translate(0.04rem, -0.04rem);
+                transform: translateY(0.04rem);;
                 background-color: var(--el-color-primary-light-3);
             }
         }
         .smoke-stove-item.active {
-            transform: translate(0.04rem, -0.04rem);
+            transform: translateY(0.04rem);;
             background-color: var(--el-color-primary);
 
             box-shadow: var(--el-box-shadow-light);
