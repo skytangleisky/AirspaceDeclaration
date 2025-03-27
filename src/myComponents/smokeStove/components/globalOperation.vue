@@ -45,9 +45,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, inject, watch } from "vue";
+import { ref, reactive, inject,watch } from "vue";
 import type { TabsPaneContext } from "element-plus";
-import { 烟炉数据 } from "~/api/天工";
+import { 烟炉数据 } from '~/api/天工.js'
 let activeName = ref("first"); //当前选择的tab名字
 let smokeStoveList = ref([]); //烟炉数据
 let stoveID = inject("stoveID"); //当前选中的烟炉ID

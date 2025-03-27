@@ -91,7 +91,7 @@
 
 // 强制覆盖默认主题
 :root{
-  --el-color-primary: #1a8cff;
+  --el-color-primary: rgb(26, 140, 255);
   --el-color-primary-light-3: #177EE5;
   --el-color-primary-light-5: #1570CC;
   --el-color-primary-light-7: #1262B3;
@@ -162,4 +162,7 @@
   --el-fill-color-blank: transparent;
   --el-mask-color: rgba(0, 0, 0, 0.8);
   --el-mask-color-extra-light: rgba(0, 0, 0, 0.3);
+}
+:root{
+  --el-color-primary-opacity-3:rgba(26, 140, 255, 0.3);
 }

@@ -39,7 +39,7 @@
   </div>
   <script src="index.umd.js"></script>
   <script type="module">
-    const {RgyxWorkPoint,resize,dragable} = index;
+    const {RgyxWorkPoint,SvgIcon,resize,dragable} = index;
     const {createPinia} = Pinia;
     const {createApp} = Vue;
     const { createPersistedState } = piniaPluginPersistedstate;
@@ -64,6 +64,7 @@
     app.use(pinia);
     app.directive('resize',resize)
     app.directive('dragable',dragable)
+    app.component('svg-icon',SvgIcon)
     app.mount('#app');
   </script>
 

@@ -2,8 +2,11 @@
 import dragable from '../directive/dragable'
 import resize from '../directive/resize'
 // import rgyxWorkPoint from "../App.vue";
+import 'virtual:svg-icons-register'
+import SvgIcon from "./myComponents/SvgIcon.vue";
 import RgyxWorkPoint from "../App.vue"
 import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue"
+import {useSettingStore} from "~/stores/setting";
 // import {resize,dragable,pinia} from "../main.js";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";
@@ -28,6 +31,8 @@ export {
   dragable,
   RgyxWorkPoint,
   SmokeStove,
+  SvgIcon,
+  useSettingStore,
 }
 // const myPlugin = {
 //     install(app) {
