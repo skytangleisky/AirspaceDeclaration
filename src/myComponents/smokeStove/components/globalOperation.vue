@@ -1,42 +1,53 @@
 <template>
     <div class="globalOperation">
         <el-tabs v-model="activeName" @tab-click="tabClickHandle">
+            <el-scrollbar height="100%">
             <el-tab-pane label="烟炉状态" name="first">
-                <div class="smoke-stove-box">
-                    <template
-                        v-for="(item, index) in smokeStoveList"
-                        :key="index"
-                    >
-                        <div
-                            class="smoke-stove-item"
-                            :class="{ active: stoveID == item.strStoveID }"
-                            @click="chooseSmokeStove(item)"
+                
+                    <div class="smoke-stove-box">
+                        <template
+                            v-for="(item, index) in smokeStoveList"
+                            :key="index"
                         >
-                            <div class="stove-item-top">{{ item.strName }}</div>
-                            <div class="stove-item-bottom">
-                                <div class="stove-status">
-                                    <div class="stove-status-label">燃烧</div>
-                                    <div class="stove-status-value">
-                                        {{ item.key1 }}
-                                    </div>
+                            <div
+                                class="smoke-stove-item"
+                                :class="{ active: stoveID == item.strStoveID }"
+                                @click="chooseSmokeStove(item)"
+                            >
+                                <div class="stove-item-top">
+                                    {{ item.strName }}
                                 </div>
-                                <div class="stove-status">
-                                    <div class="stove-status-label">已用</div>
-                                    <div class="stove-status-value">
-                                        {{ item.key2 }}
+                                <div class="stove-item-bottom">
+                                    <div class="stove-status">
+                                        <div class="stove-status-label">
+                                            燃烧
+                                        </div>
+                                        <div class="stove-status-value">
+                                            {{ item.key1 }}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="stove-status">
-                                    <div class="stove-status-label">可用</div>
-                                    <div class="stove-status-value">
-                                        {{ item.key3 }}
+                                    <div class="stove-status">
+                                        <div class="stove-status-label">
+                                            已用
+                                        </div>
+                                        <div class="stove-status-value">
+                                            {{ item.key2 }}
+                                        </div>
+                                    </div>
+                                    <div class="stove-status">
+                                        <div class="stove-status-label">
+                                            可用
+                                        </div>
+                                        <div class="stove-status-value">
+                                            {{ item.key3 }}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </template>
-                </div>
-            </el-tab-pane>
+                        </template>
+                    </div>
+                </el-tab-pane>
+            </el-scrollbar>
             <el-tab-pane label="消息" name="second">消息</el-tab-pane>
             <el-tab-pane label="作业历史" name="third">作业历史</el-tab-pane>
             <el-tab-pane label="功能扩展" name="fourth">功能扩展</el-tab-pane>
@@ -45,9 +56,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, inject,watch } from "vue";
+import { ref, reactive, inject, watch } from "vue";
 import type { TabsPaneContext } from "element-plus";
-import { 烟炉数据 } from '~/api/天工.js'
+import { 烟炉数据 } from "~/api/天工.js";
 let activeName = ref("first"); //当前选择的tab名字
 let smokeStoveList = ref([]); //烟炉数据
 let stoveID = inject("stoveID"); //当前选中的烟炉ID
@@ -121,7 +132,7 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
             &:nth-child(-n + 8) {
                 margin-top: 0;
             }
-            
+
             .stove-item-top {
                 margin-bottom: $grid-1;
                 text-overflow: ellipsis;
@@ -175,11 +186,11 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
     margin: 0;
 }
 .el-tabs:deep(.el-tabs__item) {
-    height: .32rem;
+    height: 0.32rem;
     color: var(--el-text-color-regular);
 }
 .el-tabs:deep(.el-tabs__item.is-active) {
-    height: .32rem;
+    height: 0.32rem;
     color: var(--el-color-primary);
 }
 </style>
