@@ -5,8 +5,7 @@
             <!-- <globalOperation  
                 @chooseStoveHandle="chooseStoveHandle"
             ></globalOperation> -->
-            <globalOperation  
-            ></globalOperation>
+            <globalOperation></globalOperation>
         </div>
         <div class="page-bottom">
             <div class="page-bottom-left">
@@ -50,19 +49,29 @@ function chooseStoveHandle(item) {
 </script>
 
 <style lang="scss" scoped>
-$page-top-height: 3.3rem;
+$layoutTop-height:0px;
+.page-content {
+    position: absolute;
+    overflow: auto;
+    background-color: var(--el-bg-color);
+    inset: $grid-5;
+    border-radius: $border-radius-5;
+}
 .smokeStove {
     background-color: transparent;
     padding: 0;
+    display: flex;
+    flex-direction: column;
     .page-top {
+        flex: 1;
         background-color: var(--el-bg-color);
         border-radius: $border-radius-4;
-        height: $page-top-height;
         margin-bottom: $grid-4;
         padding: $grid-4;
+        max-height: 3.4rem;
     }
     .page-bottom {
-        height: calc(100% - $page-top-height - $grid-4);
+        flex: 1.5;
         display: flex;
         .page-bottom-left {
             flex: 1;
@@ -90,6 +99,7 @@ $page-top-height: 3.3rem;
             background-color: var(--el-bg-color);
             border-radius: $border-radius-4;
             padding: $grid-4;
+            box-sizing: border-box;
         }
     }
 }
