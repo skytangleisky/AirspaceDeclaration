@@ -1,4 +1,6 @@
 import App from "./App.vue"
+import 'virtual:svg-icons-register'
+import SvgIcon from "./myComponents/SvgIcon.vue"
 import dragable from './directive/dragable'
 import resize from './directive/resize'
 import { createApp } from 'vue'
@@ -22,4 +24,5 @@ app.use(pinia)
 app.use(VueDOMPurifyHTML)
 app.directive('dragable',dragable)
 app.directive('resize',resize)
+app.component("svg-icon", SvgIcon);
 app.mount('#app')
