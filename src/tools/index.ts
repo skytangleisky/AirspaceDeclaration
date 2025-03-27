@@ -1,5 +1,4 @@
 import * as turf from '@turf/turf'
-const modules = import.meta.glob('~/**/*.vue')
 import axios from 'axios'
 import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
@@ -89,73 +88,6 @@ function deepClone<T>(obj: T): T {
 export function intersection<T>(arr1: T[], arr2: T[]): boolean {
   return arr2.some(item => arr1.includes(item));
 }
-export const array2components = (array:Array<{[key:string]:any}>, roles:Array<string>) => {
-  const arr = deepClone(array)
-  arr.map((v,k)=>{
-    v.path='/' + v.path
-    v.identify = uuid()
-  })
-  const fn = (list:Array<any>) => {
-    for(let i=0;i<list.length;i++){
-      let v = list[i]
-      if(!v.meta || !v.meta.roles || intersection(roles,v.meta.roles)){
-        if(v.children instanceof Array){
-          fn(v.children)
-        }
-        v.component = modules[v.component]
-      }else{
-        list.splice(i--,1)
-      }
-    }
-  }
-  fn(arr)
-  return arr
-}
-// export const array2components = (array:Array<{[key:string]:any}>, roles:Array<string>) => {
-//   const arr = deepClone(array)
-//   arr.map((v,k)=>{
-//     v.path='/' + v.path
-//     v.identify = uuid()
-//   })
-//   const fn = (list:Array<any>) => {
-//     for(let i=0;i<list.length;i++){
-//       if(list[i].children instanceof Array){
-//         fn(list[i].children)
-//       }
-//       list[i].component = modules[list[i].component]
-//     }
-//   }
-//   fn(arr)
-//   return arr
-// }
-Date.prototype.Format = function(format:any){
-  let that = this;
-  if(format==undefined) format = "yyyy-MM-dd HH:mm:ss";
-  return format.replace(/yyyy|MM|dd|HH|mm|ss|SSS|SS|S/g, function(a:string){
-    switch(a){
-      case 'yyyy':
-        return function(i){return (i < 10 ? '0' : '') + i}(that.getFullYear());
-      case 'MM':
-        return function(i){return (i < 10 ? '0' : '') + i}(that.getMonth() + 1);
-      case 'dd':
-        return function(i){return (i < 10 ? '0' : '') + i}(that.getDate());
-      case 'HH':
-        return function(i){return (i < 10 ? '0' : '') + i}(that.getHours());
-      case 'mm':
-        return function(i){return (i < 10 ? '0' : '') + i}(that.getMinutes());
-      case 'ss':
-        return function(i){return (i < 10 ? '0' : '') + i}(that.getSeconds());
-      case 'S':
-        return function(i){return i}(Math.floor(that.getMilliseconds()*10/1000));
-      case 'SS':
-        return function(i){return i.toFixed().padStart(2,'0')}(Math.floor(that.getMilliseconds()*100/1000));
-      case 'SSS':
-        return function(i){return i.toFixed().padStart(3,'0')}(that.getMilliseconds());
-      case 'q':
-        return Math.floor((that.getMonth() + 3) / 3)+'';
-    }
-  });
-};
 export class View{
   dataView:DataView
   flag:boolean
