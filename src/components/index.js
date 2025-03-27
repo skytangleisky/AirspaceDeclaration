@@ -1,10 +1,10 @@
 // import rgyxWorkPoint from "./rgyx-work-point.vue"; // 引入封装好的组
-import dragable from '../directive/dragable'
-import resize from '../directive/resize'
+import dragable from '~/directive/dragable'
+import resize from '~/directive/resize'
 // import rgyxWorkPoint from "../App.vue";
 import 'virtual:svg-icons-register'
-import SvgIcon from "./myComponents/SvgIcon.vue";
-import RgyxWorkPoint from "../App.vue"
+import SvgIcon from "~/myComponents/SvgIcon.vue";
+import RgyxWorkPoint from "~/App.vue"
 import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue"
 import {useSettingStore} from "~/stores/setting";
 // import {resize,dragable,pinia} from "../main.js";
