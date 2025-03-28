@@ -76,10 +76,10 @@ import 火箭弹图标 from '~/assets/火箭弹.svg?url'
 import 高炮图标 from '~/assets/高炮.svg?url'
 import axios from 'axios'
 import { eventbus } from "~/eventbus";
-import { reactive, onMounted, onBeforeUnmount, ref, watch, defineAsyncComponent } from "vue";
+import { reactive, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { planDataType,zyddataType } from "./planPanel.vue";
-const PlanPanel = defineAsyncComponent(() => import("./planPanel.vue"));
-const Dialog = defineAsyncComponent(() => import("./dialog.vue"));
+import PlanPanel from "./planPanel.vue";
+import Dialog from "./dialog.vue";
 import { addFeatherImages,View,getLngLat } from "~/tools";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";

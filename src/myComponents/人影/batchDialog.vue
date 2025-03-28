@@ -137,14 +137,12 @@ let checkAllPoint = ref(true);
 let isIndeterminate = ref(false);
 let checkedPoints = ref(new Array<any>());
 watch(batchList,()=>{
-  console.log(batchList)
   checkAllPoint.value = true
   isIndeterminate.value = false
   checkedPoints.value.length = 0
   batchList.value.forEach((item:any) => {
     checkedPoints.value.push(item.strID);
   })
-
 },{
   immediate:true,
   deep:true,
