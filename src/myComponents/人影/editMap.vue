@@ -2466,6 +2466,21 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch(()=>setting.人影.监控.landColor,()=>{
+  map.setPaintProperty("land","background-color",
+    [
+      "interpolate",
+      ["linear"],
+      ["zoom"],
+      0,
+      `rgba(${setting.人影.监控.landColor.r},${setting.人影.监控.landColor.g},${setting.人影.监控.landColor.b},${setting.人影.监控.landColor.a})`,
+      11,
+      `rgba(${setting.人影.监控.landColor.r},${setting.人影.监控.landColor.g},${setting.人影.监控.landColor.b},${setting.人影.监控.landColor.a})`,
+    ]
+  )
+},{
+  deep:true
+})
 watch(
   () => props.tile,
   (tile) => {

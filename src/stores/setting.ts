@@ -16,7 +16,7 @@ export const useSettingStore = defineStore({
     网络状态:'',
     内存占用:'',
     devtoolsOpen:false,
-    menus:true,
+    menus:false,
     canvas:{
       devtoolsOpen:false,
       particleCount:10,
@@ -367,6 +367,12 @@ export const useSettingStore = defineStore({
     },
     人影:{
       监控:{
+        landColor:{
+          r:36,
+          g:51,
+          b:73,
+          a:1
+        },
         zoom: 9,
         center: [
           116.403414,

@@ -140,6 +140,7 @@ const list = reactive([
     {label:'暗黑主题',value:isDark,type:'checkbox'},
     // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
     {label:'瓦片地图',value:computed({get:()=>setting.人影.监控.loadmap,set(val){setting.人影.监控.loadmap=val}}),type:'checkbox'},
+    {label:'地面颜色',value:toRefs(setting.人影.监控).landColor,type:'color'},
     {label:'全国行政区划',type:'folder',opened:toRefs(setting.人影.监控).districtOptionsOpened,children:[
       {label:'填充',type:'folder',opened:toRefs(setting.人影.监控.districtOptions).districtOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.districtOptions).district,type:'checkbox'},

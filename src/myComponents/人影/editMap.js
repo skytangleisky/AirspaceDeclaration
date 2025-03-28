@@ -347,9 +347,9 @@ export default function(){
 							["linear"],
 							["zoom"],
 							0,
-							"#243349",
+							`rgba(${setting.人影.监控.landColor.r},${setting.人影.监控.landColor.g},${setting.人影.监控.landColor.b},${setting.人影.监控.landColor.a})`,
 							11,
-							"#243349"
+							`rgba(${setting.人影.监控.landColor.r},${setting.人影.监控.landColor.g},${setting.人影.监控.landColor.b},${setting.人影.监控.landColor.a})`,
 						]
 					}
 				},
