@@ -127,7 +127,7 @@ import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
 import { prevRequestDataType } from "../../dialog_plan_request.vue";
-const DialogPlanRequest = defineAsyncComponent(()=>import("../../dialog_plan_request.vue"));
+import DialogPlanRequest from "../../dialog_plan_request.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { eventbus } from "~/eventbus/index";
