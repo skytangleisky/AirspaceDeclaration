@@ -111,7 +111,9 @@
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
   <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;right:300px;"></div>
   <!-- <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane> -->
-  <control-pane style="top:10px;right:10px;" :list="list" theme="default"></control-pane>
+  <el-scrollbar style="position:absolute;right:0;height: 100%; width:fit-content;">
+    <control-pane style="position: relative;" :list="list" theme="default"></control-pane>
+  </el-scrollbar>
 </template>
 <script lang="ts" setup>
 import { watch, ref, reactive, computed,onMounted, onBeforeUnmount, toRefs, defineAsyncComponent } from "vue";

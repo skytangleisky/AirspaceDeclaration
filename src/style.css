@@ -7,6 +7,7 @@ body {
   padding: 0;
   font-size: 100px;
   color: var(--el-text-color-primary);
+  overscroll-behavior: none;
 }
 #app {
   width: 100vw;
