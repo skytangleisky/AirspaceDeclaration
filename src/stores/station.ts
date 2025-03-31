@@ -64,8 +64,7 @@ interface Wind {
     }>
   }>;
 }
-export const useStationStore = defineStore({
-  id: 'station',
+export const useStationStore = defineStore('station',{
   state: () => ({
     result:new Array<Station>(),//设备信息列表
     avgWindData: new Array<Wind>(),//平均风数据
