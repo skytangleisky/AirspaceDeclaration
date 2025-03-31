@@ -862,6 +862,15 @@ export const useSettingStore = defineStore({
       this.$patch({
         loadmap:bool
       })
+    },
+    zoomIn(){
+      console.log('zoomIn')
+    },
+    zoomOut(){
+      console.log('zoomOut')
+    },
+    批量操作(){
+      console.log('批量操作')
     }
   },
   persist: true

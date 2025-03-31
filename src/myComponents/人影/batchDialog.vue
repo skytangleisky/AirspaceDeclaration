@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    :close-on-click-modal="false"
     v-model="pointDialogVisible"
     title="作业批量申请"
     width="560"

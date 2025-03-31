@@ -387,13 +387,17 @@ const loop = ()=>{
 }
 const zoomIn = ()=>map&&map.zoomIn()
 const zoomOut = ()=>map&&map.zoomOut()
+const 批量操作 = ()=>{
+  draw.changeMode('draw_polygon')
+}
+setting.zoomIn = zoomIn
+setting.zoomOut = zoomOut
+setting.批量操作 = 批量操作
 let draw:MapboxDraw;
 defineExpose({
   zoomIn,
   zoomOut,
-  批量操作(){
-    draw.changeMode('draw_polygon')
-  }
+  批量操作,
 })
 let aid = 0;
 import getStyle from './editMap.js'
@@ -2415,10 +2419,9 @@ onMounted(() => {
     })
   })
   map.on('draw.update',(e)=>{
-    console.log(e)
+    // console.log(e)
   })
   map.on('draw.modechange', function(e) {
-    console.log(e.mode)
     // if (e.mode === 'simple_select') {
     //   draw.changeMode('no_select')
     // }
