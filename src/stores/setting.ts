@@ -9,8 +9,7 @@ import cq_permission from "./permission/cq.js"
 export const formatUrl = (url: string) => {
   return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
 };
-export const useSettingStore = defineStore({
-  id: 'setting',
+export const useSettingStore = defineStore('setting',{
   state:()=>({
     在线人数:'',
     网络状态:'',
