@@ -1,5 +1,5 @@
 <template>
-    <div class="smokeStove page-content">
+    <div class="smokeStove">
         <!-- 烟炉 -->
         <div class="page-top">
             <!-- <globalOperation  
@@ -13,7 +13,7 @@
                     <smokeBar></smokeBar>
                 </div>
                 <div class="bottom-left-bottom">
-                    <weatherInfo ></weatherInfo>
+                    <weatherInfo></weatherInfo>
                 </div>
             </div>
             <div class="page-bottom-right">
@@ -32,9 +32,7 @@ import stoveSetting from "./components/stoveSetting.vue";
 let stoveID = ref(null); //当前选中烟炉ID
 let stoveObject = ref({}); //当前选中烟炉数据
 
-provide('stoveID',stoveID)
-
-
+provide("stoveID", stoveID);
 
 /**
  * @author yhl 2025-03-13 15:54:33
@@ -49,48 +47,49 @@ function chooseStoveHandle(item) {
 </script>
 
 <style lang="scss" scoped>
-$layoutTop-height:0px;
-.page-content {
-    position: absolute;
-    overflow: auto;
-    background-color: var(--el-bg-color);
-    inset: $grid-5;
-    border-radius: $border-radius-5;
-}
+$layoutTop-height: 0px;
+$page-top-height: 3.4rem;
 .smokeStove {
-    background-color: transparent;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
+    background-color: var(--el-bg-color-page);
+    padding: $grid-5;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+
+    
     .page-top {
-        flex: 1;
         background-color: var(--el-bg-color);
         border-radius: $border-radius-4;
         margin-bottom: $grid-4;
         padding: $grid-4;
-        max-height: 3.4rem;
+        height: 3.4rem;
+        box-sizing: border-box;
     }
     .page-bottom {
-        flex: 1.5;
+        height: calc(100% - $page-top-height - $grid-4);
         display: flex;
         .page-bottom-left {
             flex: 1;
-            display: flex;
-            flex-direction: column;
+            // display: flex;
+            // flex-direction: column;
+            height: 100%;
             margin-right: $grid-4;
+            $bottom-left-bottom-height: 1.8rem;
             .bottom-left-top {
-                flex: 2;
+                height: calc(100% - $bottom-left-bottom-height - $grid-4);
                 background-color: var(--el-bg-color);
                 border-radius: $border-radius-4;
                 margin-bottom: $grid-4;
                 padding: $grid-4;
+                box-sizing: border-box;
                 overflow: hidden;
             }
             .bottom-left-bottom {
-                flex: 0.9;
+                height: $bottom-left-bottom-height;
                 background-color: var(--el-bg-color);
                 border-radius: $border-radius-4;
                 padding: $grid-4;
+                box-sizing: border-box;
             }
         }
         .page-bottom-right {
@@ -100,6 +99,7 @@ $layoutTop-height:0px;
             border-radius: $border-radius-4;
             padding: $grid-4;
             box-sizing: border-box;
+            // overflow-y: auto;
         }
     }
 }

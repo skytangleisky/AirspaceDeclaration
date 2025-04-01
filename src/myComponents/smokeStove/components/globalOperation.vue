@@ -2,7 +2,7 @@
     <div class="globalOperation">
         <el-tabs v-model="activeName" @tab-click="tabClickHandle">
             <el-scrollbar height="100%">
-            <el-tab-pane label="烟炉状态" name="first">
+                <el-tab-pane label="烟炉状态" name="first">
                     <div class="smoke-stove-box">
                         <template
                             v-for="(item, index) in smokeStoveList"
@@ -161,12 +161,13 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
                 }
             }
             &:hover {
-                transform: translateY(0.04rem);;
+                // transform: translateY(0.04rem);;
                 background-color: var(--el-color-primary-light-3);
+                box-shadow: var(--el-box-shadow-light);
             }
         }
         .smoke-stove-item.active {
-            transform: translateY(0.04rem);;
+            // transform: translateY(0.04rem);;
             background-color: var(--el-color-primary);
 
             box-shadow: var(--el-box-shadow-light);

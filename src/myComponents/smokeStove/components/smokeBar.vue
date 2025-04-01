@@ -6,74 +6,86 @@
         </div>
         <div class="module-bottom">
             <!-- 烟条状态数据 -->
-            <div class="left">
-                <template v-for="(item, index) in barList" :key="index">
-                    <div class="bars-box">
-                        <div class="bars1">
-                            <template v-for="(bar, bari) in item" :key="bar.id">
-                                <div
-                                    v-if="bari < 3"
-                                    class="bar-item"
-                                    :class="`status-${bar.status}`"
+            <el-scrollbar height="100%">
+                <div class="left">
+                    <template v-for="(item, index) in barList" :key="index">
+                        <div class="bars-box">
+                            <div class="bars1">
+                                <template
+                                    v-for="(bar, bari) in item"
+                                    :key="bar.id"
                                 >
-                                    {{ bar.id }}
-                                </div>
-                            </template>
-                        </div>
-                        <div class="bars2">
-                            <template v-for="(bar, bari) in item" :key="bar.id">
-                                <div
-                                    v-if="bari >= 3"
-                                    class="bar-item"
-                                    :class="`status-${bar.status}`"
+                                    <div
+                                        v-if="bari < 3"
+                                        class="bar-item"
+                                        :class="`status-${bar.status}`"
+                                    >
+                                        {{ bar.id }}
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="bars2">
+                                <template
+                                    v-for="(bar, bari) in item"
+                                    :key="bar.id"
                                 >
-                                    {{ bar.id }}
-                                </div>
-                            </template>
+                                    <div
+                                        v-if="bari >= 3"
+                                        class="bar-item"
+                                        :class="`status-${bar.status}`"
+                                    >
+                                        {{ bar.id }}
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </el-scrollbar>
+                <!-- 烟炉详细信息 -->
+                <div class="right">
+                    <div class="info-item">
+                        <div class="item-label">站点名称：</div>
+                        <div class="item-value">{{ stoveObj.strName }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="item-label">联系电话：</div>
+                        <div class="item-value">
+                            {{ stoveObj.strMacPhoneNum }}
                         </div>
                     </div>
-                </template>
-            </div>
-            <!-- 烟炉详细信息 -->
-            <div class="right">
-                <div class="info-item">
-                    <div class="item-label">站点名称：</div>
-                    <div class="item-value">{{ stoveObj.strName }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="item-label">联系电话：</div>
-                    <div class="item-value">{{ stoveObj.strMacPhoneNum }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="item-label">状态时间：</div>
-                    <div class="item-value">{{ stoveObj.strStoveID }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="item-label">燃烧烟条：</div>
-                    <div class="item-value">{{ stoveObj.key1 }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="item-label">已用烟条：</div>
-                    <div class="item-value">{{ stoveObj.key2 }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="item-label">可用烟条：</div>
-                    <div class="item-value">{{ stoveObj.key3 }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="item-label">点火状态：</div>
-                    <div class="item-value item-status" :class="`status-${stoveObj.status1}`">
-                        
+                    <div class="info-item">
+                        <div class="item-label">状态时间：</div>
+                        <div class="item-value">{{ stoveObj.strStoveID }}</div>
                     </div>
-                    
-                </div>
-                <div class="info-item">
-                    <div class="item-label">在线状态：</div>
-                    <div class="item-value item-status" :class="`status-${stoveObj.status2}`">
-                        
+                    <div class="info-item">
+                        <div class="item-label">燃烧烟条：</div>
+                        <div class="item-value">{{ stoveObj.key1 }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="item-label">已用烟条：</div>
+                        <div class="item-value">{{ stoveObj.key2 }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="item-label">可用烟条：</div>
+                        <div class="item-value">{{ stoveObj.key3 }}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="item-label">点火状态：</div>
+                        <div
+                            class="item-value item-status"
+                            :class="`status-${stoveObj.status1}`"
+                        ></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="item-label">在线状态：</div>
+                        <div
+                            class="item-value item-status"
+                            :class="`status-${stoveObj.status2}`"
+                        ></div>
                     </div>
                 </div>
-            </div>
+            
         </div>
     </div>
 </template>
@@ -98,9 +110,8 @@ let stoveObj = ref({
     strName: "新塔2烟炉(海淀）",
     strStoveID: "110108XT2",
     tagPos: "116101199E40000000N",
-    status1:0,
-    status2:1,
-
+    status1: 0,
+    status2: 1,
 });
 
 let barList = [
@@ -182,7 +193,9 @@ let barList = [
 <style lang="scss" scoped>
 $item-label-width: 0.7rem;
 .smokeBar {
+    height: 100%;
     .module-bottom {
+        height: calc(100% - 0.2rem);
         overflow-y: auto;
         display: flex;
         .left {
@@ -198,17 +211,18 @@ $item-label-width: 0.7rem;
                 // &:nth-last-child(-n+2){
                 //     margin-bottom: 0;
                 // }
-                &:nth-child(2n){
+                &:nth-child(2n) {
                     margin-left: $grid-1;
                 }
-                .bars1,.bars2{
+                .bars1,
+                .bars2 {
                     display: flex;
                 }
                 .bar-item {
-                    width: 0.20rem;
-                    height: 0.20rem;
-                    border-radius: 0.20rem;
-                    line-height: 0.20rem;
+                    width: 0.2rem;
+                    height: 0.2rem;
+                    border-radius: 0.2rem;
+                    line-height: 0.2rem;
                     text-align: center;
                     // border: 1px solid var(--el-border-color);
                     margin: 0.02rem;
@@ -231,22 +245,22 @@ $item-label-width: 0.7rem;
                     white-space: nowrap;
                     overflow: hidden;
                 }
-                .item-status{
-                    width: 0.20rem;
-                    height: 0.20rem;
-                    border-radius: 0.20rem;
+                .item-status {
+                    width: 0.2rem;
+                    height: 0.2rem;
+                    border-radius: 0.2rem;
                     // border: 1px solid var(--el-border-color);
                 }
             }
         }
         // 状态风格
-        .status-0{
+        .status-0 {
             background-color: var(--el-color-primary-light-5);
         }
-        .status-1{
+        .status-1 {
             background-color: var(--el-color-success-light-5);
         }
-        .status-2{
+        .status-2 {
             background-color: var(--el-color-danger-light-5);
         }
     }

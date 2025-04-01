@@ -152,6 +152,7 @@ let weatherObject = reactive({
 
 <style lang="scss" scoped>
 .weatherObject {
+    height: 100%;
     .module-bottom {
         display: flex;
         flex-wrap: wrap;
