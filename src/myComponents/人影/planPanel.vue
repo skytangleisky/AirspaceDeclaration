@@ -1,215 +1,75 @@
 <template>
-    <div class="planPanel y-container z-1">
-        <el-tabs type="border-card">
-            <el-tab-pane v-for="(v, k) in props" :label="k">
-                <div
-                    class="item-box"
-                    @click="click(item)"
-                    v-for="(item, key) in v"
-                    :key="key"
-                    @mousedown.stop
-                >
-                    <div class="item-left">
-                        <span>{{
-                            moment(item.tmBeginApply).format("HH:mm:ss")
-                        }}</span>
-
-                        <span>{{ item.strZydID }}</span>
-                        <span class="font-size-14px font-extrabold">{{
-                            item.strName
-                        }}</span>
+    <div class="planPanel z-1">
+        <div class="top">
+            <div
+                v-for="(item, index) in tabList"
+                :key="index"
+                class="top-item"
+                @click="switchTab(index + 1)"
+            >
+                <el-badge :value="item.total" type="success">
+                    <div
+                        class="box map-btn"
+                        :class="{ active: tabActive - 1 == index }"
+                    >
+                        <svg-icon :name="item.icon"></svg-icon>
+                        <span class="label">{{ item.label }}</span>
                     </div>
-                    <div class="item-right">
-                        <div class="item-right-top">
-                            <div class="item-right-top-item">
-                                <div>作业状态</div>
-                                <div
-                                    :style="`color:${
-                                        工作状态格式化(item.ubyStatus) ==
-                                        '作业开始'
-                                            ? '#f00'
-                                            : '#e5eaf3'
-                                    }`"
-                                    class="top-item-value"
-                                >
-                                    {{ 工作状态格式化(item.ubyStatus) }}
-                                </div>
-                            </div>
-                            <div class="item-right-top-item">
-                                <div>发送状态</div>
-                                <div class="top-item-value">
-                                    {{ 发送状态格式化(item.ubySendStatus) }}
-                                </div>
-                            </div>
-                            <div class="item-right-top-item">
-                                <div>作业点代码</div>
-                                <div class="top-item-value">
-                                    {{ item.strCode }}
-                                </div>
-                            </div>
-                            <div class="item-right-top-item">
-                                <template v-if="!item.bAnswerAccept">
-                                    <div>申请时间</div>
-                                    <div class="top-item-value">
-                                        {{
-                                            item.tmBeginApply.substring(10, 16)
-                                        }}
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <div>批准时间</div>
-                                    <div class="top-item-value">
-                                        {{
-                                            item.tmAnswerRev
-                                                ? item.tmAnswerRev.substring(
-                                                      10,
-                                                      16
-                                                  )
-                                                : ""
-                                        }}
-                                    </div>
-                                </template>
-                            </div>
-                            <div class="item-right-top-item">
-                                <template v-if="!item.bAnswerAccept">
-                                    <div>申请时长</div>
-                                    <div class="top-item-value">
-                                        {{ item.iApplyTimeLen }}秒
-                                    </div>
-                                </template>
-                                <template v-else>
-                                    <div>批准时长</div>
-                                    <div class="top-item-value">
-                                        {{ item.iAnswerTimeLen }}秒
-                                    </div>
-                                </template>
-                            </div>
-                            <div class="item-right-top-item">
-                                <div>空域状态</div>
-                                <div
-                                    :class="`${
-                                        获取空域状态(item) == '未使用'
-                                            ? 'notuse-warning'
-                                            : ''
-                                    }`"
-                                    class="top-item-value"
-                                >
-                                    {{ 获取空域状态(item) }}
-                                </div>
-                            </div>
-                            <div class="item-right-top-item">
-                                <div>上报单位</div>
-                                <div class="top-item-value">
-                                    <!-- {{ item.unitName }} -->
-                                    北京人影指挥中心
-                                </div>
-                            </div>
-                        </div>
-                        <div class="item-right-bottom">
-                            <div
-                                :class="`flex justify-center items-center ${申请(
-                                    item
-                                )}`"
-                                class="item-right-bottom-item"
-                            >
-                                申请({{
-                                    moment(item.tmBeginApply).format("HH:mm")
-                                }})
-                            </div>
-                            <div
-                                :class="`flex-1 flex justify-center items-center ${批复(
-                                    item
-                                )}`"
-                                class="item-right-bottom-item"
-                            >
-                                <template v-if="!item.bAnswerAccept">
-                                    批复
-                                </template>
-                                <template v-else>
-                                    北空批复{{
-                                        "(" +
-                                        moment(
-                                            item.tmAnswerRev,
-                                            "YYYY-MM-DD HH:mm:ss"
-                                        ).format("HH:mm") +
-                                        ")"
-                                    }}
-                                </template>
-                            </div>
-                            <div
-                                :class="`flex-1 flex justify-center items-center ${开始(
-                                    item
-                                )}`"
-                                class="item-right-bottom-item"
-                            >
-                                {{ beginText(item) }}
-                            </div>
-                            <div
-                                :class="`flex-1 flex justify-center items-center ${结束(
-                                    item
-                                )}`"
-                                class="item-right-bottom-item"
-                            >
-                                <template
-                                    v-if="
-                                        工作状态格式化(item.ubyStatus) ==
-                                        '作业开始'
-                                    "
-                                >
-                                    (
-                                    <div
-                                        :class="`${
-                                            endSeconds(item) < 10
-                                                ? 'color-#f00'
-                                                : 'color-inherit'
-                                        }`"
-                                        class="item-right-bottom-item"
-                                    >
-                                        {{
-                                            Math.floor(endSeconds(item) / 60) +
-                                            ":" +
-                                            (endSeconds(item) % 60)
-                                        }}
-                                    </div>
-                                    )结束
-                                </template>
-                                <template v-else>
-                                    {{
-                                        "结束" +
-                                        (item.tmBeginAnswer
-                                            ? "(" +
-                                              moment(item.tmBeginAnswer)
-                                                  .add(item.iAnswerTimeLen, "s")
-                                                  .format("HH:mm:ss") +
-                                              ")"
-                                            : "")
-                                    }}
-                                </template>
-                            </div>
-                            <div
-                                :class="`flex-1 flex justify-center items-center ${完成(
-                                    item
-                                )}`"
-                                class="item-right-bottom-item"
-                            >
-                                完成
-                            </div>
-                        </div>
-                    </div>
+                </el-badge>
+            </div>
+        </div>
+        <div class="bottom" v-show="tabActive > 0">
+            <div class="close-btn" @click="tabActive = 0">
+                <el-icon><Close /></el-icon>
+                <div class="bottom-content">
+                    <el-scrollbar height="100%">
+                        <!-- 当前作业进度 -->
+                        <div v-show="tabActive == 1"></div>
+                        <!-- 今日作业记录 -->
+                        <div v-show="tabActive == 2"></div>
+                        <!-- 人影飞机 -->
+                        <div v-show="tabActive == 3"></div>
+                    </el-scrollbar>
                 </div>
-            </el-tab-pane>
-            <el-tab-pane label="空域流转信息">
-                <Transport :data="props.今日作业记录" />
-            </el-tab-pane>
-        </el-tabs>
+            </div>
+        </div>
     </div>
 </template>
 <script lang="ts" setup>
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import moment from "moment";
-import { defineAsyncComponent } from "vue";
+import { defineAsyncComponent, reactive, ref } from "vue";
+import { Close } from "@element-plus/icons-vue";
 const Transport = defineAsyncComponent(() => import("./transport.vue"));
+
+// top按钮渲染数据
+const tabList = reactive([
+    {
+        label: "当前作业进度",
+        icon: "progress",
+        type: "progress",
+        total: 0,
+    },
+    {
+        label: "今日作业记录",
+        icon: "plan-fill",
+        type: "PLANFILL",
+        total: 0,
+    },
+    {
+        label: "人影飞机",
+        icon: "plane",
+        type: "PLANE",
+        total: 0,
+    },
+]);
+const tabActive = ref(0);
+// 切换top按钮
+const switchTab = (index) => {
+    tabActive.value = index;
+};
+
 const station = useStationStore();
 const click = (item: planDataType) => {
     station.人影界面被选中的设备 = item.strZydID;
@@ -403,61 +263,74 @@ const 完成 = (item: planDataType) => {
     }
 };
 </script>
-<style lang="scss">
-// .planPanel {
-//     .el-tabs.el-tabs--border-card {
-//         --el-border-color: gray;
-//         --el-border-color-light: gray;
-//         margin-top: 0;
-//         & > .el-tabs__header {
-//             border-bottom: 0;
-//             background-color: transparent;
-//         }
-//         & > .el-tabs__header .el-tabs__item {
-//             transition-duration: 0s;
-//             margin-top: 0;
-//             &.is-active {
-//                 border-radius: 6px 6px 0 0;
-//                 margin-top: 0;
-//                 border-top: 1px solid var(--el-border-color);
-//                 border-left: 1px solid var(--el-border-color);
-//             }
-//             &:first-child {
-//                 margin-left: 0;
-//             }
-//         }
-//         & > .el-tabs__content {
-//             border: 1px solid var(--el-border-color);
-//             padding: 0;
-//             height: 400px;
-//             display: flex;
-//             border-radius: 0 6px 6px 6px;
-//             .el-tab-pane {
-//                 width: 100%;
-//             }
-//         }
-//     }
-// }
-// .dark .planPanel .el-tabs.el-tabs--border-card {
-//     .el-tabs__item.is-active {
-//         background: #304156;
-//     }
-//     .el-tab-pane {
-//         background: #304156;
-//     }
-// }
-</style>
 <style scoped lang="scss">
 .planPanel {
     position: absolute;
     left: $page-padding;
-    top: 300px;
+    bottom: $page-padding;
+    // top: 300px;
+
+    .map-btn {
+        border-radius: $border-radius-1;
+        background-color: var(--el-bg-color-opacity-8);
+        border: 0.01rem solid var(--el-border-color);
+        &:hover {
+            border-color: var(--el-color-primary);
+        }
+    }
+    .map-btn.active {
+        background-color: var(--el-color-primary-opacity-3);
+        border-color: var(--el-color-primary);
+        color: var(--el-text-color-primary);
+    }
+    .top {
+        display: flex;
+        margin-bottom: $grid-1;
+        .top-item {
+            margin-right: $grid-3;
+        }
+        .box {
+            display: flex;
+            padding: 0.08rem 0.16rem;
+            background-color: var(--el-bg-color-opacity-8);
+            border-radius: $border-radius-1;
+            .svg-icon {
+                margin-right: 0.04rem;
+            }
+        }
+    }
+    .bottom {
+        max-width: 7.2rem;
+        overflow: auto;
+        padding: 0 0.1rem 0.1rem;
+        border-radius: $border-radius-1;
+        background: var(--el-bg-color-opacity-8);
+        box-sizing: border-box;
+        // border: .01rem solid $color-bg-light-2;
+        // box-shadow: inset 0rem 0rem .1rem 0rem $color-bg-light-2;
+        .close-btn {
+            display: flex;
+            justify-content: flex-end;
+            padding: 0.1rem 0;
+            font-size: 0.16rem;
+            &:hover {
+                .el-icon {
+                    color: var(--el-color-error);
+                }
+            }
+        }
+        .bottom-content{
+            // height: calc(100% - 0.16rem);
+            max-height: 360px;
+        }
+    }
+
     .el-tabs {
         border-radius: $border-radius-1;
         ::v-deep(.el-tabs__header .el-tabs__item) {
             transition-duration: 0s;
         }
-        ::v-deep(.el-tabs__content){
+        ::v-deep(.el-tabs__content) {
             padding: $grid-2;
         }
         .el-tab-pane {
@@ -535,7 +408,7 @@ const 完成 = (item: planDataType) => {
                 height: $item-right-bottom-height;
                 align-items: center;
                 justify-content: center;
-                padding:$grid-1;
+                padding: $grid-1;
                 box-sizing: border-box;
                 .item-right-bottom-item {
                     padding: 0 $grid-1;
