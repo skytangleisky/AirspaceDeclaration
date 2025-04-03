@@ -67,8 +67,9 @@ import nextSvg from "~/assets/next.svg?raw";
 import rightSvg from "~/assets/right.svg?raw";
 import moment from "moment";
 import graph from "./graph.vue";
+import {useTheme} from '~/theme'
+const theme = useTheme()
 import { onMounted, onBeforeUnmount, ref, reactive, watch } from "vue";
-import { isDark } from "~/composables";
 const emit = defineEmits(["update:now", "update:status", "update:level", "toLeft","toMiddle","toRight"]);
 const props = withDefaults(
   defineProps<{
@@ -110,10 +111,9 @@ let options = reactive({
   value: props.level,
   targetValue: props.level,
   devicePixelRatio,
-  color: isDark.value ? "white" : "black",
 });
-watch(isDark, (v) => {
-  if (v) {
+watch(theme, () => {
+  if (theme.value=='dark') {
     options.color = "white";
   } else {
     options.color = "black";

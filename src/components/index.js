@@ -12,7 +12,6 @@ import {useSettingStore} from "~/stores/setting";
 // import "element-plus/dist/index.css";
 import "~/style.css"
 import "~/styles/index.scss"
-import '~/composables'//初始化主题，默认自动主题
 import 'uno.css'
 import "~/styles/element/index.scss"
 import 'mapbox-gl/dist/mapbox-gl.css'

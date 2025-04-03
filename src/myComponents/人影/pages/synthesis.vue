@@ -139,7 +139,6 @@ const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/
 const list = reactive([
   {label:'devtools',type:'folder',opened:toRefs(setting).devtoolsOpen,children:[
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
-    {label:'暗黑主题',value:isDark,type:'checkbox'},
     // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
     {label:'瓦片地图',value:computed({get:()=>setting.人影.监控.loadmap,set(val){setting.人影.监控.loadmap=val}}),type:'checkbox'},
     {label:'地面颜色',value:toRefs(setting.人影.监控).landColor,type:'color'},
@@ -377,7 +376,8 @@ const selectorColor = computed({
   }
 })
 const tweakPaneRef = ref<HTMLElement>();
-import { isDark } from "~/composables";
+import {useTheme} from '~/theme';
+const theme = useTheme()
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };

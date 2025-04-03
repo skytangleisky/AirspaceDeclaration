@@ -5,7 +5,8 @@
 <script lang="ts" setup>
 import mapboxgl from "mapbox-gl_wstd";
 import {layer,windParticles} from "./windRaster";
-import { isDark } from "~/composables/dark.js";
+import {useTheme} from "~/theme";
+const theme = useTheme();
 import { onMounted, ref, onBeforeUnmount, watch, toRefs,reactive, defineAsyncComponent } from "vue";
 const ControlPane = defineAsyncComponent(() => import("../controlPane/index.vue"))
 import uvUrl from "./data/06040808.000?url";
@@ -545,7 +546,7 @@ onMounted(() => {
               }
             });
             map.addSource("point", points);
-            await addFeatherImages(map,isDark.value?'#fff':'#000');
+            await addFeatherImages(map,theme.value == 'dark'?'#fff':'#000');
             map.addLayer({
               id: "plane",
               source: "point",

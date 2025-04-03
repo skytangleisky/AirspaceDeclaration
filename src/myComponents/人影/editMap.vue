@@ -13,7 +13,7 @@
         line-height: 1;
       "
     ></div>
-    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`position:absolute;font-size: 40px;top:10px;left:10px;fill:${isDark?'black':'white'}`" @click="setting.menus=true"></el-icon>
+    <el-icon v-show="!(setting.menus)" v-html="menusSvg" :style="`position:absolute;font-size: 40px;top:10px;left:10px;fill:${theme=='dark'?'black':'white'}`" @click="setting.menus=true"></el-icon>
     <Dialog
       v-show="setting.menus"
       class="stationDialog"
@@ -65,7 +65,7 @@ import { point, polygon } from "@turf/helpers";
 import BatchDialog from "./batchDialog.vue";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
-import theme from './drawTheme/theme.js'
+import styles from './drawTheme/theme.js'
 import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import banSvg from '~/assets/ban.svg?url'
@@ -271,7 +271,8 @@ const props = withDefaults(
     equidistantRing: false,
   }
 );
-import { isDark } from '~/composables/dark.js';
+import {useTheme} from '~/theme';
+const theme = useTheme()
 // style.layers.map((v: any) => {
 //   if (v.id == "simple-tiles") {
 //     v.layout.visibility = props.loadmap ? "visible" : "none";
@@ -1685,7 +1686,7 @@ onMounted(() => {
             onClick:()=>{},
             onMouseMove(state, e) {},
           }},
-          styles:theme,
+          styles,
           defaultMode: 'no_select',
         })
         map.addControl(draw)

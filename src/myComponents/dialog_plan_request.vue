@@ -184,9 +184,10 @@ const weaponOptions = reactive([
     { value: 6, label: "火箭+高炮+烟炉" },
 ]);
 const workOptions = reactive([
+    { value: 0, label: "未定义" },
     { value: 1, label: "增雨" },
     { value: 2, label: "防雹" },
-    { value: 3, label: "大气治理" },
+    { value: 3, label: "大气污染治理" },
     { value: 4, label: "其他" },
 ]);
 const click = (data: prevRequestDataType) => {

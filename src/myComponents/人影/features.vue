@@ -23,10 +23,11 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { isDark } from "~/composables/dark";
+import {useTheme} from "~/theme";
+const theme = useTheme()
 import { ref, onMounted, onBeforeUnmount, watch } from "vue";
-watch(isDark, (isDark) => {
-  draw(canvas, isDark);
+watch(theme, () => {
+  draw(canvas, theme.value=='dark');
 });
 defineProps({
   title: {
@@ -43,7 +44,7 @@ const resize = () => {
     canvas.height = rect.height * devicePixelRatio;
     canvas.style.width = rect.width + "px";
     canvas.style.height = rect.height + "px";
-    draw(canvas, isDark.value);
+    draw(canvas, theme.value);
   }
 };
 onMounted(() => {

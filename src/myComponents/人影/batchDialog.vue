@@ -103,23 +103,23 @@ const applyPointForm = reactive({
 const purposeOptions = [
   {
     label: "未定义",
-    value: 1,
+    value: 0,
   },
   {
     label: "增雨",
-    value: 2,
+    value: 1,
   },
   {
     label: "防雹",
+    value: 2,
+  },
+  {
+    label: "大气污染治理",
     value: 3,
   },
   {
-    label: "大气治理",
-    value: 4,
-  },
-  {
     label: "其他",
-    value: 5,
+    value: 4,
   },
 ];
 /**
