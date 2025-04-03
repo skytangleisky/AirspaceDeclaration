@@ -1,7 +1,8 @@
 import { ref,watch } from 'vue'
+const defaultTheme = 'dark'
 const ThemeArray = ['dark', 'light', 'auto'] as const
 type Theme = (typeof ThemeArray)[number]
-const theme = ref<Theme>(localStorage.getItem('theme') as Theme || 'auto')
+const theme = ref<Theme>(localStorage.getItem('theme') as Theme || defaultTheme)
 const match = matchMedia('(prefers-color-scheme: dark)')
 function auto(){
   if(match.matches){
@@ -66,7 +67,10 @@ window.addEventListener('storage', (event) => {
         document.documentElement.classList.add(event.newValue as Theme);
       }
     }else{
-      auto()
+      theme.value = defaultTheme
+      localStorage.setItem('theme', defaultTheme)
+      ThemeArray.filter(item=>item!==defaultTheme).forEach(item => document.documentElement.classList.remove(item))
+      document.documentElement.classList.add(defaultTheme)
     }
   }
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
