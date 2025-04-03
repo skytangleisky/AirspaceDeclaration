@@ -1,6 +1,5 @@
 html,
 body {
-  background-color: #000;
   width: 100vw;
   height: 100vh;
   margin: 0;
@@ -8,6 +7,9 @@ body {
   font-size: 100px;
   color: var(--el-text-color-primary);
   overscroll-behavior: none;
+}
+.dark body{
+  background-color: #121212;
 }
 #app {
   width: 100vw;

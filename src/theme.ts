@@ -1,8 +1,14 @@
 import { ref,watch } from 'vue'
-const defaultTheme = 'dark'
 const ThemeArray = ['dark', 'light', 'auto'] as const
 type Theme = (typeof ThemeArray)[number]
+let defaultTheme:Theme = 'auto'
 const theme = ref<Theme>(localStorage.getItem('theme') as Theme || defaultTheme)
+for(let i=0;i<document.documentElement.classList.length;i++){
+  if(ThemeArray.includes(document.documentElement.classList[i] as Theme)){
+    defaultTheme = document.documentElement.classList[i] as Theme
+    break;
+  }
+}
 const match = matchMedia('(prefers-color-scheme: dark)')
 function auto(){
   if(match.matches){
