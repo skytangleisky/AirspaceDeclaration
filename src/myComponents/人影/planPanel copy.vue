@@ -1,5 +1,5 @@
 <template>
-    <div class="planPanel y-container z-1">
+    <div class="planPanel wstd-content z-1">
         <el-tabs type="border-card">
             <el-tab-pane v-for="(v, k) in props" :label="k">
                 <div
@@ -345,13 +345,13 @@ const 申请 = (item: planDataType) => {
         case "作业结束":
             return "bg-#3D5E86";
         case "作业申请待批复":
-            return "bg-#67c23a";
+            return "bg-#3ac8a5";
         case "作业不批准":
             return "bg-#3D5E86";
         case "作业批准":
-            return "bg-#67c23a";
+            return "bg-#3ac8a5";
         case "作业开始":
-            return "bg-#67c23a";
+            return "bg-#3ac8a5";
         default:
             return "bg-#1E3148";
     }
@@ -363,9 +363,9 @@ const 批复 = (item: planDataType) => {
         case "作业不批准":
             return "bg-#3D5E86";
         case "作业批准":
-            return "bg-#67c23a";
+            return "bg-#3ac8a5";
         case "作业开始":
-            return "bg-#67c23a";
+            return "bg-#3ac8a5";
         default:
             return "bg-#1E3148";
     }
@@ -377,7 +377,7 @@ const 开始 = (item: planDataType) => {
         case "作业不批准":
             return "bg-#f56c6c";
         case "作业开始":
-            return "bg-#67c23a";
+            return "bg-#3ac8a5";
         default:
             return "bg-#1E3148";
     }

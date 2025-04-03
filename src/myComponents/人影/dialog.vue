@@ -1,15 +1,30 @@
 <template>
-    <div class="!collapse dragDialog y-container absolute w-500px">
-        <div class="flex flex-row">
-            <el-input
-                @mousedown.stop
-                name="过滤条件"
-                class="operation_filter flex-1"
-                placeholder="请输入过滤条件"
-                v-model="options.value"
-                
-            />
-            <!-- <el-icon
+    <div class="!collapse dragDialog absolute wstd-container">
+        <div class="top">
+            <div
+                class="box map-btn"
+                :class="{ active: tabActive == 1 }"
+                @click="tabActive = 1"
+            >
+                <svg-icon name="table"></svg-icon>
+                <span class="label">作业点列表</span>
+            </div>
+        </div>
+
+        <div class="bottom wstd-content" v-if="tabActive">
+            <div class="close-btn" @click="tabActive = 0">
+                <el-icon><Close /></el-icon>
+            </div>
+            <div class="bottom-content">
+                <div class="flex flex-row">
+                    <el-input
+                        @mousedown.stop
+                        name="过滤条件"
+                        class="operation_filter flex-1"
+                        placeholder="请输入过滤条件"
+                        v-model="options.value"
+                    />
+                    <!-- <el-icon
         class="dropdown"
         style="
           width: 30px;
@@ -36,84 +51,92 @@
           </path>
         </svg>
       </el-icon> -->
-        </div>
-        <div class="contain" @mousedown.stop>
-            <div
-                @scroll="scrolling"
-                class=""
-                style="
-                    overflow: auto;
-                    box-sizing: border-box;
-                    position: relative;
-                    margin-top: 12px;
-                    scroll-padding-top: 14px;
-                "
-            >
-                <table>
-                    <thead>
-                        <tr class="z-1">
-                            <th>序号</th>
-                            <th>名称</th>
-                            <th>设备类型</th>
-                            <th>经纬度</th>
-                            <th>海拔</th>
-                        </tr>
-                    </thead>
-                    <tbody style="position: relative">
-                        <tr
-                            :id="'人影-' + v.strID"
-                            :class="`${
-                                station.人影界面被选中的设备 == v.strID
-                                    ? 'selected'
-                                    : ''
-                            }`"
-                            v-for="(v, k) in options.list"
-                            :key="v.strID"
-                            @contextmenu.prevent="contextmenu($event, v)"
-                            @click="flyTo($event, v)"
-                        >
-                            <td>{{ k + 1 }}</td>
-                            <td>{{ v.strName }}</td>
-                            <td>{{ formatWeapon(v.strWeapon) }}</td>
-                            <td>{{ v.strPos }}</td>
-                            <td>{{ v.iAltitude }}</td>
-                        </tr>
-                    </tbody>
-                </table>
+                </div>
+                <div class="contain" @mousedown.stop>
+                    <div
+                        @scroll="scrolling"
+                        class=""
+                        style="
+                            overflow: auto;
+                            box-sizing: border-box;
+                            position: relative;
+                            margin-top: 12px;
+                            scroll-padding-top: 14px;
+                        "
+                    >
+                        <table>
+                            <thead>
+                                <tr class="z-1">
+                                    <th>序号</th>
+                                    <th>名称</th>
+                                    <th>设备类型</th>
+                                    <!-- <th>经纬度</th> -->
+                                    <th>海拔</th>
+                                </tr>
+                            </thead>
+                            <tbody style="position: relative">
+                                <tr
+                                    :id="'人影-' + v.strID"
+                                    :class="`${
+                                        station.人影界面被选中的设备 == v.strID
+                                            ? 'selected'
+                                            : ''
+                                    }`"
+                                    v-for="(v, k) in options.list"
+                                    :key="v.strID"
+                                    @contextmenu.prevent="
+                                        contextmenu($event, v)
+                                    "
+                                    @click="flyTo($event, v)"
+                                >
+                                    <td>{{ k + 1 }}</td>
+                                    <td>{{ v.strName }}</td>
+                                    <td>{{ formatWeapon(v.strWeapon) }}</td>
+                                    <!-- <td>{{ v.strPos }}</td> -->
+                                    <td>{{ v.iAltitude }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="menuUl" tabindex="-1">
+                        <li @click="click">
+                            <img
+                                src="/src/assets/新增.svg"
+                                @click.native.stop
+                            />作业申请
+                        </li>
+                        <li @click="click">
+                            <img
+                                src="/src/assets/修改.svg"
+                                @click.native.stop
+                            />作业预报
+                        </li>
+                        <li @click="click">
+                            <img
+                                src="/src/assets/删除.svg"
+                                @click.native.stop
+                            />完成报请求
+                        </li>
+                        <li @click="click">
+                            <img
+                                src="/src/assets/详情.svg"
+                                @click.native.stop
+                            />查看详细数据
+                        </li>
+                    </ul>
+                </div>
             </div>
-            <ul class="menuUl" tabindex="-1">
-                <li @click="click">
-                    <img
-                        src="/src/assets/新增.svg"
-                        @click.native.stop
-                    />作业申请
-                </li>
-                <li @click="click">
-                    <img
-                        src="/src/assets/修改.svg"
-                        @click.native.stop
-                    />作业预报
-                </li>
-                <li @click="click">
-                    <img
-                        src="/src/assets/删除.svg"
-                        @click.native.stop
-                    />完成报请求
-                </li>
-                <li @click="click">
-                    <img
-                        src="/src/assets/详情.svg"
-                        @click.native.stop
-                    />查看详细数据
-                </li>
-            </ul>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
-import { reactive, onMounted, watch, computed } from "vue";
+import { Close } from "@element-plus/icons-vue";
+import { reactive, onMounted, watch, computed ,ref} from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
+
+let tabActive = ref(0);
+
 const formatWeapon = (weapon: number) =>
     [
         "火箭",
@@ -199,15 +222,14 @@ const toggleCollapse = () => {
 };
 </script>
 <style scoped lang="scss">
-
-.dragDialog{
-
+.dragDialog {
+    width: 3.2rem;
 }
 .contain {
     position: relative;
     display: flex;
     flex-direction: column;
-    height:208px;
+    height: 208px;
     .menuUl {
         outline: none;
         position: absolute;
