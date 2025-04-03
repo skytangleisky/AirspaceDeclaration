@@ -62,7 +62,7 @@ watch(theme, (value) => {
 })
 window.addEventListener('storage', (event) => {
   observer.disconnect()
-  if (event.key === 'theme') {
+  if (event.key === 'theme'||event.key === null) {
     if(ThemeArray.includes(event.newValue as Theme)){
       if(event.newValue === 'auto'){
         theme.value = 'auto'

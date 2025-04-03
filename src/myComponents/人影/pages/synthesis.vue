@@ -136,8 +136,11 @@ import { eventbus } from "~/eventbus/index";
 const ColorSelector = defineAsyncComponent(()=>import("~/myComponents/colorSelector/index.vue"));
 import { Pane } from 'controlpane';
 const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/index.vue"));
+import {useTheme} from '~/theme';
+const theme = useTheme()
 const list = reactive([
   {label:'devtools',type:'folder',opened:toRefs(setting).devtoolsOpen,children:[
+    {label:'主题',value:theme,type:'select',options:[{value:'light',label:'亮色'},{value:'dark',label:'暗色'},{value:'auto',label:'自动'}]},
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
     // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
     {label:'瓦片地图',value:computed({get:()=>setting.人影.监控.loadmap,set(val){setting.人影.监控.loadmap=val}}),type:'checkbox'},
@@ -376,8 +379,6 @@ const selectorColor = computed({
   }
 })
 const tweakPaneRef = ref<HTMLElement>();
-import {useTheme} from '~/theme';
-const theme = useTheme()
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };
