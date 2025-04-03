@@ -13,7 +13,6 @@
         line-height: 1;
       "
     ></div>
-    <el-icon v-show="!(setting.menus)" v-html="menusSvg" class="dark:fill-black fill-white" :style="`position:absolute;font-size: 40px;top:10px;left:10px;`" @click="setting.menus=true"></el-icon>
     <Dialog
       v-show="setting.menus"
       class="stationDialog"
