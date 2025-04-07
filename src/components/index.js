@@ -10,6 +10,7 @@ import {useSettingStore} from "~/stores/setting";
 // import {resize,dragable,pinia} from "../main.js";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";
+import '~/theme'
 import "~/style.css"
 import "~/styles/index.scss"
 import 'uno.css'
