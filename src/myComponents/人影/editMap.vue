@@ -2637,7 +2637,7 @@ watch([() => props.zoom, () => props.center], ([zoom, center]) => {
 watch(
   () => station.人影界面被选中的设备,
   (strID) => {
-    $(`#人影-${strID}`)[0].scrollIntoView({
+    $(`#人影-${strID}`)[0]?.scrollIntoView({
       block: "nearest",
       behavior: "smooth",
       inline: "center",
