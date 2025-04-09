@@ -377,6 +377,8 @@ export const useSettingStore = defineStore('setting',{
           116.403414,
           39.914714
         ],
+        track:true,
+        trackCount:10,
         gridValue:false,
         gridPoint:false,
         isobands:false,

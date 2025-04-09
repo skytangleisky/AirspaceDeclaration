@@ -212,6 +212,8 @@ const list = reactive([
     {label:'飞机',value:toRefs(setting.人影.监控).plane,type:'checkbox'},
     {label:'作业点',value:toRefs(setting.人影.监控).zyd,type:'checkbox'},
     {label:'导航台',value:toRefs(setting.人影.监控).navigationStation,type:'checkbox'},
+    {label:'航迹',value:toRefs(setting.人影.监控).track,type:'checkbox'},
+    {label:'航迹数量',value:toRefs(setting.人影.监控).trackCount,type:'range',min:0,max:20,arr:Array.from({length:21},(_,i:number)=>i)},
     {label:'在线人数',value:toRefs(setting).在线人数,type:'text'},
     {label:'网络状态',value:toRefs(setting).网络状态,type:'text'},
     {label:'内存占用',value:toRefs(setting).内存占用,type:'text'},
