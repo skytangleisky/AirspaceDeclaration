@@ -59,6 +59,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+const obj = {};
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { point, polygon } from "@turf/helpers";
 import BatchDialog from "./batchDialog.vue";
@@ -332,6 +333,7 @@ function 处理飞机实时位置(d:Array<{
       if(d[j]&&d[j].uiTrackNo===trackFeatures[i].properties.uiTrackNo){
         has = true;
         trackFeatures[i].geometry.coordinates.push(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
+        obj[trackFeatures[i].properties.uiTrackNo].setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
         if(trackFeatures[i].geometry.coordinates.length>setting.人影.监控.trackCount){
           trackFeatures[i].geometry.coordinates.splice(0,trackFeatures[i].geometry.coordinates.length - setting.人影.监控.trackCount)
         }
@@ -339,6 +341,27 @@ function 处理飞机实时位置(d:Array<{
       }
     }
     if(!has){
+      const customMarkerElement = document.createElement('div');
+      customMarkerElement.className = 'custom-marker'; // 自定义类名
+      customMarkerElement.innerHTML = `
+        <div class="marker-content">
+          ${(d[j].fSpeed*3.6).toFixed(2)}km/h
+          <svg>
+            <path d="M0,0 L5,5 10,0"/>
+          </svg>
+        </div>
+      `;
+      const marker = new mapboxgl.Marker({
+        element:customMarkerElement,
+        anchor: "bottom",
+        offset:[0,-16]
+      })
+        .setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude)) // 设置 Marker 的位置
+        .addTo(map);
+      marker.getElement().addEventListener('click', () => {
+        marker.remove()
+      });
+      obj[d[j].uiTrackNo] = marker
       trackFeatures.push({
         type: "Feature",
         properties: d[j],
@@ -3066,5 +3089,58 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 }
 .mapboxgl-canvas:focus {
   outline: none;
+}
+// 标牌
+.marker-content{
+  padding:5px;
+  --line-width:2px;
+  --border-color:gray;
+  border:var(--line-width) solid var(--border-color);
+  border-bottom:none;
+  --radius:4px;
+  border-radius: var(--radius);
+  background: transparent;
+  color:white;
+  position: relative;;
+  &:before{
+    content:'';
+    position: absolute;
+    left:-1px;
+    top:0;
+    box-sizing: content-box;
+    width:calc(50% - 4px);
+    height:100%;
+    border-bottom-left-radius: var(--radius);
+    border-bottom:var(--line-width) solid var(--border-color);
+    box-sizing: border-box;
+  }
+  &:after{
+    content:'';
+    position: absolute;
+    right:-1px;
+    top:0;
+    width:calc(50% - 4px);
+    height:100%;
+    border-bottom-right-radius: var(--radius);
+    border-bottom:var(--line-width) solid var(--border-color);
+    box-sizing: border-box;
+  }
+  &>svg{
+    position: absolute;
+    left:50%;
+    top:calc(100% - var(--line-width));
+    transform: translateX(-50%);
+    stroke:var(--border-color);
+    stroke-width:var(--line-width);
+    fill:transparent;
+    width:10px;
+    height: 10px;
+  }
+  &:hover{
+    background: #2b2b2b;
+    &>svg{
+      fill: #2b2b2b;
+    }
+  }
 }
 </style>
