@@ -125,7 +125,7 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        target:'http://backend.victorysoft.cn',
+        target:'http://backend.tanglei.top',
         // target:'http://192.168.0.114:3000',
         secure:false,
         changeOrigin:true,
@@ -133,7 +133,7 @@ export default defineConfig({
         ws:true,
       },
       '/debug':{
-        target:'http://victorysoft.cn:7777',
+        target:'http://tanglei.top:7777',
         secure:false,
         changeOrigin:true,
         ws:true,

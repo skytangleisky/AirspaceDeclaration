@@ -1,6 +1,6 @@
 import moment from 'moment'
 import request from '../../utils/request'
-import { getLngLat } from '~/tools'
+import { fromDMS } from '~/tools'
 export function getDevice(){
   return request({
     url: 'backend/ry_device',
@@ -33,7 +33,7 @@ export function airspaceApply(data){
 //     "iconImage": "projectile-white",
 //     "v-51ca6517": ""
 // }
-  let pos = getLngLat(data.strPos)
+  let pos = fromDMS(data.strPos)
   let targetData = {
     "zydID": data.strID,
     "workRevID": "990201000",//北京分区对应的ID

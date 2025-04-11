@@ -22,10 +22,26 @@ export function hasPermission(permissions:Array<String>){
   recurse(setting.permissions)
   return has
 }
-export function getLngLat(v:string):[number,number]{
+export function fromDMS(v:string):[number,number]{
   let lng = v.substring(0, v.indexOf("E"));
   let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
   return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
+}
+export function toDMS(lng: number, lat: number): string {
+  const lngDegree = Math.floor(Math.abs(lng));
+  const lngMinFloat = Math.abs(lng) - lngDegree;
+  const lngMin = Math.floor(lngMinFloat * 60);
+  const lngSec = Math.round((lngMinFloat * 60 - lngMin) * 60);
+
+  const latDegree = Math.floor(Math.abs(lat));
+  const latMinFloat = Math.abs(lat) - latDegree;
+  const latMin = Math.floor(latMinFloat * 60);
+  const latSec = Math.round((latMinFloat * 60 - latMin) * 60);
+
+  const lngString = `${lngDegree.toFixed().padStart(3, '0')}${lngMin.toFixed().padStart(2,'0')}${String(lngSec).padStart(4, '0')}E`;
+  const latString = `${latDegree.toFixed().padStart(2, '0')}${latMin.toFixed().padStart(2,'0')}${String(latSec).padStart(4, '0')}N`;
+
+  return `${lngString}${latString}`;
 }
 export const area = (vertices: Array<[number, number]>) => {
   let area = 0;

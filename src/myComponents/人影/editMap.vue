@@ -81,7 +81,7 @@ import { reactive, onMounted, onBeforeUnmount, ref, watch } from "vue";
 import { planDataType,zyddataType } from "./planPanel.vue";
 import PlanPanel from "./planPanel.vue";
 import Dialog from "./dialog.vue";
-import { addFeatherImages,View,getLngLat } from "~/tools";
+import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
 import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
 import { exec } from "~/api/index.js";
@@ -137,7 +137,7 @@ let 批量申请 = () => {
   let list = []
   for(let j=0;j<dialogOptions.menus.length;j++){
     let station = dialogOptions.menus[j];
-    let targetPos = point(wgs84togcj02(...getLngLat((station as any).strPos)))
+    let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
       const feature = draw.getAll().features[i];
@@ -283,6 +283,9 @@ const theme = useTheme()
 //   }
 // });
 let active = () => {};
+const mousemoveFunc = (e:any)=>{
+  setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
+}
 const zoomFunc = () => {
   emits("update:zoom", map.getZoom());
 };
@@ -334,6 +337,7 @@ function 处理飞机实时位置(d:Array<{
         has = true;
         trackFeatures[i].geometry.coordinates.push(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
         obj[trackFeatures[i].properties.uiTrackNo].setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
+        obj[trackFeatures[i].properties.uiTrackNo].getElement().querySelector('.speed').innerText = `${d[j].unSsrCode}`
         if(trackFeatures[i].geometry.coordinates.length>setting.人影.监控.trackCount){
           trackFeatures[i].geometry.coordinates.splice(0,trackFeatures[i].geometry.coordinates.length - setting.人影.监控.trackCount)
         }
@@ -345,7 +349,9 @@ function 处理飞机实时位置(d:Array<{
       customMarkerElement.className = 'custom-marker'; // 自定义类名
       customMarkerElement.innerHTML = `
         <div class="marker-content">
-          ${(d[j].fSpeed*3.6).toFixed(2)}km/h
+          <span class="speed">
+          ${d[j].unSsrCode}
+          </span>
           <svg>
             <path d="M0,0 L5,5 10,0"/>
           </svg>
@@ -409,7 +415,7 @@ function 处理飞机实时位置(d:Array<{
 const flyTo = (item: any) => {
   try {
     active();
-    let position = wgs84togcj02(...getLngLat(item.strPos));
+    let position = wgs84togcj02(...fromDMS(item.strPos));
     map.flyTo({
       center: position, // 新的中心点 [经度, 纬度]
       zoom: item.zoom || 9, // 目标缩放级别
@@ -448,14 +454,21 @@ const 批量操作 = ()=>{
   draw.changeMode('draw_polygon')
   map.getCanvas().style.cursor = "crosshair";
 }
+let 获取经纬度 = false
+const 经纬度 = ()=>{
+  获取经纬度 = true
+  map.getCanvas().style.cursor = "crosshair";
+}
 setting.zoomIn = zoomIn
 setting.zoomOut = zoomOut
 setting.批量操作 = 批量操作
+setting.经纬度 = 经纬度
 let draw:MapboxDraw;
 defineExpose({
   zoomIn,
   zoomOut,
   批量操作,
+  经纬度,
 })
 let aid = 0;
 import getStyle from './editMap.js'
@@ -917,7 +930,7 @@ onMounted(() => {
         let item = res.data[0][i]
         let strPoints = d.decode(Uint8Array.from(item.points.data).buffer)
         let points = strPoints.split(' ').map(item=>{
-          let lngLat = getLngLat(item)
+          let lngLat = fromDMS(item)
           return wgs84togcj02(lngLat[0],lngLat[1])
         }) as Array<[number,number]>
         let centroid = calculatePolygonCentroid(points)
@@ -1445,7 +1458,7 @@ onMounted(() => {
           },
           geometry: {
             type: "Point",
-            coordinates: wgs84togcj02(...getLngLat(data[i].strLonLat)),
+            coordinates: wgs84togcj02(...fromDMS(data[i].strLonLat)),
             // coordinates: [0, 0],
           },
         });
@@ -1553,7 +1566,7 @@ onMounted(() => {
           item.iShortAngelBegin = 0
         }
         if (item.strPos) {
-          let position: [number, number] = (wgs84togcj02(...getLngLat(item.strPos)) as unknown) as [
+          let position: [number, number] = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [
             number,
             number
           ];
@@ -1583,7 +1596,7 @@ onMounted(() => {
             },
           });
           // 有问题
-          // let circle: any = Circle(wgs84togcj02(...getLngLat(item.strPos)), item.iMaxShotRange, {
+          // let circle: any = Circle(wgs84togcj02(...fromDMS(item.strPos)), item.iMaxShotRange, {
           //   steps: 360,
           //   units: "meters",
           //   properties: {
@@ -1593,7 +1606,7 @@ onMounted(() => {
           // });
           // circleFeatures.push(circle);
           if (item.iShortAngelEnd - item.iShortAngelBegin >= 360) {
-            const center: [number, number] = wgs84togcj02(...getLngLat(item.strPos)) as [
+            const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
               number,
               number
             ]; // 圆心点的经纬度
@@ -1612,7 +1625,7 @@ onMounted(() => {
             });
             circleFeatures.push(sectorPolygon);
           } else {
-            const center: [number, number] = wgs84togcj02(...getLngLat(item.strPos)) as [
+            const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
               number,
               number
             ]; // 圆心点的经纬度
@@ -1640,7 +1653,7 @@ onMounted(() => {
             circleFeatures.push(sectorPolygon);
           }
           //加入警戒圈
-          const center: [number, number] = wgs84togcj02(...getLngLat(item.strPos)) as [
+          const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
             number,
             number
           ]; // 圆心点的经纬度
@@ -1930,7 +1943,7 @@ onMounted(() => {
                 circleFeatures[i].properties.opacity = 1;
               }
               star(circleFeatures[i],row)
-              const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
+              const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
                 number,
                 number
               ]; // 圆心点的经纬度
@@ -1940,7 +1953,7 @@ onMounted(() => {
               const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
               const units: turf.Units = "meters"; // 半径的单位
               if (endAngle - startAngle >= 360) {
-                const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
+                const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
                   number,
                   number
                 ]; // 圆心点的经纬度
@@ -2004,7 +2017,7 @@ onMounted(() => {
                 circleFeatures[i].properties.opacity = 1;
               }
               star(circleFeatures[i],row)
-              const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
+              const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
                 number,
                 number
               ]; // 圆心点的经纬度
@@ -2014,7 +2027,7 @@ onMounted(() => {
               const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
               const units: turf.Units = "meters"; // 半径的单位
               if (endAngle - startAngle >= 360) {
-                const center: [number, number] = wgs84togcj02(...getLngLat(row.strCurPos)) as [
+                const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
                   number,
                   number
                 ]; // 圆心点的经纬度
@@ -2078,7 +2091,7 @@ onMounted(() => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
     //   dialogOptions.menus.map((item: any) => {
-    //     let position: [number, number] = (wgs84togcj02(...getLngLat(item.lngLat)) as unknown) as [
+    //     let position: [number, number] = (wgs84togcj02(...fromDMS(item.lngLat)) as unknown) as [
     //       number,
     //       number
     //     ];
@@ -2145,7 +2158,7 @@ onMounted(() => {
     //     //   dragStartOffset = marker.getOffset() as { x: number; y: number };
     //     // });
     //     // marker.on("drag", (e: any) => {
-    //     //   let dragEndPoint = marker.getLngLat();
+    //     //   let dragEndPoint = marker.fromDMS();
     //     //   let pt1 = map.project({ lng: position[0], lat: position[1] });
     //     //   let pt2 = map.project(dragEndPoint);
     //     //   let x = dragStartOffset.x + pt2.x - pt1.x;
@@ -2161,7 +2174,7 @@ onMounted(() => {
     //     //   marker.setLngLat(position);
     //     // });
     //     // marker.on("dragend", (e: any) => {
-    //     //   let dragEndPoint = e.target.getLngLat();
+    //     //   let dragEndPoint = e.target.fromDMS();
     //     //   let pt1 = map.project({ lng: position[0], lat: position[1] });
     //     //   let pt2 = map.project(dragEndPoint);
     //     //   let offset = marker.getOffset() as { x: number; y: number };
@@ -2542,11 +2555,40 @@ onMounted(() => {
     //   draw.changeMode('no_select')
     // }
   });
-
+  map.on("click",(e)=>{
+    if(获取经纬度){
+      获取经纬度 = false
+      map.getCanvas().style.cursor = "default";
+      const dms = toDMS(e.lngLat.lng,e.lngLat.lat)
+      const customMarkerElement = document.createElement('div');
+      customMarkerElement.className = 'custom-marker'; // 自定义类名
+      customMarkerElement.innerHTML = `
+        <div class="marker-content position">
+          <span>
+          ${dms}
+          </span>
+          <svg>
+            <path d="M0,0 L5,5 10,0"/>
+          </svg>
+        </div>
+      `;
+      const marker = new mapboxgl.Marker({
+        element:customMarkerElement,
+        anchor: "bottom",
+        offset:[0,-4]
+      })
+        .setLngLat([e.lngLat.lng,e.lngLat.lat])
+        .addTo(map);
+      marker.getElement().addEventListener('click', () => {
+        marker.remove()
+      });
+    }
+  })
   map.on("zoom", zoomFunc);
   map.on("pitch", pitchFunc);
   map.on("move", moveFunc);
   map.on("bearing", bearingFunc);
+  map.on("mousemove", mousemoveFunc)
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
@@ -2564,6 +2606,7 @@ onBeforeUnmount(() => {
   map.off("move", moveFunc);
   map.off("pitch", pitchFunc);
   map.off("bearing", bearingFunc);
+  map.off("mousemove", mousemoveFunc)
   map.remove();
   map = undefined
 });
@@ -3099,9 +3142,21 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   border-bottom:none;
   --radius:4px;
   border-radius: var(--radius);
-  background: transparent;
+  --background:#2b2b2b;
+  background: var(--background);
   color:white;
-  position: relative;;
+  position: relative;
+  &.position{
+    font-family: menlo;
+    font-size:20px;
+    --line-width:2px;
+    --border-color:white;
+    --background: white;
+    color:black;
+    &:hover{
+      color:white;
+    }
+  }
   &:before{
     content:'';
     position: absolute;
@@ -3132,14 +3187,14 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
     transform: translateX(-50%);
     stroke:var(--border-color);
     stroke-width:var(--line-width);
-    fill:transparent;
+    fill:var(--background);
     width:10px;
     height: 10px;
   }
   &:hover{
-    background: #2b2b2b;
+    background: #000;
     &>svg{
-      fill: #2b2b2b;
+      fill: #000;
     }
   }
 }

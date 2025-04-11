@@ -214,6 +214,7 @@ const list = reactive([
     {label:'导航台',value:toRefs(setting.人影.监控).navigationStation,type:'checkbox'},
     {label:'航迹',value:toRefs(setting.人影.监控).track,type:'checkbox'},
     {label:'航迹数量',value:toRefs(setting.人影.监控).trackCount,type:'range',min:0,max:20,arr:Array.from({length:21},(_,i:number)=>i)},
+    {label:'位置',value:toRefs(setting.人影.监控).经纬度,type:'text'},
     {label:'在线人数',value:toRefs(setting).在线人数,type:'text'},
     {label:'网络状态',value:toRefs(setting).网络状态,type:'text'},
     {label:'内存占用',value:toRefs(setting).内存占用,type:'text'},
@@ -225,7 +226,7 @@ const list = reactive([
     {label:'放大',type:'button',click(){editMapRef.value.zoomIn()}},
     {label:'缩小',type:'button',click(){editMapRef.value.zoomOut()}},
     {label:'测距',type:'button',click(){console.log('测距')}},
-    {label:'获取经纬度',type:'button',click(){console.log('经纬度')}},
+    {label:'获取经纬度',type:'button',click(){setting.经纬度()}},
     {label:'批量操作',type:'button',click(){editMapRef.value.批量操作()}},
   ]},
 ]);
