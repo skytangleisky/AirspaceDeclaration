@@ -459,10 +459,14 @@ const 经纬度 = ()=>{
   获取经纬度 = true
   map.getCanvas().style.cursor = "crosshair";
 }
+const 测距 = ()=>{
+  draw.changeMode('draw_line_string')
+}
 setting.zoomIn = zoomIn
 setting.zoomOut = zoomOut
 setting.批量操作 = 批量操作
 setting.经纬度 = 经纬度
+setting.测距 = 测距
 let draw:MapboxDraw;
 defineExpose({
   zoomIn,
@@ -2548,7 +2552,7 @@ onMounted(() => {
     map.getCanvas().style.cursor = "default";
   })
   map.on('draw.update',(e)=>{
-    // console.log(e)
+    console.log(e)
   })
   map.on('draw.modechange', function(e) {
     // if (e.mode === 'simple_select') {

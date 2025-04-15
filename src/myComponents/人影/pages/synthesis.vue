@@ -225,7 +225,7 @@ const list = reactive([
     // {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
     {label:'放大',type:'button',click(){editMapRef.value.zoomIn()}},
     {label:'缩小',type:'button',click(){editMapRef.value.zoomOut()}},
-    {label:'测距',type:'button',click(){console.log('测距')}},
+    {label:'测距',type:'button',click:()=>{setting.测距()}},
     {label:'获取经纬度',type:'button',click(){setting.经纬度()}},
     {label:'批量操作',type:'button',click(){editMapRef.value.批量操作()}},
   ]},

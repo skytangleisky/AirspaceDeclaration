@@ -875,6 +875,9 @@ export const useSettingStore = defineStore('setting',{
     },
     经纬度(){
       console.log('经纬度')
+    },
+    测距(){
+      console.log('测距')
     }
   },
   persist: true
