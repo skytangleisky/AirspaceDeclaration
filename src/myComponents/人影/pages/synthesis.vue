@@ -155,13 +155,13 @@ const list = reactive([
         {label:'显示',value:toRefs(setting.人影.监控.districtOptions).districtBase,type:'checkbox'},
         {label:'颜色',value:toRefs(setting.人影.监控.districtOptions).districtBaseColor,type:'color'},
         {label:'透明度',value:toRefs(setting.人影.监控.districtOptions).districtBaseOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:toRefs(setting.人影.监控.districtOptions).districtBaseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+        {label:'宽度',value:toRefs(setting.人影.监控.districtOptions).districtBaseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
       ]},
       {label:'界线',type:'folder',opened:toRefs(setting.人影.监控.districtOptions).districtLineOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.districtOptions).districtLine,type:'checkbox'},
         {label:'颜色',value:toRefs(setting.人影.监控.districtOptions).districtLineColor,type:'color'},
         {label:'透明度',value:toRefs(setting.人影.监控.districtOptions).districtLineOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:toRefs(setting.人影.监控.districtOptions).districtLineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+        {label:'宽度',value:toRefs(setting.人影.监控.districtOptions).districtLineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
       ]},
     ]},
     {label:'北京行政区划',type:'folder',opened:toRefs(setting.人影.监控).beijingOptionsOpened,children:[
@@ -174,13 +174,13 @@ const list = reactive([
         {label:'显示',value:toRefs(setting.人影.监控.beijingOptions).districtBase,type:'checkbox'},
         {label:'颜色',value:toRefs(setting.人影.监控.beijingOptions).districtBaseColor,type:'color'},
         {label:'透明度',value:toRefs(setting.人影.监控.beijingOptions).districtBaseOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:toRefs(setting.人影.监控.beijingOptions).districtBaseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+        {label:'宽度',value:toRefs(setting.人影.监控.beijingOptions).districtBaseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
       ]},
       {label:'界线',type:'folder',opened:toRefs(setting.人影.监控.beijingOptions).districtLineOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.beijingOptions).districtLine,type:'checkbox'},
         {label:'颜色',value:toRefs(setting.人影.监控.beijingOptions).districtLineColor,type:'color'},
         {label:'透明度',value:toRefs(setting.人影.监控.beijingOptions).districtLineOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:toRefs(setting.人影.监控.beijingOptions).districtLineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+        {label:'宽度',value:toRefs(setting.人影.监控.beijingOptions).districtLineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
       ]},
     ]},
     {label:'华北飞行区域',type:'folder',opened:toRefs(setting.人影.监控).ryAirspacesOpened,children:[
@@ -193,13 +193,13 @@ const list = reactive([
         {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).base,type:'checkbox'},
         {label:'颜色',value:toRefs(setting.人影.监控.ryAirspaces).baseColor,type:'color'},
         {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).baseOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:toRefs(setting.人影.监控.ryAirspaces).baseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+        {label:'宽度',value:toRefs(setting.人影.监控.ryAirspaces).baseWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
       ]},
       {label:'界线',type:'folder',opened:toRefs(setting.人影.监控.ryAirspaces).lineOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).line,type:'checkbox'},
         {label:'颜色',value:toRefs(setting.人影.监控.ryAirspaces).lineColor,type:'color'},
         {label:'透明度',value:toRefs(setting.人影.监控.ryAirspaces).lineOpacity,type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:toRefs(setting.人影.监控.ryAirspaces).lineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>i/100*5)},
+        {label:'宽度',value:toRefs(setting.人影.监控.ryAirspaces).lineWidth,type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
       ]},
       {label:'标签',type:'folder',opened:toRefs(setting.人影.监控.ryAirspaces).labelOpened,children:[
         {label:'显示',value:toRefs(setting.人影.监控.ryAirspaces).label,type:'checkbox'},

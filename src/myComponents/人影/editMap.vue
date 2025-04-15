@@ -305,6 +305,14 @@ function 网络上报(data:prevRequestDataType){
   })
   emits('update:prevRequestShow',false)//关闭弹窗
 }
+function 过滤({altitude,ssrCode}){
+  if((setting.人影.监控.飞机高度下限<=altitude&&altitude<=setting.人影.监控.飞机高度上限)&&
+    (setting.人影.监控.二次码下限<=ssrCode&&ssrCode<=setting.人影.监控.二次码上限)){
+    return true
+  }else{
+    return false
+  }
+}
 function 处理飞机实时位置(d:Array<{
   "uiTrackNo": 7,
   "uiAdsAddress": 0,
@@ -335,9 +343,14 @@ function 处理飞机实时位置(d:Array<{
     for(let i=0;i<trackFeatures.length;i++){
       if(d[j]&&d[j].uiTrackNo===trackFeatures[i].properties.uiTrackNo){
         has = true;
+        trackFeatures[i].properties = {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0}
         trackFeatures[i].geometry.coordinates.push(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
-        obj[trackFeatures[i].properties.uiTrackNo].setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
-        obj[trackFeatures[i].properties.uiTrackNo].getElement().querySelector('.speed').innerText = `${d[j].unSsrCode}`
+        const marker = obj[trackFeatures[i].properties.uiTrackNo]
+        if(marker){
+          marker.setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
+          marker.getElement().querySelector('.speed').innerText = `${d[j].unSsrCode.toString(8).padStart(4,'0')}`
+          过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
+        }
         if(trackFeatures[i].geometry.coordinates.length>setting.人影.监控.trackCount){
           trackFeatures[i].geometry.coordinates.splice(0,trackFeatures[i].geometry.coordinates.length - setting.人影.监控.trackCount)
         }
@@ -350,7 +363,7 @@ function 处理飞机实时位置(d:Array<{
       customMarkerElement.innerHTML = `
         <div class="marker-content">
           <span class="speed">
-          ${d[j].unSsrCode}
+          ${d[j].unSsrCode.toString(8).padStart(4,'0')}
           </span>
           <svg>
             <path d="M0,0 L5,5 10,0"/>
@@ -367,10 +380,11 @@ function 处理飞机实时位置(d:Array<{
       marker.getElement().addEventListener('click', () => {
         marker.remove()
       });
+      过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
       obj[d[j].uiTrackNo] = marker
       trackFeatures.push({
         type: "Feature",
-        properties: d[j],
+        properties: {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
         geometry: {
           type: "MultiPoint",
           coordinates: [wgs84togcj02(d[j].fLongitude,d[j].fLatitude)],
@@ -384,33 +398,33 @@ function 处理飞机实时位置(d:Array<{
   })
   //飞机航迹结束
   let data = airplanesData;
-    for(let j=0;j<d.length;j++){
-      let has = false,i=0;
-      for(;i<data.features.length;i++){
-        if(d[j]&&d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
-          has = true;
-          break;
-        }
-      }
-      if(has){
-        Object.assign(data.features[i].properties,d[j])
-        data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
-      }else{
-        if(d[j]){
-          data.features.push({
-            type: "Feature",
-            properties: d[j],
-            geometry: {
-              type: "Point",
-              coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
-            },
-          })
-        }else{
-          console.log(`共${d.length}架，第${j}架飞机数据错误`,d[j])
-        }
+  for(let j=0;j<d.length;j++){
+    let has = false,i=0;
+    for(;i<data.features.length;i++){
+      if(d[j]&&d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
+        has = true;
+        break;
       }
     }
-    map?.getSource("飞机原数据")?.setData(data);
+    if(has){
+      Object.assign(data.features[i].properties,{...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
+      data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
+    }else{
+      if(d[j]){
+        data.features.push({
+          type: "Feature",
+          properties: {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
+          geometry: {
+            type: "Point",
+            coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
+          },
+        })
+      }else{
+        console.log(`共${d.length}架，第${j}架飞机数据错误`,d[j])
+      }
+    }
+  }
+  map?.getSource("飞机原数据")?.setData(data);
 }
 const flyTo = (item: any) => {
   try {
@@ -1400,7 +1414,7 @@ onMounted(() => {
           "text-max-width": 400,
         },
         paint: {
-          "icon-opacity": 1,
+          "icon-opacity": ['get','opacity'],
           "text-color": "white",
           "text-halo-color": "black",
           "text-halo-width": 1,
@@ -1428,6 +1442,9 @@ onMounted(() => {
         "icon-ignore-placement": true,
         visibility: props.plane ? "visible" : "none",
       },
+      paint:{
+        "icon-opacity":['get','opacity'],
+      }
     });
     map.addLayer({
       id: "模拟飞机图层",
@@ -2644,6 +2661,30 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch([()=>setting.人影.监控.飞机高度下限,()=>setting.人影.监控.飞机高度上限,()=>setting.人影.监控.二次码下限,()=>setting.人影.监控.二次码上限],()=>{
+  trackFeatures.map((item)=>{
+    if(过滤({altitude:item.properties.iAltitudeADS,ssrCode:item.properties.unSsrCode})){
+      item.properties.opacity = 1
+    }else{
+      item.properties.opacity = 0
+    }
+  })
+  map?.getSource("trackSource")?.setData({
+    type: "FeatureCollection",
+    features: trackFeatures,
+  })
+  airplanesData.features.forEach((item)=>{
+    const marker = obj[item.properties.uiTrackNo]
+    if(过滤({altitude:item.properties.iAltitudeADS,ssrCode:item.properties.unSsrCode})){
+      item.properties.opacity = 1
+      marker.getElement().style.display = "block"
+    }else{
+      item.properties.opacity = 0
+      marker.getElement().style.display = "none"
+    }
+  })
+  map?.getSource("airplaneSource")?.setData(airplanesData)
+})
 watch(()=>setting.人影.监控.track,()=>{
   map.setLayoutProperty('trackLayer','visibility',setting.人影.监控.track?'visible':'none')
 })
