@@ -125,8 +125,7 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        target:'http://backend.tanglei.top',
-        // target:'http://192.168.0.114:3000',
+        target:'http://backend.victorysoft.cn',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
@@ -194,6 +193,12 @@ export default defineConfig({
         changeOrigin:true,
         ws:true,
       },
+      '/adsb':{
+        target:'http://113.44.175.230:18301',
+        rewrite:path=>path.replace(/^\/adsb/,''),
+        secure:false,
+        changeOrigin:true,
+      }
     }
   }
 });
