@@ -1649,7 +1649,7 @@ onMounted(() => {
         'text-offset': [0, -1],
         'text-font': ['simkai'],
         'text-allow-overlap':true,
-        visibility: "visible",
+        visibility: setting.人影.监控.planeLabel?"visible":'none',
       },
       paint:{
         'icon-color':'white',
@@ -1673,7 +1673,7 @@ onMounted(() => {
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
-        visibility: "visible",
+        visibility: setting.人影.监控.plane?"visible":"none",
       },
       paint:{
         "icon-opacity":1,

@@ -14,8 +14,8 @@
       <el-form-item label="当前日期">
         <el-date-picker
           v-model="applyPointForm.date"
-          format-value="yyyy-MM-dd"
-          value-format="yyyy-MM-dd"
+          format-value="yyyy-MM-DD"
+          value-format="yyyy-MM-DD"
           type="date"
           disabled
         />
@@ -32,7 +32,7 @@
           <el-input-number
             :min="1"
             :max="5"
-            v-model="applyPointForm.key3"
+            v-model="applyPointForm.workTimeLen"
           >
             <template #suffix>
               <span>分钟</span>
@@ -41,7 +41,7 @@
         </el-form-item>
         <el-form-item label="作业目的">
           <el-select
-            v-model="applyPointForm.key4"
+            v-model="applyPointForm.workCat"
             placeholder="请选择作业目的"
           >
             <el-option
@@ -81,7 +81,7 @@
         >
         <el-button
           type="primary"
-          @click="pointDialogVisible = false"
+          @click="confirm"
         >
           网络上报
         </el-button>
@@ -93,11 +93,13 @@
 import {reactive,ref,watch,onMounted} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
+import { airspacesApply } from '../../api/人影';
+import { fromDMS } from '~/tools/index'
 const applyPointForm = reactive({
-  date: moment().format('yyyy-MM-dd'),
+  date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
-  key3: 3,
-  key4: 2,
+  workTimeLen: 3,
+  workCat: 2,
 });
 // 作业目的配置项
 const purposeOptions = [
@@ -168,6 +170,62 @@ const handleCheckedPointsChange = (value: CheckboxValueType[]) => {
 const handlePointDialogClose = () => {
   pointDialogVisible.value = false;
 };
+function confirm() {
+  const data = {
+    "workRevID": "990201000",
+    "applyBeginTime": "2025-04-20 14:30:00",
+    "workTimeLen": 180,
+    "workCat": 0,
+    "relayID": "110000000",
+    "lonlatNum": 4,
+    "lonArea": "115.68973,115.73187,116.01579,115.84223",
+    "latArea": "40.55156,40.35536,40.38823,40.57899",
+    "reverse": "",
+    "zydData": [
+        {
+            "zydID": "110108091",
+            "longitude": "116.114200",
+            "latitude": "39.594600",
+            "shootRange": 10001,
+            "maxShootHeight": 8001,
+            "startShotDirention": "300",
+            "endShotDirention": "350",
+            "reverse": ""
+        },
+        {
+            "zydID": "110108092",
+            "longitude": "116.0454",
+            "latitude": "40.0522",
+            "shootRange": 10001,
+            "maxShootHeight": 8001,
+            "startShotDirention": "300",
+            "endShotDirention": "350",
+            "reverse": ""
+        }
+    ]
+  }
+  data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
+  data.workTimeLen = applyPointForm.workTimeLen * 60
+  data.workCat = applyPointForm.workCat
+  data.zydData.length = 0
+  batchList.value.forEach((item:any) => {
+    const lngLat = fromDMS(item.strPos)
+    data.zydData.push({
+      "zydID": item.strID,
+      "longitude": lngLat[0].toString(),
+      "latitude": lngLat[1].toString(),
+      "shootRange": item.iMaxShotRange,
+      "maxShootHeight": item.iMaxShotHei,
+      "startShotDirention": item.iShortAngelBegin,
+      "endShotDirention": item.iShortAngelEnd,
+      "reverse": ""
+    })
+  })
+  pointDialogVisible.value = false
+  airspacesApply(data).then(res=>{
+    pointDialogVisible.value = false
+  })
+}
 </script>
 <style lang="scss" scoped>
 .checkbox {

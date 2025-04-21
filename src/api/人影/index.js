@@ -53,3 +53,11 @@ export function airspaceApply(data){
     data:targetData
   })
 }
+
+export function airspacesApply(data){
+  return request({
+    url: '/ry_api/api/multi/apply/airspace/',
+    method: 'post',
+    data
+  })
+}
