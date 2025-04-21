@@ -10,7 +10,7 @@
                         >
                             <div
                                 class="smoke-stove-item"
-                                :class="{ active: stoveID == item.strStoveID }"
+                                :class="{ active: currentStove.stoveID == item.strStoveID }"
                                 @click="chooseSmokeStove(item)"
                             >
                                 <div class="stove-item-top">
@@ -22,7 +22,7 @@
                                             燃烧
                                         </div>
                                         <div class="stove-status-value">
-                                            {{ item.key1 }}
+                                            {{ item.burningCount }}
                                         </div>
                                     </div>
                                     <div class="stove-status">
@@ -30,7 +30,7 @@
                                             已用
                                         </div>
                                         <div class="stove-status-value">
-                                            {{ item.key2 }}
+                                            {{ item.usedCount }}
                                         </div>
                                     </div>
                                     <div class="stove-status">
@@ -38,7 +38,7 @@
                                             可用
                                         </div>
                                         <div class="stove-status-value">
-                                            {{ item.key3 }}
+                                            {{ item.availableCount }}
                                         </div>
                                     </div>
                                 </div>
@@ -55,31 +55,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, inject, watch } from "vue";
+import { ref, reactive, inject, watch, computed, onMounted, onBeforeUnmount } from "vue";
 import type { TabsPaneContext } from "element-plus";
-import { 烟炉数据 } from "~/api/天工.js";
+import { 烟炉数据,查询烟条状态 } from "~/api/天工.js";
+import moment from "moment";
+import {eventbus} from '~/eventbus/index'
 let activeName = ref("first"); //当前选择的tab名字
-let smokeStoveList = ref([]); //烟炉数据
-let stoveID = inject("stoveID"); //当前选中的烟炉ID
-watch(
-    activeName,
-    (newVal, oldVal) => {
-        switch (newVal) {
-            case "first":
-                getSmokeStoveList();
-                break;
-            default:
-                break;
-        }
-    },
-    {
-        immediate: true,
-    }
-);
-
+const smokeStoveList = inject('smokeStoveList',reactive([]))
+let currentStove = inject<{stoveID:string,availableCount:number}>("currentStove",reactive({stoveID:'',availableCount:0,burningCount:0})); //当前选中的烟炉
 //选择烟炉
 function chooseSmokeStove(item) {
-    stoveID.value = item.strStoveID;
+    Object.assign(currentStove,item)
 }
 // 获取所有烟炉数据
 function getSmokeStoveList() {
@@ -88,14 +74,16 @@ function getSmokeStoveList() {
             let data = res.data.results;
             // 给燃烧、已用、可用添加默认值
             data.forEach((item) => {
-                item.key1 = 0;
-                item.key2 = 0;
-                item.key3 = 0;
+                item.burningCount = 0;
+                item.usedCount = 0;
+                item.availableCount = 0;
+                查询烟条状态(item.strStoveID)
             });
-            smokeStoveList.value = data;
-            if (!stoveID.value) {
-                stoveID.value = data[0].strStoveID;
+            smokeStoveList.splice(0,smokeStoveList.length,...data);
+            if (!currentStove.stoveID) {
+                Object.assign(currentStove,data[0])
             }
+            currentStove.currentTime = moment().format('YYYY-MM-DD HH:mm:ss')
         })
         .catch((err) => {
             console.log(err);
@@ -107,6 +95,35 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
     activeName.value = tab.paneName;
     // console.log(tab.paneName, tab.active, tab.index);
 };
+const process = (obj)=>{
+    if(!Array.isArray(obj)){
+        console.log('--->',obj)
+        if(obj.res_type == 'STATUS'&&obj.hasOwnProperty('res_content')){
+            for(let i=0;i<smokeStoveList.length;i++){
+                if(smokeStoveList[i].strStoveID == obj.stove_id){
+                    smokeStoveList[i].availableCount = obj.res_content.split('').filter(item=>item == '1').length;
+                    smokeStoveList[i].usedCount = obj.res_content.split('').filter(item=>item == '0').length;
+                    smokeStoveList[i].burningCount = obj.res_content.split('').filter(item=>item == '3').length;
+                    break;
+                }
+            }
+        }
+        // else if(obj.hasOwnProperty('b_online')){
+        //     stoveObj.isOnline = obj.b_online?1:3;
+        // }
+    }
+}
+const getData = ()=>{
+    getSmokeStoveList()
+}
+onMounted(()=>{
+    eventbus.on('烟炉数据',process)
+    eventbus.on('烟炉websocket已连接',getData)
+})
+onBeforeUnmount(()=>{
+    eventbus.off('烟炉数据',process)
+    eventbus.off('烟炉websocket已连接',getData)
+})
 </script>
 
 <style lang="scss" scoped>

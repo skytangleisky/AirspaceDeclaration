@@ -4,7 +4,7 @@ import resize from '~/directive/resize'
 // import rgyxWorkPoint from "../App.vue";
 import 'virtual:svg-icons-register'
 import SvgIcon from "~/myComponents/SvgIcon.vue";
-import RgyxWorkPoint from "~/App.vue"
+import RgyxWorkPoint from "~/airspaceApply.vue"
 import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue"
 import {useSettingStore} from "~/stores/setting";
 // import {resize,dragable,pinia} from "../main.js";

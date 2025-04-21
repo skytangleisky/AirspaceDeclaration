@@ -16,7 +16,7 @@
                 <div class="item-right">
                     <div class="item-label">风向</div>
                     <div class="item-value">
-                        {{ weatherObject.windDir }}<span>°</span>
+                        {{ weatherObject.windDir.toFixed(1) }}<span>°</span>
                     </div>
                 </div>
             </div>
@@ -31,7 +31,7 @@
                 <div class="item-right">
                     <div class="item-label">风速</div>
                     <div class="item-value">
-                        {{ weatherObject.windSpeed }}<span>m/s</span>
+                        {{ weatherObject.windSpeed.toFixed(1) }}<span>m/s</span>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                 <div class="item-right">
                     <div class="item-label">温度</div>
                     <div class="item-value">
-                        {{ weatherObject.tem }} <span>℃</span>
+                        {{ weatherObject.tem.toFixed(1) }} <span>℃</span>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                 <div class="item-right">
                     <div class="item-label">湿度</div>
                     <div class="item-value">
-                        {{ weatherObject.prs }}<span>%</span>
+                        {{ weatherObject.prs.toFixed(1) }}<span>%RH</span>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                 <div class="item-right">
                     <div class="item-label">压力</div>
                     <div class="item-value">
-                        {{ weatherObject.rh }}<span>hPa</span>
+                        {{ weatherObject.rh.toFixed(1) }}<span>hPa</span>
                     </div>
                 </div>
             </div>
@@ -91,7 +91,7 @@
                 <div class="item-right">
                     <div class="item-label">雨量</div>
                     <div class="item-value">
-                        {{ weatherObject.rainfall }}<span>mm</span>
+                        {{ weatherObject.rainfall.toFixed(1) }}<span>mm</span>
                     </div>
                 </div>
             </div>
@@ -106,7 +106,7 @@
                 <div class="item-right">
                     <div class="item-label">电压</div>
                     <div class="item-value">
-                        {{ weatherObject.rainfall }}<span>V</span>
+                        {{ weatherObject.Voltage.toFixed(1) }}<span>V</span>
                     </div>
                 </div>
             </div>
@@ -122,7 +122,7 @@
                 <div class="item-right">
                     <div class="item-label">烟炉温度</div>
                     <div class="item-value">
-                        {{ weatherObject.tem }} <span>℃</span>
+                        {{ weatherObject.temStove.toFixed(1) }} <span>℃</span>
                     </div>
                 </div>
             </div>
@@ -133,20 +133,18 @@
 <script setup lang="ts">
 import { ref, reactive,inject,onMounted, watch } from "vue";
 
-let stoveID = inject('stoveID')
-watch(stoveID,newVal=>{
-    // console.log("stoveIDweather",newVal);
-})
-
+let currentStove = inject('currentStove',{stoveID:''})
 const svgIconSize = "0.24rem";
 // 假气象数据
 let weatherObject = reactive({
-    rh: 1016.5,
-    windDir: 12,
-    windSpeed: 7.4,
-    tem: 14,
-    prs: 27.3,
+    rh: 0,
+    windDir: 0,
+    windSpeed: 0,
+    tem: 0,
+    prs: 0,
     rainfall: 0,
+    Voltage: 0,
+    temStove:0,
 });
 </script>
 

@@ -493,13 +493,13 @@ function 处理ADSB(d:Array<{
       }
     }
     if(has){
-      Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed*3.6).toFixed()+'km/h'})
+      Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed).toFixed()+'km/h'})
       data.features[i].geometry.coordinates = wgs84togcj02(d[j].longitude,d[j].latitude)
     }else{
       if(d[j]){
         data.features.push({
           type: "Feature",
-          properties: {...d[j],label:(d[j].ground_speed*3.6).toFixed()+'km/h'},
+          properties: {...d[j],label:(d[j].ground_speed).toFixed()+'km/h'},
           geometry: {
             type: "Point",
             coordinates: wgs84togcj02(d[j].longitude,d[j].latitude),

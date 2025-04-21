@@ -1,19 +1,8 @@
 <template>
-    <div class="wstd-main-container">
-        <RgyxWorkPoint />
-        <Websocket />
-    </div>
+    <Test></Test>
 </template>
 <script setup>
-// import RgyxWorkPoint from "~/components/rgyx-work-point.vue";//示例
-// import RgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue"; //空域申请
-import RgyxWorkPoint from "~/myComponents/smokeStove/smokeStove.vue"; //烟炉作业
-import Websocket from "~/myComponents/websocket/websocket.vue";
+// import Test from "~/components/rgyx-work-point.vue";//示例
+// import Test from "~/myComponents/人影/pages/synthesis.vue"; //空域申请
+import Test from "~/myComponents/smokeStove/smokeStove.vue"; //烟炉作业
 </script>
-<style>
-.wstd-main-container {
-    position: relative;
-    height: 100%;
-    width: 100%;
-}
-</style>

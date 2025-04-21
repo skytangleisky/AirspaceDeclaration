@@ -21,9 +21,11 @@
             </div>
         </div>
     </div>
+    <StoveWebsocket/>
 </template>
 
 <script setup lang="ts">
+import StoveWebsocket from "~/myComponents/stoveWebsocket/websocket.vue";
 import { ref, reactive, provide, watch, onMounted } from "vue";
 import globalOperation from "./components/globalOperation.vue";
 import weatherInfo from "./components/weatherInfo.vue";
@@ -32,7 +34,8 @@ import stoveSetting from "./components/stoveSetting.vue";
 let stoveID = ref(null); //当前选中烟炉ID
 let stoveObject = ref({}); //当前选中烟炉数据
 
-provide("stoveID", stoveID);
+provide("currentStove", reactive({stoveID,availableCount:0,usedCount:0}));
+provide("smokeStoveList", reactive([]));
 
 /**
  * @author yhl 2025-03-13 15:54:33
@@ -55,8 +58,6 @@ $page-top-height: 3.4rem;
     height: 100%;
     width: 100%;
     box-sizing: border-box;
-
-    
     .page-top {
         background-color: var(--el-bg-color);
         border-radius: $border-radius-4;
