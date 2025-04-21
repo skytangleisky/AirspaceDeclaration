@@ -38,13 +38,13 @@
       "base": #1a8cff,
     ),
     "success": (
-      "base": #4dff7f  ,
+      "base": #1DC2A6,
     ),
     "warning": (
-      "base": #ff9900,
+      "base": #f1BE32,
     ),
     "danger": (
-      "base": #ff0000,
+      "base": #FF7F71,
     ),
     "error": (
       "base": #ff0000,
@@ -81,7 +81,7 @@
 );
 
 // if you want to import all
-// @use "element-plus/theme-chalk/src/index.scss" as *;
+@use "element-plus/theme-chalk/src/index.scss" as *;
 
 // You can comment it to hide debug info.
 // @debug $--colors;
@@ -166,4 +166,5 @@
 :root{
   // --el-color-primary-opacity-3:rgba(26, 140, 255, 0.3);
   --el-bg-color-opacity-8:rgba(255, 255, 255,.8);
+  --color-bule-light-8:#183C90;
 }

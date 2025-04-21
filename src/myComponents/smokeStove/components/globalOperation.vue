@@ -120,11 +120,11 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
         .smoke-stove-item {
             width: calc((100% - 7 * $grid-3) / 8);
             padding: $grid-2;
-            background-color: var(--el-color-primary-opacity-3);
+            background-color: var(--color-bule-light-8);
             border-radius: $border-radius-2;
             margin-top: $grid-3;
             box-sizing: border-box;
-            color: var(--el-text-color-primary);
+            color:var(--el-color-white);
             &:not(:nth-child(8n)) {
                 margin-right: $grid-3;
             }
@@ -162,13 +162,13 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
             }
             &:hover {
                 // transform: translateY(0.04rem);;
-                background-color: var(--el-color-primary-light-3);
+                background-color: #3967d2;
                 box-shadow: var(--el-box-shadow-light);
             }
         }
         .smoke-stove-item.active {
             // transform: translateY(0.04rem);;
-            background-color: var(--el-color-primary);
+            background-color: #2256cd;
 
             box-shadow: var(--el-box-shadow-light);
         }

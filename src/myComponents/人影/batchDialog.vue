@@ -172,36 +172,36 @@ const handlePointDialogClose = () => {
 };
 function confirm() {
   const data = {
-    "workRevID": "990201000",
-    "applyBeginTime": "2025-04-20 14:30:00",
-    "workTimeLen": 180,
-    "workCat": 0,
-    "relayID": "110000000",
-    "lonlatNum": 4,
-    "lonArea": "115.68973,115.73187,116.01579,115.84223",
-    "latArea": "40.55156,40.35536,40.38823,40.57899",
-    "reverse": "",
-    "zydData": [
-        {
-            "zydID": "110108091",
-            "longitude": "116.114200",
-            "latitude": "39.594600",
-            "shootRange": 10001,
-            "maxShootHeight": 8001,
-            "startShotDirention": "300",
-            "endShotDirention": "350",
-            "reverse": ""
-        },
-        {
-            "zydID": "110108092",
-            "longitude": "116.0454",
-            "latitude": "40.0522",
-            "shootRange": 10001,
-            "maxShootHeight": 8001,
-            "startShotDirention": "300",
-            "endShotDirention": "350",
-            "reverse": ""
-        }
+    "workRevID": "990201000",//作业接收单位
+    "applyBeginTime": "2025-04-20 14:30:00",//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
+    "workTimeLen": 180,//申请作业时长(单位：秒)
+    "workCat": 0,//作业类型
+    "relayID": "110000000",//作业上报单位
+    "lonlatNum": 4,//作业范围经纬度个数
+    "lonArea": "115.68973,115.73187,116.01579,115.84223",//作业范围经度数组
+    "latArea": "40.55156,40.35536,40.38823,40.57899",//作业范围纬度数组
+    "reverse": "",//预留字段
+    "zydData": [//数据json字符串
+      {
+        "zydID": "110108091",
+        "longitude": "116.114200",
+        "latitude": "39.594600",
+        "shootRange": 10001,
+        "maxShootHeight": 8001,
+        "startShotDirention": "300",
+        "endShotDirention": "350",
+        "reverse": ""
+      },
+      {
+        "zydID": "110108092",
+        "longitude": "116.0454",
+        "latitude": "40.0522",
+        "shootRange": 10001,
+        "maxShootHeight": 8001,
+        "startShotDirention": "300",
+        "endShotDirention": "350",
+        "reverse": ""
+      }
     ]
   }
   data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
@@ -246,7 +246,7 @@ function confirm() {
   }
   .el-form-item {
     &:nth-child(2n) {
-        margin-right: 0;
+      margin-right: 0;
     }
   }
 }
