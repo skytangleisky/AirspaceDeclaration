@@ -151,31 +151,26 @@ let weatherObject = reactive({
 <style lang="scss" scoped>
 .weatherObject {
     height: 100%;
+    position: relative;
+    width:500px;
     .module-bottom {
-        display: flex;
-        flex-wrap: wrap;
+        height: fit-content;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        grid-template-rows: repeat(2, auto);
         .item {
             display: flex;
             align-items: center;
-            width: calc((100% - 3 * $grid-2) / 4);
-            margin-bottom: $grid-2;
-            &:nth-last-child(-n+4){
-                margin-bottom: 0;
-            }
-            &:not(:nth-child(4n)){
-                margin-right: $grid-2;
-            }
+            width: 100px;
+            padding:4px;
             .item-left {
-                margin-right: 0.04rem;
+                padding:8px;
                 .svg-icon:deep(use) {
                     fill: var(--el-color-primary);
                 }
             }
             .item-right {
-                .item-label {
-                    margin-bottom: 0.04rem;
-                }
-
+                white-space: nowrap;
                 .item-value {
                     font-size: 0.18rem;
                     font-weight: 600;

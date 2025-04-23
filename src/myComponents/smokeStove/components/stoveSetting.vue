@@ -147,7 +147,7 @@
                     <div class="item-content">
                         <el-form :model="systenInfo" label-width="auto" inline>
                             <el-form-item>
-                                <el-button type="primary" @click="查询烟条状态(currentStove.stoveID)">查询站点信息</el-button>
+                                <el-button type="primary" @click="click">查询站点信息</el-button>
                             </el-form-item>
                             <el-form-item>
                                 <el-button type="primary"
@@ -163,9 +163,18 @@
 </template>
 
 <script setup lang="ts">
+const stroveList = inject('smokeStoveList')
+function click(){
+    查询烟条状态(currentStove.value.strStoveID);
+    stroveList.forEach((item)=>{
+        if(item.strStoveID === currentStove.value.strStoveID){
+            item.currentTime = '数据获取中···';
+        }
+    })
+}
 import { 查询烟条状态 } from "~/api/天工";
-import { reactive, inject, ref } from "vue";
-const currentStove = inject("currentStove",{stoveID:''}); //当前选中的烟炉ID
+import { reactive, inject, Ref } from "vue";
+const currentStove = inject<any>("currentStove"); //当前选中的烟炉ID
 // 预约点火
 let appointForm = reactive({
     time: null,

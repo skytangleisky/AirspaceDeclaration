@@ -107,8 +107,8 @@ export function 查询烟条状态(stoveID:string){
       "localUserCode": "PYCLIENT",
       "stoveID": stoveID,//110108XT2
       "cmd": "TC",
-      "iPara": null,
-      "sPara": null
+      "iPara": 0,
+      "sPara": ''
     }
   })
 }
