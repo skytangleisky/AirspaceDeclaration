@@ -40,17 +40,9 @@
     </el-select> -->
     <div class="menu" ref="stationMenuRef" @mousedown.stop>
       <ul>
-        <li @click="作业申请()">地面作业申请</li>
-        <li @click="人工批复()">人工批复</li>
-        <!-- <li>查看作业点信息</li> -->
-        <!-- <li>人工批复</li>
-        <li>人工移除</li>
-        <li>手动发结束报</li> -->
-      </ul>
-    </div>
-    <div class="menu" ref="batchMenuRef" @mousedown.stop>
-      <ul>
-        <li @click="批量申请()">批量申请</li>
+        <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
+        <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
+        <li v-if="menuType=='批量申请'" @click="批量申请()">批量申请</li>
         <!-- <li>查看作业点信息</li> -->
         <!-- <li>人工批复</li>
         <li>人工移除</li>
@@ -104,7 +96,7 @@ const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const dialogOptions = reactive({ menus: [] });
 const stationMenuRef = ref<HTMLDivElement>();
-const batchMenuRef = ref<HTMLDivElement>();
+const menuType=ref('地面作业申请');
 let circleFeatures: any = [];
 let forewarningFeatures: any = [];
 let trackFeatures: any = [];//存放飞机尾迹
@@ -163,7 +155,7 @@ let 批量申请 = () => {
   batchList.splice(0,batchList.length)
   batchList.push(...list)
   batchDialogVisible.value = true
-  $(batchMenuRef.value as HTMLDivElement).css({display:'none'})
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
 const 人工批复 = () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
@@ -171,7 +163,6 @@ const 人工批复 = () => {
   properties.workBeginTime = moment().format('HH:mm:ss')
   emits("update:prevReplyShow", true);
   emits("update:prevReplyData", properties);
-  console.log('人工批复')
 }
 let 作业申请 = () => {
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
@@ -1809,16 +1800,6 @@ onMounted(() => {
       .setLngLat([0, 0])
       .setOffset([0, 0])
       .addTo(map);
-    var batchMarker = new Marker({
-      element: batchMenuRef.value,
-      draggable: false,
-      // pitchAlignment: "map",
-      // rotationAlignment: "map",
-      anchor: "top-left",
-    })
-      .setLngLat([0, 0])
-      .setOffset([0, 0])
-      .addTo(map);
     const contextmenuFunc = (e: any) => {
       if(!e.handled){
         e.originalEvent.stopPropagation()
@@ -1826,8 +1807,9 @@ onMounted(() => {
         const layers = map.getStyle().layers.filter(layer => layer.id.startsWith('gl-draw')).map(layer=>layer.id)
         const fs = map.queryRenderedFeatures(e.point, { layers });
         if(fs.length>0){
-          batchMarker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-          $(batchMenuRef.value as HTMLDivElement).css({display:'block'});
+          marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+          $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+          menuType.value = '批量申请'
           // $(stationMenu).removeData();
           // $(stationMenu).data(feature.properties);
         }
@@ -2119,6 +2101,11 @@ onMounted(() => {
         const feature = fs[0];
         station.人影界面被选中的设备 = feature.properties.strID;
         marker.setLngLat(feature.geometry.coordinates);
+        if(feature.properties.ubyStatus=='作业申请待批复'){
+          menuType.value = '人工批复'
+        }else{
+          menuType.value = '地面作业申请'
+        }
         $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
         $(stationMenuRef.value as HTMLDivElement).removeData();
         $(stationMenuRef.value as HTMLDivElement).data(feature.properties);
@@ -2137,7 +2124,6 @@ onMounted(() => {
       });
       map.on("mousedown", () => {
         $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
-        $(batchMenuRef.value as HTMLDivElement).css({display:'none'});
       });
       active = () => {
         zydFeatures = zydFeatures.map((item: any) => {
@@ -2230,6 +2216,7 @@ onMounted(() => {
             if(item.properties.strID == row.strZydID){
               item.properties.strWorkID = row.strWorkID;
               item.properties.workBeginTime = moment().format('HH:mm:ss')
+              item.properties.ubyStatus = status2value(row.ubyStatus)
             }
           })
           map.getSource('zydSource').setData({
@@ -2908,6 +2895,7 @@ onBeforeUnmount(() => {
     map.off("bearing", bearingFunc);
     map.off("mousemove", mousemoveFunc)
     map.remove();
+    map = undefined
   }
 });
 let LAT = (Math.atan(Math.sinh(Math.PI)) * 180) / Math.PI;
