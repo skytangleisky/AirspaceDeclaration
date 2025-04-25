@@ -1,10 +1,11 @@
+import moment from 'moment'
 import request from '../utils/request'
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
 let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat`
 export function 机场(){
   return request({
     url: '/backend/transaction?'+database1,
@@ -53,7 +54,7 @@ export function 作业点(){
     method: 'post',
     data:{
       sqls:[
-        "select z.*,u.strName as unitName FROM `zydpara` z left join `units` u on z.strMgrUnit = u.strID WHERE z.strID LIKE '110%' AND z.strWeapon!='3'",
+        "select z.*,u1.strName as strMgrUnitName,u2.strName as strRelayUnitName FROM `zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID WHERE z.strID LIKE '110%' AND z.strWeapon!='3'",
       ]
     }
   })
@@ -64,8 +65,8 @@ export function 作业状态数据(){
     method: 'post',
     data:{
       sqls: [
-        "SELECT z.*,u.strName as unitName FROM `zyddata` z left join `units` u on z.strATCUnitID = u.strID ORDER BY z.tmBeginApply ASC",
-        "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply ASC",//当天的数据
+        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID ORDER BY z.tmBeginApply ASC",
+        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zydhisdata` z left join `units` u1 on z.strATCUnitID=u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply ASC",//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
     }
@@ -109,6 +110,38 @@ export function 查询烟条状态(stoveID:string){
       "cmd": "TC",
       "iPara": 0,
       "sPara": ''
+    }
+  })
+}
+export function 空域申请批准(data){
+  return request({
+    url:'ry_api/api/work/send/accept',
+    method:'post',
+    data:{
+      "workID": data.strWorkID,
+      "zydID": data.strID,
+      "replyUnitID": "110000000",//北京气象局
+      "workReceiveUnit": "990201000",//北空
+      "workReceiveUser": "",
+      "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.workBeginTime),
+      "workTimeLen": data.workTimeLen*60,
+      "beginDirection": data.beginDirection,
+      "endDirection": data.endDirection,
+    }
+  })
+}
+export function 空域申请拒绝(data){
+  return request({
+    url: 'ry_api/api/work/send/reject',
+    method: 'post',
+    data:{
+      "workID": data.strWorkID,
+      "zydID": data.strID,
+      "replyUnitID": "110000000",
+      "workReceiveUnit": "990201000",
+      "workReceiveUser": "",
+      "delayTimeLen": data.delayTimeLen,
+      "denyCode": data.denyCode,
     }
   })
 }

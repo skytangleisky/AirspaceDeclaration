@@ -4,6 +4,8 @@
       ref="editMapRef"
       v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
       v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
+      v-model:prevReplyShow="setting.人影.监控.prevPlanReplyShow"
+      v-model:prevReplyData="setting.人影.监控.prevPlanReplyData"
       style="backdrop-filter: blur(25px)"
       v-model:routeLine="setting.人影.监控.routeLine"
       v-model:loadmap="setting.人影.监控.loadmap"
@@ -108,6 +110,13 @@
     @click="confirm"
     style="z-index:2010"
   ></dialog-plan-request>
+  <dialog-plan-reply
+    v-model:show="setting.人影.监控.prevPlanReplyShow"
+    v-model:data="setting.人影.监控.prevPlanReplyData"
+    style="z-index:2010"
+    @accept="accept"
+    @reject="reject"
+  ></dialog-plan-reply>
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
   <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;right:300px;"></div>
   <!-- <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane> -->
@@ -116,6 +125,7 @@
   </el-scrollbar>
 </template>
 <script lang="ts" setup>
+import { 空域申请批准,空域申请拒绝 } from '~/api/天工.ts';
 import { watch, ref, reactive, computed,onMounted, onBeforeUnmount, toRefs, defineAsyncComponent } from "vue";
 const EditMap = defineAsyncComponent(() => import("../editMap.vue"));
 const editMapRef = ref()
@@ -130,6 +140,7 @@ import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
 import { prevRequestDataType } from "../../dialog_plan_request.vue";
 import DialogPlanRequest from "../../dialog_plan_request.vue";
+import DialogPlanReply from "../../dialog_plan_reply.vue";
 import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { eventbus } from "~/eventbus/index";
@@ -386,6 +397,20 @@ const tweakPaneRef = ref<HTMLElement>();
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };
+function accept(data){
+  console.log('accept',data)
+  空域申请批准(data).then((res)=>{
+    setting.人影.监控.prevPlanReplyShow = false
+    console.log(res)
+  })
+}
+function reject(data){
+  console.log('reject',data)
+  空域申请拒绝(data).then((res)=>{
+    setting.人影.监控.prevPlanReplyShow = false
+    console.log(res)
+  })
+}
 const click = (v: any) => {
   setting.人影.监控.bottom_disappear = false;
   v.active = true;

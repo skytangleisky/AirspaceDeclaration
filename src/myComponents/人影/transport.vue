@@ -19,7 +19,7 @@
         <tr v-for="(item, key) in data" :key="key">
           <td>{{item.strName}}</td>
           <td>{{ item.strZydID }}</td>
-          <td>北京人影指挥中心</td>
+          <td>北京气象局</td>
           <td>北空</td>
           <td>{{ item.vecProcess }}</td>
         </tr>

@@ -136,8 +136,7 @@
                                     <div class="item-right-top-item">
                                         <div>上报单位</div>
                                         <div class="top-item-value">
-                                            <!-- {{ item.unitName }} -->
-                                            北京人影指挥中心
+                                            {{ item.strUpApplyUnitName }}
                                         </div>
                                     </div>
                                 </div>

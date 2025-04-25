@@ -1,6 +1,6 @@
 <template>
     <div class="modal absolute w-full h-full left-0 top-0" v-show="show">
-        <div v-dragable class="dragDialog">
+        <div class="dragDialog">
             <div class="item-box">
                 <div class="item-label">代码</div>
                 <div class="item-value">
@@ -41,7 +41,7 @@
                     <el-input
                         disabled
                         name="审批单位"
-                        :value="data.unitName"
+                        :value="data.strMgrUnitName"
                         @mousedown.stop
                     />
                 </div>
