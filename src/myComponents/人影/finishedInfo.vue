@@ -41,9 +41,19 @@
         <el-button disable v-if="row.isconfirmed=='1'" type="success" size="small" disabled>
           已确认
         </el-button>
-        <el-button v-else type="warning" @click="handleClick" size="small">
-          待确认
-        </el-button>
+        <el-popconfirm
+          v-else
+          class="box-item"
+          title="是否确认"
+          placement="right"
+          confirm-button-text="确认"
+          cancel-button-text="返回"
+          @confirm="handleClick"
+        >
+          <template #reference>
+            <el-button type="warning" size="small">待确认</el-button>
+          </template>
+        </el-popconfirm>
       </template>
     </el-table-column>
   </el-table>

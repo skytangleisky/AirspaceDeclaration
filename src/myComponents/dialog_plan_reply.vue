@@ -351,30 +351,26 @@ type zyddataType = {
 export type prevRequestDataType = {
     unitName: string;
 } & zyddataType;
-const props = withDefaults(
-    defineProps<{
-        show?: boolean;
-        data?: prevRequestDataType;
-    }>(),
-    {
-        show: true,
-        data: () => ({
-            strID: "",
-            strCode: "",
-            strName: "",
-            strPos: "",
-            iMaxShotRange: 10,
-            iMaxShotHei: 8000,
-            iWeapon: 0,
-            iWorkType: 1,
-            iShotRangeBegin: 0,
-            iShotRangeEnd: 1000,
-            beginTime: "",
-            duration: 1,
-            unitName: "",
-        }),
+const show = defineModel('show',{
+    default:true
+})
+const data = defineModel<prevRequestDataType>('data',{
+    default: {
+        strID: "",
+        strCode: "",
+        strName: "",
+        strPos: "",
+        iMaxShotRange: 10,
+        iMaxShotHei: 8000,
+        iWeapon: 0,
+        iWorkType: 1,
+        iShotRangeBegin: 0,
+        iShotRangeEnd: 1000,
+        beginTime: "",
+        duration: 1,
+        unitName: "",
     }
-);
+})
 const emit = defineEmits(["update:show", "accept", "reject"]);
 const cancel = () => {
     emit("update:show", false);

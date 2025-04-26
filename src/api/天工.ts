@@ -1,11 +1,21 @@
 import moment from 'moment'
 import request from '../utils/request'
+
+//公司
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
 let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
-// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+
+//北京市
+dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+database1 = `${dbConfig}&database=union`
+database2 = `${dbConfig}&database=ryplat`
+
+//华为
+// dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
 // database1 = `${dbConfig}&database=union`
-// database2 = `${dbConfig}&database=ryplat`
+// database2 = `${dbConfig}&database=ryplat_bjry`
+
 export function 机场(){
   return request({
     url: '/backend/transaction?'+database1,

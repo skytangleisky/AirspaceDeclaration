@@ -115,6 +115,7 @@ export default defineConfig({
     host:true,
     port:5174,
     strictPort:true,
+    allowedHosts:true,
     proxy:{
       // '/guangheng':{
       //   target:'http://tanglei.top:8000',//替换的服务端地址
