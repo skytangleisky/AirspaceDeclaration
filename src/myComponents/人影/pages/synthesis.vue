@@ -398,17 +398,13 @@ const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };
 function accept(data){
-  console.log('accept',data)
   空域申请批准(data).then((res)=>{
     setting.人影.监控.prevPlanReplyShow = false
-    console.log(res)
   })
 }
 function reject(data){
-  console.log('reject',data)
   空域申请拒绝(data).then((res)=>{
     setting.人影.监控.prevPlanReplyShow = false
-    console.log(res)
   })
 }
 const click = (v: any) => {

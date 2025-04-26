@@ -312,7 +312,7 @@ const moveFunc = () => {
 };
 function 网络上报(data:prevRequestDataType){
   airspaceApply(data).then((res:any)=>{
-    console.log(res.data)
+    console.log('空域申请成功')
   })
   emits('update:prevRequestShow',false)//关闭弹窗
 }
@@ -2219,7 +2219,7 @@ onMounted(() => {
               item.properties.ubyStatus = status2value(row.ubyStatus)
             }
           })
-          map.getSource('zydSource').setData({
+          map?.getSource('zydSource').setData({
             type: "FeatureCollection",
             features: zydFeatures,
           })

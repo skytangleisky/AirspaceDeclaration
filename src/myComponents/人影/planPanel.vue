@@ -7,7 +7,7 @@
                 class="top-item"
                 @click="switchTab(item.label)"
             >
-                <el-badge :value="item.total" type="success">
+                <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
                     <div
                         class="box map-btn"
                         :class="{ active: tabActive == item.label }"
@@ -241,10 +241,12 @@
                             </div>
                         </div>
                     </div>
-                
                     <!-- 空域流转信息 -->
                     <div v-show="tabActive == '空域流转信息'">
                         <Transport :data="props.今日作业记录" />
+                    </div>
+                    <div v-show="tabActive == '完成信息查询'">
+                        <FinishedInfo></FinishedInfo>
                     </div>
                 </el-scrollbar>
             </div>
@@ -258,6 +260,7 @@ import moment from "moment";
 import { defineAsyncComponent, reactive, ref, watch, computed } from "vue";
 import { Close } from "@element-plus/icons-vue";
 const Transport = defineAsyncComponent(() => import("./transport.vue"));
+const FinishedInfo = defineAsyncComponent(() => import("./finishedInfo.vue"));
 
 // top按钮渲染数据
 const tabList = reactive([
@@ -278,6 +281,13 @@ const tabList = reactive([
         icon: "transferInfo",
         type: "transferInfo",
         total: computed(() => props.今日作业记录.length),
+    },
+    {
+        label: "完成信息查询",
+        icon: "transferInfo",
+        type: "完成信息查询",
+        total: 0,
+        hideBadge:true,
     },
 ]);
 const tabActive = ref("");

@@ -3,9 +3,9 @@ import request from '../utils/request'
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
 let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat`
 export function 机场(){
   return request({
     url: '/backend/transaction?'+database1,
@@ -142,6 +142,34 @@ export function 空域申请拒绝(data){
       "workReceiveUser": "",
       "delayTimeLen": data.delayTimeLen,
       "denyCode": data.denyCode,
+    }
+  })
+}
+
+export function 完成信息查询({page,size}={page:1,size:10},signal?:AbortSignal){
+  return request({
+    signal,
+    url: 'backend/db/overinfo o left join  `zydpara` z on o.strZydID=z.strID?'+database2,
+    method: 'post',
+    data:{
+      select:['o.*','z.strName as strZydIDName'],
+      where:[
+        {
+          relation:'AND',
+          field:'isquxianconfirmed',
+          relationship:'=',
+          condition:'1'
+        }
+      ],
+      orderby:[
+        {
+          field:'beginTm',
+          order:'desc',
+        }
+      ],
+      distinct:false,
+      offset:(page-1)*size,
+      limit:size,
     }
   })
 }
