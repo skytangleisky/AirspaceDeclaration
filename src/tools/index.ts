@@ -208,7 +208,7 @@ export class View{
     return val
   }
   getBytes(len:number){
-    let arr = []
+    let arr:any[] = []
     for(let i=0;i<len;i++){
       arr.push(this.dataView.getUint8(this.pos))
       this.pos++
@@ -216,7 +216,7 @@ export class View{
     return Uint8Array.from(arr)
   }
   getAll(){
-    let arr = []
+    let arr:any[] = []
     while(this.pos<this.dataView.byteLength){
       arr.push(this.dataView.getUint8(this.pos))
       this.pos++
@@ -249,11 +249,13 @@ export function loadImage(url:string,width:number,height:number,options:any){
     axios.get(url).then(res=>{
       let xmlDoc = parser.parseFromString(res.data, "image/svg+xml");
       let collections = xmlDoc.getElementsByTagName("svg");
-      let promises = []
+      let promises:any[] = []
       for(let key in opts){
         if(opts[key].style){
           for(let i=0;i<collections.length;i++){
             collections[i].setAttribute("style",opts[key].style)
+            width&&(collections[i].setAttribute("width",Math.round(width*devicePixelRatio).toString()))
+            height&&(collections[i].setAttribute("height",Math.round(height*devicePixelRatio).toString()))
           }
         }
         let image = new Image();
