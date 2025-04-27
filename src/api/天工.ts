@@ -156,30 +156,96 @@ export function 空域申请拒绝(data){
   })
 }
 
-export function 完成信息查询({page,size}={page:1,size:10},signal?:AbortSignal){
+export function 完成信息查询({page,size,range,zydID}:{page:number,size:number,range?:any,zydID?:string}={page:1,size:10},signal?:AbortSignal){
+  const data = {
+    select:['o.*','z.strName as strZydIDName'],
+    where:[
+      {
+        relation:'AND',
+        field:'isquxianconfirmed',
+        relationship:'=',
+        condition:'1'
+      }
+    ],
+    orderby:[
+      {
+        field:'beginTm',
+        order:'desc',
+      }
+    ],
+    distinct:false,
+    offset:(page-1)*size,
+    limit:size,
+  }
+  if(range){
+    data.where.push({
+      relation:'AND',
+      field:'beginTm',
+      relationship:'>=',
+      condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
+    },
+    {
+      relation:'AND',
+      field:'beginTm',
+      relationship:'<=',
+      condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
+    })
+  }
+  if(zydID){
+    data.where.push({
+      relation:'AND',
+      field:'strZydID',
+      relationship:'=',
+      condition:zydID
+    })
+  }
   return request({
     signal,
     url: 'backend/db/overinfo o left join  `zydpara` z on o.strZydID=z.strID?'+database2,
     method: 'post',
-    data:{
-      select:['o.*','z.strName as strZydIDName'],
-      where:[
-        {
-          relation:'AND',
-          field:'isquxianconfirmed',
-          relationship:'=',
-          condition:'1'
-        }
-      ],
-      orderby:[
-        {
-          field:'beginTm',
-          order:'desc',
-        }
-      ],
-      distinct:false,
-      offset:(page-1)*size,
-      limit:size,
-    }
+    data,
+  })
+}
+export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
+  const data = {
+    select:['o.strZydID as strZydID','z.strName as strZydIDName','count(*) as count'],
+    where:[
+      {
+        relation:'AND',
+        field:'isquxianconfirmed',
+        relationship:'=',
+        condition:'1'
+      }
+    ],
+    groupby:['strZydID','strZydIDName'],
+    orderby:[
+      {
+        field:'beginTm',
+        order:'desc',
+      }
+    ],
+    distinct:false,
+    offset:0,
+    limit:0,
+  }
+  if(range){
+    data.where.push({
+      relation:'AND',
+      field:'o.beginTm',
+      relationship:'>=',
+      condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
+    },
+    {
+      relation:'AND',
+      field:'o.beginTm',
+      relationship:'<=',
+      condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
+    })
+  }
+  return request({
+    signal,
+    url: 'backend/db/overinfo o right join  `zydpara` z on o.strZydID=z.strID?'+database2,
+    method: 'post',
+    data,
   })
 }

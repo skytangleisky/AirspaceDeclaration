@@ -263,12 +263,13 @@ export function loadImage(url:string,width:number,height:number,options:any){
           }
           image.onerror = reject
         }))
-        // console.log(url)
+        console.log(url)
         // if(url.endsWith('.svg')){
           width&&(image.width=Math.round(width*devicePixelRatio))
           height&&(image.height=Math.round(height*devicePixelRatio))
         // }
         image.crossOrigin = 'Anonymous';
+        console.log(xmlDoc)
         image.src = URL.createObjectURL(new File([serializer.serializeToString(xmlDoc)],uuid()+'.svg',{type:"image/svg+xml"}))
       }
       Promise.all(promises).then(results=>{
