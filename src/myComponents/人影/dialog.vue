@@ -62,12 +62,14 @@
                             position: relative;
                             margin-top: 12px;
                             scroll-padding-top: 14px;
+                            font-family: Menlo,Ubuntu Mono,Consolas,Monaco;
                         "
                     >
                         <table>
                             <thead>
                                 <tr class="z-1">
                                     <th>序号</th>
+                                    <th>ID</th>
                                     <th>名称</th>
                                     <th>设备类型</th>
                                     <!-- <th>经纬度</th> -->
@@ -90,6 +92,7 @@
                                     @click="flyTo($event, v)"
                                 >
                                     <td>{{ k + 1 }}</td>
+                                    <td>{{ v.strID }}</td>
                                     <td>{{ v.strName }}</td>
                                     <td>{{ formatWeapon(v.strWeapon) }}</td>
                                     <!-- <td>{{ v.strPos }}</td> -->
@@ -186,7 +189,7 @@ watch(
     [() => props.menus, () => options.value],
     ([result, value]) => {
         options.list = result.filter(
-            (item) => item.strName.indexOf(value) > -1
+            (item) => item.strName.indexOf(value) > -1||item.strID.indexOf(value) > -1
         );
     },
     {
@@ -223,7 +226,7 @@ const toggleCollapse = () => {
 </script>
 <style scoped lang="scss">
 .dragDialog {
-    width: 3.2rem;
+    width: 400px;
 }
 .contain {
     position: relative;

@@ -241,13 +241,22 @@ export async function loadImage2Map(map:any,url:string,width:number,height:numbe
     map.addImage(k,result[k])
   }
 }
-let parser = new DOMParser()
 let serializer = new XMLSerializer()
+function safeParseSVG(svgString) {
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+  const parser = new (iframe.contentWindow as any).DOMParser();
+  const xmlDoc = parser.parseFromString(svgString, 'image/svg+xml');
+  document.body.removeChild(iframe);
+  return xmlDoc;
+}
 export function loadImage(url:string,width:number,height:number,options:any){
   let opts = JSON.parse(JSON.stringify(options))
   return new Promise((resolve,reject)=>{
     axios.get(url).then(res=>{
-      let xmlDoc = parser.parseFromString(res.data, "image/svg+xml");
+      // let xmlDoc = parser.parseFromString(res.data, "image/svg+xml");//环境中的DOMParser被第三方污染，会出现错误
+      let xmlDoc = safeParseSVG(res.data)
       let collections = xmlDoc.getElementsByTagName("svg");
       let promises:any[] = []
       for(let key in opts){
@@ -265,13 +274,11 @@ export function loadImage(url:string,width:number,height:number,options:any){
           }
           image.onerror = reject
         }))
-        console.log(url)
         // if(url.endsWith('.svg')){
           width&&(image.width=Math.round(width*devicePixelRatio))
           height&&(image.height=Math.round(height*devicePixelRatio))
         // }
         image.crossOrigin = 'Anonymous';
-        console.log(xmlDoc)
         image.src = URL.createObjectURL(new File([serializer.serializeToString(xmlDoc)],uuid()+'.svg',{type:"image/svg+xml"}))
       }
       Promise.all(promises).then(results=>{

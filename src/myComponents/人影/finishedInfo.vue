@@ -154,11 +154,6 @@ const weather = {
   17:'多云',
 }
 const zydID = ref(null)
-watch(zydID,()=>{
-  console.log('---------------->',zydID.value)
-},{
-  immediate:true,
-})
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
 watch([()=>pageOption.page,()=>pageOption.size,zydID,range],()=>{
