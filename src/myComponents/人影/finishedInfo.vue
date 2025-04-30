@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;display: flex;height:40px;justify-content: space-between;">
+  <div style="width:100%;display: flex;height:40px;justify-content: space-between;align-items:center">
     <el-date-picker
       v-model="range"
       type="datetimerange"
@@ -32,8 +32,30 @@
         </span>
       </el-option>
     </el-select>
+    <el-button size="small" @click="handleClick">新增</el-button>
   </div>
   <el-table :data="tableData" style="width: 100%">
+    <el-table-column fixed label="操作" min-width="120">
+      <template #default="{row}">
+        <el-button disable v-if="row.isconfirmed=='1'" type="success" size="small" disabled>
+          已确认
+        </el-button>
+        <el-button v-else type="warning" size="small" @click="待确认">待确认</el-button>
+        <!-- <el-popconfirm
+          v-else
+          class="box-item"
+          title="是否确认"
+          placement="right"
+          confirm-button-text="确认"
+          cancel-button-text="返回"
+          @confirm="handleClick"
+        >
+          <template #reference>
+            <el-button type="warning" size="small">待确认</el-button>
+          </template>
+        </el-popconfirm> -->
+      </template>
+    </el-table-column>
     <el-table-column prop="workID" label="作业ID" width="240" />
     <el-table-column prop="strZydIDName" label="作业点名称" width="120" />
     <el-table-column prop="tagPos" label="经纬度" width="200" />
@@ -75,32 +97,18 @@
     <el-table-column prop="workEffect" label="作业效果" width="100">
       <template #default="{row}">{{effect[row.workEffect]}}</template>
     </el-table-column>
-    <el-table-column label="操作" min-width="120">
-      <template #default="{row}">
-        <el-button disable v-if="row.isconfirmed=='1'" type="success" size="small" disabled>
-          已确认
-        </el-button>
-        <el-popconfirm
-          v-else
-          class="box-item"
-          title="是否确认"
-          placement="right"
-          confirm-button-text="确认"
-          cancel-button-text="返回"
-          @confirm="handleClick"
-        >
-          <template #reference>
-            <el-button type="warning" size="small">待确认</el-button>
-          </template>
-        </el-popconfirm>
-      </template>
-    </el-table-column>
   </el-table>
   <el-pagination v-model:current-page="pageOption.page" :page-size="pageOption.size" layout="prev, pager, next, jumper, total" :total="pageOption.total" />
+  <Add v-model:show="addShow"></Add>
+  <Confirm v-model:show="confirmShow"></Confirm>
 </template>
 <script lang="ts" setup>
+import Add from './地面作业完成信息/add.vue'
+import Confirm from './地面作业完成信息/confirm.vue'
 import {完成信息查询,完成信息查询中一段时间内作业点数据} from '~/api/天工.ts'
-import { watch,reactive,ref } from 'vue'
+import { watch,reactive,ref,provide } from 'vue'
+const addShow = ref(false)
+const confirmShow = ref(false)
 const range = ref(null)
 const now = new Date()
 const defaultDates = [
@@ -136,7 +144,7 @@ const effect = {
 const weather = {
   0:'阴',
   1:'阴有零星小雨',
-  2:'阴有零星小雨',
+  2:'阴有零星小雪',
   3:'阵雨',
   4:'雷阵雨',
   5:'雷阵雨伴有大风',
@@ -156,7 +164,9 @@ const weather = {
 const zydID = ref(null)
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
-watch([()=>pageOption.page,()=>pageOption.size,zydID,range],()=>{
+const 触发完成信息查询 = ref(Date.now())
+provide('触发完成信息查询',触发完成信息查询)
+watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查询],()=>{
   if(currentController!=null){
     currentController.abort()
   }
@@ -179,7 +189,16 @@ watch(range,()=>{
   immediate:true,
 })
 const handleClick = () => {
-  console.log('click')
+  addShow.value = true
+}
+const 待确认 = () => {
+  alert('开发中')
+  // confirmShow.value = true
 }
 const tableData = reactive<any>([])
 </script>
+<style scoped lang="scss">
+.el-table.is-scrolling-left::v-deep(th.el-table-fixed-column--left) {
+  background-color: var(--el-color-primary);
+}
+</style>

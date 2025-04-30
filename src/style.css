@@ -16,3 +16,8 @@ body {
   height: 100vh;
   font-size: 14px;
 }
+.el-message .el-icon {
+  width: 0.16rem;
+  height: 0.16rem;
+  line-height: 0.16rem;
+}
