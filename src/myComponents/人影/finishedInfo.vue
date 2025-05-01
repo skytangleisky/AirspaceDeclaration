@@ -35,12 +35,16 @@
     <el-button size="small" @click="handleClick">新增</el-button>
   </div>
   <el-table :data="tableData" style="width: 100%">
-    <el-table-column fixed label="操作" min-width="120">
+    <el-table-column fixed label="操作" min-width="140">
       <template #default="{row}">
-        <el-button disable v-if="row.isconfirmed=='1'" type="success" size="small" disabled>
-          已确认
-        </el-button>
-        <el-button v-else type="warning" size="small" @click="待确认(row)">待确认</el-button>
+        <div v-if="row.isconfirmed=='1'" style="display: flex;">
+          <el-button type="success" size="small" disabled>已确认</el-button>
+          <el-button type="info" size="small" @click="revert(row)">恢复</el-button>
+        </div>
+        <div v-else style="display:flex;">
+          <el-button type="warning" size="small" @click="待确认(row)">待确认</el-button>
+          <el-button type="danger" size="small" @click="删除(row)">删除</el-button>
+        </div>
         <!-- <el-popconfirm
           v-else
           class="box-item"
@@ -103,9 +107,10 @@
   <Confirm v-model:show="confirmShow" v-model:confirmID="confirmID"></Confirm>
 </template>
 <script lang="ts" setup>
+import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
-import {完成信息查询,完成信息查询中一段时间内作业点数据} from '~/api/天工.ts'
+import {完成信息查询,完成信息查询中一段时间内作业点数据,通过workID删除完成信息和完成信息确认,通过workID恢复完成信息} from '~/api/天工.ts'
 import { watch,reactive,ref,provide } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
@@ -195,6 +200,44 @@ const handleClick = () => {
 const 待确认 = (row) => {
   confirmID.value = row.workID
   confirmShow.value = true
+}
+const 删除 = (row) => {
+  ElMessageBox.confirm('是否删除该条记录?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'danger',
+  }).then(() => {
+    通过workID删除完成信息和完成信息确认(row.workID).then(res=>{
+      触发完成信息查询.value = Date.now()
+      ElMessageBox.alert('删除成功', '提示', {
+        confirmButtonText: '确定',
+        type:'success',
+      })
+    })
+  })
+}
+const revert = (row)=>{
+  ElMessageBox.prompt('请输入密码', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    inputPattern: /G7#mX2q!/,
+    inputErrorMessage: '密码错误',
+  })
+    .then(({ value }) => {
+      通过workID恢复完成信息(row.workID).then(res=>{
+        触发完成信息查询.value = Date.now()
+        ElMessage({
+          type: 'success',
+          message: `恢复成功`,
+        })
+      }).catch(()=>{
+        ElMessage({
+          type:'error',
+          message: `恢复失败`,
+        })
+      })
+    }).catch(() => {
+    })
 }
 const tableData = reactive<any>([])
 </script>

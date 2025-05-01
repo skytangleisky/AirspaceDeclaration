@@ -477,3 +477,43 @@ export function 完成信息确认(完成信息数据){
     }
   })
 }
+export function 通过workID删除完成信息和完成信息确认(workID){
+  return request({
+    url: 'backend/transaction?'+database2,
+    method: 'post',
+    data:{
+      sqls:[
+        "DELETE FROM `overinfo` WHERE `workID` = ?;",
+        "DELETE FROM `overinfo_confirmed` WHERE `workID` = ?;",
+      ],
+      vals:[
+        [
+          workID
+        ],
+        [
+          workID
+        ],
+      ]
+    }
+  })
+}
+export function 通过workID恢复完成信息(workID){
+  return request({
+    url: 'backend/transaction?'+database2,
+    method: 'post',
+    data:{
+      sqls:[
+        "UPDATE `overinfo` SET `isconfirmed` = b'0' WHERE `workID` =?;",
+        "DELETE FROM `overinfo_confirmed` WHERE `workID` = ?;",
+      ],
+      vals:[
+        [
+          workID
+        ],
+        [
+          workID
+        ],
+      ]
+    }
+  })
+}

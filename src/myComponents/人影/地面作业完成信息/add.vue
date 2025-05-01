@@ -242,7 +242,7 @@ const save = async(data) => {
         beforeWeather:data.weatherBefore,
         afterWeather:data.weatherAfter,
         workEffect:data.effect,
-        isconfirmed:"1",
+        isconfirmed:"0",
         isquxianconfirmed:"1",
         recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),
     }).then((res)=>{
@@ -261,6 +261,12 @@ const save = async(data) => {
 };
 const show = defineModel('show',{
     default:true
+})
+watch(show,()=>{
+    if(show.value){
+        data.value.beginDate = moment().format('YYYY-MM-DD')
+        data.value.beginTime = moment().format('HH:mm')
+    }
 })
 const data = defineModel('data',{
     default:reactive({
