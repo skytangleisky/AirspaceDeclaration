@@ -36,7 +36,7 @@
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业时间</span>
-                        <el-time-picker v-model="data.beginTime" value-format="hh:mm:ss"/>
+                        <el-time-picker v-model="data.beginTime" value-format="HH:mm" format="HH:mm"/>
                     </el-col>
                 </el-row>
                 <el-row>
@@ -145,7 +145,7 @@
                 </el-row>
                 <div class="page-btns">
                     <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
-                    <el-button type="primary" @mousedown.stop @click="click(data)">保存</el-button
+                    <el-button type="primary" @mousedown.stop @click="save(data)">保存</el-button
                     >
                 </div>
             </div>
@@ -198,7 +198,7 @@ const weatherOptions = reactive([
     { value: 16, label: "雷电" },
     { value: 17, label: "多云" },
 ])
-const click = async(data) => {
+const save = async(data) => {
     if(data.strID==null){
         ElMessage({
             message: '请选择作业点编号',
@@ -206,7 +206,7 @@ const click = async(data) => {
         })
         return
     }
-    const workID = `RW${data.strID}${data.beginDate.replaceAll("-","")}${data.beginTime.replaceAll(":","-")}`
+    const workID = `RW${data.strID}${data.beginDate}-${data.beginTime.replaceAll(":","-")}`
 
     const result1 = await 判断是否有完成信息(workID)
     if(result1.data.results.length>0){
@@ -242,9 +242,9 @@ const click = async(data) => {
         beforeWeather:data.weatherBefore,
         afterWeather:data.weatherAfter,
         workEffect:data.effect,
-        recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),
         isconfirmed:"1",
         isquxianconfirmed:"1",
+        recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),
     }).then((res)=>{
         ElMessage({
             message: '保存成功',
@@ -275,7 +275,7 @@ const data = defineModel('data',{
         iShotRangeBegin: 0,
         iShotRangeEnd: 1000,
         beginDate: moment().format('YYYY-MM-DD'),
-        beginTime: moment().format('HH:mm:ss'),
+        beginTime: moment().format('HH:mm'),
         duration: 60,
         unitName: "",
         numPD:0,
@@ -310,9 +310,12 @@ onMounted(() => {
         const results = res.data.results;
         zydOptions.splice(0, zydOptions.length);
         results.forEach((item) => {
-            zydOptions.push({label:item.strID,value:item.strID,name:item.strName});
+            zydOptions.push({label:item.strID,value:item.strID,name:item.strName,strPos:item.strPos});
         });
         results[0]&&(data.value.strID = results[0].strID);
+        const item = zydOptions.find((item:any)=>item.value==data.value.strID) as any
+        strName.value = item?.name || ""
+        strPos.value = item?.strPos || ""
     });
     // timer = setInterval(()=>{
     //   props.data.beginTime = moment().format('HH:mm:ss')

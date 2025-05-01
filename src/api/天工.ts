@@ -7,9 +7,9 @@ let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
 
 //北京市
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -310,6 +310,125 @@ export function 保存完成信息和完成信息确认(完成信息数据){
       sqls:[
         "INSERT INTO `overinfo` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`, `isquxianconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
         "INSERT INTO `overinfo_confirmed` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, b'"+完成信息数据.isconfirmed+"');",
+      ],
+      vals:[
+        [
+          完成信息数据.workID,
+          完成信息数据.strZydID,
+          完成信息数据.tagPos,
+          完成信息数据.beginTm,
+          完成信息数据.timeLen,
+          完成信息数据.workType,
+          完成信息数据.workTool,
+          完成信息数据.numPD,
+          完成信息数据.numHJ,
+          完成信息数据.numYT,
+          完成信息数据.numOther,
+          完成信息数据.shootDirect,
+          完成信息数据.shootAngle,
+          完成信息数据.workArea,
+          完成信息数据.beforeWeather,
+          完成信息数据.afterWeather,
+          完成信息数据.workEffect,
+          完成信息数据.recordTm,
+          完成信息数据.isconfirmed,
+          完成信息数据.isquxianconfirmed,
+        ],
+        [
+          完成信息数据.workID,
+          完成信息数据.strZydID,
+          完成信息数据.tagPos,
+          完成信息数据.beginTm,
+          完成信息数据.timeLen,
+          完成信息数据.workType,
+          完成信息数据.workTool,
+          完成信息数据.numPD,
+          完成信息数据.numHJ,
+          完成信息数据.numYT,
+          完成信息数据.numOther,
+          完成信息数据.shootDirect,
+          完成信息数据.shootAngle,
+          完成信息数据.workArea,
+          完成信息数据.beforeWeather,
+          完成信息数据.afterWeather,
+          完成信息数据.workEffect,
+          完成信息数据.recordTm,
+        ],
+      ]
+    }
+  })
+}
+export function 通过workID获取完成信息(workID){
+  return request({
+    url: 'backend/db/overinfo o left join zydpara z on o.strZydID = z.strID?'+database2,
+    method: 'post',
+    data:{
+      select:['o.*','z.strName as strZydIDName'],
+      where:[
+        {
+          relation:'AND',
+          field:'workID',
+          relationship:'=',
+          condition:workID
+        }
+      ],
+      distinct:false,
+      offset:0,
+      limit:0,
+    }
+  })
+}
+export function 完成信息确认(完成信息数据){
+  return request({
+    url: 'backend/transaction?'+database2,
+    method: 'post',
+    data:{
+      sqls:[
+        "INSERT INTO `overinfo` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`, `isquxianconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+        ON DUPLICATE KEY UPDATE \
+        `workID`=VALUES(`workID`),\
+        `strZydID`=VALUES(`strZydID`),\
+        `tagPos`=VALUES(`tagPos`),\
+        `beginTm`=VALUES(`beginTm`),\
+        `timeLen`=VALUES(`timeLen`),\
+        `workType`=VALUES(`workType`),\
+        `workTool`=VALUES(`workTool`),\
+        `numPD`=VALUES(`numPD`),\
+        `numHJ`=VALUES(`numHJ`),\
+        `numYT`=VALUES(`numYT`),\
+        `numOther`=VALUES(`numOther`),\
+        `shootDirect`=VALUES(`shootDirect`),\
+        `shootAngle`=VALUES(`shootAngle`),\
+        `workArea`=VALUES(`workArea`),\
+        `beforeWeather`=VALUES(`beforeWeather`),\
+        `afterWeather`=VALUES(`afterWeather`),\
+        `workEffect`=VALUES(`workEffect`),\
+        `recordTm`=VALUES(`recordTm`),\
+        `isconfirmed`=VALUES(`isconfirmed`),\
+        `isquxianconfirmed`=VALUES(`isquxianconfirmed`)\
+        ;",
+        "INSERT INTO `overinfo_confirmed` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, b'"+完成信息数据.isconfirmed+"') \
+        ON DUPLICATE KEY UPDATE \
+        `workID` = VALUES(`workID`), \
+        `strZydID` = VALUES(`strZydID`), \
+        `tagPos` = VALUES(`tagPos`), \
+        `beginTm` = VALUES(`beginTm`), \
+        `timeLen` = VALUES(`timeLen`), \
+        `workType` = VALUES(`workType`), \
+        `workTool` = VALUES(`workTool`), \
+        `numPD` = VALUES(`numPD`), \
+        `numHJ` = VALUES(`numHJ`), \
+        `numYT` = VALUES(`numYT`), \
+        `numOther` = VALUES(`numOther`), \
+        `shootDirect` = VALUES(`shootDirect`), \
+        `shootAngle` = VALUES(`shootAngle`), \
+        `workArea` = VALUES(`workArea`), \
+        `beforeWeather` = VALUES(`beforeWeather`), \
+        `afterWeather` = VALUES(`afterWeather`), \
+        `workEffect` = VALUES(`workEffect`), \
+        `recordTm` = VALUES(`recordTm`), \
+        `isconfirmed` = VALUES(`isconfirmed`) \
+        ;",
       ],
       vals:[
         [

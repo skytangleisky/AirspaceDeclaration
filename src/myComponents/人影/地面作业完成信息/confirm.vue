@@ -5,24 +5,7 @@
                 <el-row>
                     <el-col :span="12">
                         <span class="label">作业点编号</span>
-                        <el-select
-                            clearable
-                            v-model="data.strID"
-                            filterable
-                            placeholder="作业点编号"
-                            style="width: 200px"
-                            :value-on-clear="null"
-                            >
-                            <el-option
-                                v-for="item in zydOptions"
-                                :key="item.value"
-                                :label="item.label"
-                                :value="item.value"
-                            >
-                                <span style="float: left;color: var(--el-text-color-secondary)">{{ item.value }}</span>
-                                <span style="float: right;font-size: 16px;">{{ item.name }}</span>
-                            </el-option>
-                        </el-select>
+                        <el-input disabled v-model="data.strID"></el-input>
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业点名称</span>
@@ -36,7 +19,7 @@
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业时间</span>
-                        <el-time-picker v-model="data.beginTime" value-format="hh:mm:ss"/>
+                        <el-time-picker v-model="data.beginTime" value-format="HH:mm" format="HH:mm"/>
                     </el-col>
                 </el-row>
                 <el-row>
@@ -145,7 +128,7 @@
                 </el-row>
                 <div class="page-btns">
                     <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
-                    <el-button type="primary" @mousedown.stop @click="click(data)">保存</el-button
+                    <el-button type="primary" @mousedown.stop @click="confirm(data)">确认</el-button
                     >
                 </div>
             </div>
@@ -154,7 +137,7 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {获取作业点ID数据,保存完成信息和完成信息确认,判断是否有完成信息,判断是否有完成信息确认} from "~/api/天工.ts";
+import {获取作业点ID数据,完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject } from "vue";
 const weaponOptions = reactive([
@@ -198,34 +181,9 @@ const weatherOptions = reactive([
     { value: 16, label: "雷电" },
     { value: 17, label: "多云" },
 ])
-console.log(moment().format('YYYY-MM-DD HH:mm:ss'))
-const click = async(data) => {
-    if(data.strID==null){
-        ElMessage({
-            message: '请选择作业点编号',
-            type: 'error',
-        })
-        return
-    }
-    const workID = `RW${data.strID}${data.beginDate.replaceAll("-","")}${data.beginTime.replaceAll(":","-")}`
-
-    const result1 = await 判断是否有完成信息(workID)
-    if(result1.data.results.length>0){
-        ElMessage({
-            message: '\'完成信息\'已经存在',
-            type: 'error',
-        })
-        return
-    }
-    const result2 = await 判断是否有完成信息确认(workID)
-    if(result2.data.results.length>0){
-        ElMessage({
-            message: '\'完成信息确认\'已经存在',
-            type: 'error',
-        })
-        return
-    }
-    保存完成信息和完成信息确认({
+const confirm = async(data) => {
+    const workID = confirmID.value
+    完成信息确认({
         workID,
         strZydID: data.strID,
         tagPos:strPos.value,
@@ -248,14 +206,14 @@ const click = async(data) => {
         isquxianconfirmed:"1",
     }).then((res)=>{
         ElMessage({
-            message: '保存成功',
+            message: '确认成功',
             type: 'success',
         })
         触发完成信息查询.value = Date.now()
         show.value = false;
     }).catch(err=>{
         ElMessage({
-            message: '保存失败',
+            message: '确认失败',
             type:'error',
         })
     })
@@ -263,22 +221,18 @@ const click = async(data) => {
 const show = defineModel('show',{
     default:true
 })
+const confirmID = defineModel('confirmID',{
+    default:""
+})
 const data = defineModel('data',{
     default:reactive({
         strID: "",
-        strCode: "",
-        strName: "",
         strPos: "",
-        iMaxShotRange: 10,
-        iMaxShotHei: 8000,
         iWeapon: 0,
         iWorkType: 1,
-        iShotRangeBegin: 0,
-        iShotRangeEnd: 1000,
         beginDate: moment().format('YYYY-MM-DD'),
-        beginTime: moment().format('HH:mm:ss'),
+        beginTime: moment().format('HH:mm'),
         duration: 60,
-        unitName: "",
         numPD:0,
         numHJ:0,
         numYT:0,
@@ -293,32 +247,47 @@ const data = defineModel('data',{
         weatherAfter:7
     })
 })
-const zydOptions = reactive<any[]>([])
+watch(()=>confirmID.value,async()=>{
+    if(confirmID.value!=null&&confirmID.value!=''){
+        通过workID获取完成信息(confirmID.value).then((res)=>{
+            const results = res.data.results;
+            if(results.length>0){
+                const item = results[0];
+                strPos.value = item.tagPos;
+                data.value.strID = item.strZydID;
+                strName.value = item.strZydIDName;
+                data.value.beginDate = item.beginTm.substring(0,10);
+                data.value.beginTime = item.beginTm.substring(11,16);
+                data.value.duration = item.timeLen;
+                data.value.iWorkType = item.workType;
+                data.value.iWeapon = item.workTool;
+                data.value.shootDirectBegin = Number(item.shootDirect.substring(0,3));
+                data.value.shootDirectEnd = Number(item.shootDirect.substring(3,6));
+                data.value.shootPitchBegin = Number(item.shootAngle.substring(0,2));
+                data.value.shootPitchEnd = Number(item.shootAngle.substring(2,4));
+                data.value.numPD = item.numPD;
+                data.value.numHJ = item.numHJ;
+                data.value.numYT = item.numYT;
+                data.value.numOther = item.numOther;
+                data.value.area = item.workArea;
+                data.value.weatherBefore = item.beforeWeather;
+                data.value.weatherAfter = item.afterWeather;
+                data.value.effect = item.workEffect;
+            }
+        })
+    }
+},
+{
+    immediate:true,
+})
+1;
 const strName = ref("")
 const strPos = ref("")
-watch(()=>data.value.strID,()=>{
-    const item = zydOptions.find((item:any)=>item.value==data.value.strID) as any
-    strName.value = item?.name || ""
-    strPos.value = item?.strPos || ""
-})
 const cancel = () => {
     show.value = false;
 };
 const 触发完成信息查询 = inject('触发完成信息查询',ref(Date.now()))
 // let timer:number;
-onMounted(() => {
-    获取作业点ID数据().then((res) => {
-        const results = res.data.results;
-        zydOptions.splice(0, zydOptions.length);
-        results.forEach((item: zyddataType) => {
-            zydOptions.push({label:item.strID,value:item.strID,name:item.strName});
-        });
-        results[0]&&(data.value.strID = results[0].strID);
-    });
-    // timer = setInterval(()=>{
-    //   props.data.beginTime = moment().format('HH:mm:ss')
-    // },1000)
-});
 onBeforeUnmount(() => {
     // clearInterval(timer)
 });

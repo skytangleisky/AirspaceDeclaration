@@ -40,7 +40,7 @@
         <el-button disable v-if="row.isconfirmed=='1'" type="success" size="small" disabled>
           已确认
         </el-button>
-        <el-button v-else type="warning" size="small" @click="待确认">待确认</el-button>
+        <el-button v-else type="warning" size="small" @click="待确认(row)">待确认</el-button>
         <!-- <el-popconfirm
           v-else
           class="box-item"
@@ -100,7 +100,7 @@
   </el-table>
   <el-pagination v-model:current-page="pageOption.page" :page-size="pageOption.size" layout="prev, pager, next, jumper, total" :total="pageOption.total" />
   <Add v-model:show="addShow"></Add>
-  <Confirm v-model:show="confirmShow"></Confirm>
+  <Confirm v-model:show="confirmShow" v-model:confirmID="confirmID"></Confirm>
 </template>
 <script lang="ts" setup>
 import Add from './地面作业完成信息/add.vue'
@@ -109,6 +109,7 @@ import {完成信息查询,完成信息查询中一段时间内作业点数据} 
 import { watch,reactive,ref,provide } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
+const confirmID = ref("")
 const range = ref(null)
 const now = new Date()
 const defaultDates = [
@@ -191,9 +192,9 @@ watch(range,()=>{
 const handleClick = () => {
   addShow.value = true
 }
-const 待确认 = () => {
-  alert('开发中')
-  // confirmShow.value = true
+const 待确认 = (row) => {
+  confirmID.value = row.workID
+  confirmShow.value = true
 }
 const tableData = reactive<any>([])
 </script>
