@@ -145,7 +145,7 @@ import { useSettingStore } from "~/stores/setting";
 const setting = useSettingStore();
 import { eventbus } from "~/eventbus/index";
 const ColorSelector = defineAsyncComponent(()=>import("~/myComponents/colorSelector/index.vue"));
-import { Pane } from 'controlpane';
+// import { Pane } from 'controlpane';
 const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/index.vue"));
 import {useTheme} from '~/theme';
 const theme = useTheme()
@@ -244,6 +244,7 @@ const list = reactive([
 ]);
 let pane:any
 onMounted(()=>{
+  /*
   pane = new Pane({
     container:tweakPaneRef.value
   });
@@ -355,6 +356,7 @@ onMounted(()=>{
   pane.addBinding(setting.人影.监控, 'gridValue',{label:'网格值'});
   pane.addBinding(setting.人影.监控, 'isolines',{label:'等值线'});
   pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
+  */
 })
 onBeforeUnmount(()=>{
   pane&&pane.dispose();

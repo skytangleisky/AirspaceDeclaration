@@ -95,6 +95,7 @@ import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
 import { airspacesApply } from '../../api/人影';
 import { fromDMS } from '~/tools/index'
+import { eventbus } from '~/eventbus'
 const applyPointForm = reactive({
   date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
@@ -210,20 +211,23 @@ function confirm() {
   data.zydData.length = 0
   batchList.value.forEach((item:any) => {
     const lngLat = fromDMS(item.strPos)
-    data.zydData.push({
-      "zydID": item.strID,
-      "longitude": lngLat[0].toString(),
-      "latitude": lngLat[1].toString(),
-      "shootRange": item.iMaxShotRange,
-      "maxShootHeight": item.iMaxShotHei,
-      "startShotDirention": item.iShortAngelBegin,
-      "endShotDirention": item.iShortAngelEnd,
-      "reverse": ""
-    })
+    if(checkedPoints.value.includes(item.strID)){
+      data.zydData.push({
+        "zydID": item.strID,
+        "longitude": lngLat[0].toString(),
+        "latitude": lngLat[1].toString(),
+        "shootRange": item.iMaxShotRange,
+        "maxShootHeight": item.iMaxShotHei,
+        "startShotDirention": item.iShortAngelBegin,
+        "endShotDirention": item.iShortAngelEnd,
+        "reverse": ""
+      })
+    }
   })
   pointDialogVisible.value = false
   airspacesApply(data).then(res=>{
     pointDialogVisible.value = false
+    eventbus.emit('批量空域申请上报完成')
   })
 }
 </script>

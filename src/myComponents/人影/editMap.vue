@@ -324,6 +324,9 @@ function 过滤({altitude,ssrCode}){
     return false
   }
 }
+function 移除draw绘制的所有图形(){
+  draw&&draw.deleteAll()
+}
 function 处理飞机实时位置(d:Array<{
   "uiTrackNo": 7,
   "uiAdsAddress": 0,
@@ -2877,6 +2880,7 @@ onMounted(() => {
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
+  eventbus.on("批量空域申请上报完成",移除draw绘制的所有图形)
 });
 onBeforeUnmount(() => {
   if(map){
@@ -2889,6 +2893,7 @@ onBeforeUnmount(() => {
     eventbus.off("人影-将站点移动到屏幕中心", flyTo);
     eventbus.off("人影-地面作业申请-网络上报", 网络上报);
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
+    eventbus.off("批量空域申请上报完成",移除draw绘制的所有图形)
     map.off("zoom", zoomFunc);
     map.off("move", moveFunc);
     map.off("pitch", pitchFunc);

@@ -70,10 +70,11 @@
                                 <tr class="z-1">
                                     <th>序号</th>
                                     <th>ID</th>
+                                    <th>简码</th>
                                     <th>名称</th>
                                     <th>设备类型</th>
                                     <!-- <th>经纬度</th> -->
-                                    <th>海拔</th>
+                                    <!-- <th>海拔</th> -->
                                 </tr>
                             </thead>
                             <tbody style="position: relative">
@@ -93,10 +94,11 @@
                                 >
                                     <td>{{ k + 1 }}</td>
                                     <td>{{ v.strID }}</td>
+                                    <td>{{ v.strCode }}</td>
                                     <td>{{ v.strName }}</td>
                                     <td>{{ formatWeapon(v.strWeapon) }}</td>
                                     <!-- <td>{{ v.strPos }}</td> -->
-                                    <td>{{ v.iAltitude }}</td>
+                                    <!-- <td>{{ v.iAltitude }}</td> -->
                                 </tr>
                             </tbody>
                         </table>
@@ -189,7 +191,7 @@ watch(
     [() => props.menus, () => options.value],
     ([result, value]) => {
         options.list = result.filter(
-            (item) => item.strName.indexOf(value) > -1||item.strID.indexOf(value) > -1
+            (item) => item.strName.indexOf(value) > -1||item.strID.indexOf(value) > -1||item.strCode.indexOf(value) > -1
         );
     },
     {
@@ -226,7 +228,7 @@ const toggleCollapse = () => {
 </script>
 <style scoped lang="scss">
 .dragDialog {
-    width: 400px;
+    width: 500px;
 }
 .contain {
     position: relative;

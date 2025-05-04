@@ -128,7 +128,7 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/backend':{
-        target:'http://backend.victorysoft.cn',
+        target:'http://192.168.0.114:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''), // 设置重写的路径
@@ -175,7 +175,7 @@ export default defineConfig({
         ws:true,
       },
       '/ry_api':{//人影接口
-        target:'http://victorysoft.cn:8080',
+        target:'http://192.168.0.135:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,

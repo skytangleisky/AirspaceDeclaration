@@ -41,6 +41,7 @@
                                     v-model="appointForm.time"
                                     type="datetime"
                                     placeholder="请选择起始时间"
+                                    :clearable="false"
                                 />
                             </el-form-item>
                             <el-form-item>
@@ -54,17 +55,14 @@
                     <div class="item-content">
                         <el-form :model="immedForm" label-width="auto" inline>
                             <el-form-item label="烟条个数">
-                                <el-input-number
-                                    :min="0"
-                                    v-model="immedForm.num"
-                                    ><template #suffix>
+                                <el-input-number :min="1" :max="1" v-model="immedForm.num">
+                                    <template #suffix>
                                         <span>支</span>
                                     </template>
                                 </el-input-number>
                             </el-form-item>
-
                             <el-form-item>
-                                <el-button type="primary">开始点火</el-button>
+                                <el-button type="primary" @click="fire()">开始点火</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -79,6 +77,7 @@
                         >
                             <el-form-item>
                                 <el-select
+                                    disabled
                                     v-model="stoveLoadForm.loadNum"
                                     placeholder="请选择装载烟炉"
                                 >
@@ -89,12 +88,11 @@
                                         :value="item.value"
                                     />
                                 </el-select>
-                                <el-button type="primary" class="l-btn"
-                                    >装载烟炉</el-button
-                                >
+                                <el-button type="primary" class="l-btn" @click="load">装载烟炉</el-button>
                             </el-form-item>
                             <el-form-item>
                                 <el-select
+                                    disabled
                                     v-model="stoveLoadForm.unloadNum"
                                     placeholder="请选择卸载烟炉"
                                 >
@@ -105,8 +103,7 @@
                                         :value="item.value"
                                     />
                                 </el-select>
-                                <el-button type="primary" class="l-btn"
-                                    >卸载烟炉</el-button
+                                <el-button type="primary" class="l-btn" @click="unloadStove">卸载烟炉</el-button
                                 >
                             </el-form-item>
                             <el-form-item>
@@ -115,9 +112,7 @@
                                     v-model="stoveLoadForm.smokeBarIndex"
                                 >
                                 </el-input-number>
-                                <el-button type="primary" class="l-btn"
-                                    >卸载烟条</el-button
-                                >
+                                <el-button type="primary" class="l-btn" @click="unload">卸载烟条</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -127,16 +122,16 @@
                     <div class="item-content">
                         <el-form :model="systenInfo" label-width="auto" inline>
                             <el-form-item>
-                                <el-button type="primary">查询时间</el-button>
+                                <el-button type="primary" @click="queryTime">查询时间</el-button>
                             </el-form-item>
                             <el-form-item>
                                 <el-date-picker
                                     v-model="systenInfo.time"
                                     type="datetime"
                                     placeholder="请选择时间"
+                                    :clearable="false"
                                 />
-                                <el-button type="primary" class="l-btn"
-                                    >设置时间</el-button
+                                <el-button type="primary" class="l-btn" @click="setTime">设置时间</el-button
                                 >
                             </el-form-item>
                         </el-form>
@@ -150,9 +145,7 @@
                                 <el-button type="primary" @click="click">查询站点信息</el-button>
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary"
-                                    >查询站点气象信息</el-button
-                                >
+                                <el-button type="primary" @click="queryWeatherInfo">查询站点气象信息</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -163,18 +156,184 @@
 </template>
 
 <script setup lang="ts">
-const stroveList = inject('smokeStoveList')
+import moment from 'moment'
+import { Action, ElMessageBox, ElMessage } from "element-plus";
+const stroveList = inject('smokeStoveList',new Array<any>())
 function click(){
-    查询烟条状态(currentStove.value.strStoveID);
-    stroveList.forEach((item)=>{
-        if(item.strStoveID === currentStove.value.strStoveID){
-            item.currentTime = '数据获取中···';
-        }
+    ElMessageBox.alert('是否确定发送状态查询命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        查询烟条状态(currentStove.value.strStoveID).then(res=>{
+            ElMessage({
+                type:'success',
+                message: `状态查询命令发送成功`,
+            })
+        }).catch(()=>{
+            ElMessage({
+                type:'error',
+                message: `状态查询命令发送失败`,
+            })
+        });
+        stroveList.forEach((item)=>{
+            if(item.strStoveID === currentStove.value.strStoveID){
+                item.currentTime = '数据获取中···';
+            }
+        })
     })
 }
-import { 查询烟条状态 } from "~/api/天工";
+import { 查询烟条状态,即时点火,烟条装载,烟条卸载,烟炉的时间查询,给烟炉设置时间,查询天气情况 } from "~/api/天工";
 import { reactive, inject, Ref } from "vue";
-const currentStove = inject<any>("currentStove"); //当前选中的烟炉ID
+const currentStove = inject<any>("currentStove");
+function fire(){
+    ElMessageBox.alert('是否确定发送立即点火命令', '提示', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    confirmButtonText: '确定',
+    type: 'info'
+    }).then(() => {
+        即时点火(currentStove.value.strStoveID,immedForm.num).then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `立即点火命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `立即点火命令发送失败`,
+            })
+        })
+    })
+}
+function unloadStove(){
+    ElMessageBox.alert('是否确定发送烟炉装载命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        //996表示第一个烟炉
+        烟条卸载(currentStove.value.strStoveID,996).then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `烟炉卸载命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `烟炉卸载命令发送失败`,
+            })
+        })
+    })
+}
+function load(){
+    ElMessageBox.alert('是否确定发送烟炉装载命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        烟条装载(currentStove.value.strStoveID,'996').then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `烟炉装载命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `烟炉装载命令发送失败`,
+            })
+        })
+    })
+}
+function unload(){
+    ElMessageBox.alert('是否确定发送烟条卸载命令', '提示', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    confirmButtonText: '确定',
+    type: 'info'
+    }).then(() => {
+        烟条卸载(currentStove.value.strStoveID,stoveLoadForm.smokeBarIndex).then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `烟条卸载命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `烟条卸载命令发送失败`,
+            })
+        })
+    })
+}
+function queryTime(){
+    ElMessageBox.alert('是否确定发送查询时间命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        烟炉的时间查询(currentStove.value.strStoveID).then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `查询时间命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `查询时间命令发送失败`,
+            })
+        })
+    })
+}
+function setTime(){
+    ElMessageBox.alert('是否确定发送设置时间命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        给烟炉设置时间(currentStove.value.strStoveID,systenInfo.time).then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `设置时间命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `设置时间命令发送失败`,
+            })
+        })
+    })
+}
+function queryWeatherInfo(){
+    ElMessageBox.alert('是否确定发送查询气象信息命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(()=>{
+        查询天气情况(currentStove.value.strStoveID).then(res=>{
+            ElMessage({
+                type:'success',
+                message: `查询气象信息命令发送成功`,
+            })
+        }).catch(err=>{
+            ElMessage({
+                type:'error',
+                message: `查询气象信息命令发送失败`,
+            })
+        })
+    })
+}
 // 预约点火
 let appointForm = reactive({
     time: null,
@@ -194,7 +353,7 @@ let stoveLoadForm = reactive({
 });
 // 系统时间设置及查询
 let systenInfo = reactive({
-    time: null,
+    time: moment().format("YYYY-MM-DD HH:mm:ss"),
 });
 // 烟炉配置项
 let stoveOptions = reactive([

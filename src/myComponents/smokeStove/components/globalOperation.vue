@@ -67,9 +67,9 @@ import { 烟炉数据,查询烟条状态 } from "~/api/天工.js";
 import moment from "moment";
 import {eventbus} from '~/eventbus/index'
 const logContainer = ref()
-const logInfoList = inject<Array<string>>('logInfoList')
+const logInfoList = inject('logInfoList', reactive(new Array<string>()))
 let activeName = ref("first"); //当前选择的tab名字
-const smokeStoveList = inject('smokeStoveList',reactive([]))
+const smokeStoveList = inject('smokeStoveList',reactive(new Array<any>()))
 let currentStove = inject("currentStove"); //当前选中的烟炉
 //选择烟炉
 function chooseSmokeStove(item) {
@@ -185,34 +185,42 @@ const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
 };
 const process = (obj)=>{
     if(!Array.isArray(obj)){
-        smokeStoveList.forEach(item=>{
-            if(item.strStoveID == obj.stove_id){
-                logInfoList.push(moment().format('YYYY-MM-DD HH:mm:ss ')+`[<div class="color-blue">${item.strName}</div>]`+`收到烟炉状态上报`)
-                if(logInfoList.length>100){
-                    logInfoList.splice(0,logInfoList.length-100)
+        if(obj.type == 'stoveOnline'){
+            smokeStoveList.forEach(item=>{
+                if(item.strStoveID == obj.data.stove_id){
+                    logInfoList.push(moment().format('YYYY-MM-DD HH:mm:ss ')+`[<div class="color-blue">${item.strName}</div>]`+`收到烟炉状态上报`)
+                    if(logInfoList.length>100){
+                        logInfoList.splice(0,logInfoList.length-100)
+                    }
+                }
+            })
+            for(let i=0;i<smokeStoveList.length;i++){
+                if(smokeStoveList[i].strStoveID == obj.data.stove_id){
+                    smokeStoveList[i].status = obj.data.b_online?1:3;
+                    smokeStoveList[i].heartTime = Date.now()
                 }
             }
-        })
-        if(obj.res_type == 'STATUS'&&obj.hasOwnProperty('res_content')){
+        }else if(obj.type == 'stoveCmdResponse'){
+            smokeStoveList.forEach(item=>{
+                if(item.strStoveID == obj.data.stove_id){
+                    logInfoList.push(moment().format('YYYY-MM-DD HH:mm:ss ')+`[<div class="color-blue">${item.strName}</div>]`+obj.data.res_content)
+                    if(logInfoList.length>100){
+                        logInfoList.splice(0,logInfoList.length-100)
+                    }
+                }
+            })
             for(let i=0;i<smokeStoveList.length;i++){
-                if(smokeStoveList[i].strStoveID == obj.stove_id){
-                    smokeStoveList[i].availableCount = obj.res_content.split('').filter(item=>item == '1').length;
-                    smokeStoveList[i].usedCount = obj.res_content.split('').filter(item=>item == '0').length;
-                    smokeStoveList[i].burningCount = obj.res_content.split('').filter(item=>item == '3').length;
+                if(smokeStoveList[i].strStoveID == obj.data.stove_id){
+                    smokeStoveList[i].availableCount = obj.data.res_content.split('').filter(item=>item == '1').length;
+                    smokeStoveList[i].usedCount = obj.data.res_content.split('').filter(item=>item == '0').length;
+                    smokeStoveList[i].burningCount = obj.data.res_content.split('').filter(item=>item == '3').length;
                     smokeStoveList[i].currentTime = moment().format('YYYY-MM-DD HH:mm:ss')
                     smokeStoveList[i].barList.forEach((item,j)=>{
                         item.forEach((it,i)=>{
-                            it.status = Number(obj.res_content.substring(j*7+i,j*7+i+1))
+                            it.status = Number(obj.data.res_content.substring(j*7+i,j*7+i+1))
                         })
                     })
                     break;
-                }
-            }
-        }else if(obj.hasOwnProperty('b_online')){
-            for(let i=0;i<smokeStoveList.length;i++){
-                if(smokeStoveList[i].strStoveID == obj.stove_id){
-                    smokeStoveList[i].status = obj.b_online?1:3;
-                    smokeStoveList[i].heartTime = Date.now()
                 }
             }
         }

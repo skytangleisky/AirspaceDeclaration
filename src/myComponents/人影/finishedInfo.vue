@@ -14,6 +14,7 @@
       v-model="zydID"
       filterable
       placeholder="作业点名称过滤"
+      :filter-method="filterMethod"
       style="width: 260px"
       :value-on-clear="null"
     >
@@ -168,6 +169,7 @@ const weather = {
   17:'多云',
 }
 const zydID = ref(null)
+const globalOptions:any[] = []
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
 const 触发完成信息查询 = ref(Date.now())
@@ -185,11 +187,12 @@ watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查
   immediate:true,
 })
 watch(range,()=>{
-  options.splice(0,options.length)
+  globalOptions.length = 0
   完成信息查询中一段时间内作业点数据(range.value).then(res=>{
     res.data.results.forEach(item=>{
-      options.push({label:item.strZydIDName,value:item.strZydID,count:item.count})
+      globalOptions.push({label:item.strZydIDName,value:item.strZydID,count:item.count})
     })
+    options.splice(0,options.length,...globalOptions.slice())
   })
 },{
   immediate:true,
@@ -216,28 +219,41 @@ const 删除 = (row) => {
     })
   })
 }
-const revert = (row)=>{
-  ElMessageBox.prompt('请输入密码', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    inputPattern: /G7#mX2q!/,
-    inputErrorMessage: '密码错误',
-  })
-    .then(({ value }) => {
-      通过workID恢复完成信息(row.workID).then(res=>{
-        触发完成信息查询.value = Date.now()
-        ElMessage({
-          type: 'success',
-          message: `恢复成功`,
-        })
-      }).catch(()=>{
-        ElMessage({
-          type:'error',
-          message: `恢复失败`,
-        })
-      })
-    }).catch(() => {
+let revertTime = 0 // 用于1分钟内不用重复输入密码
+const 恢复 = (row) => {
+  revertTime = Date.now()
+  通过workID恢复完成信息(row.workID).then(res=>{
+    触发完成信息查询.value = Date.now()
+    ElMessage({
+      type: 'success',
+      message: `恢复成功`,
     })
+  }).catch(()=>{
+    ElMessage({
+      type:'error',
+      message: `恢复失败`,
+    })
+  })
+}
+const revert = (row)=>{
+  if(Date.now() - revertTime > 1e3 * 60){
+    ElMessageBox.prompt('请输入密码', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      inputPattern: /G7#mX2q!/,
+      inputErrorMessage: '密码错误',
+    })
+      .then(({ value }) => {
+        恢复(row)
+      }).catch(() => {
+      })
+  }else{
+    恢复(row)
+  }
+}
+function filterMethod(val:string){
+  const tmpOptions = globalOptions.slice().filter(option=>option.label.indexOf(val) !== -1 || option.value.indexOf(val)!== -1)
+  options.splice(0,options.length,...tmpOptions)
 }
 const tableData = reactive<any>([])
 </script>

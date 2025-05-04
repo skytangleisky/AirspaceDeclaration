@@ -109,6 +109,78 @@ export function ADSB(){
 //       ("iPara", c_uint),                      # 整数附加参数
 //       ("sPara", c_char * 64)                  # 字符串附加参数
 //   ]
+
+/*烟炉接口start，注意接口调用后返回的结果是通过websocket返回，而不是通过接口直接返回*/
+export function 即时点火(stoveID:string,count:number=1){
+  return request({
+    url: 'ry_api/api/stove/send_cmd',
+    method: 'post',
+    data:{
+      "localUnitID": "110000000",
+      "localUserCode": "PYCLIENT",
+      "stoveID": stoveID,//110108XT2
+      "cmd": "JF",
+      "iPara": count,//点火数量
+      "sPara": ''
+    }
+  })
+}
+export function 烟条装载(stoveID:string,sPara:'996'|'999'|'001'){
+  return request({
+    url: 'ry_api/api/stove/send_cmd',
+    method: 'post',
+    data:{
+      "localUnitID": "110000000",
+      "localUserCode": "PYCLIENT",
+      "stoveID": stoveID,//110108XT2
+      "cmd": "YZ",
+      "iPara": 0,
+      sPara//996第一个烟炉，999全部烟炉，001第一根烟条
+    }
+  })
+}
+export function 烟条卸载(stoveID:string,unloadIndex:number){
+  return request({
+    url: 'ry_api/api/stove/send_cmd',
+    method: 'post',
+    data:{
+      "localUnitID": "110000000",
+      "localUserCode": "PYCLIENT",
+      "stoveID": stoveID,//110108XT2
+      "cmd": "YX",
+      "iPara": unloadIndex,//表示要卸载的烟条序号，取值为001-056//996表示第一个烟炉，999表示全部烟炉
+      "sPara": ''
+    }
+  })
+}
+export function 烟炉的时间查询(stoveID:string){
+  return request({
+    url: 'ry_api/api/stove/send_cmd',
+    method: 'post',
+    data:{
+      "localUnitID": "110000000",
+      "localUserCode": "PYCLIENT",
+      "stoveID": stoveID,//110108XT2
+      "cmd": "XC",
+      "iPara": 0,
+      "sPara": ''
+    }
+  })
+}
+export function 给烟炉设置时间(stoveID:string,time:string){
+  return request({
+    url: 'ry_api/api/stove/send_cmd',
+    method: 'post',
+    data:{
+      "localUnitID": "110000000",
+      "localUserCode": "PYCLIENT",
+      "stoveID": stoveID,//110108XT2
+      "cmd": "XS",
+      "iPara": 0,
+      "sPara": time
+    }
+  })
+}
 export function 查询烟条状态(stoveID:string){
   return request({
     url: 'ry_api/api/stove/send_cmd',
@@ -123,6 +195,21 @@ export function 查询烟条状态(stoveID:string){
     }
   })
 }
+export function 查询天气情况(stoveID:string){
+  return request({
+    url: 'ry_api/api/stove/send_cmd',
+    method: 'post',
+    data:{
+      "localUnitID": "110000000",
+      "localUserCode": "PYCLIENT",
+      "stoveID": stoveID,//110108XT2
+      "cmd": "QC",
+      "iPara": 0,
+      "sPara": ''
+    }
+  })
+}
+/*烟炉接口end*/
 export function 空域申请批准(data){
   return request({
     url:'ry_api/api/work/send/accept',
