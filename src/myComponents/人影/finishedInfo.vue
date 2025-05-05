@@ -112,7 +112,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import {完成信息查询,完成信息查询中一段时间内作业点数据,通过workID删除完成信息和完成信息确认,通过workID恢复完成信息} from '~/api/天工.ts'
-import { watch,reactive,ref,provide } from 'vue'
+import { watch,reactive,ref,provide,onMounted,onBeforeUnmount } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
 const confirmID = ref("")
@@ -256,6 +256,15 @@ function filterMethod(val:string){
   options.splice(0,options.length,...tmpOptions)
 }
 const tableData = reactive<any>([])
+let timer:any = 0
+onMounted(()=>{
+  timer = setInterval(()=>{
+    触发完成信息查询.value = Date.now()
+  },1000)
+})
+onBeforeUnmount(()=>{
+  clearInterval(timer)
+})
 </script>
 <style scoped lang="scss">
 .el-table.is-scrolling-left::v-deep(th.el-table-fixed-column--left) {
