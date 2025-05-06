@@ -7,9 +7,9 @@ let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
 
 //北京市
-// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-// database1 = `${dbConfig}&database=union`
-// database2 = `${dbConfig}&database=ryplat`
+dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+database1 = `${dbConfig}&database=union`
+database2 = `${dbConfig}&database=ryplat`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -600,6 +600,62 @@ export function 通过workID恢复完成信息(workID){
         [
           workID
         ],
+      ]
+    }
+  })
+}
+export function 通过烟炉ID获取预约点火信息(stoveID){
+  return request({
+    url: 'backend/db/appoint?'+database2,
+    method: 'post',
+    data:{
+      select:['*'],
+      where:[
+        {
+          relation:'AND',
+          field:'stoveID',
+          relationship:'=',
+          condition:stoveID
+        }
+      ],
+      distinct:false,
+      offset:0,
+      limit:0,
+    }
+  })
+}
+export function 预约点火({beginTime,interval,flare,times,stoveID}){
+  return request({
+    url: 'backend/transaction?'+database2,
+    method: 'post',
+    data:{
+      sqls:[
+        "INSERT INTO `appoint` (`beginTime`, `interval`, `flare`, `times`, `stoveID`) VALUES (?,?,?,?,?);",
+      ],
+      vals:[
+        [
+          beginTime,
+          interval,
+          flare,
+          times,
+          stoveID,
+        ]
+      ]
+    }
+  })
+}
+export function 取消预约点火(stoveID){
+  return request({
+    url: 'backend/transaction?'+database2,
+    method: 'post',
+    data:{
+      sqls:[
+        "DELETE FROM `appoint` WHERE `stoveID` = ?;",
+      ],
+      vals:[
+        [
+          stoveID,
+        ]
       ]
     }
   })

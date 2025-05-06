@@ -12,6 +12,7 @@
                         <el-form :model="appointForm" label-width="auto" inline>
                             <el-form-item label="间隔">
                                 <el-input-number
+                                    :disabled="appointed"
                                     :min="0"
                                     v-model="appointForm.interval"
                                 >
@@ -22,8 +23,9 @@
                             </el-form-item>
                             <el-form-item label="每次点燃">
                                 <el-input-number
+                                    :disabled="appointed"
                                     :min="0"
-                                    v-model="appointForm.num"
+                                    v-model="appointForm.flare"
                                     ><template #suffix>
                                         <span>支</span>
                                     </template></el-input-number
@@ -31,21 +33,26 @@
                             </el-form-item>
                             <el-form-item label="点火次数">
                                 <el-input-number
+                                    :disabled="appointed"
                                     :min="0"
-                                    v-model="appointForm.total"
+                                    v-model="appointForm.times"
                                 ></el-input-number>
                             </el-form-item>
 
                             <el-form-item label="起始时间">
                                 <el-date-picker
-                                    v-model="appointForm.time"
+                                    :disabled="appointed"
+                                    v-model="appointForm.beginTime"
+                                    value-format="YYYY-MM-DD HH:mm:ss"
+                                    format="YYYY-MM-DD HH:mm:ss"
                                     type="datetime"
                                     placeholder="请选择起始时间"
                                     :clearable="false"
                                 />
                             </el-form-item>
                             <el-form-item>
-                                <el-button type="primary">开始预约</el-button>
+                                <el-button v-if="appointed" type="warning" @click="取消预约">取消预约</el-button>
+                                <el-button v-else type="primary" @click="预约">开始预约</el-button>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -157,7 +164,7 @@
 
 <script setup lang="ts">
 import moment from 'moment'
-import { Action, ElMessageBox, ElMessage } from "element-plus";
+import { ElMessageBox, ElMessage } from "element-plus";
 const stroveList = inject('smokeStoveList',new Array<any>())
 function click(){
     ElMessageBox.alert('是否确定发送状态查询命令', '提示', {
@@ -184,9 +191,29 @@ function click(){
         })
     })
 }
-import { 查询烟条状态,即时点火,烟条装载,烟条卸载,烟炉的时间查询,给烟炉设置时间,查询天气情况 } from "~/api/天工";
-import { reactive, inject, Ref } from "vue";
+import { 查询烟条状态,即时点火,烟条装载,烟条卸载,烟炉的时间查询,给烟炉设置时间,查询天气情况,通过烟炉ID获取预约点火信息,预约点火,取消预约点火 } from "~/api/天工";
+import { reactive, inject, watch, ref } from "vue";
+const appointed = ref(false)
 const currentStove = inject<any>("currentStove");
+const currentTime = ref(Date.now());
+watch([currentStove,currentTime],()=>{
+    通过烟炉ID获取预约点火信息(currentStove.value.strStoveID).then(res=>{
+        //得到预约点火信息后，判断是否可以点火一次，二次，三次等等。如果时间未到，不能点火。如果时间过了，也不能点火。
+        // 如果有记录但是未开始，可以取消预约
+        // 如果没有记录，可以预约
+        console.log(res)
+        if(res.data.results.length > 0){
+            appointed.value = true
+            let item = res.data.results[0]
+            appointForm.beginTime = item.beginTime
+            appointForm.flare = item.flare
+            appointForm.interval = item.interval
+            appointForm.times = item.times
+        }else{
+            appointed.value = false
+        }
+    })
+})
 function fire(){
     ElMessageBox.alert('是否确定发送立即点火命令', '提示', {
     // if you want to disable its autofocus
@@ -336,10 +363,10 @@ function queryWeatherInfo(){
 }
 // 预约点火
 let appointForm = reactive({
-    time: null,
+    beginTime: moment().format('YYYY-MM-DD HH:mm:ss'),
     interval: 10,
-    num: 1,
-    total: 2,
+    flare: 1,
+    times: 2,
 });
 // 即时点火
 let immedForm = reactive({
@@ -374,6 +401,52 @@ let stoveOptions = reactive([
         value: "4",
     },
 ]);
+const 预约 = () => {
+    ElMessageBox.alert('是否确定发送预约点火命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        预约点火({beginTime:appointForm.beginTime,interval:appointForm.interval,flare:appointForm.flare,times:appointForm.times,stoveID:currentStove.value.strStoveID}).then(res=>{
+            currentTime.value = Date.now()
+            ElMessage({
+                type:'success',
+                message: `预约点火命令发送成功`,
+            })
+        }).catch(err=>{
+            ElMessage({
+                type:'error',
+                message: `预约点火命令发送失败`,
+            })
+        })
+    })
+}
+const 取消预约 = () => {
+    ElMessageBox.alert('是否确定发送取消预约点火命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(()=>{
+        取消预约点火(currentStove.value.strStoveID).then(res=>{
+            currentTime.value = Date.now()
+            appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
+            appointForm.interval = 10
+            appointForm.flare = 1
+            appointForm.times = 2
+            ElMessage({
+                type:'success',
+                message: `取消预约点火命令发送成功`,
+            })
+        }).catch(err=>{
+            ElMessage({
+                type:'error',
+                message: `取消预约点火命令发送失败`,
+            })
+        })
+    })
+}
 </script>
 
 <style lang="scss" scoped>
