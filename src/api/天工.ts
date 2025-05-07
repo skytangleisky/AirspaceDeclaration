@@ -7,9 +7,9 @@ let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
 
 //北京市
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -590,7 +590,7 @@ export function 通过workID恢复完成信息(workID){
     method: 'post',
     data:{
       sqls:[
-        "UPDATE `overinfo` SET `isconfirmed` = b'0' WHERE `workID` =?;",
+        "UPDATE `overinfo` SET `isconfirmed` = b'0' WHERE `workID` = ?;",
         "DELETE FROM `overinfo_confirmed` WHERE `workID` = ?;",
       ],
       vals:[
@@ -604,20 +604,13 @@ export function 通过workID恢复完成信息(workID){
     }
   })
 }
-export function 通过烟炉ID获取预约点火信息(stoveID){
+export function 获取所有烟炉的预约点火信息(){
   return request({
     url: 'backend/db/appoint?'+database2,
     method: 'post',
     data:{
       select:['*'],
-      where:[
-        {
-          relation:'AND',
-          field:'stoveID',
-          relationship:'=',
-          condition:stoveID
-        }
-      ],
+      where:[],
       distinct:false,
       offset:0,
       limit:0,
@@ -651,6 +644,23 @@ export function 取消预约点火(stoveID){
     data:{
       sqls:[
         "DELETE FROM `appoint` WHERE `stoveID` = ?;",
+      ],
+      vals:[
+        [
+          stoveID,
+        ]
+      ]
+    }
+  })
+}
+
+export function 判断是否可以点火(stoveID){
+  return request({
+    url: 'backend/transaction?'+database2,
+    method: 'post',
+    data:{
+      sqls:[
+        "UPDATE `appoint` SET `begun` = b'1' WHERE `stoveID` = ? AND `begun` = b'0';",
       ],
       vals:[
         [
