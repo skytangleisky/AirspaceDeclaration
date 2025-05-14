@@ -178,10 +178,10 @@
                                         "结束" +
                                         (item.tmBeginAnswer
                                             ? "(" +
-                                              moment(item.tmBeginAnswer)
-                                                  .add(item.iAnswerTimeLen, "s")
-                                                  .format("HH:mm:ss") +
-                                              ")"
+                                                moment(item.tmBeginAnswer)
+                                                    .add(item.iAnswerTimeLen, "s")
+                                                    .format("HH:mm:ss") +
+                                                ")"
                                             : "")
                                     }}
                                 </template>

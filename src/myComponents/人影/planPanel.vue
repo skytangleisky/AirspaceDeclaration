@@ -9,8 +9,7 @@
             >
                 <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
                     <div
-                        class="box map-btn"
-                        :class="{ active: tabActive == item.label }"
+                        :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
                     >
                         <svg-icon :name="item.icon"></svg-icon>
                         <span class="label">{{ item.label }}</span>
@@ -127,8 +126,7 @@
                                                 获取空域状态(item) == '未使用'
                                                     ? 'notuse-warning'
                                                     : ''
-                                            }`"
-                                            class="top-item-value"
+                                            } top-item-value`"
                                         >
                                             {{ 获取空域状态(item) }}
                                         </div>
@@ -144,8 +142,7 @@
                                     <div
                                         :class="`flex justify-center items-center ${申请(
                                             item
-                                        )}`"
-                                        class="item-right-bottom-item"
+                                        )} item-right-bottom-item`"
                                     >
                                         申请({{
                                             moment(item.tmBeginApply).format(
@@ -156,8 +153,7 @@
                                     <div
                                         :class="`flex-1 flex justify-center items-center ${批复(
                                             item
-                                        )}`"
-                                        class="item-right-bottom-item"
+                                        )} item-right-bottom-item`"
                                     >
                                         <template v-if="!item.bAnswerAccept">
                                             批复
@@ -176,16 +172,14 @@
                                     <div
                                         :class="`flex-1 flex justify-center items-center ${开始(
                                             item
-                                        )}`"
-                                        class="item-right-bottom-item"
+                                        )} item-right-bottom-item`"
                                     >
                                         {{ beginText(item) }}
                                     </div>
                                     <div
                                         :class="`flex-1 flex justify-center items-center ${结束(
                                             item
-                                        )}`"
-                                        class="item-right-bottom-item"
+                                        )} item-right-bottom-item`"
                                     >
                                         <template
                                             v-if="
@@ -200,8 +194,7 @@
                                                     endSeconds(item) < 10
                                                         ? 'color-#f00'
                                                         : 'color-inherit'
-                                                }`"
-                                                class="item-right-bottom-item"
+                                                } item-right-bottom-item`"
                                             >
                                                 {{
                                                     Math.floor(
@@ -218,13 +211,13 @@
                                                 "结束" +
                                                 (item.tmBeginAnswer
                                                     ? "(" +
-                                                      moment(item.tmBeginAnswer)
-                                                          .add(
-                                                              item.iAnswerTimeLen,
-                                                              "s"
-                                                          )
-                                                          .format("HH:mm:ss") +
-                                                      ")"
+                                                        moment(item.tmBeginAnswer)
+                                                            .add(
+                                                                item.iAnswerTimeLen,
+                                                                "s"
+                                                            )
+                                                            .format("HH:mm:ss") +
+                                                        ")"
                                                     : "")
                                             }}
                                         </template>
@@ -232,8 +225,7 @@
                                     <div
                                         :class="`flex-1 flex justify-center items-center ${完成(
                                             item
-                                        )}`"
-                                        class="item-right-bottom-item"
+                                        )} item-right-bottom-item`"
                                     >
                                         完成
                                     </div>
@@ -310,10 +302,10 @@ function beginText(item: planDataType) {
         "开始" +
         (item.tmBeginAnswer
             ? "(" +
-              moment(item.tmBeginAnswer, "YYYY-MM-DD HH:mm:ss").format(
-                  "HH:mm:ss"
-              ) +
-              ")"
+                moment(item.tmBeginAnswer, "YYYY-MM-DD HH:mm:ss").format(
+                    "HH:mm:ss"
+                ) +
+                ")"
             : "")
     );
 }

@@ -295,7 +295,7 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
 }
 export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
   const data = {
-    select:['o.strZydID as strZydID','z.strName as strZydIDName','count(*) as count','max(o.beginTm) as maxBeginTm'],
+    select:['o.strZydID as strZydID','z.strName as strZydIDName','count(*) count','max(o.beginTm) maxBeginTm'],
     where:[
       {
         relation:'AND',
@@ -304,7 +304,7 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
         condition:'1'
       }
     ],
-    groupby:['strZydID','strZydIDName'],
+    groupby:['o.strZydID','z.strName'],
     orderby:[
       {
         field:'maxBeginTm',
@@ -331,7 +331,7 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
   }
   return request({
     signal,
-    url: 'backend/db/overinfo o right join  `zydpara` z on o.strZydID=z.strID?'+database2,
+    url: 'backend/db/overinfo o LEFT JOIN zydpara z ON o.strZydID=z.strID?'+database2,
     method: 'post',
     data,
   })
