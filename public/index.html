@@ -31,7 +31,7 @@
 </head>
 <body>
   <div id="app">
-    <rgyx-work-point></rgyx-work-point>
+    <test></test>
     <!-- <div style="position: absolute;top:0;left:0;display: flex;flex-direction: column;">
       <div>{{ message }}</div>
       <button @click="changeMessage">点击我改变消息</button>
@@ -39,7 +39,7 @@
   </div>
   <script src="index.umd.js"></script>
   <script type="module">
-    const {RgyxWorkPoint,SvgIcon,resize,dragable} = index;
+    const {SmokeStove,SvgIcon,resize,dragable} = index;
     const {createPinia} = Pinia;
     const {createApp} = Vue;
     const { createPersistedState } = piniaPluginPersistedstate;
@@ -55,8 +55,7 @@
         };
       },
       components:{
-        // RgyxWorkPoint:index[0],
-        RgyxWorkPoint
+        Test:SmokeStove
       }
     });
     const pinia = createPinia();
