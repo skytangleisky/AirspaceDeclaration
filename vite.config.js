@@ -113,20 +113,10 @@ export default defineConfig({
     // },
     // open:'http://localhost:5173',
     host:true,
-    port:5174,
+    port:5175,
     strictPort:true,
     allowedHosts:true,
     proxy:{
-      // '/guangheng':{
-      //   target:'http://tanglei.top:8000',//替换的服务端地址
-      //   changeOrigin:true,//开启代理，允许跨域
-      //   rewrite:path=>path.replace(/^\/guangheng/,''), // 设置重写的路径
-      // },
-      '/api':{
-        target:'https://main.emgo-tech.com',//替换的服务端地址
-        // target:'http://127.0.0.1:3000',//替换的服务端地址
-        changeOrigin:true,
-      },
       '/backend':{
         target:'http://192.168.0.114:3000',
         secure:false,
@@ -177,14 +167,6 @@ export default defineConfig({
       '/ry_api':{//人影接口
         target:'http://192.168.0.135:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''), // 设置重写的路径
-        secure:false,
-        changeOrigin:true,
-        ws:true,
-      },
-      '/python':{
-        // target:'http://192.168.0.135:8000',
-        target:'http://victorysoft.cn:8000',
-        rewrite:path=>path.replace(/^\/python/,''), // 设置重写的路径
         secure:false,
         changeOrigin:true,
         ws:true,

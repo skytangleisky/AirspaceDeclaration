@@ -39,7 +39,7 @@
   </div>
   <script src="index.umd.js"></script>
   <script type="module">
-    const {SmokeStove,SvgIcon,resize,dragable} = index;
+    const {SmokeStove, RgyxWorkPoint, Rgy,SvgIcon,resize,dragable} = index;
     const {createPinia} = Pinia;
     const {createApp} = Vue;
     const { createPersistedState } = piniaPluginPersistedstate;
@@ -55,7 +55,7 @@
         };
       },
       components:{
-        Test:SmokeStove
+        Test:RgyxWorkPoint
       }
     });
     const pinia = createPinia();

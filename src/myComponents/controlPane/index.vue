@@ -161,10 +161,19 @@ const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'
   box-shadow: 0 2px 4px var(--tp-base-shadow-color);
   overflow: hidden;
   border-radius: 6px;
-  font-size: 11px;
   font-family: Roboto Mono, Source Code Pro, Menlo, Courier, monospace;
   --border-width:4px;
   --padding-left:4px;
+  font-size: 18px;
+  @media (max-width: 1200px) {
+    font-size: 16px;
+  }
+  @media (max-width: 768px) {
+    font-size: 14px;
+  }
+  @media (max-width: 480px) {
+    font-size: 11px;
+  }
   ul,li{
     list-style: none;
     margin:0;

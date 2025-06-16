@@ -1667,7 +1667,7 @@ onMounted(() => {
       type: "symbol",
       source: "adsb原数据",
       layout: {
-        "icon-image": "adsb",
+        "icon-image": "airplane",
         // "icon-size": {
         //   base: 1,
         //   stops: [
@@ -1852,8 +1852,8 @@ onMounted(() => {
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              // "icon-image": "projectile-white",
-              "icon-image": "火箭弹图标",
+              "icon-image": "projectile-white",
+              // "icon-image": "火箭弹图标",
               发报单位:'110000000',
               delayTimeLen:10,
               beginDirection:270,
@@ -2131,9 +2131,9 @@ onMounted(() => {
       active = () => {
         zydFeatures = zydFeatures.map((item: any) => {
           if (item.properties.id == station.人影界面被选中的设备) {
-            item.properties["icon-image"] = "火箭弹图标";
+            item.properties["icon-image"] = "projectile-white";
           } else {
-            item.properties["icon-image"] = "火箭弹图标";
+            item.properties["icon-image"] = "projectile-white";
           }
           return item;
         });

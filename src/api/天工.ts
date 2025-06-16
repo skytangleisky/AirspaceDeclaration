@@ -16,6 +16,11 @@ database2 = `${dbConfig}&database=ryplat`
 // database1 = `${dbConfig}&database=union`
 // database2 = `${dbConfig}&database=ryplat_bjry`
 
+//钟桃
+// dbConfig = "host=127.0.0.1&port=3306&user=root&password=Tao.1841"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat_bjry`
+
 export function 机场(){
   return request({
     url: '/backend/transaction?'+database1,
@@ -218,7 +223,7 @@ export function 空域申请批准(data){
       "workID": data.strWorkID,
       "zydID": data.strID,
       "replyUnitID": "110000000",//北京气象局
-      "workReceiveUnit": "990201000",//北空
+      "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.workBeginTime),
       "workTimeLen": data.workTimeLen*60,
@@ -235,7 +240,7 @@ export function 空域申请拒绝(data){
       "workID": data.strWorkID,
       "zydID": data.strID,
       "replyUnitID": "110000000",
-      "workReceiveUnit": "990201000",
+      "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "delayTimeLen": data.delayTimeLen,
       "denyCode": data.denyCode,
