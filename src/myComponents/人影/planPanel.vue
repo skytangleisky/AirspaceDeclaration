@@ -276,7 +276,7 @@ const tabList = reactive([
     },
     {
         label: "完成信息查询",
-        icon: "transferInfo",
+        icon: "tasks",
         type: "完成信息查询",
         total: 0,
         hideBadge:true,

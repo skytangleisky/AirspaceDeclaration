@@ -40,7 +40,7 @@ import CustomRasterSource from './customRasterSource.js'
 import { useSettingStore } from "~/stores/setting";
 import { getFeather, getColor, getCoord, addFeatherImages } from "~/tools";
 const setting = useSettingStore();
-const list = reactive([{label:'devtools',type:'folder',opened:true,children:[
+const list = reactive([{label:'工具箱',type:'folder',opened:true,children:[
   {label:'投影方式',value:toRefs(setting.mapbox).projection,type:'select',options:[
     { value: "mercator", label: "mercator" },
     { value: "globe", label: "globe" },

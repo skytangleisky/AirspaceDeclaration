@@ -14,7 +14,7 @@ export const useSettingStore = defineStore('setting',{
     在线人数:'',
     网络状态:'',
     内存占用:'',
-    devtoolsOpen:false,
+    devtoolsOpen:true,
     menus:false,
     canvas:{
       devtoolsOpen:false,
@@ -366,10 +366,11 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        是否显示工具箱:false,
         landColor:{
-          r:36,
-          g:51,
-          b:73,
+          r:27,
+          g:37,
+          b:47,
           a:1
         },
         zoom: 9,

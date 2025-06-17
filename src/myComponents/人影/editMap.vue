@@ -607,7 +607,7 @@ onMounted(() => {
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
-    projection: "globe",//mercator|globe
+    projection: "mercator",//mercator|globe
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
     style:style as any,
     fadeDuration: 0,

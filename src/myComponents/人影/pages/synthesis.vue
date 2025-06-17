@@ -120,12 +120,16 @@
   <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
   <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;right:300px;"></div>
   <!-- <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane> -->
-  <el-scrollbar style="position:absolute;top:16px;bottom:16px;right:16px;height:auto;width:fit-content;pointer-events: none;">
+  <div class="toolkit-button" @click="setting.人影.监控.是否显示工具箱=!setting.人影.监控.是否显示工具箱">
+    <el-icon v-html="toolkitSvg" style="font-size:26px;"></el-icon>
+  </div>
+  <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position:absolute;top:calc( 38px + 40px + 16px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
     <control-pane style="position: relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
   </el-scrollbar>
 </template>
 <script lang="ts" setup>
 import { 空域申请批准,空域申请拒绝 } from '~/api/天工.ts';
+import toolkitSvg from '~/assets/toolkit.svg?raw'
 import { watch, ref, reactive, computed,onMounted, onBeforeUnmount, toRefs, defineAsyncComponent } from "vue";
 const EditMap = defineAsyncComponent(() => import("../editMap.vue"));
 const editMapRef = ref()
@@ -150,7 +154,7 @@ const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/
 import {useTheme} from '~/theme';
 const theme = useTheme()
 const list = reactive([
-  {label:'devtools',type:'folder',opened:toRefs(setting).devtoolsOpen,children:[
+  {label:'工具箱',type:'folder',opened:toRefs(setting).devtoolsOpen,children:[
     {label:'主题',value:theme,type:'select',options:[{value:'light',label:'亮色'},{value:'dark',label:'暗色'},{value:'auto',label:'自动'}]},
     {label:'菜单',value:toRefs(setting).menus,type:'checkbox'},
     // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
@@ -226,7 +230,7 @@ const list = reactive([
     {label:'飞机',value:toRefs(setting.人影.监控).plane,type:'checkbox'},
     {label:'飞机标牌',value:toRefs(setting.人影.监控).planeLabel,type:'checkbox'},
     {label:'航迹数量',value:toRefs(setting.人影.监控).trackCount,type:'range',min:0,max:99,arr:Array.from({length:101},(_,i:number)=>i)},
-    {label:'位置',value:toRefs(setting.人影.监控).经纬度,type:'text'},
+    {label:'位置',value:computed(()=>setting.人影.监控.经纬度.substring(0,10)+'\r\n0'+setting.人影.监控.经纬度.substring(10,20)),type:'text'},
     {label:'在线人数',value:toRefs(setting).在线人数,type:'text'},
     {label:'网络状态',value:toRefs(setting).网络状态,type:'text'},
     {label:'内存占用',value:toRefs(setting).内存占用,type:'text'},
@@ -896,7 +900,33 @@ $time: 1s;
     }
   }
 }
-.fourCorners {
+.toolkit-button{
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  position: absolute;
+  right:18px;
+  top:38px;
+  width:40px;
+  height:40px;
+  border:1px solid #bdd4ff;
+  border-radius:5px;
+  background-color: #eaf1ff;
+  color:var(--el-color-primary);
+}
+.dark .toolkit-button{
+  position: absolute;
+  right:18px;
+  top:38px;
+  width:40px;
+  height:40px;
+  border:1px solid #7d8593;
+  border-radius:5px;
+  background-color: #243349;
+  color:var(--el-color-primary);
+}
+.dark .fourCorners {
   &::after {
     filter: drop-shadow(-2px -2px 4px #00000044);
     --offset: -6px;
