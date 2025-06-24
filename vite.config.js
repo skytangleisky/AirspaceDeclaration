@@ -8,6 +8,7 @@ import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import path from "path";
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import {
   presetAttributify,
   presetIcons,
@@ -24,7 +25,9 @@ export default defineConfig({
       symbolId: "icon-[name]",
     }),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [ElementPlusResolver({
+        locale: zhCn,
+      })],
     }),
     Components({
       // allow auto load markdown components under `./src/components/`

@@ -36,15 +36,18 @@
     <el-button size="small" @click="handleClick">新增</el-button>
   </div>
   <el-table :data="tableData" style="width: 100%">
-    <el-table-column fixed label="操作" min-width="140">
+    <el-table-column fixed label="操作" min-width="200">
       <template #default="{row}">
-        <div v-if="row.isconfirmed=='1'" style="display: flex;">
-          <el-button type="success" size="small" disabled>已确认</el-button>
-          <el-button type="info" size="small" @click="revert(row)">恢复</el-button>
-        </div>
-        <div v-else style="display:flex;">
-          <el-button type="warning" size="small" @click="待确认(row)">待确认</el-button>
-          <el-button type="danger" size="small" @click="删除(row)">删除</el-button>
+        <div style="display: flex;">
+          <template v-if="row.isconfirmed=='1'">
+            <el-button type="success" size="small" disabled>已确认</el-button>
+            <el-button type="info" size="small" @click="revert(row)">恢复</el-button>
+          </template>
+          <template v-else>
+            <el-button type="warning" size="small" @click="待确认(row)">待确认</el-button>
+            <el-button type="danger" size="small" @click="删除(row)">删除</el-button>
+          </template>
+          <el-button type="primary" size="small" @click="详情(row)">详情</el-button>
         </div>
         <!-- <el-popconfirm
           v-else
@@ -106,16 +109,20 @@
   <el-pagination v-model:current-page="pageOption.page" :page-size="pageOption.size" layout="prev, pager, next, jumper, total" :total="pageOption.total" />
   <Add v-model:show="addShow"></Add>
   <Confirm v-model:show="confirmShow" v-model:confirmID="confirmID"></Confirm>
+  <View v-model:show="viewShow" v-model:viewID="viewID"></View>
 </template>
 <script lang="ts" setup>
 import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
+import View from './地面作业完成信息/view.vue'
 import {完成信息查询,完成信息查询中一段时间内作业点数据,通过workID删除完成信息和完成信息确认,通过workID恢复完成信息} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
+const viewShow = ref(false)
 const confirmID = ref("")
+const viewID = ref("")
 const range = ref(null)
 const now = new Date()
 const defaultDates = [
@@ -203,6 +210,10 @@ const handleClick = () => {
 const 待确认 = (row) => {
   confirmID.value = row.workID
   confirmShow.value = true
+}
+const 详情 = (row) => {
+  viewID.value = row.workID
+  viewShow.value = true
 }
 const 删除 = (row) => {
   ElMessageBox.confirm('是否删除该条记录?', '提示', {

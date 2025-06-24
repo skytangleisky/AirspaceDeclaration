@@ -5,6 +5,8 @@ import imageUrl from "~/assets/feather.svg?url";
 import arrowUrl from "~/assets/arrow.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
 import { useSettingStore } from '~/stores/setting';
+import { computed, ComputedRef } from 'vue'
+export const modelRef = (obj: object,fields: string)=>computed({get:()=>new Function('obj', `return obj.${fields}`)(obj),set:(val: any)=>new Function('obj', 'val', `obj.${fields} = val`)(obj, val)})
 export function hasPermission(permissions:Array<String>){
   let has = false
   const recurse = (list:any)=>{

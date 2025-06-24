@@ -15,7 +15,7 @@ export const useSettingStore = defineStore('setting',{
     网络状态:'',
     内存占用:'',
     devtoolsOpen:true,
-    menus:false,
+    menus:true,
     canvas:{
       devtoolsOpen:false,
       particleCount:10,

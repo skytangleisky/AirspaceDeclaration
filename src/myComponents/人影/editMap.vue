@@ -362,8 +362,8 @@ function 处理飞机实时位置(d:Array<{
         const marker = obj[trackFeatures[i].properties.uiTrackNo]
         if(marker){
           marker.setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
-          marker.getElement().querySelector('.speed').innerText = `${d[j].unSsrCode.toString(8).padStart(4,'0')}`
-          过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
+          marker.getElement().querySelector('.speed').innerText = `${d[j].unSsrCode.toString(8).padStart(4,'0')}`;
+          (过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})&&setting.人影.监控.planeLabel)?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
         }
         if(trackFeatures[i].geometry.coordinates.length>setting.人影.监控.trackCount){
           trackFeatures[i].geometry.coordinates.splice(0,trackFeatures[i].geometry.coordinates.length - setting.人影.监控.trackCount)
@@ -394,7 +394,7 @@ function 处理飞机实时位置(d:Array<{
       marker.getElement().addEventListener('click', () => {
         marker.remove()
       });
-      过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
+      (过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})&&setting.人影.监控.planeLabel)?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
       obj[d[j].uiTrackNo] = marker
       trackFeatures.push({
         type: "Feature",
@@ -607,7 +607,7 @@ onMounted(() => {
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
-    projection: "mercator",//mercator|globe
+    projection: "globe",//mercator|globe
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
     style:style as any,
     fadeDuration: 0,
@@ -1667,7 +1667,7 @@ onMounted(() => {
       type: "symbol",
       source: "adsb原数据",
       layout: {
-        "icon-image": "airplane",
+        "icon-image": "adsb",
         // "icon-size": {
         //   base: 1,
         //   stops: [
@@ -2067,6 +2067,26 @@ onMounted(() => {
             "text-pitch-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
+          },
+          paint: {
+            "icon-opacity": 1,
+          },
+          filter: ["==", ["get", "type"], "站点"],
+        });
+      }
+      if(!map.getLayer("zydLabelLayer")){
+        map.addLayer({
+          id: "zydLabelLayer",
+          type: "symbol",
+          source: "zydSource",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+            "text-pitch-alignment": "map",
             "text-field": ["get", "strName"],
             "text-font": ["simkai"],
             "text-size": 16,
@@ -2082,11 +2102,11 @@ onMounted(() => {
             "text-max-width": 400,
           },
           paint: {
-            "icon-opacity": 1,
             "text-color": "white",
             "text-halo-color": "black",
             "text-halo-width": 1,
           },
+          "minzoom":9,
           filter: ["==", ["get", "type"], "站点"],
         });
       }
@@ -2963,6 +2983,14 @@ watch(()=>setting.人影.监控.track,()=>{
 })
 watch(()=>setting.人影.监控.planeLabel,()=>{
   map.setLayoutProperty('adsb气泡图层','visibility',setting.人影.监控.planeLabel?'visible':'none')
+  airplanesData.features.forEach((item)=>{
+    const marker = obj[item.properties.uiTrackNo]
+    if(setting.人影.监控.planeLabel){
+      marker.getElement().style.display = "block"
+    }else{
+      marker.getElement().style.display = "none"
+    }
+  })
 })
 watch(()=>setting.人影.监控.trackCount,()=>{
   for(let i=0;i<trackFeatures.length;i++){
@@ -3102,6 +3130,11 @@ watch(
       newVal
         ? map.setLayoutProperty("zydLayer", "visibility", "visible")
         : map.setLayoutProperty("zydLayer", "visibility", "none");
+    }
+    if (map.getLayer("zydLabelLayer")) {
+      newVal
+        ? map.setLayoutProperty("zydLabelLayer", "visibility", "visible")
+        : map.setLayoutProperty("zydLabelLayer", "visibility", "none");
     }
     if (map.getLayer("最大射程-line")) {
       newVal

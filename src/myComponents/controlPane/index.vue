@@ -180,6 +180,7 @@ const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'
     padding:0;
   }
   .control-item{
+    font-size: 0.9em;
     &:has(.folder):has(>.item){
       border-left: var(--border-width) solid var(--tp-container-background-color);
     }

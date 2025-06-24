@@ -7,9 +7,9 @@ let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
 
 //北京市
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -307,6 +307,18 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
         field:'isquxianconfirmed',
         relationship:'=',
         condition:'1'
+      },
+      {
+        relation:'AND',
+        field:'z.strName',
+        relationship:'IS NOT',
+        condition:null
+      },
+      {
+        relation:'AND',
+        field:'o.strZydID',
+        relationship:'IS NOT',
+        condition:null
       }
     ],
     groupby:['o.strZydID','z.strName'],
