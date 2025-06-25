@@ -239,10 +239,10 @@ export default function(){
 		"zoom": 12.711177223232953,
 		"bearing": 0,
 		"pitch": 0,
-		"fog": {
-				"range": [2, 20],
-				"color": "hsl(0, 0%, 100%)",
-				"high-color": "hsl(210, 100%, 80%)",
+		// "fog": {
+				// "range": [2, 20],
+				// "color": "hsl(0, 0%, 100%)",
+				// "high-color": "hsl(210, 100%, 80%)",
 				// "space-color": [
 				// 	"interpolate",
 				// 	["exponential", 1.2],
@@ -252,15 +252,15 @@ export default function(){
 				// 	7,
 				// 	"hsl(210, 100%, 80%)"
 				// ],
-				"horizon-blend": [
-					"interpolate",
-					["exponential", 1.2],
-					["zoom"],
-					5,
-					0.02,
-					7,
-					0.08
-				],
+				// "horizon-blend": [
+				// 	"interpolate",
+				// 	["exponential", 1.2],
+				// 	["zoom"],
+				// 	5,
+				// 	0.02,
+				// 	7,
+				// 	0.08
+				// ],
 				// "star-intensity": [
 				// 	"interpolate",
 				// 	["exponential", 1.2],
@@ -270,7 +270,7 @@ export default function(){
 				// 	7,
 				// 	0
 				// ]
-		},
+		// },
 		"sources": {
 			// 'mapbox-terrain': {
 			// 	type: 'vector',

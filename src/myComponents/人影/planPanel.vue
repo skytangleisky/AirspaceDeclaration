@@ -11,7 +11,7 @@
                     <div
                         :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
                     >
-                        <svg-icon :name="item.icon"></svg-icon>
+                        <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
                         <span class="label">{{ item.label }}</span>
                     </div>
                 </el-badge>

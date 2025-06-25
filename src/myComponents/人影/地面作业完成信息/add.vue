@@ -2,7 +2,7 @@
     <teleport to="#app">
         <div class="modal" v-if="show">
             <div class="dragDialog">
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">作业点编号</span>
                         <el-select
@@ -29,7 +29,7 @@
                         <el-input v-model="strName" disabled></el-input>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">作业日期</span>
                         <el-date-picker v-model="data.beginDate"/>
@@ -39,7 +39,7 @@
                         <el-time-picker v-model="data.beginTime" value-format="HH:mm" format="HH:mm"/>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12" style="display: flex;white-space: nowrap;">
                         <span class="label">作业时长</span>
                         <el-input-number v-model="data.duration" :min="1" :max="600" style="width:100%">
@@ -49,7 +49,7 @@
                         </el-input-number>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">作业类型</span>
                         <el-select v-model="data.iWorkType" placeholder="请选择" style="width: 100%">
@@ -63,7 +63,7 @@
                         </el-select>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12" >
                         <span class="label">炮弹用量</span>
                         <el-input-number v-model="data.numPD" :min="0" :max="99" style="width:100%">
@@ -77,7 +77,7 @@
                         </el-input-number>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">烟条用量</span>
                         <el-input-number v-model="data.numYT" :min="0" :max="99" style="width:100%">
@@ -91,7 +91,7 @@
                         </el-input-number>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="20">
                         <span class="label">射向</span>
                         <el-input-number v-model="data.shootDirectBegin" :min="0" :max="360" style="width:100%">
@@ -103,7 +103,7 @@
                         </el-input-number>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="20">
                         <span class="label">俯仰角</span>
                         <el-input-number v-model="data.shootPitchBegin" :min="0" :max="90" style="width:100%">
@@ -115,7 +115,7 @@
                         </el-input-number>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">作业面积</span>
                         <el-input-number v-model="data.area" :min="1" :max="99" style="width:100%">
@@ -129,7 +129,7 @@
                         </el-select>
                     </el-col>
                 </el-row>
-                <el-row>
+                <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">作业前天气</span>
                         <el-select v-model="data.weatherBefore" placeholder="请选择" style="width: 100%">
@@ -157,6 +157,7 @@ import { ElMessage } from 'element-plus'
 import {获取作业点ID数据,保存完成信息和完成信息确认,判断是否有完成信息,判断是否有完成信息确认} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject } from "vue";
+const rowGutter =20
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
     { value: 1, label: "高炮" },
@@ -340,19 +341,24 @@ onBeforeUnmount(() => {
     .dragDialog {
         position: absolute;
         width: 600px;
-        background-color: var(--el-bg-color);
-        padding: $grid-3;
-        border-radius: $border-radius-3;
-        box-shadow: var(--el-box-shadow);
+        //background-color: var(--el-bg-color);
+        //padding: $grid-2;
+        //border-radius: $border-radius-3;
+        //box-shadow: var(--el-box-shadow);
+
+      background-color: var(--el-bg-color-opacity-8);
+      padding: $grid-2;
+      border-radius: $border-radius-2;
+      border:1px solid var(--el-border-color);
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        display: flex;
-        flex-wrap: wrap;
+
         box-sizing: border-box;
         max-width: 100%;
         max-height: 100%;
         overflow: auto;
+
         .item-box {
             display: flex;
             width: calc((100% - $grid-3) / 2);
@@ -380,19 +386,15 @@ onBeforeUnmount(() => {
             display: flex;
             justify-content: flex-end;
         }
-        .ep-row {
-            padding: 5px;
-        }
         &::v-deep(.el-row){
-            width:100%;
-            margin-bottom:10px;
+            margin-bottom:$grid-2;
             .el-col{
                 display:flex;
                 white-space: nowrap;
                 align-items: center;
                 .label{
-                    margin:0 10px;
-                    min-width:100px;
+                    //margin:0 10px;
+                    min-width:80px;
                 }
             }
         }

@@ -19,7 +19,7 @@ defineProps({
     //svg图标的颜色
     color: {
         type: String,
-        default: "",
+        default: "#c1c1c1",
     },
     //svg宽度
     width: {
@@ -36,6 +36,6 @@ defineProps({
 
 <style lang="scss" scoped>
 use{
-    fill:var(--el-color-primary);
+    //fill:var(--el-color-primary);
 }
 </style>

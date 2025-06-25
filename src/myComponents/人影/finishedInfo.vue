@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;display: flex;height:40px;justify-content: space-between;align-items:center">
+  <div style="width:100%;display: flex;align-items:center;margin-bottom:12px">
     <el-date-picker
       v-model="range"
       type="datetimerange"
@@ -7,7 +7,8 @@
       end-placeholder="结束时间"
       :default-value="defaultDates"
       unlink-panels
-      style="max-width:350px"
+
+
     />
     <el-select
       clearable
@@ -15,7 +16,8 @@
       filterable
       placeholder="作业点名称过滤"
       :filter-method="filterMethod"
-      style="width: 260px"
+      style="margin:0 12px; width:240px"
+
       :value-on-clear="null"
     >
       <el-option
@@ -33,7 +35,7 @@
         </span>
       </el-option>
     </el-select>
-    <el-button size="small" @click="handleClick">新增</el-button>
+    <el-button type="primary" @click="handleClick" >新增</el-button>
   </div>
   <el-table :data="tableData" style="width: 100%">
     <el-table-column fixed label="操作" min-width="200">
@@ -106,7 +108,7 @@
       <template #default="{row}">{{effect[row.workEffect]}}</template>
     </el-table-column>
   </el-table>
-  <el-pagination v-model:current-page="pageOption.page" :page-size="pageOption.size" layout="prev, pager, next, jumper, total" :total="pageOption.total" />
+  <el-pagination size="small" v-model:current-page="pageOption.page" :page-size="pageOption.size"  layout="prev,pager, next, jumper, total" :total="pageOption.total" />
   <Add v-model:show="addShow"></Add>
   <Confirm v-model:show="confirmShow" v-model:confirmID="confirmID"></Confirm>
   <View v-model:show="viewShow" v-model:viewID="viewID"></View>
@@ -280,5 +282,8 @@ onBeforeUnmount(()=>{
 <style scoped lang="scss">
 .el-table.is-scrolling-left::v-deep(th.el-table-fixed-column--left) {
   background-color: var(--el-color-primary);
+}
+.el-pagination{
+  margin-top:$grid-2;
 }
 </style>

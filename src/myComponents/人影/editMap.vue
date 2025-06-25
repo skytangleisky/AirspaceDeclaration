@@ -1262,8 +1262,8 @@ onMounted(() => {
 					'line-cap':'round',
 				},
 				'paint': {
-					'line-color': '#085991',
-					'line-width': 20,
+					'line-color': '#99B2D6',
+					'line-width': 2,
           'line-opacity':1,
 				}
 			})
@@ -1277,8 +1277,8 @@ onMounted(() => {
 					'line-cap':'round',
 				},
 				'paint': {
-					'line-color': '#2387bb',
-					'line-width': 6,
+					'line-color': '#99B2D6',
+					'line-width':2,
           'line-opacity':1,
 					// 'line-dasharray': [1,1],
 				}

@@ -1,32 +1,32 @@
 <template>
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute;">
     <edit-map
-      ref="editMapRef"
-      v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
-      v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
-      v-model:prevReplyShow="setting.人影.监控.prevPlanReplyShow"
-      v-model:prevReplyData="setting.人影.监控.prevPlanReplyData"
-      style="backdrop-filter: blur(25px)"
-      v-model:routeLine="setting.人影.监控.routeLine"
-      v-model:loadmap="setting.人影.监控.loadmap"
-      v-model:zyd="setting.人影.监控.zyd"
-      v-model:district="setting.人影.监控.districtOptions.district"
-      v-model:tile="setting.人影.监控.tile"
-      v-model:center="setting.人影.监控.center"
-      v-model:zoom="setting.人影.监控.zoom"
-      v-model:pitch="setting.人影.监控.pitch"
-      v-model:bearing="setting.人影.监控.bearing"
-      v-model:zdz="setting.人影.监控.zdz"
-      v-model:plane="setting.人影.监控.plane"
-      v-model:airport="setting.人影.监控.airport"
-      v-model:gridPoint="setting.人影.监控.gridPoint"
-      v-model:gridValue="setting.人影.监控.gridValue"
-      v-model:isolines="setting.人影.监控.isolines"
-      v-model:isobands="setting.人影.监控.isobands"
+        ref="editMapRef"
+        v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
+        v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
+        v-model:prevReplyShow="setting.人影.监控.prevPlanReplyShow"
+        v-model:prevReplyData="setting.人影.监控.prevPlanReplyData"
+        style="backdrop-filter: blur(25px)"
+        v-model:routeLine="setting.人影.监控.routeLine"
+        v-model:loadmap="setting.人影.监控.loadmap"
+        v-model:zyd="setting.人影.监控.zyd"
+        v-model:district="setting.人影.监控.districtOptions.district"
+        v-model:tile="setting.人影.监控.tile"
+        v-model:center="setting.人影.监控.center"
+        v-model:zoom="setting.人影.监控.zoom"
+        v-model:pitch="setting.人影.监控.pitch"
+        v-model:bearing="setting.人影.监控.bearing"
+        v-model:zdz="setting.人影.监控.zdz"
+        v-model:plane="setting.人影.监控.plane"
+        v-model:airport="setting.人影.监控.airport"
+        v-model:gridPoint="setting.人影.监控.gridPoint"
+        v-model:gridValue="setting.人影.监控.gridValue"
+        v-model:isolines="setting.人影.监控.isolines"
+        v-model:isobands="setting.人影.监控.isobands"
     ></edit-map>
     <div
-      class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
-      style="border-radius: 8px; font-size: 16px; display: none"
+        class="absolute left-10px top-10px b-solid b-1px dark:b-gray-5 b-gray dark:bg-#2b2b2b bg-white dark:color-white color-black w-150px h-80px flex flex-col justify-between p-10px"
+        style="border-radius: 8px; font-size: 16px; display: none"
     >
       <span>反制设备 10台</span>
       <span>合作无人机 0架</span>
@@ -34,8 +34,8 @@
     </div>
     <div :class="`right-drawer ${setting.人影.监控.disappear ? 'disappear' : ''}`">
       <div
-        class="handle"
-        @click.native="setting.人影.监控.disappear = !setting.人影.监控.disappear"
+          class="handle"
+          @click.native="setting.人影.监控.disappear = !setting.人影.监控.disappear"
       >
         <el-icon v-html="rightSvg"></el-icon>
       </div>
@@ -45,12 +45,16 @@
           <legend class="font-size-20px">图层设置</legend>
           <div style="display: flex; flex-direction: column; padding: 0 4px">
             <el-checkbox
-              name="控制瓦片"
-              v-model="setting.人影.监控.loadmap"
-              label="显示瓦片地图"
+                name="控制瓦片"
+                v-model="setting.人影.监控.loadmap"
+                label="显示瓦片地图"
             ></el-checkbox>
-            <div class="flex items-center"><el-checkbox name="控制区划" v-model="setting.人影.监控.districtOptions.district"></el-checkbox><div class="p-l-8px">显示行政区划</div></div>
-            <el-checkbox name="控制华北飞行区" v-model="setting.人影.监控.ryAirspaces.fill" label="华北飞行区"></el-checkbox>
+            <div class="flex items-center">
+              <el-checkbox name="控制区划" v-model="setting.人影.监控.districtOptions.district"></el-checkbox>
+              <div class="p-l-8px">显示行政区划</div>
+            </div>
+            <el-checkbox name="控制华北飞行区" v-model="setting.人影.监控.ryAirspaces.fill"
+                         label="华北飞行区"></el-checkbox>
             <el-checkbox name="控制航线" v-model="setting.人影.监控.routeLine" label="航路航线"></el-checkbox>
             <el-checkbox name="控制作业点" v-model="setting.人影.监控.zyd" label="显示作业点"></el-checkbox>
             <el-checkbox name="飞机" v-model="setting.人影.监控.plane" label="显示飞机"></el-checkbox>
@@ -69,8 +73,16 @@
           <legend class="font-size-14px">华北飞行区域 显示风格</legend>
           <div class="flex flex-col">
             <el-checkbox name="图层显示控制" class="row-start-1 col-span-3" label="图层显示"></el-checkbox>
-            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0" v-model="setting.人影.监控.showColorSelector">图层颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a});flex:1;`"></div></label>
-            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="1" v-model="setting.人影.监控.showColorSelector">填充颜色<div :style="`background:rgba(${setting.人影.监控.districtOptions.districtFillColor.r},${setting.人影.监控.districtOptions.districtFillColor.g},${setting.人影.监控.districtOptions.districtFillColor.b},${setting.人影.监控.districtOptions.districtFillColor.a});flex:1;`"></div></label>
+            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="0"
+                                       v-model="setting.人影.监控.showColorSelector">图层颜色
+              <div
+                  :style="`background:rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a});flex:1;`"></div>
+            </label>
+            <label class="flex"><input type="radio" class="m-0" name="选择颜色" :value="1"
+                                       v-model="setting.人影.监控.showColorSelector">填充颜色
+              <div
+                  :style="`background:rgba(${setting.人影.监控.districtOptions.districtFillColor.r},${setting.人影.监控.districtOptions.districtFillColor.g},${setting.人影.监控.districtOptions.districtFillColor.b},${setting.人影.监控.districtOptions.districtFillColor.a});flex:1;`"></div>
+            </label>
             <el-checkbox name="填充控制" class="row-start-3 col-span-3" label="填充"></el-checkbox>
             <el-checkbox name="比例尺显示" class="row-start-4 col-span-3" label="比例尺显示控制"></el-checkbox>
           </div>
@@ -78,59 +90,76 @@
       </div>
     </div>
     <div
-      v-if="false"
-      :class="`bottom-drawer hidden ${setting.人影.监控.bottom_disappear ? 'disappear' : ''}`"
+        v-if="false"
+        :class="`bottom-drawer hidden ${setting.人影.监控.bottom_disappear ? 'disappear' : ''}`"
     >
       <div class="handle p-8px">
         <el-badge
-          v-for="(v, k) in menus"
-          :key="k"
-          :value="v.value"
-          :type="v.type"
-          :show-zero="false"
-          @click="click(v)"
-          ><el-icon :class="`${v.active ? 'fourCorners' : ''}`" v-html="v.svg"></el-icon
-        ></el-badge>
+            v-for="(v, k) in menus"
+            :key="k"
+            :value="v.value"
+            :type="v.type"
+            :show-zero="false"
+            @click="click(v)"
+        >
+          <el-icon :class="`${v.active ? 'fourCorners' : ''}`" v-html="v.svg"></el-icon
+          >
+        </el-badge>
       </div>
       <el-icon
-        class="cursor-pointer z-1"
-        style="position: absolute; top: 0; right: 0; font-size: 21px"
-        v-html="forkSvg"
-        @click.stop="setting.人影.监控.bottom_disappear = true"
+          class="cursor-pointer z-1"
+          style="position: absolute; top: 0; right: 0; font-size: 21px"
+          v-html="forkSvg"
+          @click.stop="setting.人影.监控.bottom_disappear = true"
       ></el-icon>
       <datatable
-        :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'"
-        :table="'zydpara'"
+          :database="'host=tanglei.top&port=3308&user=root&password=mysql&database=ryplat_bjry'"
+          :table="'zydpara'"
       />
     </div>
   </div>
   <dialog-plan-request
-    v-model:show="setting.人影.监控.prevPlanRequestShow"
-    v-model:data="setting.人影.监控.prevPlanRequestData"
-    @click="confirm"
-    style="z-index:2010"
+      v-model:show="setting.人影.监控.prevPlanRequestShow"
+      v-model:data="setting.人影.监控.prevPlanRequestData"
+      @click="confirm"
+      style="z-index:2010"
   ></dialog-plan-request>
   <dialog-plan-reply
-    v-model:show="setting.人影.监控.prevPlanReplyShow"
-    v-model:data="setting.人影.监控.prevPlanReplyData"
-    style="z-index:2010"
-    @accept="accept"
-    @reject="reject"
+      v-model:show="setting.人影.监控.prevPlanReplyShow"
+      v-model:data="setting.人影.监控.prevPlanReplyData"
+      style="z-index:2010"
+      @accept="accept"
+      @reject="reject"
   ></dialog-plan-reply>
-  <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor" style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
+  <ColorSelector v-show="setting.人影.监控.showColorSelector !== -1" v-model:selectorColor="selectorColor"
+                 style="z-index: 2010;" @cancel="setting.人影.监控.showColorSelector=-1"></ColorSelector>
   <div ref="tweakPaneRef" class="tp-dfwv default hidden" data-pane-lighttheme style="z-index: 1;right:300px;"></div>
   <!-- <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane> -->
-  <div class="toolkit-button" @click="toolkitButtonClick">
-    <el-icon v-html="toolkitSvg" style="font-size:26px;"></el-icon>
+  <div class="tool-btns">
+    <div class="btn-box" @click="toolkitButtonClick">
+      <el-icon v-html="toolkitSvg" style="font-size:26px;"></el-icon>
+    </div>
   </div>
-  <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position:absolute;top:calc( 38px + 40px + 16px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
+  <el-scrollbar v-if="setting.人影.监控.是否显示工具箱"
+                style="position:absolute;top:calc( 38px + 40px + 16px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
     <control-pane style="position: relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
   </el-scrollbar>
 </template>
 <script lang="ts" setup>
-import { 空域申请批准,空域申请拒绝 } from '~/api/天工.ts';
+import {空域申请批准, 空域申请拒绝} from '~/api/天工.ts';
 import toolkitSvg from '~/assets/toolkit.svg?raw'
-import { watch, ref, reactive, computed,onMounted, onBeforeUnmount, toRefs, defineAsyncComponent, ComputedRef } from "vue";
+import {
+  watch,
+  ref,
+  reactive,
+  computed,
+  onMounted,
+  onBeforeUnmount,
+  toRefs,
+  defineAsyncComponent,
+  ComputedRef
+} from "vue";
+
 const EditMap = defineAsyncComponent(() => import("../editMap.vue"));
 const editMapRef = ref()
 import forkSvg from "~/assets/fork.svg?raw";
@@ -142,123 +171,324 @@ import recordSvg from "~/assets/record.svg?raw";
 import whitelistSvg from "~/assets/whitelist.svg?raw";
 import statisticSvg from "~/assets/statistic.svg?raw";
 import selectTile from "../selectTile.vue";
-import { prevRequestDataType } from "../../dialog_plan_request.vue";
+import {prevRequestDataType} from "../../dialog_plan_request.vue";
 import DialogPlanRequest from "../../dialog_plan_request.vue";
 import DialogPlanReply from "../../dialog_plan_reply.vue";
-import { useSettingStore } from "~/stores/setting";
+import {useSettingStore} from "~/stores/setting";
+
 const setting = useSettingStore();
-import { eventbus } from "~/eventbus/index";
-const ColorSelector = defineAsyncComponent(()=>import("~/myComponents/colorSelector/index.vue"));
+import {eventbus} from "~/eventbus/index";
+
+const ColorSelector = defineAsyncComponent(() => import("~/myComponents/colorSelector/index.vue"));
 // import { Pane } from 'controlpane';
-const ControlPane = defineAsyncComponent(()=>import("~/myComponents/controlPane/index.vue"));
+const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
+
 const theme = useTheme()
 const list = reactive([
-  {label:'工具箱',type:'folder',opened:modelRef(setting,'devtoolsOpen'),children:[
-    {label:'主题',value:theme,type:'select',options:[{value:'light',label:'亮色'},{value:'dark',label:'暗色'},{value:'auto',label:'自动'}]},
-    {label:'菜单',value:modelRef(setting,'menus'),type:'checkbox'},
-    // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
-    {label:'瓦片地图',value:modelRef(setting,'人影.监控.loadmap'),type:'checkbox'},
-    {label:'地面颜色',value:modelRef(setting,'人影.监控.landColor'),type:'color'},
-    {label:'全国行政区划',type:'folder',opened:modelRef(setting,'人影.监控.districtOptionsOpened'),children:[
-      {label:'填充',type:'folder',opened:modelRef(setting,'人影.监控.districtOptions.districtOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.districtOptions.district'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.districtOptions.districtFillColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.districtOptions.districtFillOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-      ]},
-      {label:'底线',type:'folder',opened:modelRef(setting,'人影.监控.districtOptions.districtBaseOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.districtOptions.districtBase'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.districtOptions.districtBaseColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.districtOptions.districtBaseOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:modelRef(setting,'人影.监控.districtOptions.districtBaseWidth'),type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
-      ]},
-      {label:'界线',type:'folder',opened:modelRef(setting,'人影.监控.districtOptions.districtLineOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.districtOptions.districtLine'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.districtOptions.districtLineColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.districtOptions.districtLineOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:modelRef(setting,'人影.监控.districtOptions.districtLineWidth'),type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
-      ]},
-    ]},
-    {label:'北京行政区划',type:'folder',opened:modelRef(setting,'人影.监控.beijingOptionsOpened'),children:[
-      {label:'填充',type:'folder',opened:modelRef(setting,'人影.监控.beijingOptions.districtOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.beijingOptions.district'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.beijingOptions.districtFillColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.beijingOptions.districtFillOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-      ]},
-      {label:'底线',type:'folder',opened:modelRef(setting,'人影.监控.beijingOptions.districtBaseOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.beijingOptions.districtBase'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.beijingOptions.districtBaseColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.beijingOptions.districtBaseOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:modelRef(setting,'人影.监控.beijingOptions.districtBaseWidth'),type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
-      ]},
-      {label:'界线',type:'folder',opened:modelRef(setting,'人影.监控.beijingOptions.districtLineOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.beijingOptions.districtLine'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.beijingOptions.districtLineColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.beijingOptions.districtLineOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:modelRef(setting,'人影.监控.beijingOptions.districtLineWidth'),type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
-      ]},
-    ]},
-    {label:'华北飞行区域',type:'folder',opened:modelRef(setting,'人影.监控.ryAirspacesOpened'),children:[
-      {label:'填充',type:'folder',opened:modelRef(setting,'人影.监控.ryAirspaces.fillOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.ryAirspaces.fill'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.ryAirspaces.fillColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.ryAirspaces.fillOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-      ]},
-      {label:'底线',type:'folder',opened:modelRef(setting,'人影.监控.ryAirspaces.baseOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.ryAirspaces.base'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.ryAirspaces.baseColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.ryAirspaces.baseOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:modelRef(setting,'人影.监控.ryAirspaces.baseWidth'),type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
-      ]},
-      {label:'界线',type:'folder',opened:modelRef(setting,'人影.监控.ryAirspaces.lineOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.ryAirspaces.line'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.ryAirspaces.lineColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.ryAirspaces.lineOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-        {label:'宽度',value:modelRef(setting,'人影.监控.ryAirspaces.lineWidth'),type:'range',min:0,max:5,arr:Array.from({length:101},(_,i:number)=>5*i/100)},
-      ]},
-      {label:'标签',type:'folder',opened:modelRef(setting,'人影.监控.ryAirspaces.labelOpened'),children:[
-        {label:'显示',value:modelRef(setting,'人影.监控.ryAirspaces.label'),type:'checkbox'},
-        {label:'颜色',value:modelRef(setting,'人影.监控.ryAirspaces.labelColor'),type:'color'},
-        {label:'透明度',value:modelRef(setting,'人影.监控.ryAirspaces.labelOpacity'),type:'range',min:0,max:1,arr:Array.from({length:101},(_,i:number)=>i/100)},
-      ]}
-    ]},
-    {label:'航路航线',value:modelRef(setting,'人影.监控.routeLine'),type:'checkbox'},
-    {label:'机场',value:modelRef(setting,'人影.监控.airport'),type:'checkbox'},
-    {label:'作业点',value:modelRef(setting,'人影.监控.zyd'),type:'checkbox'},
-    {label:'导航台',value:modelRef(setting,'人影.监控.navigationStation'),type:'checkbox'},
-    {label:'飞机',value:modelRef(setting,'人影.监控.plane'),type:'checkbox'},
-    {label:'飞机标牌',value:modelRef(setting,'人影.监控.planeLabel'),type:'checkbox'},
-    {label:'航迹',value:modelRef(setting,'人影.监控.track'),type:'checkbox'},
-    {label:'航迹数量',value:modelRef(setting,'人影.监控.trackCount'),type:'range',min:0,max:99,arr:Array.from({length:101},(_,i:number)=>i)},
-    {label:'位置',value:computed(()=>setting.人影.监控.经纬度.substring(0,10)+'\r\n0'+setting.人影.监控.经纬度.substring(10,20)),type:'text'},
-    {label:'在线人数',value:modelRef(setting,'在线人数'),type:'text'},
-    {label:'网络状态',value:modelRef(setting,'网络状态'),type:'text'},
-    {label:'内存占用',value:modelRef(setting,'内存占用'),type:'text'},
-    // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
-    // {label:'网格点',value:toRefs(setting.人影.监控).gridPoint,type:'checkbox'},
-    // {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
-    // {label:'等值线',value:toRefs(setting.人影.监控).isolines,type:'checkbox'},
-    // {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
-    {label:'重置系统',type:'button',click(){setting.$reset()}},
-    {label:'放大',type:'button',click(){editMapRef.value.zoomIn()}},
-    {label:'缩小',type:'button',click(){editMapRef.value.zoomOut()}},
-    {label:'测距',type:'button',click:()=>{setting.测距()}},
-    {label:'获取经纬度',type:'button',click(){setting.经纬度()}},
-    {label:'批量操作',type:'button',click(){editMapRef.value.批量操作()}},
-  ]},
+  {
+    label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
+      {
+        label: '主题',
+        value: theme,
+        type: 'select',
+        options: [{value: 'light', label: '亮色'}, {value: 'dark', label: '暗色'}, {value: 'auto', label: '自动'}]
+      },
+      {label: '菜单', value: modelRef(setting, 'menus'), type: 'checkbox'},
+      // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
+      {label: '瓦片地图', value: modelRef(setting, '人影.监控.loadmap'), type: 'checkbox'},
+      {label: '地面颜色', value: modelRef(setting, '人影.监控.landColor'), type: 'color'},
+      {
+        label: '全国行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.districtOptionsOpened'), children: [
+          {
+            label: '填充',
+            type: 'folder',
+            opened: modelRef(setting, '人影.监控.districtOptions.districtOpened'),
+            children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.districtOptions.district'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.districtOptions.districtFillColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.districtOptions.districtFillOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+            ]
+          },
+          {
+            label: '底线',
+            type: 'folder',
+            opened: modelRef(setting, '人影.监控.districtOptions.districtBaseOpened'),
+            children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.districtOptions.districtBase'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.districtOptions.districtBaseColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.districtOptions.districtBaseOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+              {
+                label: '宽度',
+                value: modelRef(setting, '人影.监控.districtOptions.districtBaseWidth'),
+                type: 'range',
+                min: 0,
+                max: 5,
+                arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+              },
+            ]
+          },
+          {
+            label: '界线',
+            type: 'folder',
+            opened: modelRef(setting, '人影.监控.districtOptions.districtLineOpened'),
+            children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.districtOptions.districtLine'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.districtOptions.districtLineColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.districtOptions.districtLineOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+              {
+                label: '宽度',
+                value: modelRef(setting, '人影.监控.districtOptions.districtLineWidth'),
+                type: 'range',
+                min: 0,
+                max: 5,
+                arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+              },
+            ]
+          },
+        ]
+      },
+      {
+        label: '北京行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.beijingOptionsOpened'), children: [
+          {
+            label: '填充',
+            type: 'folder',
+            opened: modelRef(setting, '人影.监控.beijingOptions.districtOpened'),
+            children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.district'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtFillColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.beijingOptions.districtFillOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+            ]
+          },
+          {
+            label: '底线',
+            type: 'folder',
+            opened: modelRef(setting, '人影.监控.beijingOptions.districtBaseOpened'),
+            children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.districtBase'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtBaseColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.beijingOptions.districtBaseOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+              {
+                label: '宽度',
+                value: modelRef(setting, '人影.监控.beijingOptions.districtBaseWidth'),
+                type: 'range',
+                min: 0,
+                max: 5,
+                arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+              },
+            ]
+          },
+          {
+            label: '界线',
+            type: 'folder',
+            opened: modelRef(setting, '人影.监控.beijingOptions.districtLineOpened'),
+            children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.districtLine'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtLineColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.beijingOptions.districtLineOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+              {
+                label: '宽度',
+                value: modelRef(setting, '人影.监控.beijingOptions.districtLineWidth'),
+                type: 'range',
+                min: 0,
+                max: 5,
+                arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+              },
+            ]
+          },
+        ]
+      },
+      {
+        label: '华北飞行区域', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspacesOpened'), children: [
+          {
+            label: '填充', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.fillOpened'), children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.fill'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.fillColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.ryAirspaces.fillOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+            ]
+          },
+          {
+            label: '底线', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.baseOpened'), children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.base'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.baseColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.ryAirspaces.baseOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+              {
+                label: '宽度',
+                value: modelRef(setting, '人影.监控.ryAirspaces.baseWidth'),
+                type: 'range',
+                min: 0,
+                max: 5,
+                arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+              },
+            ]
+          },
+          {
+            label: '界线', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.lineOpened'), children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.line'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.lineColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.ryAirspaces.lineOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+              {
+                label: '宽度',
+                value: modelRef(setting, '人影.监控.ryAirspaces.lineWidth'),
+                type: 'range',
+                min: 0,
+                max: 5,
+                arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+              },
+            ]
+          },
+          {
+            label: '标签', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.labelOpened'), children: [
+              {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.label'), type: 'checkbox'},
+              {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.labelColor'), type: 'color'},
+              {
+                label: '透明度',
+                value: modelRef(setting, '人影.监控.ryAirspaces.labelOpacity'),
+                type: 'range',
+                min: 0,
+                max: 1,
+                arr: Array.from({length: 101}, (_, i: number) => i / 100)
+              },
+            ]
+          }
+        ]
+      },
+      {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
+      {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
+      {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
+      {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
+      {label: '飞机', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
+      {label: '飞机标牌', value: modelRef(setting, '人影.监控.planeLabel'), type: 'checkbox'},
+      {label: '航迹', value: modelRef(setting, '人影.监控.track'), type: 'checkbox'},
+      {
+        label: '航迹数量',
+        value: modelRef(setting, '人影.监控.trackCount'),
+        type: 'range',
+        min: 0,
+        max: 99,
+        arr: Array.from({length: 101}, (_, i: number) => i)
+      },
+      {
+        label: '位置',
+        value: computed(() => setting.人影.监控.经纬度.substring(0, 10) + '\r\n0' + setting.人影.监控.经纬度.substring(10, 20)),
+        type: 'text'
+      },
+      {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
+      {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
+      {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
+      // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
+      // {label:'网格点',value:toRefs(setting.人影.监控).gridPoint,type:'checkbox'},
+      // {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
+      // {label:'等值线',value:toRefs(setting.人影.监控).isolines,type:'checkbox'},
+      // {label:'等值带',value:toRefs(setting.人影.监控).isobands,type:'checkbox'},
+      {
+        label: '重置系统', type: 'button', click() {
+          setting.$reset()
+        }
+      },
+      {
+        label: '放大', type: 'button', click() {
+          editMapRef.value.zoomIn()
+        }
+      },
+      {
+        label: '缩小', type: 'button', click() {
+          editMapRef.value.zoomOut()
+        }
+      },
+      {
+        label: '测距', type: 'button', click: () => {
+          setting.测距()
+        }
+      },
+      {
+        label: '获取经纬度', type: 'button', click() {
+          setting.经纬度()
+        }
+      },
+      {
+        label: '批量操作', type: 'button', click() {
+          editMapRef.value.批量操作()
+        }
+      },
+    ]
+  },
 ]);
-const toolkitButtonClick=(e:any)=>{
-  setting.人影.监控.是否显示工具箱=!setting.人影.监控.是否显示工具箱
-  if(setting.人影.监控.是否显示工具箱){
+const toolkitButtonClick = (e: any) => {
+  setting.人影.监控.是否显示工具箱 = !setting.人影.监控.是否显示工具箱
+  if (setting.人影.监控.是否显示工具箱) {
     e.currentTarget.classList.add('active')
-  }else{
+  } else {
     e.currentTarget.classList.remove('active')
   }
-    console.log(e.currentTarget)
+  console.log(e.currentTarget)
 }
-let pane:any
-onMounted(()=>{
+let pane: any
+onMounted(() => {
   /*
   pane = new Pane({
     container:tweakPaneRef.value
@@ -373,40 +603,41 @@ onMounted(()=>{
   pane.addBinding(setting.人影.监控, 'isobands',{label:'等值带'});
   */
 })
-onBeforeUnmount(()=>{
-  pane&&pane.dispose();
+onBeforeUnmount(() => {
+  pane && pane.dispose();
 })
 watch([
-  ()=>setting.人影.监控.loadmap,
-  ()=>setting.人影.监控.districtOptions.district,
-  ()=>setting.人影.监控.ryAirspaces.fill,
-  ()=>setting.人影.监控.routeLine,
-  ()=>setting.人影.监控.airport,
-  ()=>setting.人影.监控.plane,
-  ()=>setting.人影.监控.zyd,
-  ()=>setting.人影.监控.navigationStation,
-  ()=>setting.人影.监控.zdz,
-  ()=>setting.人影.监控.gridPoint,
-  ()=>setting.人影.监控.gridValue,
-  ()=>setting.人影.监控.isolines,
-  ()=>setting.人影.监控.isobands,
-],()=>{
-  pane&&pane.refresh()
+  () => setting.人影.监控.loadmap,
+  () => setting.人影.监控.districtOptions.district,
+  () => setting.人影.监控.ryAirspaces.fill,
+  () => setting.人影.监控.routeLine,
+  () => setting.人影.监控.airport,
+  () => setting.人影.监控.plane,
+  () => setting.人影.监控.zyd,
+  () => setting.人影.监控.navigationStation,
+  () => setting.人影.监控.zdz,
+  () => setting.人影.监控.gridPoint,
+  () => setting.人影.监控.gridValue,
+  () => setting.人影.监控.isolines,
+  () => setting.人影.监控.isobands,
+], () => {
+  pane && pane.refresh()
 })
 import datatable from "~/myComponents/datatable/index.vue";
+
 const menus = reactive([
-  { value: 12, type: "warning", svg: warnSvg, active: true },
-  { value: 12, type: "success", svg: uavSvg, active: false },
-  { value: 12, type: "primary", svg: deviceSvg, active: false },
-  { value: 12, type: "danger", svg: recordSvg, active: false },
-  { value: 12, type: "info", svg: whitelistSvg, active: false },
-  { value: 0, svg: statisticSvg, active: false },
+  {value: 12, type: "warning", svg: warnSvg, active: true},
+  {value: 12, type: "success", svg: uavSvg, active: false},
+  {value: 12, type: "primary", svg: deviceSvg, active: false},
+  {value: 12, type: "danger", svg: recordSvg, active: false},
+  {value: 12, type: "info", svg: whitelistSvg, active: false},
+  {value: 0, svg: statisticSvg, active: false},
 ]);
 const selectorColor = computed({
-  get(){
+  get() {
     return setting.人影.监控.districtOptions.districtFillColor
   },
-  set(val:{r:number,g:number,b:number,a:number}){
+  set(val: { r: number, g: number, b: number, a: number }) {
     setting.人影.监控.districtOptions.districtFillColor = val
   }
 })
@@ -414,24 +645,27 @@ const tweakPaneRef = ref<HTMLElement>();
 const confirm = (data: prevRequestDataType) => {
   eventbus.emit("人影-地面作业申请-网络上报", data);
 };
-function accept(data){
-  空域申请批准(data).then((res)=>{
+
+function accept(data) {
+  空域申请批准(data).then((res) => {
     setting.人影.监控.prevPlanReplyShow = false
   })
 }
-function reject(data){
-  空域申请拒绝(data).then((res)=>{
+
+function reject(data) {
+  空域申请拒绝(data).then((res) => {
     setting.人影.监控.prevPlanReplyShow = false
   })
 }
+
 const click = (v: any) => {
   setting.人影.监控.bottom_disappear = false;
   v.active = true;
   menus
-    .filter((item) => item !== v)
-    .map((item) => {
-      item.active = false;
-    });
+      .filter((item) => item !== v)
+      .map((item) => {
+        item.active = false;
+      });
 };
 const formatUrl = (url: string) => {
   return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
@@ -582,26 +816,26 @@ tileList.value.map((item: any, k: number) => {
   }
 });
 watch(
-  () => setting.人影.监控.tile,
-  (v) => {
-    if (tileList.value[v.index]) {
-      tileList.value[v.index].selected = true;
-    } else {
-      tileList.value[0].selected = true;
+    () => setting.人影.监控.tile,
+    (v) => {
+      if (tileList.value[v.index]) {
+        tileList.value[v.index].selected = true;
+      } else {
+        tileList.value[0].selected = true;
+      }
     }
-  }
 );
 watch(
-  tileList,
-  (list) => {
-    list.map((item: any, k: number) => {
-      if (item.selected) {
-        setting.人影.监控.tile.index = k;
-        setting.人影.监控.tile.tileData = item.tileData;
-      }
-    });
-  },
-  { immediate: true, deep: true }
+    tileList,
+    (list) => {
+      list.map((item: any, k: number) => {
+        if (item.selected) {
+          setting.人影.监控.tile.index = k;
+          setting.人影.监控.tile.tileData = item.tileData;
+        }
+      });
+    },
+    {immediate: true, deep: true}
 );
 </script>
 <style lang="scss">
@@ -651,7 +885,7 @@ watch(
 //   --tp-monitor-background-color: hsla(230, 7%, 0%, 0.2);
 //   --tp-monitor-foreground-color: hsla(230, 7%, 75%, 0.7);
 // }
-:root{
+:root {
   --tp-base-background-color: hsla(230, 5%, 90%, 1);
   --tp-base-shadow-color: hsla(0, 0%, 0%, 0.1);
   --tp-button-background-color: hsla(230, 7%, 75%, 1);
@@ -674,8 +908,9 @@ watch(
   --tp-monitor-background-color: hsla(230, 15%, 30%, 0.1);
   --tp-monitor-foreground-color: hsla(230, 10%, 30%, 0.5);
 }
-.dark .tp-dfwv{
-  &.default{
+
+.dark .tp-dfwv {
+  &.default {
     --tp-base-background-color: hsla(230, 7%, 17%, 1);
     --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
     --tp-button-background-color: hsla(230, 7%, 70%, 1);
@@ -698,7 +933,8 @@ watch(
     --tp-monitor-background-color: hsla(230, 7%, 0%, 0.2);
     --tp-monitor-foreground-color: hsla(230, 7%, 75%, 0.7);
   }
-  &.jetblack{
+
+  &.jetblack {
     --tp-base-background-color: hsla(0, 0%, 0%, 1);
     --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
     --tp-button-background-color: hsla(0, 0%, 70%, 1);
@@ -721,7 +957,8 @@ watch(
     --tp-monitor-background-color: hsla(0, 0%, 8%, 1);
     --tp-monitor-foreground-color: hsla(0, 0%, 48%, 1);
   }
-  &.iceberg{
+
+  &.iceberg {
     --tp-base-background-color: hsla(230, 20%, 11%, 1);
     --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
     --tp-button-background-color: hsla(230, 10%, 80%, 1);
@@ -744,7 +981,8 @@ watch(
     --tp-monitor-background-color: hsla(230, 20%, 8%, 1);
     --tp-monitor-foreground-color: hsla(230, 12%, 48%, 1);
   }
-  &.retro{
+
+  &.retro {
     --tp-base-background-color: hsla(40, 3%, 90%, 1);
     --tp-base-shadow-color: hsla(0, 0%, 0%, 0.3);
     --tp-button-background-color: hsla(40, 3%, 70%, 1);
@@ -767,7 +1005,8 @@ watch(
     --tp-monitor-background-color: hsla(120, 3%, 20%, 1);
     --tp-monitor-foreground-color: hsla(120, 40%, 60%, 0.8);
   }
-  &.translucent{
+
+  &.translucent {
     --tp-base-background-color: hsla(0, 0%, 10%, 0.8);
     --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
     --tp-button-background-color: hsla(0, 0%, 80%, 1);
@@ -790,7 +1029,8 @@ watch(
     --tp-monitor-background-color: hsla(0, 0%, 0%, 0.3);
     --tp-monitor-foreground-color: hsla(0, 0%, 100%, 0.3);
   }
-  &.vivid{
+
+  &.vivid {
     --tp-base-background-color: hsla(0, 80%, 40%, 1);
     --tp-base-shadow-color: hsla(0, 0%, 0%, 0.2);
     --tp-button-background-color: hsla(0, 0%, 100%, 1);
@@ -829,11 +1069,14 @@ $time: 1s;
   box-sizing: border-box;
   border-top: 1px solid #ddd;
   transition: transform $time;
+
   & > .handle {
     position: absolute;
     transform: translateY(-100%);
+
     .ep-badge {
       margin: 0 20px;
+
       .ep-icon {
         cursor: pointer;
         filter: drop-shadow(0 0 8px #000);
@@ -842,13 +1085,16 @@ $time: 1s;
       }
     }
   }
+
   &.disappear {
     transform: translateY(100%);
   }
 }
+
 .dark .bottom-drawer {
   border-top: 1px solid gray;
   background-color: #2b2b2b;
+
   & > .handle {
     .ep-badge {
       .ep-icon {
@@ -858,6 +1104,7 @@ $time: 1s;
     }
   }
 }
+
 .right-drawer {
   position: absolute;
   right: 0;
@@ -865,11 +1112,12 @@ $time: 1s;
   box-sizing: border-box;
   height: 100%;
   background-color: white;
-  display: none;//flex
+  display: none; //flex
   flex-direction: column;
   transition: transform $time;
   border-left: 1px solid #ddd;
   box-sizing: border-box;
+
   & > .handle {
     display: flex;
     justify-content: start;
@@ -887,59 +1135,65 @@ $time: 1s;
     height: 30px;
     border: 1px solid #ddd;
     border-right: none;
+
     & > .ep-icon {
       transition: transform $time;
       color: #bbb;
     }
   }
+
   &.disappear {
     transform: translateX(calc(100%));
+
     & > .handle > .ep-icon {
       transform: rotateY(180deg);
     }
   }
 }
+
 .dark .right-drawer {
   background-color: #2b2b2b;
   border-left: 1px solid gray;
+
   & > .handle {
     background-color: #2b2b2b;
     border: 1px solid grey;
     border-right: none;
+
     & > .ep-icon {
       color: #ddd;
     }
   }
 }
-.toolkit-button{
-  box-sizing: border-box;
+
+.tool-btns {
+  position: absolute;
+  right: 18px;
+  top: 38px;
   display: flex;
-  justify-content: center;
-  align-items:center;
-  position: absolute;
-  right:18px;
-  top:38px;
-  width:40px;
-  height:40px;
-  border:1px solid #bdd4ff;
-  border-radius:5px;
-  background-color: #eaf1ff;
-  color:var(--el-color-primary);
+
+
+  .btn-box {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left:$grid-2;
+    width: 40px;
+    height: 40px;
+    color: #c1c1c1;
+    border-radius: $border-radius-1;
+    background-color: var(--el-bg-color-opacity-8);
+    border: 0.01rem solid var(--el-border-color);
+
+  }
+
+  .btn-box.active {
+    border-color: var(--el-color-primary);
+  }
 }
-.toolkit-button.active,.dark .toolkit-button.active{
-  border-color:var(--el-color-primary);
-}
-.dark .toolkit-button{
-  position: absolute;
-  right:18px;
-  top:38px;
-  width:40px;
-  height:40px;
-  border:1px solid #7d8593;
-  border-radius:5px;
-  background-color: #243349;
-  color:var(--el-color-primary);
-}
+
+
 .dark .fourCorners {
   &::after {
     filter: drop-shadow(-2px -2px 4px #00000044);
@@ -959,6 +1213,7 @@ $time: 1s;
       calc(100% - var(--len)) calc(100% - var(--len));
   }
 }
+
 .dark .fourCorners::after {
   border: var(--borderWidth) solid #000;
   filter: drop-shadow(2px 2px 4px #ffffff44);
