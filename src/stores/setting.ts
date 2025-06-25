@@ -385,6 +385,7 @@ export const useSettingStore = defineStore('setting',{
         track:true,
         trackCount:10,
         plane:true,
+        adsb:false,
         planeLabel:true,
         gridValue:false,
         gridPoint:false,
