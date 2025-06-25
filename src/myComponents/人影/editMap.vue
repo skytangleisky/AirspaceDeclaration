@@ -2309,80 +2309,20 @@ onMounted(() => {
             }
           }
         }
-        // planProps.今日作业记录 = res.data[1];
-        // planProps.今日作业记录.map((row:any)=>{
-        //   row.ubySendStatus = 3//发送成功
-        //   if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
-        //     row.ubyStatus = 91//作业开始
-        //   }
-        //   if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
-        //     row.ubyStatus = 100
-        //   }
-        //   if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
-        //     row.ubyStatus = 100
-        //   }
-        //   for (let i = 0; i < circleFeatures.length; i++) {
-        //     if (circleFeatures[i].properties.strID == row.strZydID) {
-        //       circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
-        //       if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
-        //         circleFeatures[i].properties.opacity = 0.5;
-        //       }
-        //       star(circleFeatures[i],row)
-        //       const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
-        //         number,
-        //         number
-        //       ]; // 圆心点的经纬度
-        //       const radius: number = row.iRange; // 半径（单位：米）
-        //       const startAngle: number = row.iAngleBegin; // 起始角度（单位：度）
-        //       const endAngle: number = row.iAngleEnd; // 终止角度（单位：度）
-        //       const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
-        //       const units: turf.Units = "meters"; // 半径的单位
-        //       if (endAngle - startAngle >= 360) {
-        //         const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
-        //           number,
-        //           number
-        //         ]; // 圆心点的经纬度
-        //         const radius: number = row.iRange; // 半径（单位：米
-        //         const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-        //         const units: turf.Units = "meters"; // 半径的单位
-        //         const sectorPoints: [number, number][] = calculateCirclePoints(
-        //           center,
-        //           radius,
-        //           steps,
-        //           units
-        //         );
-        //         const sectorPolygon = turf.polygon([sectorPoints], {
-        //           strID: row.strZydID,
-        //           opacity:0
-        //         });
-        //         circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
-        //       } else {
-        //         // const sectorPoints: [number, number][] = calculateSectorPoints(
-        //         //   center,
-        //         //   radius,
-        //         //   startAngle,
-        //         //   endAngle,
-        //         //   steps,
-        //         //   units
-        //         // );
-        //         // const sectorPolygon = turf.polygon([sectorPoints], {
-        //         //   strID: row.strZydID,
-        //         //   opacity:0
-        //         // });
-        //         // circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
-        //       }
-        //     }
-        //   }
-        //   for(let i=0;i<forewarningFeatures.length;i++){
-        //     if(forewarningFeatures[i].properties.strID == row.strZydID){
-        //       forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
-        //       if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
-        //         forewarningFeatures[i].properties.opacity = 0.5;
-        //       }
-        //       star(forewarningFeatures[i],row)
-        //     }
-        //   }
-        // })
+        planProps.今日作业记录 = res.data[1];
+        for(let i=0;i<planProps.今日作业记录.length;i++){
+          let row = planProps.今日作业记录[i]
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+        }
         let source1 = map?.getSource("最大射程source");
         source1?.setData({
           type: "FeatureCollection",
