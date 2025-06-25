@@ -774,8 +774,10 @@ const tileList = ref([
   // },
   {
     name: "高德卫星地图",
-    url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
-    tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+    // url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
+    // tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
+    url: formatUrl("/amap/api/map/gismap/{x}/{y}/{z}"),
+    tileData: ["/amap/api/map/gismap/{x}/{y}/{z}"],
   },
   // {
   //   name: "谷歌卫星地图",

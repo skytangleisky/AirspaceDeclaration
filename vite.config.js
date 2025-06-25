@@ -154,10 +154,9 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       },
       '/amap':{
-        target:'http://tanglei.top:8000',//替换的服务端地址
-        // target:'http://192.168.0.133:8000',//替换的服务端地址
+        target:'http://192.168.0.135:8088',
         changeOrigin:true,
-        rewrite:path=>path.replace(/^\/amap/,'') // 设置重写的路径
+        rewrite:path=>path.replace(/^\/amap/,''),
       },
       '/aircraft_position':{//人影飞机
         target:'http://192.168.0.135:8081',
