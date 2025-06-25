@@ -53,8 +53,6 @@
 </template>
 <script lang="ts" setup>
 let adsbTimer:any;
-const obj = {};
-const adsbObj = {}
 import custom_draw_line_with_distance from './CustomDrawLineWithDistance.js'
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { point, polygon } from "@turf/helpers";
@@ -359,12 +357,6 @@ function 处理飞机实时位置(d:Array<{
         has = true;
         trackFeatures[i].properties = {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0}
         trackFeatures[i].geometry.coordinates.push(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
-        const marker = obj[trackFeatures[i].properties.uiTrackNo]
-        if(marker){
-          marker.setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
-          marker.getElement().querySelector('.speed').innerText = `${d[j].unSsrCode.toString(8).padStart(4,'0')}`;
-          (过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})&&setting.人影.监控.planeLabel)?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
-        }
         if(trackFeatures[i].geometry.coordinates.length>setting.人影.监控.trackCount){
           trackFeatures[i].geometry.coordinates.splice(0,trackFeatures[i].geometry.coordinates.length - setting.人影.监控.trackCount)
         }
@@ -372,30 +364,6 @@ function 处理飞机实时位置(d:Array<{
       }
     }
     if(!has){
-      const customMarkerElement = document.createElement('div');
-      customMarkerElement.className = 'custom-marker'; // 自定义类名
-      customMarkerElement.innerHTML = `
-        <div class="marker-content">
-          <span class="speed">
-          ${d[j].unSsrCode.toString(8).padStart(4,'0')}
-          </span>
-          <svg>
-            <path d="M0,0 L5,5 10,0"/>
-          </svg>
-        </div>
-      `;
-      const marker = new mapboxgl.Marker({
-        element:customMarkerElement,
-        anchor: "bottom",
-        offset:[0,-16]
-      })
-        .setLngLat(wgs84togcj02(d[j].fLongitude,d[j].fLatitude)) // 设置 Marker 的位置
-        .addTo(map);
-      marker.getElement().addEventListener('click', () => {
-        marker.remove()
-      });
-      (过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})&&setting.人影.监控.planeLabel)?marker.getElement().style.display = 'block':marker.getElement().style.display = 'none'
-      obj[d[j].uiTrackNo] = marker
       trackFeatures.push({
         type: "Feature",
         properties: {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
@@ -421,13 +389,13 @@ function 处理飞机实时位置(d:Array<{
       }
     }
     if(has){
-      Object.assign(data.features[i].properties,{...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
+      Object.assign(data.features[i].properties,{...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
       data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
     }else{
       if(d[j]){
         data.features.push({
           type: "Feature",
-          properties: {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
+          properties: {...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
           geometry: {
             type: "Point",
             coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
@@ -1515,7 +1483,7 @@ onMounted(() => {
         type: "symbol",
         source: "trackSource",
         layout: {
-          visibility: setting.人影.监控.track ? "visible" : "none",
+          visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -1567,7 +1535,7 @@ onMounted(() => {
         type: "symbol",
         source: "adsbTrackSource",
         layout: {
-          visibility: setting.人影.监控.track ? "visible" : "none",
+          visibility: (setting.人影.监控.track&&setting.人影.监控.adsb) ? "visible" : "none",
           // This icon is a part of the Mapbox Streets style.
           // To view all images available in a Mapbox style, open
           // the style in Mapbox Studio and click the "Images" tab.
@@ -1631,6 +1599,38 @@ onMounted(() => {
       }
     });
     map.addLayer({
+      id: "飞机气泡图层",
+      type: "symbol",
+      source: "飞机原数据",
+      layout: {
+        "icon-image": "pop",
+        // "icon-size": {
+        //   base: 1,
+        //   stops: [
+        //     [0, 0.5],
+        //     [22, 1],
+        //   ],
+        // },
+        // "icon-rotation-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
+        'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
+        'text-field': ['get', 'label'],
+        // 'text-pitch-alignment':'map',
+        'icon-anchor': 'bottom',
+        'text-anchor': 'bottom',
+        'text-offset': [0, -1],
+        'text-font': ['simkai'],
+        'text-allow-overlap':true,
+        visibility: (setting.人影.监控.planeLabel&&setting.人影.监控.plane)?"visible":'none',
+      },
+      paint:{
+        'icon-color':'white',
+        "icon-opacity":1,
+      }
+    });
+    map.addLayer({
       id: "adsb气泡图层",
       type: "symbol",
       source: "adsb原数据",
@@ -1655,7 +1655,7 @@ onMounted(() => {
         'text-offset': [0, -1],
         'text-font': ['simkai'],
         'text-allow-overlap':true,
-        visibility: setting.人影.监控.planeLabel?"visible":'none',
+        visibility: (setting.人影.监控.planeLabel&&setting.人影.监控.adsb)?"visible":'none',
       },
       paint:{
         'icon-color':'white',
@@ -1679,7 +1679,7 @@ onMounted(() => {
         "icon-rotation-alignment": "map",
         "icon-allow-overlap": true,
         "icon-ignore-placement": true,
-        visibility: setting.人影.监控.plane?"visible":"none",
+        visibility: setting.人影.监控.adsb?"visible":"none",
       },
       paint:{
         "icon-opacity":1,
@@ -2309,80 +2309,20 @@ onMounted(() => {
             }
           }
         }
-        // planProps.今日作业记录 = res.data[1];
-        // planProps.今日作业记录.map((row:any)=>{
-        //   row.ubySendStatus = 3//发送成功
-        //   if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
-        //     row.ubyStatus = 91//作业开始
-        //   }
-        //   if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
-        //     row.ubyStatus = 100
-        //   }
-        //   if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
-        //     row.ubyStatus = 100
-        //   }
-        //   for (let i = 0; i < circleFeatures.length; i++) {
-        //     if (circleFeatures[i].properties.strID == row.strZydID) {
-        //       circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
-        //       if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
-        //         circleFeatures[i].properties.opacity = 0.5;
-        //       }
-        //       star(circleFeatures[i],row)
-        //       const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
-        //         number,
-        //         number
-        //       ]; // 圆心点的经纬度
-        //       const radius: number = row.iRange; // 半径（单位：米）
-        //       const startAngle: number = row.iAngleBegin; // 起始角度（单位：度）
-        //       const endAngle: number = row.iAngleEnd; // 终止角度（单位：度）
-        //       const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
-        //       const units: turf.Units = "meters"; // 半径的单位
-        //       if (endAngle - startAngle >= 360) {
-        //         const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
-        //           number,
-        //           number
-        //         ]; // 圆心点的经纬度
-        //         const radius: number = row.iRange; // 半径（单位：米
-        //         const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-        //         const units: turf.Units = "meters"; // 半径的单位
-        //         const sectorPoints: [number, number][] = calculateCirclePoints(
-        //           center,
-        //           radius,
-        //           steps,
-        //           units
-        //         );
-        //         const sectorPolygon = turf.polygon([sectorPoints], {
-        //           strID: row.strZydID,
-        //           opacity:0
-        //         });
-        //         circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
-        //       } else {
-        //         // const sectorPoints: [number, number][] = calculateSectorPoints(
-        //         //   center,
-        //         //   radius,
-        //         //   startAngle,
-        //         //   endAngle,
-        //         //   steps,
-        //         //   units
-        //         // );
-        //         // const sectorPolygon = turf.polygon([sectorPoints], {
-        //         //   strID: row.strZydID,
-        //         //   opacity:0
-        //         // });
-        //         // circleFeatures[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
-        //       }
-        //     }
-        //   }
-        //   for(let i=0;i<forewarningFeatures.length;i++){
-        //     if(forewarningFeatures[i].properties.strID == row.strZydID){
-        //       forewarningFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
-        //       if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
-        //         forewarningFeatures[i].properties.opacity = 0.5;
-        //       }
-        //       star(forewarningFeatures[i],row)
-        //     }
-        //   }
-        // })
+        planProps.今日作业记录 = res.data[1];
+        for(let i=0;i<planProps.今日作业记录.length;i++){
+          let row = planProps.今日作业记录[i]
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+        }
         let source1 = map?.getSource("最大射程source");
         source1?.setData({
           type: "FeatureCollection",
@@ -2965,32 +2905,33 @@ watch([()=>setting.人影.监控.飞机高度下限,()=>setting.人影.监控.�
     type: "FeatureCollection",
     features: trackFeatures,
   })
-  airplanesData.features.forEach((item)=>{
-    const marker = obj[item.properties.uiTrackNo]
-    if(过滤({altitude:item.properties.iAltitudeADS,ssrCode:item.properties.unSsrCode})){
-      item.properties.opacity = 0.5
-      marker.getElement().style.display = "block"
-    }else{
-      item.properties.opacity = 0
-      marker.getElement().style.display = "none"
-    }
-  })
   map?.getSource("airplaneSource")?.setData(airplanesData)
 })
 watch(()=>setting.人影.监控.track,()=>{
-  map.setLayoutProperty('trackLayer','visibility',setting.人影.监控.track?'visible':'none')
-  map.setLayoutProperty('adsbTrackLayer','visibility',setting.人影.监控.track?'visible':'none')
+  if(setting.人影.监控.track){
+    if(setting.人影.监控.plane){
+      map.setLayoutProperty('trackLayer','visibility','visible')
+    }
+    if(setting.人影.监控.adsb){
+      map.setLayoutProperty('adsbTrackLayer','visibility','visible')
+    }
+  }else{
+    map.setLayoutProperty('trackLayer','visibility','none')
+    map.setLayoutProperty('adsbTrackLayer','visibility','none')
+  }
 })
 watch(()=>setting.人影.监控.planeLabel,()=>{
-  map.setLayoutProperty('adsb气泡图层','visibility',setting.人影.监控.planeLabel?'visible':'none')
-  airplanesData.features.forEach((item)=>{
-    const marker = obj[item.properties.uiTrackNo]
-    if(setting.人影.监控.planeLabel){
-      marker.getElement().style.display = "block"
-    }else{
-      marker.getElement().style.display = "none"
+  if(setting.人影.监控.planeLabel){
+    if(setting.人影.监控.plane){
+      map.setLayoutProperty('飞机气泡图层','visibility','visible')
     }
-  })
+    if(setting.人影.监控.adsb){
+      map.setLayoutProperty('adsb气泡图层','visibility','visible')
+    }
+  }else{
+    map.setLayoutProperty('飞机气泡图层','visibility','none')
+    map.setLayoutProperty('adsb气泡图层','visibility','none')
+  }
 })
 watch(()=>setting.人影.监控.trackCount,()=>{
   for(let i=0;i<trackFeatures.length;i++){
@@ -3158,10 +3099,48 @@ watch(
   (newVal) => {
     if (newVal) {
       map.setLayoutProperty("飞机", "visibility", "visible");
-      map.setLayoutProperty("adsb图层", "visibility", "visible");
+      setting.人影.监控.adsb = false
     } else {
       map.setLayoutProperty("飞机", "visibility", "none");
+    }
+    if(setting.人影.监控.track){
+      if(newVal){
+        map.setLayoutProperty('trackLayer','visibility','visible')
+      }else{
+        map.setLayoutProperty('trackLayer','visibility','none')
+      }
+    }
+    if(setting.人影.监控.planeLabel){
+      if(newVal){
+        map.setLayoutProperty('飞机气泡图层','visibility','visible')
+      }else{
+        map.setLayoutProperty('飞机气泡图层','visibility','none')
+      }
+    }
+  }
+);
+watch(
+  () => setting.人影.监控.adsb,
+  (newVal) => {
+    if (newVal) {
+      map.setLayoutProperty("adsb图层", "visibility", "visible");
+      setting.人影.监控.plane = false
+    } else {
       map.setLayoutProperty("adsb图层", "visibility", "none");
+    }
+    if(setting.人影.监控.track){
+      if(newVal){
+        map.setLayoutProperty('adsbTrackLayer','visibility','visible')
+      }else{
+        map.setLayoutProperty('adsbTrackLayer','visibility','none')
+      }
+    }
+    if(setting.人影.监控.planeLabel){
+      if(newVal){
+        map.setLayoutProperty('adsb气泡图层','visibility','visible')
+      }else{
+        map.setLayoutProperty('adsb气泡图层','visibility','none')
+      }
     }
   }
 );
