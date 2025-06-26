@@ -312,13 +312,14 @@ onBeforeUnmount(()=>{
         display: grid;
         grid-template-columns: repeat(9, 1fr);
         grid-template-rows: repeat(2, auto);
-        grid-gap: 8px;
+        grid-gap:$grid-2;
         place-content: center;
         .smoke-stove-item-card {
             .smoke-stove-item {
-                padding:4px;
-                background: var(--color-bule-light-8);
-                border-radius: $border-radius-2;
+                padding:$grid-1;
+                background: var(--el-fill-color-darker);
+                border-radius: $border-radius-1;
+              border:1px solid transparent;
                 // margin-top: $grid-3;
                 box-sizing: border-box;
                 color:var(--el-color-white);
@@ -350,18 +351,18 @@ onBeforeUnmount(()=>{
                 }
                 &:hover {
                     // transform: translateY(0.04rem);;
-                    background-color: #3967d2;
+                    background-color: var(--el-color-primary-dark-2);
                     box-shadow: var(--el-box-shadow-light);
                 }
 
-                &.default{
-                    background: #444;
-                }
+                //&.default{
+                //    background: #444;
+                //}
             }
             .smoke-stove-item.active {
                 // transform: translate(0.04rem,0.04rem);
-                border:2px solid cyan;
-
+                border-color: var(--el-color-primary);
+                background-color: var(--el-color-primary);
                 box-shadow: var(--el-box-shadow-light);
             }
         }

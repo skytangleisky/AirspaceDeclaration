@@ -136,42 +136,42 @@ $layoutTop-height: 0px;
 $page-top-height: 3.4rem;
 .smokeStove {
     background-color: var(--el-bg-color-page);
-    padding: $grid-5;
+    padding: $grid-2;
     height: 100%;
     width: 100%;
     box-sizing: border-box;
     .page-top {
         background-color: var(--el-bg-color);
-        border-radius: $border-radius-4;
-        margin-bottom: $grid-4;
-        padding: $grid-4;
+        border-radius: $border-radius-2;
+        margin-bottom: $grid-2;
+        padding: $grid-2;
         height: 3.4rem;
         box-sizing: border-box;
     }
     .page-bottom {
-        height: calc(100% - $page-top-height - $grid-4);
+        height: calc(100% - $page-top-height - $grid-2);
         display: flex;
         .page-bottom-left {
             width:fit-content;
             // display: flex;
             // flex-direction: column;
             height: 100%;
-            margin-right: $grid-4;
+            margin-right: $grid-2;
             $bottom-left-bottom-height: 1.8rem;
             .bottom-left-top {
-                height: calc(100% - $bottom-left-bottom-height - $grid-4);
+                height: calc(100% - $bottom-left-bottom-height - $grid-2);
                 background-color: var(--el-bg-color);
-                border-radius: $border-radius-4;
-                margin-bottom: $grid-4;
-                padding: $grid-4;
+                border-radius: $border-radius-2;
+                margin-bottom: $grid-2;
+                padding: $grid-2;
                 box-sizing: border-box;
                 overflow: hidden;
             }
             .bottom-left-bottom {
                 height: $bottom-left-bottom-height;
                 background-color: var(--el-bg-color);
-                border-radius: $border-radius-4;
-                padding: $grid-4;
+                border-radius: $border-radius-2;
+                padding: $grid-2;
                 box-sizing: border-box;
             }
         }
@@ -179,8 +179,8 @@ $page-top-height: 3.4rem;
             flex: 1;
             height: 100%;
             background-color: var(--el-bg-color);
-            border-radius: $border-radius-4;
-            padding: $grid-4;
+            border-radius: $border-radius-2;
+            padding: $grid-2;
             box-sizing: border-box;
             // overflow-y: auto;
         }
