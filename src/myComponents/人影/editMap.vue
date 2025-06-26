@@ -49,6 +49,12 @@
         <li>手动发结束报</li> -->
       </ul>
     </div>
+    <teleport to="body">
+      <video class="video" controls autoplay muted width="640" height="360">
+        <source src="https://media.w3.org/2010/05/sintel/trailer.mp4" type="application/x-mpegURL">
+        您的浏览器不支持 video 标签。
+      </video>
+    </teleport>
   </div>
 </template>
 <script lang="ts" setup>
@@ -3367,6 +3373,13 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 </script>
 
 <style lang="scss">
+.video{
+  position: absolute;
+  right:10px;
+  bottom:10px;
+  border:1px solid black;
+  background:#2b2b2b;
+}
 .menu {
   width:fit-content;
   display: none;

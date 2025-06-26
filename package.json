@@ -41,6 +41,7 @@
     "element-plus": "^2.9.0",
     "gl-matrix": "^3.4.3",
     "gsap": "^3.12.7",
+    "http-proxy-agent": "^7.0.2",
     "jquery": "^3.7.1",
     "mapbox-gl_wstd": "^3.8.0",
     "moment": "^2.30.1",

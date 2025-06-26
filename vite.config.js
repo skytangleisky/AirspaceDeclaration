@@ -9,6 +9,8 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import path from "path";
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import { HttpProxyAgent } from 'http-proxy-agent'
+const agent = new HttpProxyAgent("http://127.0.0.1:4444")
 import {
   presetAttributify,
   presetIcons,
@@ -121,6 +123,7 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
+        agent,
         target:'http://192.168.0.114:3000',
         secure:false,
         changeOrigin:true,
@@ -128,37 +131,44 @@ export default defineConfig({
         ws:true,
       },
       '/debug':{
+        agent,
         target:'http://tanglei.top:7777',
         secure:false,
         changeOrigin:true,
         ws:true,
       },
       '/tanglei':{
+        agent,
         target:'http://tanglei.top',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/tanglei/,'') // 设置重写的路径
       },
       '/qqAuth':{
+        agent,
         target:'https://graph.qq.com',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/qqAuth/,'') // 设置重写的路径
       },
       '/ArcGIS':{
+        agent,
         target:'https://map.geoq.cn',//替换的服务端地址
         changeOrigin:true,
       },
       '/qt':{
+        agent,
         // target:'http://192.168.0.135:9090',//替换的服务端地址
         target:'http://qt.tanglei.top',//替换的服务端地址
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/qt/,'') // 设置重写的路径
       },
       '/amap':{
+        agent,
         target:'http://192.168.0.135:8088',
         changeOrigin:true,
         rewrite:path=>path.replace(/^\/amap/,''),
       },
       '/aircraft_position':{//人影飞机
+        agent,
         target:'http://192.168.0.135:8081',
         // target:'http://victorysoft.cn:8081',
         rewrite:path=>path.replace(/^\/aircraft_position/,''), // 设置重写的路径
@@ -167,6 +177,7 @@ export default defineConfig({
         ws:true,
       },
       '/ry_api':{//人影接口
+        agent,
         target:'http://192.168.0.135:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''), // 设置重写的路径
         secure:false,
@@ -174,6 +185,7 @@ export default defineConfig({
         ws:true,
       },
       '/tianditu':{
+        agent,
         target:'http://t0.tianditu.com',
         rewrite:path=>path.replace(/^\/tianditu/,''), // 设置重写的路径
         secure:false,
@@ -181,6 +193,7 @@ export default defineConfig({
         ws:true,
       },
       '/adsb':{
+        // agent,
         target:'http://113.44.175.230:18301',
         rewrite:path=>path.replace(/^\/adsb/,''),
         secure:false,

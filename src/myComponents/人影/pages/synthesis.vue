@@ -421,7 +421,8 @@ const list = reactive([
       {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
       {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
       {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
-      {label: '飞机', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
+      {label: '二次雷达信号', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
+      {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
       {label: '飞机标牌', value: modelRef(setting, '人影.监控.planeLabel'), type: 'checkbox'},
       {label: '航迹', value: modelRef(setting, '人影.监控.track'), type: 'checkbox'},
       {
@@ -437,9 +438,14 @@ const list = reactive([
         value: computed(() => setting.人影.监控.经纬度.substring(0, 10) + '\r\n0' + setting.人影.监控.经纬度.substring(10, 20)),
         type: 'text'
       },
-      {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
-      {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
-      {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
+
+      {
+        label: '系统信息', type: 'folder', opened: modelRef(setting, '人影.监控.systemInfoOpened'), children: [
+          {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
+          {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
+          {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
+        ]
+      },
       // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
       // {label:'网格点',value:toRefs(setting.人影.监控).gridPoint,type:'checkbox'},
       // {label:'网格值',value:toRefs(setting.人影.监控).gridValue,type:'checkbox'},
