@@ -29,7 +29,7 @@ const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'
     --tp-container-background-color: var(--el-fill-color);
     --tp-container-background-color-active: var(--el-fill-color-dark);;
     --tp-container-background-color-focus: var(--el-fill-color-lighter);
-    --tp-container-background-color-hover: var(--el-fill-color-light);
+    --tp-container-background-color-hover: var(--el-fill-color-dark);
     --tp-container-foreground-color: var(--el-text-color-regular);
     --tp-groove-foreground-color:var(--el-text-color-regular);
     --tp-input-background-color: var(--el-fill-color);
