@@ -516,7 +516,7 @@ const 取消预约 = () => {
     height: 100%;
     // overflow-y: auto;
     .module-bottom {
-        height: calc(100% - 0.2rem);
+        height: calc(100% - 0.35rem);
     }
     .form-item {
         .el-select {

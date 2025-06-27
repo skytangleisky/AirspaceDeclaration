@@ -44,7 +44,7 @@ code {
         display: flex;
         margin-bottom: $grid-1;
         .top-item {
-            margin-right: $grid-3;
+            margin-right: $grid-2;
         }
         .box {
             display: flex;
@@ -154,7 +154,7 @@ code {
     color: var(--el-text-color-primary);
     font-size: 0.16rem;
     margin-bottom: $grid-2;
-    border-left: 3px solid var(--el-color-primary);
+    border-left:0.04rem solid var(--el-color-primary);
     padding-left: $grid-1;
 }
 

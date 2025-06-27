@@ -21,6 +21,6 @@
   &:active{
     background: var(--tp-button-background-color-active);
   }
-  color: var(--tp-button-foreground-color)
+  color: #fff;
 }
 </style>
