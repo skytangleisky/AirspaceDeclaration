@@ -141,6 +141,7 @@ const emits = defineEmits([
   'update:prevReplyData',
 ]);
 let 批量申请 = () => {
+  setting.人影.监控.是否显示工具箱 = false
   let list = []
   for(let j=0;j<dialogOptions.menus.length;j++){
     let station = dialogOptions.menus[j];
@@ -653,7 +654,8 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(52,52,52)",
+        // "line-color": "rgb(52,52,52)",
+        "line-color": "rgb(255,0,0)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -669,7 +671,6 @@ onMounted(async() => {
       units
     );
     sectorPolygon = turf.polygon([sectorPoints], {});
-    console.log(sectorPolygon)
     map.addLayer({
       id: "line2",
       type: "line",
@@ -681,7 +682,7 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(255,0,0)",
+        "line-color": "rgb(0,0,255)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -697,7 +698,6 @@ onMounted(async() => {
       units
     );
     sectorPolygon = turf.polygon([sectorPoints], {});
-    console.log(sectorPolygon)
     map.addLayer({
       id: "line3",
       type: "line",
@@ -709,7 +709,7 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(0,38,115)",
+        "line-color": "rgb(0,255,0)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -725,7 +725,6 @@ onMounted(async() => {
       units
     );
     sectorPolygon = turf.polygon([sectorPoints], {});
-    console.log(sectorPolygon)
     map.addLayer({
       id: "line4",
       type: "line",
@@ -737,23 +736,20 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(38,11,0)",
+        "line-color": "rgb(255,255,0)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
     });
 
 
-    
-
 
 
 for(let i=0;i<8;i++){
   const bearing = 45*i;
-  const distance = 360;
+  const distance = 180;
   const startPoint = turf.point(center);
   const endPoint = turf.destination(startPoint, distance, bearing, { units: 'kilometers' });
-  console.log(endPoint)
   map.addLayer({
     id: 'line-layer'+i,
     type: 'line',
@@ -776,7 +772,7 @@ for(let i=0;i<8;i++){
       'line-cap': 'round'
     },
     paint: {
-      'line-color': 'rgb(255,0,0)',
+      'line-color': 'rgb(0,255,255)',
       'line-width': 1
     }
   });

@@ -7,9 +7,9 @@ let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
 
 //北京市
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=ryplat`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -80,14 +80,13 @@ export function 作业状态数据(){
     method: 'post',
     data:{
       sqls: [
-        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID ORDER BY z.tmBeginApply ASC",
-        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zydhisdata` z left join `units` u1 on z.strATCUnitID=u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply ASC",//当天的数据
+        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID ORDER BY z.tmBeginApply DESC",
+        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zydhisdata` z left join `units` u1 on z.strATCUnitID=u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply DESC",//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
     }
   })
 }
-
 export function ADSB(){
   return request({
     url: '/adsb/getPlaneInfo',

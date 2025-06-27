@@ -16,27 +16,28 @@ onMounted(()=>{
   所有站点的视频信息().then(({data})=>{
     for(let i=0;i<data.data.length;i++){
       const it = data.data[i]
-      if(it.cameraName.includes(item.value.strName.substring(0,2))){
+      if(it.cameraName.includes(item.value.strName.substring(0,2))&&it.cameraName.includes('作业平台')){
         m3u8(it.cameraIndexCode).then(res=>{
-          console.log(res.data.data.url)
-          videoSrc = res.data.data.url
+          const url = new URL(res.data.data.url)
+          videoSrc = url.pathname + url.search
+          console.log(videoSrc)
           if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
+            const hls = new Hls()
+            hls.loadSource(videoSrc)
+            hls.attachMedia(video)
             hls.on(Hls.Events.MANIFEST_PARSED, () => {
-              video.play();
-            });
+              video.play()
+            })
           } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
+            video.src = videoSrc
             video.addEventListener('loadedmetadata', () => {
-              video.play();
-            });
+              video.play()
+            })
           } else {
-            alert('该浏览器不支持 HLS 播放');
+            alert('该浏览器不支持 HLS 播放')
           }
         })
-        break;
+        break
       }
     }
   })
@@ -44,11 +45,7 @@ onMounted(()=>{
 </script>
 <style lang="scss" scoped>
 .video{
-  padding:2px;
-  box-sizing: border-box;
   position: relative;
   width:100%;
-  border:1px solid black;
-  background:#2b2b2b;
 }
 </style>
