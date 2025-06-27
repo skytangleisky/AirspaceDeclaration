@@ -1,58 +1,66 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute">
-    <div
-      v-resize="resize"
-      ref="mapRef"
-      class="dark:bg-#666 bg-white"
-      style="
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        line-height: 1;
-      "
-    ></div>
-    <Dialog
-      v-show="setting.menus"
-      class="stationDialog"
-      v-model:menus="dialogOptions.menus"
-    ></Dialog>
-    <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
-    <plan-panel
-      v-show="setting.menus"
-      :当前作业进度="planProps.当前作业进度"
-      :今日作业记录="planProps.今日作业记录"
-    ></plan-panel>
-    <!-- <el-select
-      class="select"
-      style="position: absolute; width: 100px; left: 588px; top: 10px"
-      size="small"
-      v-model="color"
-      placeholder="请选择颜色"
-    >
-      <el-option
-        v-for="(v, k) in options"
-        :label="v.label"
-        :value="v.value"
-        :key="k"
-      ></el-option>
-    </el-select> -->
-    <div class="menu" ref="stationMenuRef" @mousedown.stop>
-      <ul>
-        <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
-        <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
-        <li v-if="menuType=='批量申请'" @click="批量申请()">批量申请</li>
-        <!-- <li>查看作业点信息</li> -->
-        <!-- <li>人工批复</li>
-        <li>人工移除</li>
-        <li>手动发结束报</li> -->
-      </ul>
+  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute;display: flex;">
+    <div style="position: relative;flex:1;">
+      <div
+        v-resize="resize"
+        ref="mapRef"
+        class="dark:bg-#666 bg-white"
+        style="
+          position: relative;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          line-height: 1;
+        "
+      ></div>
+      <Dialog
+        v-show="setting.menus"
+        class="stationDialog"
+        v-model:menus="dialogOptions.menus"
+      ></Dialog>
+      <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
+      <plan-panel
+        v-show="setting.menus"
+        :当前作业进度="planProps.当前作业进度"
+        :今日作业记录="planProps.今日作业记录"
+      ></plan-panel>
+      <!-- <el-select
+        class="select"
+        style="position: absolute; width: 100px; left: 588px; top: 10px"
+        size="small"
+        v-model="color"
+        placeholder="请选择颜色"
+      >
+        <el-option
+          v-for="(v, k) in options"
+          :label="v.label"
+          :value="v.value"
+          :key="k"
+        ></el-option>
+      </el-select> -->
+      <div class="menu" ref="stationMenuRef" @mousedown.stop>
+        <ul>
+          <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
+          <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
+          <li v-if="menuType=='批量申请'" @click="批量申请()">批量申请</li>
+          <!-- <li>查看作业点信息</li> -->
+          <!-- <li>人工批复</li>
+          <li>人工移除</li>
+          <li>手动发结束报</li> -->
+        </ul>
+      </div>
+      <Tool-Box />
+    </div>
+    <div v-if="planProps.当前作业进度.length>0" style="position:relative;width:500px;overflow: auto;">
+      <Video v-for="item in planProps.当前作业进度" :item="item" :key="item.strWorkID"></Video>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
 let adsbTimer:any;
+import Video from './pages/video.vue'
+import ToolBox from './pages/toolBox.vue'
 import custom_draw_line_with_distance from './CustomDrawLineWithDistance.js'
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import { point, polygon } from "@turf/helpers";
@@ -163,6 +171,7 @@ const 人工批复 = () => {
   emits("update:prevReplyData", properties);
 }
 let 作业申请 = () => {
+  setting.人影.监控.是否显示工具箱 = false
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   emits("update:prevRequestShow", true);
@@ -570,7 +579,7 @@ let airplanesMockData = {
   type: "FeatureCollection",
   features: new Array<any>(),
 }
-onMounted(() => {
+onMounted(async() => {
   document.addEventListener("keydown", keydownFunc);
   aid = requestAnimationFrame(loop)
   map = new Map({
@@ -619,6 +628,169 @@ onMounted(() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
+    const center: [number, number] = wgs84togcj02(116.3913,39.907105) as [
+      number,
+      number
+    ]; // 圆心点的经纬
+    let radius: number = 60*1000; // 半径（单位：米
+    let steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+    let units: turf.Units = "meters"; // 半径的单位
+    let sectorPoints: [number, number][] = calculateCirclePoints(
+      center,
+      radius,
+      steps,
+      units
+    );
+    let sectorPolygon = turf.polygon([sectorPoints], {});
+    map.addLayer({
+      id: "line1",
+      type: "line",
+      source: {
+        type:'geojson',
+        data:{
+          type: "FeatureCollection",
+          features: [sectorPolygon],
+        },
+      },
+      paint: {
+        "line-color": "rgb(52,52,52)",
+        "line-width": 1,
+        // "line-dasharray": [1, 1],
+      },
+    });
+
+    radius = 120*1000; // 半径（单位：米
+    steps = 360; // 用于生成圆弧的步数，越大越平滑
+    units = "meters"; // 半径的单位
+    sectorPoints = calculateCirclePoints(
+      center,
+      radius,
+      steps,
+      units
+    );
+    sectorPolygon = turf.polygon([sectorPoints], {});
+    console.log(sectorPolygon)
+    map.addLayer({
+      id: "line2",
+      type: "line",
+      source: {
+        type:'geojson',
+        data:{
+          type: "FeatureCollection",
+          features: [sectorPolygon],
+        },
+      },
+      paint: {
+        "line-color": "rgb(255,0,0)",
+        "line-width": 1,
+        // "line-dasharray": [1, 1],
+      },
+    });
+
+    radius = 180*1000; // 半径（单位：米
+    steps = 360; // 用于生成圆弧的步数，越大越平滑
+    units = "meters"; // 半径的单位
+    sectorPoints = calculateCirclePoints(
+      center,
+      radius,
+      steps,
+      units
+    );
+    sectorPolygon = turf.polygon([sectorPoints], {});
+    console.log(sectorPolygon)
+    map.addLayer({
+      id: "line3",
+      type: "line",
+      source: {
+        type:'geojson',
+        data:{
+          type: "FeatureCollection",
+          features: [sectorPolygon],
+        },
+      },
+      paint: {
+        "line-color": "rgb(0,38,115)",
+        "line-width": 1,
+        // "line-dasharray": [1, 1],
+      },
+    });
+
+    radius = 360*1000; // 半径（单位：米
+    steps = 360; // 用于生成圆弧的步数，越大越平滑
+    units = "meters"; // 半径的单位
+    sectorPoints = calculateCirclePoints(
+      center,
+      radius,
+      steps,
+      units
+    );
+    sectorPolygon = turf.polygon([sectorPoints], {});
+    console.log(sectorPolygon)
+    map.addLayer({
+      id: "line4",
+      type: "line",
+      source: {
+        type:'geojson',
+        data:{
+          type: "FeatureCollection",
+          features: [sectorPolygon],
+        },
+      },
+      paint: {
+        "line-color": "rgb(38,11,0)",
+        "line-width": 1,
+        // "line-dasharray": [1, 1],
+      },
+    });
+
+
+    
+
+
+
+for(let i=0;i<8;i++){
+  const bearing = 45*i;
+  const distance = 360;
+  const startPoint = turf.point(center);
+  const endPoint = turf.destination(startPoint, distance, bearing, { units: 'kilometers' });
+  console.log(endPoint)
+  map.addLayer({
+    id: 'line-layer'+i,
+    type: 'line',
+    source: {
+      type:'geojson',
+      data:{
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            center,
+            endPoint.geometry.coordinates
+          ]
+        },
+        properties: {}
+      }
+    },
+    layout: {
+      'line-join': 'round',
+      'line-cap': 'round'
+    },
+    paint: {
+      'line-color': 'rgb(255,0,0)',
+      'line-width': 1
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
     adsbTimer = setInterval(()=>{
       ADSB().then(res=>{
         处理ADSB(res.data)

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HLS 播放器</title>
+</head>
+<body>
+  <video id="video" width="640" muted height="360"></video>
+  <!-- 引入 hls.js -->
+  <script src="/hls.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const videoSrc = 'http://172.18.7.210:83/openUrl/vsigFGNO7le17fa52612afb457085fb8/live.m3u8';
+    if (Hls.isSupported()) {
+      const hls = new Hls();
+      hls.loadSource(videoSrc);
+      hls.attachMedia(video);
+      hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        video.play();
+      });
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+      video.src = videoSrc;
+      video.addEventListener('loadedmetadata', () => {
+        video.play();
+      });
+    } else {
+      alert('该浏览器不支持 HLS 播放');
+    }
+  </script>
+</body>
+</html>

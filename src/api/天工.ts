@@ -7,9 +7,9 @@ let database1 = `${dbConfig}&database=union`
 let database2 = `${dbConfig}&database=ryplat_bjry`
 
 //北京市
-// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-// database1 = `${dbConfig}&database=union`
-// database2 = `${dbConfig}&database=ryplat`
+dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+database1 = `${dbConfig}&database=union`
+database2 = `${dbConfig}&database=ryplat`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -684,6 +684,26 @@ export function 判断是否可以点火(stoveID){
           stoveID,
         ]
       ]
+    }
+  })
+}
+
+export function 所有站点的视频信息(){
+  return request({
+    url:'/videoLive/videoQuery',
+    method:'get',
+    params:{
+      region:'beijing'
+    }
+  })
+}
+export function m3u8(indexCode){
+  return request({
+    url:'/videoLive/videoBySite',
+    method:'get',
+    params:{
+      indexCode:indexCode,
+      region:'beijing'
     }
   })
 }
