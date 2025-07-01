@@ -2,26 +2,23 @@
   <div
     class="transport"
   >
-    <table class="w-full">
+    <table style="width: 100%;">
       <thead>
-        <tr
-          class="z-1"
-          
-        >
-          <th>站点名称</th>
-          <th>站点ID</th>
-          <th>申请上报单位</th>
-          <th>批复单位</th>
-          <th>流转信息</th>
+        <tr style="z-index:1">
+          <th style="white-space: nowrap;">站点名称</th>
+          <th style="white-space: nowrap;">站点ID</th>
+          <th style="white-space: nowrap;">申请上报单位</th>
+          <th style="white-space: nowrap;">批复单位</th>
+          <th style="white-space: nowrap;">流转信息</th>
         </tr>
       </thead>
       <tbody style="position: relative">
         <tr v-for="(item, key) in data" :key="key">
-          <td>{{item.strName}}</td>
-          <td>{{ item.strZydID }}</td>
-          <td>北京气象局</td>
-          <td>北空</td>
-          <td>{{ item.vecProcess }}</td>
+          <td style="white-space: nowrap;">{{item.strName}}</td>
+          <td style="white-space: nowrap;">{{ item.strZydID }}</td>
+          <td style="white-space: nowrap;">北京气象局</td>
+          <td style="white-space: nowrap;">北空</td>
+          <td style="white-space: nowrap;">{{ item.vecProcess }}</td>
         </tr>
       </tbody>
     </table>

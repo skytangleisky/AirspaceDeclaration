@@ -1,5 +1,5 @@
 <template>
-    <div class="planPanel z-1 wstd-container">
+    <div class="planPanel wstd-container" style="z-index: 1;">
         <div class="top">
             <div
                 v-for="(item, index) in tabList"
@@ -491,7 +491,7 @@ const 完成 = (item: planDataType) => {
     bottom: $page-padding;
     // top: 300px;
     .wstd-content {
-        width: 7.2rem;
+        width: 840px;
     }
     .el-tabs {
         border-radius: $border-radius-1;
@@ -536,7 +536,7 @@ const 完成 = (item: planDataType) => {
             }
         }
 
-        $item-left-width: 70px;
+        $item-left-width: 120px;
         .item-left {
             padding: $grid-1;
             border-right: 1px solid var(--el-border-color);
