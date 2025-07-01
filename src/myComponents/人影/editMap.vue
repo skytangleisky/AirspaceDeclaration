@@ -399,13 +399,15 @@ function 处理飞机实时位置(d:Array<{
       }
     }
     if(has){
-      Object.assign(data.features[i].properties,{...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
+      // Object.assign(data.features[i].properties,{...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
+      Object.assign(data.features[i].properties,{...d[j],label:d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
       data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
     }else{
       if(d[j]){
         data.features.push({
           type: "Feature",
-          properties: {...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
+          // properties: {...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
+          properties: {...d[j],label:d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
           geometry: {
             type: "Point",
             coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
@@ -585,7 +587,7 @@ onMounted(async() => {
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
-    projection: "globe",//mercator|globe
+    projection: "mercator",//mercator|globe
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
     style:style as any,
     fadeDuration: 0,
@@ -629,6 +631,31 @@ onMounted(async() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
+
+    const extent = [72.0,15.0,136.0,54.0]
+    map.addLayer({
+      id: 'overlay-layer',
+      source: {
+        type: 'image',
+        url: '/image.png',
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      },
+      type: 'raster',
+      paint: {
+        'raster-opacity': 0.2,
+        'raster-resampling': 'nearest'
+      }
+    });
+
+
+
+
+
     const center: [number, number] = wgs84togcj02(116.3913,39.907105) as [
       number,
       number
