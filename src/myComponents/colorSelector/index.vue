@@ -46,7 +46,7 @@
         <div id="csactive"><div style="position:absolute;bottom:-50%;left:50%;transform: translateX(-50%);">当前</div></div>
         <div id="cshtmlcolor" class="hidden"></div>
       </div>
-      <div class="absolute left-310px top-310px"><label for="inHEX"># </label><input autocomplete="off" class="w-82px h-15px" style="font-family: menlo;" id="inHEX" type="text" maxlength="7" size="7"></div>
+      <div class="absolute left-310px top-310px"><label for="inHEX"># </label><input autocomplete="off" class="w-82px h-15px" style="font-family: Menlo,Ubuntu Mono,Consolas,Monaco" id="inHEX" type="text" maxlength="7" size="7"></div>
       <div class="absolute top-0 hidden"><label for="outHTML">HTML Color Name: </label><input id="outHTML" type="text" maxlength="20" size="15"></div>
 
       <div class="button confirm" @click.native="confirm">确认</div>

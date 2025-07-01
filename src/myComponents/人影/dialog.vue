@@ -62,7 +62,6 @@
                             position: relative;
                             margin-top: 12px;
                             scroll-padding-top: 14px;
-                            font-family: Menlo,Ubuntu Mono,Consolas,Monaco;
                         "
                     >
                         <table>

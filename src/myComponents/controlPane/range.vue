@@ -8,7 +8,7 @@
         </div>
         <div class="thumb" :style="`${isDragging?'transform: scale(1);':''}`"></div>
       </div>
-      <input type="text" :name="Math.random().toString()" maxlength="6" style="width: 6ch;font-family: Menlo,Consolas,Monaco;margin:2px;" :value="inputValue" @change="valueChange">
+      <input type="text" name="name" maxlength="6" style="width: 6ch;margin:2px;" :value="inputValue" @change="valueChange">
     </div>
   </div>
 </template>

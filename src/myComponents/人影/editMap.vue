@@ -631,26 +631,30 @@ onMounted(async() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
+    axios.get('http://10.225.6.188:3141/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{
+      const extent = data.data.extent.split(',').map(Number)
+      console.log(data)
+      map.addLayer({
+        id: 'overlay-layer',
+        source: {
+          type: 'image',
+          url: data.data.data,
+          coordinates: [
+            [extent[0], extent[3]],
+            [extent[2], extent[3]],
+            [extent[2], extent[1]],
+            [extent[0], extent[1]],
+          ]
+        },
+        type: 'raster',
+        paint: {
+          'raster-opacity': 1,
+          'raster-resampling': 'nearest'
+        }
+      });
 
-    const extent = [72.0,15.0,136.0,54.0]
-    map.addLayer({
-      id: 'overlay-layer',
-      source: {
-        type: 'image',
-        url: '/image.png',
-        coordinates: [
-          [extent[0], extent[3]],
-          [extent[2], extent[3]],
-          [extent[2], extent[1]],
-          [extent[0], extent[1]],
-        ]
-      },
-      type: 'raster',
-      paint: {
-        'raster-opacity': 0.2,
-        'raster-resampling': 'nearest'
-      }
-    });
+    })
+
 
 
 

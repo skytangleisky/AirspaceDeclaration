@@ -50,7 +50,7 @@
       <el-tab-pane label="消息" name="second">
         <div ref="logContainer" style="height: 100%;overflow: auto;white-space: pre;">
           <div v-for="item in logInfoList" v-html="item"
-               style="display:flex;font-family: Menlo,Ubuntu Mono,Consolas,Monaco;"></div>
+               style="display:flex;"></div>
           <el-icon class="trash" @click="clearAll" v-html="trashSvg"
                    style="position: absolute;right:20px;bottom:0;font-size:20px;"></el-icon>
         </div>

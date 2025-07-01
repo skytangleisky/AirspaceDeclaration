@@ -334,7 +334,7 @@ onBeforeUnmount(() => {
 </script>
 <style scoped lang="scss">
 .modal {
-    z-index: 4;
+    z-index: 8;
     background: #00000088;
     position: absolute;
     inset:0;

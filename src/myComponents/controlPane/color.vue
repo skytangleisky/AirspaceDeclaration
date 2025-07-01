@@ -4,7 +4,7 @@
     <div :style="`background:${color};width:13px;height:13px;position:relative;margin:2px;border-radius:2px;margin:3px 3px 3px 4px;`">
       <input class="absolute" style="opacity: 0;width:100%;height: 100%;position: absolute;" :name="Math.random().toString()" type="color" v-model="color">
     </div>
-    <input type="text" :name="Math.random().toString()" maxlength="7" style="width: 7ch;font-family: Menlo,Consolas,Monaco;margin:2px;" :value="inputColor" @change="colorChange">
+    <input type="text" name="name" maxlength="7" style="width: 7ch;font-family: Menlo,Ubuntu Mono,Consolas,Monaco;margin:2px;" :value="inputColor" @change="colorChange">
   </div>
 </template>
 <script lang="ts" setup>
