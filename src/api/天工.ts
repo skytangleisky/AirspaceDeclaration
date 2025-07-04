@@ -706,3 +706,102 @@ export function m3u8(indexCode){
     }
   })
 }
+//红外云图：%s
+export function 红外云图(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/zcgk/api/v1/satellite/product/getLocalFileList',
+      method:'get',
+      params:{
+        type:'WMC-K.0008.0010.T',
+        order:'desc'
+      }
+    }).then(({data})=>{
+      if(data.data.dateList.length>0){
+        request({
+          url:'/zcgk/api/v1/satellite/product/getProduct',
+          method:'get',
+          params:{
+            productType:'WMC-K.0008.0010.T',
+            fileName:data.data.dateList[0].fileName,
+          }
+        }).then(({data})=>{
+          resolve(data)
+        }).catch(e=>{
+          reject(e)
+        })
+      }else{
+        reject('暂无红外云图')
+      }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}
+//全国拼图V3.0：组合反射率
+export function 组合反射率(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/zcgk/api/v1/rada/radarV3Product/findDateList',
+      method:'get',
+      params:{
+        radarType:'ACHN_CREF',
+        imgType:'RADA_L3_MST_CREF_QC',
+        order:'desc'
+      }
+    }).then(({data})=>{
+      if(data.data.dateList.length>0){
+        request({
+          url:'/zcgk/api/v1/rada/radarV3Product/getProduct',
+          method:'get',
+          params:{
+            fileName:data.data.dateList[0].fileName,
+            productType:'RADA_L3_MST_CREF_QC',
+            smooth:false
+          }
+        }).then(({data})=>{
+          resolve(data)
+        }).catch(e=>{
+          reject(e)
+        })
+      }else{
+        reject('暂无组合反射率')
+      }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}
+//1km分辨率多源融合实况分析产品
+export function 多源融合实况分析产品(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/zcgk/api/v1/cmpas1kmProduct/findDateList',
+      method:'get',
+      params:{
+        type:'ss',
+        product:'SURF_CMPAS_MUL_1KM_RT',
+        order:'desc'
+      }
+    }).then(({data})=>{
+      if(data.data.length>0){
+        request({
+          url:'/zcgk/api/v1/cmpas1kmProduct/getProduct',
+          method:'get',
+          params:{
+            productType:'SURF_CMPAS_MUL_1KM_RT',
+            fileName:data.data[0].fileName,
+          }
+        }).then(({data})=>{
+          resolve(data)
+        }).catch(e=>{
+          reject(e)
+        })
+      }else{
+        reject('暂无多源融合实况分析产品')
+      }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}

@@ -1,6 +1,6 @@
 import city from './省界.json?url'
 import beijing from './北京市.json?url'
-import beijingBorder from './北京市.geojson?url'
+// import beijingBorder from './北京市.geojson?url'
 import { useSettingStore } from '~/stores/setting';
 export default function(){
 	const setting = useSettingStore()
@@ -285,9 +285,13 @@ export default function(){
 				"type":"geojson",
 				"data": beijing
 			},
-			"beijingBorder":{
+			// "beijingBorder":{
+			// 	"type":"geojson",
+			// 	"data": beijingBorder
+			// },
+			"huabeiBorder":{
 				"type":"geojson",
-				"data": beijingBorder
+				"data": '/resources/huabei.json'
 			},
 			// "composite": {
 			// 		"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
@@ -414,6 +418,22 @@ export default function(){
 						'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
 						'line-width': setting.人影.监控.districtOptions.districtLineWidth,
 						'line-opacity': setting.人影.监控.districtOptions.districtLineOpacity,
+						// 'line-dasharray': [1,1],
+					}
+				},
+				{
+					'id': 'huabeiLineOver',
+					'type': 'line',
+					'source': 'huabeiBorder',
+					'layout': {
+						'visibility':'visible',
+						'line-join':'round',
+						'line-cap':'round',
+					},
+					'paint': {
+						'line-color': 'rgb(163,183,218)',
+						'line-width': 2,
+						'line-opacity': 1,
 						// 'line-dasharray': [1,1],
 					}
 				},

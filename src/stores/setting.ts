@@ -12,6 +12,28 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    地图列表:[
+      {
+        value:0,
+        label: "白板地图",
+        tileData: [],
+      },
+      {
+        value:1,
+        label: "地形地图",
+        tileData: ["/tile/xbry/maps/DataServer?T=ter_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+      },
+      {
+        value:2,
+        label: "影像地图",
+        tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+      },
+      {
+        value:3,
+        label: "矢量地图",
+        tileData: ["/tile/xbry/maps/DataServer?T=vec_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+      },
+    ],
     在线人数:'',
     网络状态:'',
     内存占用:'',
@@ -383,11 +405,11 @@ export const useSettingStore = defineStore('setting',{
         飞机高度上限:Infinity,
         二次码下限:-Infinity,
         二次码上限:Infinity,
-        track:true,
+        track:false,
         trackCount:10,
-        plane:true,
+        plane:false,
         adsb:false,
-        planeLabel:true,
+        planeLabel:false,
         gridValue:false,
         gridPoint:false,
         isobands:false,
@@ -397,8 +419,8 @@ export const useSettingStore = defineStore('setting',{
         pitch:0,
         routeLine:true,
         zyd:true,
-        airport:true,
-        navigationStation:true,
+        airport:false,
+        navigationStation:false,
         systemInfoOpened:false,
         districtOptionsOpened:false,
         districtOptions:{
@@ -413,7 +435,7 @@ export const useSettingStore = defineStore('setting',{
           districtBaseOpacity:0.5,
           districtLineOpened:true,
           districtLine:true,
-          districtLineWidth:1,
+          districtLineWidth:2,
           districtLineColor:{r:50,g:59,b:73,a:1},
           districtLineOpacity:1,
         },
@@ -457,6 +479,7 @@ export const useSettingStore = defineStore('setting',{
         },
         showColorSelector:-1,
         loadmap:false,
+        红外云图:false,组合反射率:false,多源融合实况分析产品:false,
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{
@@ -490,10 +513,7 @@ export const useSettingStore = defineStore('setting',{
           duration: 1,
         },
         bottom_disappear:true,
-        tile:{
-          index:0,
-          tileData:new Array<string>()
-        },
+        tile: 0
       },
       回放:{
         "zoom": 8.882777980661407,

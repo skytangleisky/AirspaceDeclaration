@@ -191,9 +191,11 @@ watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查
   完成信息查询({page:pageOption.page,size:pageOption.size,range:range.value,zydID:zydID.value},currentController.signal).then(res=>{
     pageOption.total = res.data.total
     tableData.splice(0,tableData.length,...res.data.results)
+  }).catch(e=>{
+
   })
 },{
-  immediate:true,
+  immediate:true
 })
 watch(range,()=>{
   globalOptions.length = 0

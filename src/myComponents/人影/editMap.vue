@@ -58,6 +58,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+let sixMinutesTimer:any;
+let fifteenMinutesTimer:any;
 let adsbTimer:any;
 import Video from './pages/video.vue'
 import ToolBox from './pages/toolBox.vue'
@@ -110,7 +112,7 @@ let adsbTrackFeatures: any = []//存放ADSB尾迹
 const batchDialogVisible = ref(false)
 let batchList = reactive([])
 let zydFeatures:any[] = []//作业点数据
-import {华北飞行区域,作业点,机场,作业状态数据,ADSB} from '~/api/天工'
+import {华北飞行区域,作业点,机场,作业状态数据,ADSB,红外云图,组合反射率,多源融合实况分析产品} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -247,11 +249,6 @@ const props = withDefaults(
     loadmap?: boolean;
     district?: boolean;
     zyd?: boolean;
-    tile?: {
-      name: string,
-      url: string,
-      tileData: Array<string>,
-    };
     center?: object;
     zoom?: number;
     pitch?: number;
@@ -613,6 +610,7 @@ onMounted(async() => {
     center: props.center as mapboxgl.LngLatLike,
     pitch: props.pitch,
   });
+  map.getCanvas().style.cursor = 'default';
   const d = new TextDecoder('gbk')
   const GISTYPE={
     GIS_POINT: 1,
@@ -631,29 +629,231 @@ onMounted(async() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
-    axios.get('http://10.225.6.188:3141/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{
-      const extent = data.data.extent.split(',').map(Number)
-      console.log(data)
-      map.addLayer({
-        id: 'overlay-layer',
-        source: {
-          type: 'image',
-          url: data.data.data,
+    await 红外云图().then(({data})=>{
+      const extent = data.extent.split(',').map(Number)
+      const obj = {
+        url: data.data,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(!map.getLayer('overlay-layer1')){
+        map.addLayer({
+          id: 'overlay-layer1',
+          source: {
+            type: 'image',
+            ...obj
+          },
+          type: 'raster',
+          layout: {
+            visibility: setting.人影.监控.红外云图?'visible':'none'
+          },
+          paint: {
+            'raster-opacity': 0.8,
+            'raster-resampling': 'nearest'
+          }
+        });
+      }else{
+        const sourceName = map.getLayer('overlay-layer1').source
+        const source = map.getSource(sourceName)
+        source.updateImage(obj);
+      }
+    })
+    await 多源融合实况分析产品().then(({data})=>{
+      const extent = data.extent.split(',').map(Number)
+      const obj = {
+        url: data.data,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(!map.getLayer('overlay-layer3')){
+        map.addLayer({
+          id: 'overlay-layer3',
+          source: {
+            type: 'image',
+            ...obj
+          },
+          type: 'raster',
+          layout: {
+            visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
+          },
+          paint: {
+            'raster-opacity': 1,
+            'raster-resampling': 'nearest'
+          }
+        });
+      }else{
+        const sourceName = map.getLayer('overlay-layer3').source
+        const source = map.getSource(sourceName)
+        source.updateImage(obj);
+      }
+    })
+    await 组合反射率().then(({data})=>{
+      const extent = data.extent.split(',').map(Number)
+      const obj = {
+        url: data.data,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(!map.getLayer('overlay-layer2')){
+        map.addLayer({
+          id: 'overlay-layer2',
+          source: {
+            type: 'image',
+            ...obj
+          },
+          type: 'raster',
+          layout: {
+            visibility: setting.人影.监控.组合反射率?'visible':'none'
+          },
+          paint: {
+            'raster-opacity': 1,
+            'raster-resampling': 'nearest'
+          }
+        });
+      }else{
+        const sourceName = map.getLayer('overlay-layer2').source
+        const source = map.getSource(sourceName)
+        source.updateImage(obj);
+      }
+    })
+    fifteenMinutesTimer = setInterval(()=>{
+      红外云图().then(({data})=>{
+        const extent = data.extent.split(',').map(Number)
+        const obj = {
+          url: data.data,
           coordinates: [
             [extent[0], extent[3]],
             [extent[2], extent[3]],
             [extent[2], extent[1]],
             [extent[0], extent[1]],
           ]
-        },
-        type: 'raster',
-        paint: {
-          'raster-opacity': 1,
-          'raster-resampling': 'nearest'
         }
-      });
+        if(!map.getLayer('overlay-layer1')){
+          map.addLayer({
+            id: 'overlay-layer1',
+            source: {
+              type: 'image',
+              ...obj
+            },
+            type: 'raster',
+            layout: {
+              visibility: setting.人影.监控.红外云图?'visible':'none'
+            },
+            paint: {
+              'raster-opacity': 1,
+              'raster-resampling': 'nearest'
+            }
+          });
+        }else{
+          const sourceName = map.getLayer('overlay-layer1').source
+          const source = map.getSource(sourceName)
+          source.updateImage(obj);
+        }
+      })
+    },60*1000*15)
+    sixMinutesTimer = setInterval(()=>{
+      组合反射率().then(({data})=>{
+        const extent = data.extent.split(',').map(Number)
+        const obj = {
+          url: data.data,
+          coordinates: [
+            [extent[0], extent[3]],
+            [extent[2], extent[3]],
+            [extent[2], extent[1]],
+            [extent[0], extent[1]],
+          ]
+        }
+        if(!map.getLayer('overlay-layer2')){
+          map.addLayer({
+            id: 'overlay-layer2',
+            source: {
+              type: 'image',
+              ...obj
+            },
+            type: 'raster',
+            layout: {
+              visibility: setting.人影.监控.组合反射率?'visible':'none'
+            },
+            paint: {
+              'raster-opacity': 1,
+              'raster-resampling': 'nearest'
+            }
+          });
+        }else{
+          const sourceName = map.getLayer('overlay-layer2').source
+          const source = map.getSource(sourceName)
+          source.updateImage(obj);
+        }
+      })
+      多源融合实况分析产品().then(({data})=>{
+        const extent = data.extent.split(',').map(Number)
+        const obj = {
+          url: data.data,
+          coordinates: [
+            [extent[0], extent[3]],
+            [extent[2], extent[3]],
+            [extent[2], extent[1]],
+            [extent[0], extent[1]],
+          ]
+        }
+        if(!map.getLayer('overlay-layer3')){
+          map.addLayer({
+            id: 'overlay-layer3',
+            source: {
+              type: 'image',
+              ...obj
+            },
+            type: 'raster',
+            layout: {
+              visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
+            },
+            paint: {
+              'raster-opacity': 1,
+              'raster-resampling': 'nearest'
+            }
+          });
+        }else{
+          const sourceName = map.getLayer('overlay-layer3').source
+          const source = map.getSource(sourceName)
+          source.updateImage(obj);
+        }
+      })
+    },60*1000*6)
+    // axios.get('/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{
+    //   const extent = data.data.extent.split(',').map(Number)
+    //   console.log(data)
+    //   map.addLayer({
+    //     id: 'overlay-layer1',
+    //     source: {
+    //       type: 'image',
+    //       url: data.data.data,
+    //       coordinates: [
+    //         [extent[0], extent[3]],
+    //         [extent[2], extent[3]],
+    //         [extent[2], extent[1]],
+    //         [extent[0], extent[1]],
+    //       ]
+    //     },
+    //     type: 'raster',
+    //     paint: {
+    //       'raster-opacity': 1,
+    //       'raster-resampling': 'nearest'
+    //     }
+    //   });
+    // })
 
-    })
 
 
 
@@ -1419,37 +1619,37 @@ for(let i=0;i<8;i++){
 					// 'line-dasharray': [1,1],
 				}
 			})
-      map.addLayer({
-				'id': 'beijingBorderLineBase',
-				'type': 'line',
-				'source': 'beijingBorder',
-				'layout': {
-					'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
-					'line-join':'round',
-					'line-cap':'round',
-				},
-				'paint': {
-					'line-color': '#99B2D6',
-					'line-width': 2,
-          'line-opacity':1,
-				}
-			})
-      map.addLayer({
-				'id': 'beijingBorderLineOver',
-				'type': 'line',
-				'source': 'beijingBorder',
-				'layout': {
-					'visibility':'visible',
-					'line-join':'round',
-					'line-cap':'round',
-				},
-				'paint': {
-					'line-color': '#99B2D6',
-					'line-width':2,
-          'line-opacity':1,
-					// 'line-dasharray': [1,1],
-				}
-			})
+      // map.addLayer({
+			// 	'id': 'beijingBorderLineBase',
+			// 	'type': 'line',
+			// 	'source': 'beijingBorder',
+			// 	'layout': {
+			// 		'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
+			// 		'line-join':'round',
+			// 		'line-cap':'round',
+			// 	},
+			// 	'paint': {
+			// 		'line-color': '#99B2D6',
+			// 		'line-width': 2,
+      //     'line-opacity':1,
+			// 	}
+			// })
+      // map.addLayer({
+			// 	'id': 'beijingBorderLineOver',
+			// 	'type': 'line',
+			// 	'source': 'beijingBorder',
+			// 	'layout': {
+			// 		'visibility':'visible',
+			// 		'line-join':'round',
+			// 		'line-cap':'round',
+			// 	},
+			// 	'paint': {
+			// 		'line-color': '#99B2D6',
+			// 		'line-width':2,
+      //     'line-opacity':1,
+			// 		// 'line-dasharray': [1,1],
+			// 	}
+			// })
       map.addLayer({
 				"id": "routeLineLayer",
 				"type": "raster",
@@ -3049,6 +3249,8 @@ onBeforeUnmount(() => {
     clearInterval(timer);
     clearInterval(taskTimer);
     clearInterval(adsbTimer);
+    clearInterval(sixMinutesTimer);
+    clearInterval(fifteenMinutesTimer);
     eventbus.off("人影-将站点移动到屏幕中心", flyTo);
     eventbus.off("人影-地面作业申请-网络上报", 网络上报);
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
@@ -3092,6 +3294,15 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch(()=>setting.人影.监控.红外云图,(val)=>{
+  map.setLayoutProperty('overlay-layer1','visibility',val?'visible':'none')
+})
+watch(()=>setting.人影.监控.组合反射率,(val)=>{
+  map.setLayoutProperty('overlay-layer2','visibility',val?'visible':'none')
+})
+watch(()=>setting.人影.监控.多源融合实况分析产品,(val)=>{
+  map.setLayoutProperty('overlay-layer3','visibility',val?'visible':'none')
+})
 watch([()=>setting.人影.监控.飞机高度下限,()=>setting.人影.监控.飞机高度上限,()=>setting.人影.监控.二次码下限,()=>setting.人影.监控.二次码上限],()=>{
   trackFeatures.map((item)=>{
     if(过滤({altitude:item.properties.iAltitudeADS,ssrCode:item.properties.unSsrCode})){
@@ -3168,20 +3379,20 @@ watch(()=>setting.人影.监控.landColor,()=>{
   deep:true
 })
 watch(
-  () => props.tile,
+  () => setting.人影.监控.tile,
   (tile) => {
-    if(tile.tileData.length>0){
-      let s = map ? map.getStyle() : style;
-      s.sources["raster-tiles"].url = processTileData(tile.tileData);
-      // s.layers.map((v: any) => {
-      //   if (v.id == "simple-tiles") {
-      //     v.layout.visibility = props.loadmap ? "visible" : "none";
-      //   } else if (v.id == "districtLineBase" || v.id == "districtLineOver") {
-      //     // v.layout.visibility = props.district ? "visible" : "none";
-      //   }
-      // });
-      map && map.setStyle(s);
-    }
+    setting.地图列表.map(item=>{
+      if(item.value==tile){
+        let s = map ? map.getStyle() : style;
+        s.sources["raster-tiles"].url = processTileData(item.tileData);
+        s.layers.map((v: any) => {
+          if (v.id == "simple-tiles") {
+            v.layout.visibility =  item.tileData.length>0? "visible" : "none";
+          }
+        });
+        map && map.setStyle(s);
+      }
+    })
   },
   { deep: true, immediate: true }
 );
