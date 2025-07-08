@@ -74,11 +74,12 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["vue","pinia"],
+      external: ["vue","pinia","element-plus"],
       output: {
         globals: {
           vue: "Vue",
           pinia: "Pinia",
+          'element-plus': 'ElementPlus',
         },
       },
     },
@@ -181,9 +182,16 @@ export default defineConfig({
         changeOrigin:true,
         secure:false,
       },
-      '/zcgk':{
+      '/zcgk':{//三维产品接口
         agent,
         target:'http://10.225.6.188:3141',
+        changeOrigin:true,
+        secure:false,
+      },
+      '/qt':{
+        agent,
+        target:'http://172.18.7.38:8001',
+        rewrite:path=>path.replace(/^\/qt/,''),
         changeOrigin:true,
         secure:false,
       }

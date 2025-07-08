@@ -17,9 +17,9 @@
                 </el-badge>
             </div>
         </div>
-        <div class="bottom wstd-content" v-show="tabActive !== ''">
+        <div class="bottom wstd-content" style="position: relative;" v-show="tabActive !== ''">
             <div class="close-btn" @click="tabActive = ''">
-                <el-icon><Close /></el-icon>
+                <el-icon v-html="closeSvg"></el-icon>
             </div>
             <div class="bottom-content">
                 <el-scrollbar height="100%">
@@ -85,7 +85,7 @@
                                             <div class="top-item-value">
                                                 {{
                                                     item.tmBeginApply.substring(
-                                                        10,
+                                                        11,
                                                         16
                                                     )
                                                 }}
@@ -97,7 +97,7 @@
                                                 {{
                                                     item.tmAnswerRev
                                                         ? item.tmAnswerRev.substring(
-                                                              10,
+                                                              11,
                                                               16
                                                           )
                                                         : ""
@@ -240,6 +240,9 @@
                     <div v-show="tabActive == '完成信息查询'">
                         <FinishedInfo></FinishedInfo>
                     </div>
+                    <div v-show="tabActive == '人影飞机'">
+                        <PlaneInfo></PlaneInfo>
+                    </div>
                 </el-scrollbar>
             </div>
         </div>
@@ -250,10 +253,12 @@ import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import moment from "moment";
 import { defineAsyncComponent, reactive, ref, watch, computed } from "vue";
-import { Close } from "@element-plus/icons-vue";
+import closeSvg from '~/assets/close.svg?raw'
 const Transport = defineAsyncComponent(() => import("./transport.vue"));
 const FinishedInfo = defineAsyncComponent(() => import("./finishedInfo.vue"));
-
+const PlaneInfo = defineAsyncComponent(() => import("./planeInfo.vue"));
+import { useSettingStore } from "../../stores/setting";
+const setting = useSettingStore()
 // top按钮渲染数据
 const tabList = reactive([
     {
@@ -280,6 +285,12 @@ const tabList = reactive([
         type: "完成信息查询",
         total: 0,
         hideBadge:true,
+    },
+    {
+        label: "人影飞机",
+        icon: "plane",
+        total: computed(()=>setting.人影.监控.需要重点关注的飞机.length),
+        hideBadge:false,
     },
 ]);
 const tabActive = ref("");

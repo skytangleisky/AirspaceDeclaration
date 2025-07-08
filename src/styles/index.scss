@@ -69,15 +69,33 @@ code {
         // border: .01rem solid $color-bg-light-2;
         // box-shadow: inset 0rem 0rem .1rem 0rem $color-bg-light-2;
         .close-btn {
-            display: flex;
-            justify-content: flex-end;
-            padding-bottom: 0.1rem;
+            right:-10px;
+            top:-10px;
+            position: absolute;
+            width:20px;
+            height:20px;
+            justify-content: center;
+            align-items:center;
             font-size: 0.16rem;
+            display: none;
+            z-index:999;
+            color:white;
             &:hover {
                 .el-icon {
-                    color: var(--el-color-error);
+                    color: #ff4d4f;
                 }
             }
+            &:active {
+                transform: rotateX(180deg);
+                transition: transform 0.3s;
+                transition-timing-function: ease-in-out;
+                .el-icon {
+                    color: #d32f2f;
+                }
+            }
+        }
+        .close-btn {
+            display: flex;
         }
         .bottom-content {
             max-height: 3.6rem;

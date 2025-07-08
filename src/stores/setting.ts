@@ -1,4 +1,5 @@
 import {defineStore, acceptHMRUpdate} from "pinia"
+import {shallowReactive} from 'vue'
 import moment from 'moment'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
@@ -389,6 +390,13 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        准心:false,
+        //下面两行用于人影飞机跟踪
+        飞机数据:shallowReactive([]),
+        注册飞机数据:shallowReactive([]),
+        需要重点关注的飞机:shallowReactive([]),
+        注册飞机列表显示:false,
+        roadMap:false,
         是否显示工具箱:false,
         landColor:{
           r:34,
@@ -926,27 +934,27 @@ export const useSettingStore = defineStore('setting',{
       console.log('测距')
     }
   },
-  persist: {
-    serializer: {
-      // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
-      serialize: (state) =>
-        JSON.stringify(state, (key, value) => {
-          if (value === Infinity) return '__INFINITY__'
-          if (value === -Infinity) return '__NEGATIVE_INFINITY__'
-          if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
-          return value
-        }),
+  // persist: {
+  //   serializer: {
+  //     // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
+  //     serialize: (state) =>
+  //       JSON.stringify(state, (key, value) => {
+  //         if (value === Infinity) return '__INFINITY__'
+  //         if (value === -Infinity) return '__NEGATIVE_INFINITY__'
+  //         if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
+  //         return value
+  //       }),
 
-            // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
-            deserialize: (str) =>
-                JSON.parse(str, (key, value) => {
-                    if (value === '__INFINITY__') return Infinity
-                    if (value === '__NEGATIVE_INFINITY__') return -Infinity
-                    if (value === '__NaN__') return NaN
-                    return value
-                })
-        }
-    }
+  //           // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
+  //           deserialize: (str) =>
+  //               JSON.parse(str, (key, value) => {
+  //                   if (value === '__INFINITY__') return Infinity
+  //                   if (value === '__NEGATIVE_INFINITY__') return -Infinity
+  //                   if (value === '__NaN__') return NaN
+  //                   return value
+  //               })
+  //       }
+  //   }
 })
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))

@@ -8,7 +8,6 @@
         v-model:prevReplyData="setting.人影.监控.prevPlanReplyData"
         style="backdrop-filter: blur(25px)"
         v-model:routeLine="setting.人影.监控.routeLine"
-        v-model:loadmap="setting.人影.监控.loadmap"
         v-model:zyd="setting.人影.监控.zyd"
         v-model:district="setting.人影.监控.districtOptions.district"
         v-model:center="setting.人影.监控.center"
@@ -197,7 +196,6 @@ onBeforeUnmount(() => {
   pane && pane.dispose();
 })
 watch([
-  () => setting.人影.监控.loadmap,
   () => setting.人影.监控.districtOptions.district,
   () => setting.人影.监控.ryAirspaces.fill,
   () => setting.人影.监控.routeLine,

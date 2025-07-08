@@ -110,21 +110,20 @@
   </el-table>
   <el-pagination size="small" v-model:current-page="pageOption.page" :page-size="pageOption.size"  layout="prev,pager, next, jumper, total" :total="pageOption.total" />
   <Add v-model:show="addShow"></Add>
-  <Confirm v-model:show="confirmShow" v-model:confirmID="confirmID"></Confirm>
-  <View v-model:show="viewShow" v-model:viewID="viewID"></View>
+  <Confirm v-model:show="confirmShow" :data="rowData"></Confirm>
+  <View v-model:show="viewShow" :data="rowData"></View>
 </template>
 <script lang="ts" setup>
 import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
-import {完成信息查询,完成信息查询中一段时间内作业点数据,通过workID删除完成信息和完成信息确认,通过workID恢复完成信息} from '~/api/天工.ts'
+import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,通过workID恢复完成信息} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
 const viewShow = ref(false)
-const confirmID = ref("")
-const viewID = ref("")
+const rowData = ref<any>({})
 const range = ref(null)
 const now = new Date()
 const defaultDates = [
@@ -188,7 +187,7 @@ watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查
     currentController.abort()
   }
   currentController = new AbortController()
-  完成信息查询({page:pageOption.page,size:pageOption.size,range:range.value,zydID:zydID.value},currentController.signal).then(res=>{
+  完成信息查询({page:pageOption.page,size:pageOption.size,range:range.value,zydID:zydID.value,simple:0},currentController.signal).then(res=>{
     pageOption.total = res.data.total
     tableData.splice(0,tableData.length,...res.data.results)
   }).catch(e=>{
@@ -212,11 +211,11 @@ const handleClick = () => {
   addShow.value = true
 }
 const 待确认 = (row) => {
-  confirmID.value = row.workID
+  rowData.value = row
   confirmShow.value = true
 }
 const 详情 = (row) => {
-  viewID.value = row.workID
+  rowData.value = row
   viewShow.value = true
 }
 const 删除 = (row) => {
@@ -225,7 +224,7 @@ const 删除 = (row) => {
     cancelButtonText: '取消',
     type: 'danger',
   }).then(() => {
-    通过workID删除完成信息和完成信息确认(row.workID).then(res=>{
+    删除完成信息(row.workID).then(res=>{
       触发完成信息查询.value = Date.now()
       ElMessageBox.alert('删除成功', '提示', {
         confirmButtonText: '确定',

@@ -1,5 +1,6 @@
 import moment from 'moment'
 import request from '../utils/request'
+import { orderBy } from 'element-plus/es/components/table/src/util.mjs'
 
 //公司
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
@@ -22,23 +23,47 @@ database2 = `${dbConfig}&database=ryplat`
 // database2 = `${dbConfig}&database=ryplat_bjry`
 
 export function 机场(){
+  // return request({
+  //   url: '/backend/transaction?'+database1,
+  //   method: 'post',
+  //   data:{
+  //     sqls:[
+  //       "select * from `airport`"
+  //     ]
+  //   }
+  // })
   return request({
-    url: '/backend/transaction?'+database1,
+    url: '/qt/select/airport',
     method: 'post',
     data:{
-      sqls:[
-        "select * from `airport`"
-      ]
+        "select": [
+        ],
+        "where": [
+        ],
+        "orderby": [
+        ]
     }
   })
 }
 export function 华北飞行区域(){
+  // return request({
+  //   url: '/backend/transaction?'+database1,
+  //   method: 'post',
+  //   data:{
+  //     sqls:[
+  //       "select * from `华北飞行区域`"
+  //     ]
+  //   }
+  // })
   return request({
-    url: '/backend/transaction?'+database1,
+    url: '/qt/select/flyarea?'+database1,
     method: 'post',
     data:{
-      sqls:[
-        "select * from `华北飞行区域`"
+      "select": [
+      ],
+      "where": [
+      ],
+      "orderby": [
       ]
     }
   })
@@ -64,12 +89,105 @@ export function 烟炉数据() {
   })
 }
 export function 作业点(){
+  // return request({
+  //   url: '/backend/transaction?'+database2,
+  //   method: 'post',
+  //   data:{
+  //     sqls:[
+  //       "select z.*,u1.strName as strMgrUnitName,u2.strName as strRelayUnitName FROM `zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID WHERE z.strID LIKE '110%' AND z.strWeapon!='3'",
+  //     ]
+  //   }
+  // })
   return request({
-    url: '/backend/transaction?'+database2,
-    method: 'post',
+    url:'/qt/select/zydpara',
+    method:'post',
     data:{
-      sqls:[
-        "select z.*,u1.strName as strMgrUnitName,u2.strName as strRelayUnitName FROM `zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID WHERE z.strID LIKE '110%' AND z.strWeapon!='3'",
+      "where": [
+          {
+            "relation": "AND",
+            "field": "strID",
+            "relationship": "LIKE",
+            "condition": "110%"
+          },
+          {
+            "relation": "AND",
+            "field": "strWeapon",
+            "relationship": "!=",
+            "condition": "3"
+          }
+      ]
+    }
+  })
+}
+export function 协同作业点(){
+  // return request({
+  //   url: '/backend/transaction?'+database2,
+  //   method: 'post',
+  //   data:{
+  //     sqls:[
+  //       "select z.*,u1.strName as strMgrUnitName,u2.strName as strRelayUnitName FROM `zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID WHERE z.strID LIKE '110%' AND z.strWeapon!='3'",
+  //     ]
+  //   }
+  // })
+  return request({
+    url:'/qt/select/zydpara',
+    method:'post',
+    data:{
+      "where": [
+        {
+          "relation": "AND",
+          "field": "strID",
+          "relationship": "NOT LIKE",
+          "condition": "110%"
+        },
+        {
+          "relation": "AND",
+          "field": "strWeapon",
+          "relationship": "!=",
+          "condition": "3"
+        }
+      ]
+    }
+  })
+}
+export function 当前作业查询(){
+  return request({
+    url:'/qt/select/zyddata',
+    method:'post',
+    data:{
+      "orderby": [
+        {
+          "field": "tmBeginApply",
+          "order": "desc"
+        }
+      ]
+    }
+  })
+}
+export function 历史作业查询(){
+  return request({
+    url:'/qt/select/zydhisdata',
+    method:'post',
+    data:{
+      "where": [
+      {
+          "relation": "AND",
+          "field": "tmBeginApply",
+          "relationship": "<=",
+          "condition": `${moment().format('YYYY-MM-DD')} 23:59:59`
+      },
+      {
+          "relation": "AND",
+          "field": "tmBeginApply",
+          "relationship": ">=",
+          "condition": `${moment().format('YYYY-MM-DD')} 00:00:00`
+      }
+      ],
+      "orderby": [
+        {
+          "field": "tmBeginApply",
+          "order": "desc"
+        }
       ]
     }
   })
@@ -248,25 +366,45 @@ export function 空域申请拒绝(data){
 }
 
 export function 完成信息查询({page,size,range,zydID}:{page:number,size:number,range?:any,zydID?:string}={page:1,size:10},signal?:AbortSignal){
+  // const data = {
+  //   select:['o.*','z.strName as strZydIDName'],
+  //   where:[
+  //     {
+  //       relation:'AND',
+  //       field:'isquxianconfirmed',
+  //       relationship:'=',
+  //       condition:'1'
+  //     }
+  //   ],
+  //   orderby:[
+  //     {
+  //       field:'beginTm',
+  //       order:'desc',
+  //     }
+  //   ],
+  //   distinct:false,
+  //   offset:(page-1)*size,
+  //   limit:size,
+  // }
   const data = {
-    select:['o.*','z.strName as strZydIDName'],
-    where:[
-      {
-        relation:'AND',
-        field:'isquxianconfirmed',
-        relationship:'=',
-        condition:'1'
-      }
+    "where": [
+        {
+            "relation": "AND",
+            "field": "isquxianconfirmed",
+            "relationship": "=",
+            "condition": "1"
+        }
     ],
-    orderby:[
-      {
-        field:'beginTm',
-        order:'desc',
-      }
+    "orderby": [
+        {
+            "field": "beginTm",
+            "order": "desc"
+        }
     ],
     distinct:false,
     offset:(page-1)*size,
     limit:size,
+    simple:0
   }
   if(range){
     data.where.push({
@@ -290,79 +428,134 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
       condition:zydID
     })
   }
+  // return request({
+  //   signal,
+  //   url: 'backend/db/overinfo o left join  `zydpara` z on o.strZydID=z.strID?'+database2,
+  //   method: 'post',
+  //   data,
+  // })
+
   return request({
     signal,
-    url: 'backend/db/overinfo o left join  `zydpara` z on o.strZydID=z.strID?'+database2,
+    url: '/qt/select/overinfo',
     method: 'post',
     data,
   })
 }
+// export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
+//   const data = {
+//     select:['o.strZydID as strZydID','z.strName as strZydIDName','count(*) count','max(o.beginTm) maxBeginTm'],
+//     where:[
+//       {
+//         relation:'AND',
+//         field:'isquxianconfirmed',
+//         relationship:'=',
+//         condition:'1'
+//       },
+//       {
+//         relation:'AND',
+//         field:'z.strName',
+//         relationship:'IS NOT',
+//         condition:null
+//       },
+//       {
+//         relation:'AND',
+//         field:'o.strZydID',
+//         relationship:'IS NOT',
+//         condition:null
+//       }
+//     ],
+//     groupby:['o.strZydID','z.strName'],
+//     orderby:[
+//       {
+//         field:'maxBeginTm',
+//         order:'desc',
+//       }
+//     ],
+//     distinct:false,
+//     offset:0,
+//     limit:0,
+//   }
+//   if(range){
+//     data.where.push({
+//       relation:'AND',
+//       field:'o.beginTm',
+//       relationship:'>=',
+//       condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
+//     },
+//     {
+//       relation:'AND',
+//       field:'o.beginTm',
+//       relationship:'<=',
+//       condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
+//     })
+//   }
+//   return request({
+//     signal,
+//     url: 'backend/db/overinfo o LEFT JOIN zydpara z ON o.strZydID=z.strID?'+database2,
+//     method: 'post',
+//     data,
+//   })
+// }
+// export function 获取作业点ID数据(){
+//   return request({
+//     url: 'backend/db/zydpara?'+database2,
+//     method: 'post',
+//     data:{
+//       select:['strID','strName','strPos'],
+//       where:[],
+//       distinct:true,
+//       offset:0,
+//       limit:0,
+//     }
+//   })
+// }
 export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
   const data = {
-    select:['o.strZydID as strZydID','z.strName as strZydIDName','count(*) count','max(o.beginTm) maxBeginTm'],
-    where:[
-      {
-        relation:'AND',
-        field:'isquxianconfirmed',
-        relationship:'=',
-        condition:'1'
-      },
-      {
-        relation:'AND',
-        field:'z.strName',
-        relationship:'IS NOT',
-        condition:null
-      },
-      {
-        relation:'AND',
-        field:'o.strZydID',
-        relationship:'IS NOT',
-        condition:null
-      }
+    "select":[
+        "strZydID",
+        "COUNT(*) AS Num",
+        "MAX(beginTm) AS Last"
     ],
-    groupby:['o.strZydID','z.strName'],
-    orderby:[
-      {
-        field:'maxBeginTm',
-        order:'desc',
-      }
+    "where": [
+        {
+            "relation": "AND",
+            "field": "isquxianconfirmed",
+            "relationship": "=",
+            "condition": "1"
+        }
     ],
-    distinct:false,
-    offset:0,
-    limit:0,
+    "groupby":[
+        "strZydID"
+    ],
+    "orderby": [
+        {
+            "field": "Last",
+            "order": "desc"
+        }
+    ],
+    "distinct": false,
+    "simple":1
   }
   if(range){
     data.where.push({
       relation:'AND',
-      field:'o.beginTm',
+      field:'beginTm',
       relationship:'>=',
       condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
     },
     {
       relation:'AND',
-      field:'o.beginTm',
+      field:'beginTm',
       relationship:'<=',
       condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
     })
   }
   return request({
     signal,
-    url: 'backend/db/overinfo o LEFT JOIN zydpara z ON o.strZydID=z.strID?'+database2,
-    method: 'post',
-    data,
-  })
-}
-export function 获取作业点ID数据(){
-  return request({
-    url: 'backend/db/zydpara?'+database2,
-    method: 'post',
-    data:{
-      select:['strID','strName','strPos'],
-      where:[],
-      distinct:true,
-      offset:0,
-      limit:0,
-    }
+    url:'/qt/select/overinfo',
+    method:'post',
+    data
   })
 }
 export function 判断是否有完成信息(workID){
@@ -405,60 +598,67 @@ export function 判断是否有完成信息确认(workID){
     }
   })
 }
-export function 保存完成信息和完成信息确认(完成信息数据){
+// export function 保存完成信息和完成信息确认(完成信息数据){
+//   return request({
+//     url: 'backend/transaction?'+database2,
+//     method: 'post',
+//     data:{
+//       sqls:[
+//         "INSERT INTO `overinfo` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`, `isquxianconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+//         "INSERT INTO `overinfo_confirmed` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, b'"+完成信息数据.isconfirmed+"');",
+//       ],
+//       vals:[
+//         [
+//           完成信息数据.workID,
+//           完成信息数据.strZydID,
+//           完成信息数据.tagPos,
+//           完成信息数据.beginTm,
+//           完成信息数据.timeLen,
+//           完成信息数据.workType,
+//           完成信息数据.workTool,
+//           完成信息数据.numPD,
+//           完成信息数据.numHJ,
+//           完成信息数据.numYT,
+//           完成信息数据.numOther,
+//           完成信息数据.shootDirect,
+//           完成信息数据.shootAngle,
+//           完成信息数据.workArea,
+//           完成信息数据.beforeWeather,
+//           完成信息数据.afterWeather,
+//           完成信息数据.workEffect,
+//           完成信息数据.recordTm,
+//           完成信息数据.isconfirmed,
+//           完成信息数据.isquxianconfirmed,
+//         ],
+//         [
+//           完成信息数据.workID,
+//           完成信息数据.strZydID,
+//           完成信息数据.tagPos,
+//           完成信息数据.beginTm,
+//           完成信息数据.timeLen,
+//           完成信息数据.workType,
+//           完成信息数据.workTool,
+//           完成信息数据.numPD,
+//           完成信息数据.numHJ,
+//           完成信息数据.numYT,
+//           完成信息数据.numOther,
+//           完成信息数据.shootDirect,
+//           完成信息数据.shootAngle,
+//           完成信息数据.workArea,
+//           完成信息数据.beforeWeather,
+//           完成信息数据.afterWeather,
+//           完成信息数据.workEffect,
+//           完成信息数据.recordTm,
+//         ],
+//       ]
+//     }
+//   })
+// }
+export function 增加完成信息(data){
   return request({
-    url: 'backend/transaction?'+database2,
-    method: 'post',
-    data:{
-      sqls:[
-        "INSERT INTO `overinfo` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`, `isquxianconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
-        "INSERT INTO `overinfo_confirmed` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, b'"+完成信息数据.isconfirmed+"');",
-      ],
-      vals:[
-        [
-          完成信息数据.workID,
-          完成信息数据.strZydID,
-          完成信息数据.tagPos,
-          完成信息数据.beginTm,
-          完成信息数据.timeLen,
-          完成信息数据.workType,
-          完成信息数据.workTool,
-          完成信息数据.numPD,
-          完成信息数据.numHJ,
-          完成信息数据.numYT,
-          完成信息数据.numOther,
-          完成信息数据.shootDirect,
-          完成信息数据.shootAngle,
-          完成信息数据.workArea,
-          完成信息数据.beforeWeather,
-          完成信息数据.afterWeather,
-          完成信息数据.workEffect,
-          完成信息数据.recordTm,
-          完成信息数据.isconfirmed,
-          完成信息数据.isquxianconfirmed,
-        ],
-        [
-          完成信息数据.workID,
-          完成信息数据.strZydID,
-          完成信息数据.tagPos,
-          完成信息数据.beginTm,
-          完成信息数据.timeLen,
-          完成信息数据.workType,
-          完成信息数据.workTool,
-          完成信息数据.numPD,
-          完成信息数据.numHJ,
-          完成信息数据.numYT,
-          完成信息数据.numOther,
-          完成信息数据.shootDirect,
-          完成信息数据.shootAngle,
-          完成信息数据.workArea,
-          完成信息数据.beforeWeather,
-          完成信息数据.afterWeather,
-          完成信息数据.workEffect,
-          完成信息数据.recordTm,
-        ],
-      ]
-    }
+    url:'/qt/insert/overinfo',
+    method:'post',
+    data
   })
 }
 export function 通过workID获取完成信息(workID){
@@ -481,122 +681,146 @@ export function 通过workID获取完成信息(workID){
     }
   })
 }
-export function 完成信息确认(完成信息数据){
+// export function 完成信息确认(完成信息数据){
+//   return request({
+//     url: 'backend/transaction?'+database2,
+//     method: 'post',
+//     data:{
+//       sqls:[
+//         "INSERT INTO `overinfo` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`, `isquxianconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
+//         ON DUPLICATE KEY UPDATE \
+//         `workID`=VALUES(`workID`),\
+//         `strZydID`=VALUES(`strZydID`),\
+//         `tagPos`=VALUES(`tagPos`),\
+//         `beginTm`=VALUES(`beginTm`),\
+//         `timeLen`=VALUES(`timeLen`),\
+//         `workType`=VALUES(`workType`),\
+//         `workTool`=VALUES(`workTool`),\
+//         `numPD`=VALUES(`numPD`),\
+//         `numHJ`=VALUES(`numHJ`),\
+//         `numYT`=VALUES(`numYT`),\
+//         `numOther`=VALUES(`numOther`),\
+//         `shootDirect`=VALUES(`shootDirect`),\
+//         `shootAngle`=VALUES(`shootAngle`),\
+//         `workArea`=VALUES(`workArea`),\
+//         `beforeWeather`=VALUES(`beforeWeather`),\
+//         `afterWeather`=VALUES(`afterWeather`),\
+//         `workEffect`=VALUES(`workEffect`),\
+//         `recordTm`=VALUES(`recordTm`),\
+//         `isconfirmed`=VALUES(`isconfirmed`),\
+//         `isquxianconfirmed`=VALUES(`isquxianconfirmed`)\
+//         ;",
+//         "INSERT INTO `overinfo_confirmed` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, b'"+完成信息数据.isconfirmed+"') \
+//         ON DUPLICATE KEY UPDATE \
+//         `workID` = VALUES(`workID`), \
+//         `strZydID` = VALUES(`strZydID`), \
+//         `tagPos` = VALUES(`tagPos`), \
+//         `beginTm` = VALUES(`beginTm`), \
+//         `timeLen` = VALUES(`timeLen`), \
+//         `workType` = VALUES(`workType`), \
+//         `workTool` = VALUES(`workTool`), \
+//         `numPD` = VALUES(`numPD`), \
+//         `numHJ` = VALUES(`numHJ`), \
+//         `numYT` = VALUES(`numYT`), \
+//         `numOther` = VALUES(`numOther`), \
+//         `shootDirect` = VALUES(`shootDirect`), \
+//         `shootAngle` = VALUES(`shootAngle`), \
+//         `workArea` = VALUES(`workArea`), \
+//         `beforeWeather` = VALUES(`beforeWeather`), \
+//         `afterWeather` = VALUES(`afterWeather`), \
+//         `workEffect` = VALUES(`workEffect`), \
+//         `recordTm` = VALUES(`recordTm`), \
+//         `isconfirmed` = VALUES(`isconfirmed`) \
+//         ;",
+//       ],
+//       vals:[
+//         [
+//           完成信息数据.workID,
+//           完成信息数据.strZydID,
+//           完成信息数据.tagPos,
+//           完成信息数据.beginTm,
+//           完成信息数据.timeLen,
+//           完成信息数据.workType,
+//           完成信息数据.workTool,
+//           完成信息数据.numPD,
+//           完成信息数据.numHJ,
+//           完成信息数据.numYT,
+//           完成信息数据.numOther,
+//           完成信息数据.shootDirect,
+//           完成信息数据.shootAngle,
+//           完成信息数据.workArea,
+//           完成信息数据.beforeWeather,
+//           完成信息数据.afterWeather,
+//           完成信息数据.workEffect,
+//           完成信息数据.recordTm,
+//           完成信息数据.isconfirmed,
+//           完成信息数据.isquxianconfirmed,
+//         ],
+//         [
+//           完成信息数据.workID,
+//           完成信息数据.strZydID,
+//           完成信息数据.tagPos,
+//           完成信息数据.beginTm,
+//           完成信息数据.timeLen,
+//           完成信息数据.workType,
+//           完成信息数据.workTool,
+//           完成信息数据.numPD,
+//           完成信息数据.numHJ,
+//           完成信息数据.numYT,
+//           完成信息数据.numOther,
+//           完成信息数据.shootDirect,
+//           完成信息数据.shootAngle,
+//           完成信息数据.workArea,
+//           完成信息数据.beforeWeather,
+//           完成信息数据.afterWeather,
+//           完成信息数据.workEffect,
+//           完成信息数据.recordTm,
+//         ],
+//       ]
+//     }
+//   })
+// }
+// export function 通过workID删除完成信息和完成信息确认(workID){
+//   return request({
+//     url: 'backend/transaction?'+database2,
+//     method: 'post',
+//     data:{
+//       sqls:[
+//         "DELETE FROM `overinfo` WHERE `workID` = ?;",
+//         "DELETE FROM `overinfo_confirmed` WHERE `workID` = ?;",
+//       ],
+//       vals:[
+//         [
+//           workID
+//         ],
+//         [
+//           workID
+//         ],
+//       ]
+//     }
+//   })
+// }
+export function 完成信息确认(data){
   return request({
-    url: 'backend/transaction?'+database2,
-    method: 'post',
-    data:{
-      sqls:[
-        "INSERT INTO `overinfo` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`, `isquxianconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) \
-        ON DUPLICATE KEY UPDATE \
-        `workID`=VALUES(`workID`),\
-        `strZydID`=VALUES(`strZydID`),\
-        `tagPos`=VALUES(`tagPos`),\
-        `beginTm`=VALUES(`beginTm`),\
-        `timeLen`=VALUES(`timeLen`),\
-        `workType`=VALUES(`workType`),\
-        `workTool`=VALUES(`workTool`),\
-        `numPD`=VALUES(`numPD`),\
-        `numHJ`=VALUES(`numHJ`),\
-        `numYT`=VALUES(`numYT`),\
-        `numOther`=VALUES(`numOther`),\
-        `shootDirect`=VALUES(`shootDirect`),\
-        `shootAngle`=VALUES(`shootAngle`),\
-        `workArea`=VALUES(`workArea`),\
-        `beforeWeather`=VALUES(`beforeWeather`),\
-        `afterWeather`=VALUES(`afterWeather`),\
-        `workEffect`=VALUES(`workEffect`),\
-        `recordTm`=VALUES(`recordTm`),\
-        `isconfirmed`=VALUES(`isconfirmed`),\
-        `isquxianconfirmed`=VALUES(`isquxianconfirmed`)\
-        ;",
-        "INSERT INTO `overinfo_confirmed` (`workID`, `strZydID`, `tagPos`, `beginTm`, `timeLen`, `workType`, `workTool`, `numPD`, `numHJ`, `numYT`, `numOther`, `shootDirect`, `shootAngle`, `workArea`, `beforeWeather`, `afterWeather`, `workEffect`, `recordTm`, `isconfirmed`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, b'"+完成信息数据.isconfirmed+"') \
-        ON DUPLICATE KEY UPDATE \
-        `workID` = VALUES(`workID`), \
-        `strZydID` = VALUES(`strZydID`), \
-        `tagPos` = VALUES(`tagPos`), \
-        `beginTm` = VALUES(`beginTm`), \
-        `timeLen` = VALUES(`timeLen`), \
-        `workType` = VALUES(`workType`), \
-        `workTool` = VALUES(`workTool`), \
-        `numPD` = VALUES(`numPD`), \
-        `numHJ` = VALUES(`numHJ`), \
-        `numYT` = VALUES(`numYT`), \
-        `numOther` = VALUES(`numOther`), \
-        `shootDirect` = VALUES(`shootDirect`), \
-        `shootAngle` = VALUES(`shootAngle`), \
-        `workArea` = VALUES(`workArea`), \
-        `beforeWeather` = VALUES(`beforeWeather`), \
-        `afterWeather` = VALUES(`afterWeather`), \
-        `workEffect` = VALUES(`workEffect`), \
-        `recordTm` = VALUES(`recordTm`), \
-        `isconfirmed` = VALUES(`isconfirmed`) \
-        ;",
-      ],
-      vals:[
-        [
-          完成信息数据.workID,
-          完成信息数据.strZydID,
-          完成信息数据.tagPos,
-          完成信息数据.beginTm,
-          完成信息数据.timeLen,
-          完成信息数据.workType,
-          完成信息数据.workTool,
-          完成信息数据.numPD,
-          完成信息数据.numHJ,
-          完成信息数据.numYT,
-          完成信息数据.numOther,
-          完成信息数据.shootDirect,
-          完成信息数据.shootAngle,
-          完成信息数据.workArea,
-          完成信息数据.beforeWeather,
-          完成信息数据.afterWeather,
-          完成信息数据.workEffect,
-          完成信息数据.recordTm,
-          完成信息数据.isconfirmed,
-          完成信息数据.isquxianconfirmed,
-        ],
-        [
-          完成信息数据.workID,
-          完成信息数据.strZydID,
-          完成信息数据.tagPos,
-          完成信息数据.beginTm,
-          完成信息数据.timeLen,
-          完成信息数据.workType,
-          完成信息数据.workTool,
-          完成信息数据.numPD,
-          完成信息数据.numHJ,
-          完成信息数据.numYT,
-          完成信息数据.numOther,
-          完成信息数据.shootDirect,
-          完成信息数据.shootAngle,
-          完成信息数据.workArea,
-          完成信息数据.beforeWeather,
-          完成信息数据.afterWeather,
-          完成信息数据.workEffect,
-          完成信息数据.recordTm,
-        ],
-      ]
-    }
+    url:'/qt/update/overinfo',
+    method:'post',
+    data,
   })
 }
-export function 通过workID删除完成信息和完成信息确认(workID){
+export function 删除完成信息(workID){
   return request({
-    url: 'backend/transaction?'+database2,
-    method: 'post',
-    data:{
-      sqls:[
-        "DELETE FROM `overinfo` WHERE `workID` = ?;",
-        "DELETE FROM `overinfo_confirmed` WHERE `workID` = ?;",
-      ],
-      vals:[
-        [
-          workID
-        ],
-        [
-          workID
-        ],
-      ]
+    url:'/qt/delete/overinfo',
+    method:'post',
+    data: {
+        //一般根据主键删除即可
+        "where": [
+            {
+                "relation": "AND",
+                "field": "workID",
+                "relationship": "=",
+                "condition": workID
+            }
+        ]
     }
   })
 }
@@ -803,5 +1027,54 @@ export function 多源融合实况分析产品(){
     }).catch(e=>{
       reject(e)
     })
+  })
+}
+
+
+export function 注册飞机查询({page,size}){
+  return request({
+    url:'/qt/select/regplane',
+    method:'post',
+    data:{
+      orderby: [
+        {
+          "field": "dtRegTime",
+          "order": "DESC"
+        }
+      ],
+      "distinct": false,
+      "offset": (page-1)*size,
+      "limit": size
+    }
+  })
+}
+export function 删除飞机(address:string){
+  return request({
+    url:'/qt/delete/regplane',
+    method:'post',
+    data: {
+      "where": [
+          {
+            "relation": "AND",
+            "field": "iAddress",
+            "relationship": "=",
+            "condition": address
+          }
+      ]
+    }
+  })
+}
+export function 新增飞机(data){
+  return request({
+    url:'/qt/insert/regplane',
+    method:'post',
+    data
+  })
+}
+export function 修改飞机(data){
+  return request({
+    url:'/qt/update/regplane',
+    method:'post',
+    data
   })
 }

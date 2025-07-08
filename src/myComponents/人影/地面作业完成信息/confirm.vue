@@ -5,27 +5,27 @@
                 <el-row>
                     <el-col :span="12">
                         <span class="label">作业点编号</span>
-                        <el-input disabled v-model="data.strID"></el-input>
+                        <el-input disabled v-model="data.strZydID"></el-input>
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业点名称</span>
-                        <el-input v-model="strName" disabled></el-input>
+                        <el-input v-model="data.strZydIDName" disabled></el-input>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="12">
                         <span class="label">作业日期</span>
-                        <el-date-picker v-model="data.beginDate"/>
+                        <el-date-picker v-model="date" value-format="YYYY-MM-DD" format="YYYY-MM-DD" />
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业时间</span>
-                        <el-time-picker v-model="data.beginTime" value-format="HH:mm" format="HH:mm"/>
+                        <el-time-picker v-model="time" value-format="HH:mm:ss" format="HH:mm:ss"/>
                     </el-col>
                 </el-row>
                 <el-row>
                     <el-col :span="12" style="display: flex;white-space: nowrap;">
                         <span class="label">作业时长</span>
-                        <el-input-number v-model="data.duration" :min="1" :max="600" style="width:100%">
+                        <el-input-number v-model="data.timeLen" :min="1" :max="600" style="width:100%">
                             <template #suffix>
                                 <span>秒</span>
                             </template>
@@ -35,13 +35,13 @@
                 <el-row>
                     <el-col :span="12">
                         <span class="label">作业类型</span>
-                        <el-select v-model="data.iWorkType" placeholder="请选择" style="width: 100%">
+                        <el-select v-model="data.workType" placeholder="请选择" style="width: 100%">
                             <el-option v-for="item in workOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业工具</span>
-                        <el-select v-model="data.iWeapon" placeholder="请选择" style="width: 100%">
+                        <el-select v-model="data.workTool" placeholder="请选择" style="width: 100%">
                             <el-option v-for="item in weaponOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -77,11 +77,11 @@
                 <el-row>
                     <el-col :span="20">
                         <span class="label">射向</span>
-                        <el-input-number v-model="data.shootDirectBegin" :min="0" :max="360" style="width:100%">
+                        <el-input-number v-model="shootDirectBegin" :min="0" :max="360" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                         <span style="margin:0 10px;font-size: 22px;">~</span>
-                        <el-input-number v-model="data.shootDirectEnd" :min="0" :max="360" style="width:100%">
+                        <el-input-number v-model="shootDirectEnd" :min="0" :max="360" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                     </el-col>
@@ -89,11 +89,11 @@
                 <el-row>
                     <el-col :span="20">
                         <span class="label">俯仰角</span>
-                        <el-input-number v-model="data.shootPitchBegin" :min="0" :max="90" style="width:100%">
+                        <el-input-number v-model="shootAngleBegin" :min="0" :max="90" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                         <span style="margin:0 10px;font-size: 22px;">~</span>
-                        <el-input-number v-model="data.shootPitchEnd" :min="0" :max="90" style="width:100%">
+                        <el-input-number v-model="shootAngleEnd" :min="0" :max="90" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                     </el-col>
@@ -101,13 +101,13 @@
                 <el-row>
                     <el-col :span="12">
                         <span class="label">作业面积</span>
-                        <el-input-number v-model="data.area" :min="1" :max="99" style="width:100%">
+                        <el-input-number v-model="data.workArea" :min="1" :max="99" style="width:100%">
                             <template #suffix><span>km²</span></template>
                         </el-input-number>
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业效果</span>
-                        <el-select v-model="data.effect" placeholder="请选择" style="width: 100%">
+                        <el-select v-model="data.workEffect" placeholder="请选择" style="width: 100%">
                             <el-option v-for="item in effectOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -115,21 +115,20 @@
                 <el-row>
                     <el-col :span="12">
                         <span class="label">作业前天气</span>
-                        <el-select v-model="data.weatherBefore" placeholder="请选择" style="width: 100%">
+                        <el-select v-model="data.beforeWeather" placeholder="请选择" style="width: 100%">
                             <el-option v-for="item in weatherOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业后天气</span>
-                        <el-select v-model="data.weatherAfter" placeholder="请选择" style="width: 100%">
+                        <el-select v-model="data.afterWeather" placeholder="请选择" style="width: 100%">
                             <el-option v-for="item in weatherOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
                 </el-row>
                 <div class="page-btns">
+                    <el-button type="primary" @mousedown.stop @click="confirm(data)">确认</el-button>
                     <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
-                    <el-button type="primary" @mousedown.stop @click="confirm(data)">确认</el-button
-                    >
                 </div>
             </div>
         </div>
@@ -137,9 +136,68 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {获取作业点ID数据,完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息} from "~/api/天工.ts";
+import {完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息} from "~/api/天工.ts";
 import moment from "moment";
-import { reactive, onMounted, onBeforeUnmount,watch,ref,inject } from "vue";
+import { reactive, onMounted, onBeforeUnmount,watch,ref,inject,computed,toRaw } from "vue";
+const date = computed({
+    get(){
+        return data.value.beginTm.substring(0,10)
+    },
+    set(val){
+        data.value.beginTm = val + ' ' + time.value
+    }
+})
+const time = computed({
+    get(){
+        return data.value.beginTm.substring(11,19)
+    },
+    set(val){
+        data.value.beginTm = date.value + ' ' + val
+    }
+})
+
+const shootDirectBegin = computed({
+    get(){
+        return Number(data.value.shootDirect.substring(0,3))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootDirect = val.toString().padStart(3,'0') + shootDirectEnd.value.toString().padStart(3,'0')
+        }
+    }
+})
+const shootDirectEnd = computed({
+    get(){
+        return Number(data.value.shootDirect.substring(3,6))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootDirect = shootDirectBegin.value.toString().padStart(3,'0') + val.toString().padStart(3,'0')
+        }
+    }
+})
+
+const shootAngleBegin = computed({
+    get(){
+        return Number(data.value.shootAngle.substring(0,2))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootAngle = val.toString().padStart(2,'0') + shootAngleEnd.value.toString().padStart(2,'0')
+        }
+    }
+})
+const shootAngleEnd = computed({
+    get(){
+        return Number(data.value.shootAngle.substring(2,4))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootAngle = shootAngleBegin.value.toString().padStart(2,'0') + val.toString().padStart(2,'0')
+        }
+    }
+})
+
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
     { value: 1, label: "高炮" },
@@ -182,29 +240,11 @@ const weatherOptions = reactive([
     { value: 17, label: "多云" },
 ])
 const confirm = async(data) => {
-    const workID = confirmID.value
-    完成信息确认({
-        workID,
-        strZydID: data.strID,
-        tagPos:strPos.value,
-        beginTm:data.beginDate + ' ' + data.beginTime,
-        timeLen:data.duration,
-        workType:data.iWorkType,
-        workTool:data.iWeapon,
-        numPD:data.numPD,
-        numHJ:data.numHJ,
-        numYT:data.numYT,
-        numOther:data.numOther,
-        shootDirect:data.shootDirectBegin.toString().padStart(3,'0')+data.shootDirectEnd.toString().padStart(3,'0'),
-        shootAngle:data.shootPitchBegin.toString().padStart(2,'0')+data.shootPitchEnd.toString().padStart(2,'0'),
-        workArea:data.area,
-        beforeWeather:data.weatherBefore,
-        afterWeather:data.weatherAfter,
-        workEffect:data.effect,
-        recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),
-        isconfirmed:"1",
-        isquxianconfirmed:"1",
-    }).then((res)=>{
+    data.isconfirmed = 1
+    data.isquxianconfirmed = 1
+    delete data.strZydIDName
+    完成信息确认(data).then((res)=>{
+        console.log(res)
         ElMessage({
             message: '确认成功',
             type: 'success',
@@ -221,68 +261,37 @@ const confirm = async(data) => {
 const show = defineModel('show',{
     default:true
 })
-const confirmID = defineModel('confirmID',{
-    default:""
-})
 const data = defineModel('data',{
     default:reactive({
-        strID: "",
-        strPos: "",
-        iWeapon: 0,
-        iWorkType: 1,
-        beginDate: moment().format('YYYY-MM-DD'),
-        beginTime: moment().format('HH:mm'),
-        duration: 60,
-        numPD:0,
-        numHJ:0,
-        numYT:0,
-        numOther:0,
-        shootDirectBegin:0,
-        shootDirectEnd:0,
-        shootPitchBegin:0,
-        shootPitchEnd:0,
-        area:0,
-        effect:0,
-        weatherBefore:0,
-        weatherAfter:7
+        workID:'',//1
+        strZydID: "",//2
+        strZydIDName: "",
+        tagPos: "",//3
+        beginTm:moment().format('YYYY-MM-DD HH:mm:ss'),//4
+        timeLen: 60,//5
+        workType: 1,//6
+        workTool: 0,//7
+        numPD:0,//8
+        numHJ:0,//9
+        numYT:0,//10
+        numOther:0,//11
+        shootDirect:"000000",//12
+        shootAngle:"0000",//13
+        workArea:0,//14
+        beforeWeather:0,//15
+        afterWeather:7,//16
+        workEffect:0,//17
+        recordTm:"",//18
+        isconfirmed:0,//19
+        isquxianconfirmed:1,//20
     })
 })
-watch(()=>confirmID.value,async()=>{
-    if(confirmID.value!=null&&confirmID.value!=''){
-        通过workID获取完成信息(confirmID.value).then((res)=>{
-            const results = res.data.results;
-            if(results.length>0){
-                const item = results[0];
-                strPos.value = item.tagPos;
-                data.value.strID = item.strZydID;
-                strName.value = item.strZydIDName;
-                data.value.beginDate = item.beginTm.substring(0,10);
-                data.value.beginTime = item.beginTm.substring(11,16);
-                data.value.duration = item.timeLen;
-                data.value.iWorkType = item.workType;
-                data.value.iWeapon = item.workTool;
-                data.value.shootDirectBegin = Number(item.shootDirect.substring(0,3));
-                data.value.shootDirectEnd = Number(item.shootDirect.substring(3,6));
-                data.value.shootPitchBegin = Number(item.shootAngle.substring(0,2));
-                data.value.shootPitchEnd = Number(item.shootAngle.substring(2,4));
-                data.value.numPD = item.numPD;
-                data.value.numHJ = item.numHJ;
-                data.value.numYT = item.numYT;
-                data.value.numOther = item.numOther;
-                data.value.area = item.workArea;
-                data.value.weatherBefore = item.beforeWeather;
-                data.value.weatherAfter = item.afterWeather;
-                data.value.effect = item.workEffect;
-            }
-        })
-    }
-},
-{
-    immediate:true,
+
+watch(()=>data,(d)=>{
+    console.log(d)
+},{
+    deep:true
 })
-1;
-const strName = ref("")
-const strPos = ref("")
 const cancel = () => {
     show.value = false;
 };

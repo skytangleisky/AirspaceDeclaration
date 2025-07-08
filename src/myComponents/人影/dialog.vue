@@ -11,9 +11,9 @@
             </div>
         </div>
 
-        <div class="bottom wstd-content" v-if="tabActive">
+        <div class="bottom wstd-content" style="position: relative;" v-if="tabActive">
             <div class="close-btn" @click="tabActive = 0">
-                <el-icon><Close /></el-icon>
+                <el-icon v-html="closeSvg"></el-icon>
             </div>
             <div class="bottom-content">
                 <div class="flex flex-row">
@@ -134,7 +134,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-import { Close } from "@element-plus/icons-vue";
+import closeSvg from '~/assets/close.svg?raw'
 import { reactive, onMounted, watch, computed ,ref} from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";

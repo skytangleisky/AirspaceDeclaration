@@ -36,7 +36,7 @@
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业时间</span>
-                        <el-time-picker v-model="data.beginTime" value-format="HH:mm" format="HH:mm"/>
+                        <el-time-picker v-model="data.beginTime" value-format="HH:mm:ss" format="HH:mm:ss"/>
                     </el-col>
                 </el-row>
                 <el-row :gutter="rowGutter">
@@ -154,7 +154,7 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {获取作业点ID数据,保存完成信息和完成信息确认,判断是否有完成信息,判断是否有完成信息确认} from "~/api/天工.ts";
+import {作业点,增加完成信息,判断是否有完成信息,判断是否有完成信息确认} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject } from "vue";
 const rowGutter =20
@@ -209,23 +209,23 @@ const save = async(data) => {
     }
     const workID = `RW${data.strID}${data.beginDate}-${data.beginTime.replaceAll(":","-")}`
 
-    const result1 = await 判断是否有完成信息(workID)
-    if(result1.data.results.length>0){
-        ElMessage({
-            message: '\'完成信息\'已经存在',
-            type: 'error',
-        })
-        return
-    }
-    const result2 = await 判断是否有完成信息确认(workID)
-    if(result2.data.results.length>0){
-        ElMessage({
-            message: '\'完成信息确认\'已经存在',
-            type: 'error',
-        })
-        return
-    }
-    保存完成信息和完成信息确认({
+    // const result1 = await 判断是否有完成信息(workID)
+    // if(result1.data.results.length>0){
+    //     ElMessage({
+    //         message: '\'完成信息\'已经存在',
+    //         type: 'error',
+    //     })
+    //     return
+    // }
+    // const result2 = await 判断是否有完成信息确认(workID)
+    // if(result2.data.results.length>0){
+    //     ElMessage({
+    //         message: '\'完成信息确认\'已经存在',
+    //         type: 'error',
+    //     })
+    //     return
+    // }
+    增加完成信息({
         workID,
         strZydID: data.strID,
         tagPos:strPos.value,
@@ -243,8 +243,8 @@ const save = async(data) => {
         beforeWeather:data.weatherBefore,
         afterWeather:data.weatherAfter,
         workEffect:data.effect,
-        isconfirmed:"0",
-        isquxianconfirmed:"1",
+        isconfirmed:0,
+        isquxianconfirmed:1,
         recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),
     }).then((res)=>{
         ElMessage({
@@ -266,7 +266,7 @@ const show = defineModel('show',{
 watch(show,()=>{
     if(show.value){
         data.value.beginDate = moment().format('YYYY-MM-DD')
-        data.value.beginTime = moment().format('HH:mm')
+        data.value.beginTime = moment().format('HH:mm:ss')
     }
 })
 const data = defineModel('data',{
@@ -282,7 +282,7 @@ const data = defineModel('data',{
         iShotRangeBegin: 0,
         iShotRangeEnd: 1000,
         beginDate: moment().format('YYYY-MM-DD'),
-        beginTime: moment().format('HH:mm'),
+        beginTime: moment().format('HH:mm:ss'),
         duration: 60,
         unitName: "",
         numPD:0,
@@ -313,7 +313,7 @@ const cancel = () => {
 const 触发完成信息查询 = inject('触发完成信息查询',ref(Date.now()))
 // let timer:number;
 onMounted(() => {
-    获取作业点ID数据().then((res) => {
+    作业点().then((res) => {
         const results = res.data.results;
         zydOptions.splice(0, zydOptions.length);
         results.forEach((item) => {

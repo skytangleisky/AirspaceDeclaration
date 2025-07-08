@@ -1,6 +1,6 @@
 import city from './省界.json?url'
 import beijing from './北京市.json?url'
-// import beijingBorder from './北京市.geojson?url'
+import beijingBorder from './北京市.geojson?url'
 import { useSettingStore } from '~/stores/setting';
 export default function(){
 	const setting = useSettingStore()
@@ -285,10 +285,10 @@ export default function(){
 				"type":"geojson",
 				"data": beijing
 			},
-			// "beijingBorder":{
-			// 	"type":"geojson",
-			// 	"data": beijingBorder
-			// },
+			"beijingBorder":{
+				"type":"geojson",
+				"data": beijingBorder
+			},
 			"huabeiBorder":{
 				"type":"geojson",
 				"data": '/resources/huabei.json'
@@ -320,6 +320,11 @@ export default function(){
 				// "tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
 				"tileSize": 512,
 				"maxzoom":14
+			},
+			"raster-road":{
+				type:'raster',
+				tiles:['/tile/xbry/maps/DataServer?T=cia_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}'],
+				tileSize:256,
 			},
 			// "mapbox-dem": {
 			// 	"type": "raster-dem",
