@@ -7,8 +7,6 @@
       end-placeholder="结束时间"
       :default-value="defaultDates"
       unlink-panels
-
-
     />
     <el-select
       clearable
@@ -66,12 +64,12 @@
         </el-popconfirm> -->
       </template>
     </el-table-column>
-    <el-table-column prop="workID" label="作业ID" width="240" />
+    <el-table-column prop="workID" label="作业ID" width="260" />
     <el-table-column prop="strZydIDName" label="作业点名称" width="120" />
     <el-table-column prop="tagPos" label="经纬度" width="200" />
     <el-table-column prop="beginTm" label="作业时间" width="160" />
     <el-table-column prop="timeLen" label="作业时长（秒）" width="120" />
-    <el-table-column label="作业类型" width="150" >
+    <el-table-column label="作业类型" width="150">
       <template #default="{row}">
         {{ workType[row.workType] }}
       </template>
@@ -118,7 +116,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
-import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,通过workID恢复完成信息} from '~/api/天工.ts'
+import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
@@ -224,7 +222,8 @@ const 删除 = (row) => {
     cancelButtonText: '取消',
     type: 'danger',
   }).then(() => {
-    删除完成信息(row.workID).then(res=>{
+    删除完成信息(row.workID).then(async()=>{
+      await 删除完成信息确认(row.workID)
       触发完成信息查询.value = Date.now()
       ElMessageBox.alert('删除成功', '提示', {
         confirmButtonText: '确定',
@@ -236,7 +235,10 @@ const 删除 = (row) => {
 let revertTime = 0 // 用于1分钟内不用重复输入密码
 const 恢复 = (row) => {
   revertTime = Date.now()
-  通过workID恢复完成信息(row.workID).then(res=>{
+  row.isconfirmed = 0
+  delete row.strZydIDName
+  修改完成信息(row).then(async(res)=>{
+    await 删除完成信息确认(row.workID)
     触发完成信息查询.value = Date.now()
     ElMessage({
       type: 'success',
@@ -256,11 +258,10 @@ const revert = (row)=>{
       cancelButtonText: '取消',
       inputPattern: /G7#mX2q!/,
       inputErrorMessage: '密码错误',
+    }).then(({ value }) => {
+      恢复(row)
+    }).catch(() => {
     })
-      .then(({ value }) => {
-        恢复(row)
-      }).catch(() => {
-      })
   }else{
     恢复(row)
   }

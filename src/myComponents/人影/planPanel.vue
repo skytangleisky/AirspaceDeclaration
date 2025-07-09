@@ -1,23 +1,6 @@
 <template>
     <div class="planPanel wstd-container" style="z-index: 1;">
-        <div class="top">
-            <div
-                v-for="(item, index) in tabList"
-                :key="index"
-                class="top-item"
-                @click="switchTab(item.label)"
-            >
-                <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
-                    <div
-                        :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
-                    >
-                        <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
-                        <span class="label">{{ item.label }}</span>
-                    </div>
-                </el-badge>
-            </div>
-        </div>
-        <div class="bottom wstd-content" style="position: relative;" v-show="tabActive !== ''">
+        <div class="bottom wstd-content" style="position: relative;margin-bottom:10px;" v-show="tabActive !== ''">
             <div class="close-btn" @click="tabActive = ''">
                 <el-icon v-html="closeSvg"></el-icon>
             </div>
@@ -244,6 +227,23 @@
                         <PlaneInfo></PlaneInfo>
                     </div>
                 </el-scrollbar>
+            </div>
+        </div>
+        <div class="top" style="margin-top:10px;margin-bottom:0;">
+            <div
+                v-for="(item, index) in tabList"
+                :key="index"
+                class="top-item"
+                @click="switchTab(item.label)"
+            >
+                <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
+                    <div
+                        :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
+                    >
+                        <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
+                        <span class="label">{{ item.label }}</span>
+                    </div>
+                </el-badge>
             </div>
         </div>
     </div>

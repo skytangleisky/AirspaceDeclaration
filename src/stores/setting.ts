@@ -390,7 +390,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        准心:false,
+        准心:true,
         //下面两行用于人影飞机跟踪
         飞机数据:shallowReactive([]),
         注册飞机数据:shallowReactive([]),
@@ -415,7 +415,7 @@ export const useSettingStore = defineStore('setting',{
         二次码上限:Infinity,
         track:false,
         trackCount:10,
-        plane:false,
+        plane:true,
         adsb:false,
         planeLabel:false,
         gridValue:false,

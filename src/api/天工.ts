@@ -119,37 +119,6 @@ export function 作业点(){
     }
   })
 }
-export function 协同作业点(){
-  // return request({
-  //   url: '/backend/transaction?'+database2,
-  //   method: 'post',
-  //   data:{
-  //     sqls:[
-  //       "select z.*,u1.strName as strMgrUnitName,u2.strName as strRelayUnitName FROM `zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID WHERE z.strID LIKE '110%' AND z.strWeapon!='3'",
-  //     ]
-  //   }
-  // })
-  return request({
-    url:'/qt/select/zydpara',
-    method:'post',
-    data:{
-      "where": [
-        {
-          "relation": "AND",
-          "field": "strID",
-          "relationship": "NOT LIKE",
-          "condition": "110%"
-        },
-        {
-          "relation": "AND",
-          "field": "strWeapon",
-          "relationship": "!=",
-          "condition": "3"
-        }
-      ]
-    }
-  })
-}
 export function 当前作业查询(){
   return request({
     url:'/qt/select/zyddata',
@@ -346,6 +315,23 @@ export function 空域申请批准(data){
       "workTimeLen": data.workTimeLen*60,
       "beginDirection": data.beginDirection,
       "endDirection": data.endDirection,
+    }
+  })
+}
+export function 空域申请移除(strWorkID){
+  return request({
+    url:'/qt/delete/zyddata',
+    method:'post',
+    data: {
+      //一般根据主键删除即可
+      "where": [
+          {
+              "relation": "AND",
+              "field": "strWorkID",
+              "relationship": "=",
+              "condition": strWorkID
+          }
+      ]
     }
   })
 }
@@ -661,6 +647,13 @@ export function 增加完成信息(data){
     data
   })
 }
+export function 增加完成信息确认(data){
+  return request({
+    url:'/qt/insert/overinfo_confirm',
+    method:'post',
+    data
+  })
+}
 export function 通过workID获取完成信息(workID){
   return request({
     url: 'backend/db/overinfo o left join zydpara z on o.strZydID = z.strID?'+database2,
@@ -800,7 +793,7 @@ export function 通过workID获取完成信息(workID){
 //     }
 //   })
 // }
-export function 完成信息确认(data){
+export function 修改完成信息(data){
   return request({
     url:'/qt/update/overinfo',
     method:'post',
@@ -810,6 +803,23 @@ export function 完成信息确认(data){
 export function 删除完成信息(workID){
   return request({
     url:'/qt/delete/overinfo',
+    method:'post',
+    data: {
+        //一般根据主键删除即可
+        "where": [
+            {
+                "relation": "AND",
+                "field": "workID",
+                "relationship": "=",
+                "condition": workID
+            }
+        ]
+    }
+  })
+}
+export function 删除完成信息确认(workID){
+  return request({
+    url:'/qt/delete/overinfo_confirm',
     method:'post',
     data: {
         //一般根据主键删除即可

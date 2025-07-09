@@ -136,7 +136,7 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息} from "~/api/天工.ts";
+import {修改完成信息,增加完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject,computed,toRaw } from "vue";
 const date = computed({
@@ -241,10 +241,10 @@ const weatherOptions = reactive([
 ])
 const confirm = async(data) => {
     data.isconfirmed = 1
-    data.isquxianconfirmed = 1
     delete data.strZydIDName
-    完成信息确认(data).then((res)=>{
-        console.log(res)
+    修改完成信息(data).then(async(res)=>{
+        delete data.isquxianconfirmed
+        await 增加完成信息确认(data)
         ElMessage({
             message: '确认成功',
             type: 'success',
@@ -285,12 +285,6 @@ const data = defineModel('data',{
         isconfirmed:0,//19
         isquxianconfirmed:1,//20
     })
-})
-
-watch(()=>data,(d)=>{
-    console.log(d)
-},{
-    deep:true
 })
 const cancel = () => {
     show.value = false;

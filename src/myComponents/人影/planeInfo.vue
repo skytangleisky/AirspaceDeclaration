@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%"  @row-click="handleRowClick">
+  <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
     <el-table-column prop="protocol" label="数据类型" />
     <el-table-column prop="sign" label="飞机标识"/>
     <el-table-column prop="address" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
@@ -21,6 +21,10 @@ import {注册飞机查询,完成信息查询中一段时间内作业点数据,�
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,computed,toRaw } from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import { toDMS } from '~/tools'
+const tableRowClassName = ({ row }) => {
+  return 'row-selected'
+  // return row.selected = true ? 'row-selected' : '';
+};
 import moment from 'moment'
 const setting = useSettingStore()
 const addShow = ref(false)
