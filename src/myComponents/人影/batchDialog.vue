@@ -227,7 +227,7 @@ function confirm() {
   pointDialogVisible.value = false
   airspacesApply(data).then(res=>{
     pointDialogVisible.value = false
-    eventbus.emit('批量空域申请上报完成')
+    eventbus.emit('移除draw绘制的所有图形')
   })
 }
 </script>

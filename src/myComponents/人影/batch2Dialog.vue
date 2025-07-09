@@ -2,7 +2,7 @@
   <el-dialog
     :close-on-click-modal="false"
     v-model="pointDialogVisible"
-    title="作业批量申请"
+    title="作业批量批复"
     width="560"
     :before-close="handlePointDialogClose"
   >
@@ -76,15 +76,9 @@
     </div>
     <template #footer>
       <div class="dialog-footer">
-        <el-button
-          @click="pointDialogVisible = false">取消</el-button
-        >
-        <el-button
-          type="primary"
-          @click="confirm"
-        >
-          网络上报
-        </el-button>
+        <el-button type="primary" @click="accept">批准</el-button>
+        <el-button type="primary" @click="reject">不批准</el-button>
+        <el-button type="primary" @click="pointDialogVisible = false">退出</el-button>
       </div>
     </template>
   </el-dialog>
@@ -93,7 +87,7 @@
 import {reactive,ref,watch,onMounted} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
-import { airspacesApply } from '../../api/人影';
+import {空域申请批准,空域申请拒绝} from '~/api/天工'
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
 const applyPointForm = reactive({
@@ -171,65 +165,137 @@ const handleCheckedPointsChange = (value: CheckboxValueType[]) => {
 const handlePointDialogClose = () => {
   pointDialogVisible.value = false;
 };
-function confirm() {
-  const data = {
-    "workRevID": "990201000",//作业接收单位
-    "applyBeginTime": "2025-04-20 14:30:00",//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
-    "workTimeLen": 180,//申请作业时长(单位：秒)
-    "workCat": 0,//作业类型
-    "relayID": "110000000",//作业上报单位
-    "lonlatNum": 4,//作业范围经纬度个数
-    "lonArea": "115.68973,115.73187,116.01579,115.84223",//作业范围经度数组
-    "latArea": "40.55156,40.35536,40.38823,40.57899",//作业范围纬度数组
-    "reverse": "",//预留字段
-    "zydData": [//数据json字符串
-      {
-        "zydID": "110108091",
-        "longitude": "116.114200",
-        "latitude": "39.594600",
-        "shootRange": 10001,
-        "maxShootHeight": 8001,
-        "startShotDirention": "300",
-        "endShotDirention": "350",
-        "reverse": ""
-      },
-      {
-        "zydID": "110108092",
-        "longitude": "116.0454",
-        "latitude": "40.0522",
-        "shootRange": 10001,
-        "maxShootHeight": 8001,
-        "startShotDirention": "300",
-        "endShotDirention": "350",
-        "reverse": ""
-      }
-    ]
-  }
-  data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
-  data.workTimeLen = applyPointForm.workTimeLen * 60
-  data.workCat = applyPointForm.workCat
-  data.zydData.length = 0
-  batchList.value.forEach((item:any) => {
+function accept() {
+  batchList.value.forEach(async(item:any) => {
     const lngLat = fromDMS(item.strPos)
     if(checkedPoints.value.includes(item.strID)){
-      data.zydData.push({
-        "zydID": item.strID,
-        "longitude": lngLat[0].toString(),
-        "latitude": lngLat[1].toString(),
-        "shootRange": item.iMaxShotRange,
-        "maxShootHeight": item.iMaxShotHei,
-        "startShotDirention": item.iShortAngelBegin,
-        "endShotDirention": item.iShortAngelEnd,
-        "reverse": ""
+// item = {
+//     "bAutoDownSend": true,
+//     "bAutoUpSend": true,
+//     "connectType": 0,
+//     "dataver": 393,
+//     "iAltitude": 0,
+//     "iMaxShotHei": 8000,
+//     "iMaxShotRange": 10000,
+//     "iShortAngelBegin": 300,
+//     "iShortAngelEnd": 25,
+//     "iType": 0,
+//     "iVersion": 2,
+//     "listenPort": 15,
+//     "strCode": "801",
+//     "strID": "110117001",
+//     "strIP": "",
+//     "strMgrUnit": "990201000",
+//     "strMgrUnitName": "北京分区",
+//     "strName": "黑豆峪",
+//     "strPos": "117135900E40122000N",
+//     "strRelayUnit": "110117000",
+//     "strRelayUnitName": "北京平谷区",
+//     "strShotAngle": "0090",
+//     "strShotSector": "300025",
+//     "strSimNo": "",
+//     "strWeapon": 2,
+//     "properties": {
+//         "strID": "110117001",
+//         "opacity": 0.5,
+//         "ubyStatus": "作业申请待批复",
+//         "bAnswerAccept": false,
+//         "bAnswerValid": true,
+//         "bApplyValid": false,
+//         "bEndValid": false,
+//         "bRevOver": false,
+//         "iActingTimeLen": 0,
+//         "iAngleBegin": 300,
+//         "iAngleEnd": 25,
+//         "iAnswerTimeLen": 0,
+//         "iApplyTimeLen": 180,
+//         "iEndType": 0,
+//         "iMaxShotHei": 8000,
+//         "iRange": 10000,
+//         "strATCUnitID": "990201000",
+//         "strATCUnitIDName": "北京分区",
+//         "strAnswerMark": "",
+//         "strAnswerUnit": "",
+//         "strApplyMark": "",
+//         "strApplyUnit": "110000000PYCLIENT",
+//         "strCode": "801",
+//         "strCurPos": "117135900E40122000N",
+//         "strEndMark": "",
+//         "strEndUnit": "",
+//         "strName": "黑豆峪",
+//         "strUpApplyUnit": "110000000",
+//         "strUpApplyUnitName": "北京气象局",
+//         "strWeapon": "火箭+高炮",
+//         "strWorkID": "RY1101170012025-07-09-1449540",
+//         "strZydID": "110117001",
+//         "tmAnswerCreate": "",
+//         "tmAnswerRev": "",
+//         "tmAnswerSend": "",
+//         "tmApplyCreate": "1970-01-01 08:00:00",
+//         "tmApplyRev": "2025-07-09 14:49:55",
+//         "tmApplySend": "",
+//         "tmBeginActing": "",
+//         "tmBeginAnswer": "",
+//         "tmBeginApply": "2025-07-09 14:49:42",
+//         "tmEnd": "",
+//         "tmEndCreate": "",
+//         "tmEndRev": "",
+//         "tmEndSend": "",
+//         "tmUpdate": "2025-07-09 14:49:55",
+//         "ubyProcStatus": 3,
+//         "ubySendStatus": 3,
+//         "ubyWorkCat": 2,
+//         "vecProcess": ";14:49:55,收到批量申请",
+//         "fillColor": "#000"
+//     }
+// }
+
+      const data = {
+        "strWorkID": item.properties.strWorkID,
+        "strID": item.strID,
+        "replyUnitID": "110000000",//北京气象局
+        "workReceiveUnit": item.strID,
+        "workReceiveUser": "",
+        "workBeginTime": applyPointForm.time,
+        "workTimeLen": applyPointForm.workTimeLen,
+        "beginDirection": 20,
+        "endDirection": 80,
+      }
+
+
+
+      await 空域申请批准(data).then(res=>{
+        pointDialogVisible.value = false
+        eventbus.emit('移除draw绘制的所有图形')
       })
     }
   })
   pointDialogVisible.value = false
-  airspacesApply(data).then(res=>{
-    pointDialogVisible.value = false
-    eventbus.emit('批量空域申请上报完成')
-  })
 }
+function reject() {
+  batchList.value.forEach(async(item:any) => {
+    const lngLat = fromDMS(item.strPos)
+    if(checkedPoints.value.includes(item.strID)){
+
+console.log(applyPointForm.date+' '+applyPointForm.time)
+      const data = {
+        "strWorkID": item.properties.strWorkID,
+        "strID": item.strID,
+        "replyUnitID": "110000000",//北京气象局
+        "workReceiveUnit": item.strID,
+        "workReceiveUser": "",
+        "delayTimeLen": applyPointForm.workTimeLen,
+        "denyCode":0
+      }
+      await 空域申请拒绝(data).then(res=>{
+        pointDialogVisible.value = false
+        eventbus.emit('移除draw绘制的所有图形')
+      })
+    }
+  })
+  pointDialogVisible.value = false
+}
+
 </script>
 <style lang="scss" scoped>
 .checkbox {

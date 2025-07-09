@@ -1,12 +1,12 @@
 <template>
   <div class="tool-btns">
     <div class="btn-box disabled"><div class="distributionClass"></div></div>
+    <div class="btn-box disabled"><div class="productsClass"></div></div>
     <div :class="`btn-box ${setting.人影.监控.是否显示工具箱?'active':''}`" @click="toolkitButtonClick">
-      <div class="productsClass">
+      <div class="toolClass">
         <div class="triangleClass"></div>
       </div>
     </div>
-    <div class="btn-box disabled"><div class="toolClass"></div></div>
     <div class="btn-box disabled"><div class="favoritesClass"></div></div>
   </div>
   <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position:absolute;top:calc( 26px + 40px + 10px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">

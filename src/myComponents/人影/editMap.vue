@@ -217,13 +217,14 @@ let 批量批复 = () => {
     for(let i=0;i<circleFeatures.length;i++){
       if(item.strID==circleFeatures[i].properties.strID){
         if(['作业申请待批复'].includes(circleFeatures[i].properties.ubyStatus)){
+          item.properties = circleFeatures[i].properties
           return true
         }
       }
     }
     return false
   })
-  batchList2.splice(0,batchList.length,...list)
+  batchList2.splice(0,batchList2.length,...list)
   batch2DialogVisible.value = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
@@ -2808,8 +2809,8 @@ for(let i=0;i<8;i++){
           })
           for (let i = 0; i < circleFeatures.length; i++) {
             if (circleFeatures[i].properties.strID == row.strZydID) {
+              Object.assign(circleFeatures[i].properties,row)
               circleFeatures[i].properties.ubyStatus = status2value(row.ubyStatus);
-              circleFeatures[i].properties.strWorkID = row.strWorkID;
               if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
                 circleFeatures[i].properties.opacity = 0.5;
               }
@@ -3416,7 +3417,7 @@ for(let i=0;i<8;i++){
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
-  eventbus.on("批量空域申请上报完成",移除draw绘制的所有图形)
+  eventbus.on("移除draw绘制的所有图形",移除draw绘制的所有图形)
 });
 onBeforeUnmount(() => {
   if(map){
@@ -3431,7 +3432,7 @@ onBeforeUnmount(() => {
     eventbus.off("人影-将站点移动到屏幕中心", flyTo);
     eventbus.off("人影-地面作业申请-网络上报", 网络上报);
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
-    eventbus.off("批量空域申请上报完成",移除draw绘制的所有图形)
+    eventbus.off("移除draw绘制的所有图形",移除draw绘制的所有图形)
     map.off("zoom", zoomFunc);
     map.off("move", moveFunc);
     map.off("pitch", pitchFunc);
