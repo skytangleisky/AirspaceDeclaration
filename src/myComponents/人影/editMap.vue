@@ -104,6 +104,7 @@ import { planDataType,zyddataType } from "./planPanel.vue";
 import PlanPanel from "./planPanel.vue";
 import Dialog from "./dialog.vue";
 import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
+import { getImage } from '~/tools/project.js'
 // import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
 import {getTodayRecords,airspaceApply} from "~/api/人影/index.js"
@@ -396,14 +397,14 @@ function 网络上报(data:prevRequestDataType){
   })
   emits('update:prevRequestShow',false)//关闭弹窗
 }
-function 过滤({altitude,ssrCode}){
-  if((setting.人影.监控.飞机高度下限<=altitude&&altitude<=setting.人影.监控.飞机高度上限)&&
-    (setting.人影.监控.二次码下限<=ssrCode&&ssrCode<=setting.人影.监控.二次码上限)){
-    return true
-  }else{
-    return false
-  }
-}
+// function 过滤({altitude,ssrCode}){
+//   if((setting.人影.监控.飞机高度下限<=altitude&&altitude<=setting.人影.监控.飞机高度上限)&&
+//     (setting.人影.监控.二次码下限<=ssrCode&&ssrCode<=setting.人影.监控.二次码上限)){
+//     return true
+//   }else{
+//     return false
+//   }
+// }
 function 移除draw绘制的所有图形(){
   draw&&draw.deleteAll()
 }
@@ -437,7 +438,7 @@ function 处理飞机实时位置(d:Array<{
     for(let i=0;i<trackFeatures.length;i++){
       if(d[j]&&d[j].uiTrackNo===trackFeatures[i].properties.uiTrackNo){
         has = true;
-        trackFeatures[i].properties = {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0}
+        trackFeatures[i].properties = {...d[j],opacity:1}
         trackFeatures[i].geometry.coordinates.push(wgs84togcj02(d[j].fLongitude,d[j].fLatitude))
         if(trackFeatures[i].geometry.coordinates.length>setting.人影.监控.trackCount){
           trackFeatures[i].geometry.coordinates.splice(0,trackFeatures[i].geometry.coordinates.length - setting.人影.监控.trackCount)
@@ -448,7 +449,7 @@ function 处理飞机实时位置(d:Array<{
     if(!has){
       trackFeatures.push({
         type: "Feature",
-        properties: {...d[j],opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
+        properties: {...d[j],opacity:1},
         geometry: {
           type: "MultiPoint",
           coordinates: [wgs84togcj02(d[j].fLongitude,d[j].fLatitude)],
@@ -463,6 +464,7 @@ function 处理飞机实时位置(d:Array<{
   //飞机航迹结束
   let data = airplanesData;
   for(let j=0;j<d.length;j++){
+    // if(d[j].unSsrCode==0)continue;
     let has = false,i=0;
     for(;i<data.features.length;i++){
       if(d[j]&&d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
@@ -471,15 +473,17 @@ function 处理飞机实时位置(d:Array<{
       }
     }
     if(has){
-      // Object.assign(data.features[i].properties,{...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
-      Object.assign(data.features[i].properties,{time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0})
-      data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
+      if(performance.now()-data.features[i].properties.lastTime>30*1000){
+        data.features.splice(i--,1)
+      }else{
+        Object.assign(data.features[i].properties,{time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:1,lastTime:performance.now()})
+        data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
+      }
     }else{
       if(d[j]){
         data.features.push({
           type: "Feature",
-          // properties: {...d[j],label:(d[j].fSpeed*3.6).toFixed(2)+'km/h',opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
-          properties: {icon:"airplane",time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:过滤({altitude:d[j].iAltitudeADS,ssrCode:d[j].unSsrCode})?1:0},
+          properties: {icon:"airplane",time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:1,lastTime:performance.now()},
           geometry: {
             type: "Point",
             coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
@@ -554,13 +558,17 @@ function 处理ADSB(d:Array<{
       }
     }
     if(has){
-      Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed).toFixed()+'km/h'})
-      data.features[i].geometry.coordinates = wgs84togcj02(d[j].longitude,d[j].latitude)
+      if(performance.now() - data.features[i].properties.lastTime>30*1000){
+        data.features.splice(i--,1)
+      }else{
+        Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed).toFixed()+'km/h',lastTime:performance.now()})
+        data.features[i].geometry.coordinates = wgs84togcj02(d[j].longitude,d[j].latitude)
+      }
     }else{
       if(d[j]){
         data.features.push({
           type: "Feature",
-          properties: {...d[j],label:(d[j].ground_speed).toFixed()+'km/h'},
+          properties: {...d[j],label:(d[j].ground_speed).toFixed()+'km/h',lastTime:performance.now()},
           geometry: {
             type: "Point",
             coordinates: wgs84togcj02(d[j].longitude,d[j].latitude),
@@ -675,7 +683,7 @@ onMounted(async() => {
   aid = requestAnimationFrame(loop)
   map = new Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
-    projection: "equirectangular",//mercator|globe|equirectangular
+    projection: "mercator",//mercator|globe|equirectangular
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
     style:style as any,
     fadeDuration: 0,
@@ -719,10 +727,11 @@ onMounted(async() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
-    await 红外云图().then(({data})=>{
+    await 红外云图().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
+      const imageUrl = await getImage(data.data,extent)
       const obj = {
-        url: data.data,
+        url: imageUrl,
         coordinates: [
           [extent[0], extent[3]],
           [extent[2], extent[3]],
@@ -752,10 +761,11 @@ onMounted(async() => {
         source.updateImage(obj);
       }
     })
-    await 多源融合实况分析产品().then(({data})=>{
+    await 多源融合实况分析产品().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
+      const imageUrl = await getImage(data.data,extent)
       const obj = {
-        url: data.data,
+        url: imageUrl,
         coordinates: [
           [extent[0], extent[3]],
           [extent[2], extent[3]],
@@ -785,10 +795,11 @@ onMounted(async() => {
         source.updateImage(obj);
       }
     })
-    await 组合反射率().then(({data})=>{
+    await 组合反射率().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
+      const imageUrl = await getImage(data.data,extent)
       const obj = {
-        url: data.data,
+        url: imageUrl,
         coordinates: [
           [extent[0], extent[3]],
           [extent[2], extent[3]],
@@ -819,10 +830,11 @@ onMounted(async() => {
       }
     })
     fifteenMinutesTimer = setInterval(()=>{
-      红外云图().then(({data})=>{
+      红外云图().then(async({data})=>{
         const extent = data.extent.split(',').map(Number)
+        const imageUrl = await getImage(data.data,extent)
         const obj = {
-          url: data.data,
+          url: imageUrl,
           coordinates: [
             [extent[0], extent[3]],
             [extent[2], extent[3]],
@@ -854,10 +866,11 @@ onMounted(async() => {
       })
     },60*1000*15)
     sixMinutesTimer = setInterval(()=>{
-      组合反射率().then(({data})=>{
+      组合反射率().then(async({data})=>{
         const extent = data.extent.split(',').map(Number)
+        const imageUrl = await getImage(data.data,extent)
         const obj = {
-          url: data.data,
+          url: imageUrl,
           coordinates: [
             [extent[0], extent[3]],
             [extent[2], extent[3]],
@@ -887,10 +900,11 @@ onMounted(async() => {
           source.updateImage(obj);
         }
       })
-      多源融合实况分析产品().then(({data})=>{
+      多源融合实况分析产品().then(async({data})=>{
         const extent = data.extent.split(',').map(Number)
+        const imageUrl = await getImage(data.data,extent)
         const obj = {
-          url: data.data,
+          url: imageUrl,
           coordinates: [
             [extent[0], extent[3]],
             [extent[2], extent[3]],

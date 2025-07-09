@@ -390,7 +390,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        准心:true,
+        准心:false,
         //下面两行用于人影飞机跟踪
         飞机数据:shallowReactive([]),
         注册飞机数据:shallowReactive([]),
