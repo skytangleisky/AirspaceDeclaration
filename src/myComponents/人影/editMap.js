@@ -436,7 +436,7 @@ export default function(){
 						'line-cap':'round',
 					},
 					'paint': {
-						'line-color': 'rgb(163,183,218)',
+						'line-color': '#CD9E46',
 						'line-width': 2,
 						'line-opacity': 1,
 						// 'line-dasharray': [1,1],

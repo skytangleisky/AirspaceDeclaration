@@ -32,11 +32,11 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="12">
                         <span class="label">作业日期</span>
-                        <el-date-picker v-model="data.beginDate"/>
+                        <el-date-picker v-model="beginDate" value-format="YYYY-MM-DD" format="YYYY-MM-DD"/>
                     </el-col>
                     <el-col :span="12">
                         <span class="label">作业时间</span>
-                        <el-time-picker v-model="data.beginTime" value-format="HH:mm:ss" format="HH:mm:ss"/>
+                        <el-time-picker v-model="beginTime" value-format="HH:mm:ss" format="HH:mm:ss"/>
                     </el-col>
                 </el-row>
                 <el-row :gutter="rowGutter">
@@ -94,11 +94,11 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="20">
                         <span class="label">射向</span>
-                        <el-input-number v-model="data.shootDirectBegin" :min="0" :max="360" style="width:100%">
+                        <el-input-number v-model="shootDirectBegin" :min="0" :max="360" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                         <span style="margin:0 10px;font-size: 22px;">~</span>
-                        <el-input-number v-model="data.shootDirectEnd" :min="0" :max="360" style="width:100%">
+                        <el-input-number v-model="shootDirectEnd" :min="0" :max="360" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                     </el-col>
@@ -106,11 +106,11 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="20">
                         <span class="label">俯仰角</span>
-                        <el-input-number v-model="data.shootPitchBegin" :min="0" :max="90" style="width:100%">
+                        <el-input-number v-model="shootAngleBegin" :min="0" :max="90" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                         <span style="margin:0 10px;font-size: 22px;">~</span>
-                        <el-input-number v-model="data.shootPitchEnd" :min="0" :max="90" style="width:100%">
+                        <el-input-number v-model="shootAngleEnd" :min="0" :max="90" style="width:100%">
                             <template #suffix><span>度</span></template>
                         </el-input-number>
                     </el-col>
@@ -156,7 +156,66 @@
 import { ElMessage } from 'element-plus'
 import {作业点,增加完成信息,判断是否有完成信息,判断是否有完成信息确认} from "~/api/天工.ts";
 import moment from "moment";
-import { reactive, onMounted, onBeforeUnmount,watch,ref,inject } from "vue";
+import { reactive, onMounted, onBeforeUnmount,watch,ref,inject,computed } from "vue";
+const beginDate = computed({
+    get(){
+        return moment(data.value.beginTm,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD')
+    },
+    set(val){
+        data.value.beginTm = val + moment(data.value.beginTm,'YYYY-MM-DD HH:mm:ss').format(' HH:mm:ss')
+    }
+})
+const beginTime = computed({
+    get(){
+        return moment(data.value.beginTm,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')
+    },
+    set(val){
+        data.value.beginTm = moment(data.value.beginTm,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD') + ' ' + val
+    }
+})
+
+
+const shootDirectBegin = computed({
+    get(){
+        return Number(data.value.shootDirect.substring(0,3))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootDirect = val.toString().padStart(3,'0') + shootDirectEnd.value.toString().padStart(3,'0')
+        }
+    }
+})
+const shootDirectEnd = computed({
+    get(){
+        return Number(data.value.shootDirect.substring(3,6))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootDirect = shootDirectBegin.value.toString().padStart(3,'0') + val.toString().padStart(3,'0')
+        }
+    }
+})
+
+const shootAngleBegin = computed({
+    get(){
+        return Number(data.value.shootAngle.substring(0,2))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootAngle = val.toString().padStart(2,'0') + shootAngleEnd.value.toString().padStart(2,'0')
+        }
+    }
+})
+const shootAngleEnd = computed({
+    get(){
+        return Number(data.value.shootAngle.substring(2,4))
+    },
+    set(val){
+        if(val!=null){
+            data.value.shootAngle = shootAngleBegin.value.toString().padStart(2,'0') + val.toString().padStart(2,'0')
+        }
+    }
+})
 const rowGutter =20
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
@@ -207,7 +266,7 @@ const save = async(data) => {
         })
         return
     }
-    const workID = `RW${data.strID}${data.beginDate}-${data.beginTime.replaceAll(":","-")}`
+    const workID = `RW${data.strID}${data.beginTm.replaceAll(RegExp(/[:\s]/g),"-")}`
 
     // const result1 = await 判断是否有完成信息(workID)
     // if(result1.data.results.length>0){
@@ -229,7 +288,7 @@ const save = async(data) => {
         workID,
         strZydID: data.strID,
         tagPos:strPos.value,
-        beginTm:data.beginDate + ' ' + data.beginTime,
+        beginTm:data.beginTm,
         timeLen:data.duration,
         workType:data.iWorkType,
         workTool:data.iWeapon,
@@ -237,8 +296,8 @@ const save = async(data) => {
         numHJ:data.numHJ,
         numYT:data.numYT,
         numOther:data.numOther,
-        shootDirect:data.shootDirectBegin.toString().padStart(3,'0')+data.shootDirectEnd.toString().padStart(3,'0'),
-        shootAngle:data.shootPitchBegin.toString().padStart(2,'0')+data.shootPitchEnd.toString().padStart(2,'0'),
+        shootDirect:data.shootDirect,
+        shootAngle:data.shootAngle,
         workArea:data.area,
         beforeWeather:data.weatherBefore,
         afterWeather:data.weatherAfter,
@@ -265,8 +324,7 @@ const show = defineModel('show',{
 })
 watch(show,()=>{
     if(show.value){
-        data.value.beginDate = moment().format('YYYY-MM-DD')
-        data.value.beginTime = moment().format('HH:mm:ss')
+        data.value.beginTm = moment().format('YYYY-MM-DD HH:mm:ss')
     }
 })
 const data = defineModel('data',{
@@ -281,18 +339,15 @@ const data = defineModel('data',{
         iWorkType: 1,
         iShotRangeBegin: 0,
         iShotRangeEnd: 1000,
-        beginDate: moment().format('YYYY-MM-DD'),
-        beginTime: moment().format('HH:mm:ss'),
+        beginTm:moment().format('YYYY-MM-DD HH:mm:ss'),
         duration: 60,
         unitName: "",
         numPD:0,
         numHJ:0,
         numYT:0,
         numOther:0,
-        shootDirectBegin:0,
-        shootDirectEnd:0,
-        shootPitchBegin:0,
-        shootPitchEnd:0,
+        shootDirect:'000000',
+        shootAngle:'0000',
         area:0,
         effect:0,
         weatherBefore:0,
@@ -313,6 +368,7 @@ const cancel = () => {
 const 触发完成信息查询 = inject('触发完成信息查询',ref(Date.now()))
 // let timer:number;
 onMounted(() => {
+    data.value.beginTm = moment().format('YYYY-MM-DD HH:mm:ss')
     作业点().then((res) => {
         const results = res.data.results;
         zydOptions.splice(0, zydOptions.length);
@@ -346,10 +402,10 @@ onBeforeUnmount(() => {
         //border-radius: $border-radius-3;
         //box-shadow: var(--el-box-shadow);
 
-      background-color: var(--el-bg-color-opacity-8);
-      padding: $grid-2;
-      border-radius: $border-radius-2;
-      border:1px solid var(--el-border-color);
+    background-color: var(--el-bg-color-opacity-8);
+    padding: $grid-2;
+    border-radius: $border-radius-2;
+    border:1px solid var(--el-border-color);
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);

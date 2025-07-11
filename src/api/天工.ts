@@ -103,12 +103,12 @@ export function 作业点(){
     method:'post',
     data:{
       "where": [
-          {
-            "relation": "AND",
-            "field": "strID",
-            "relationship": "LIKE",
-            "condition": "110%"
-          },
+          // {
+          //   "relation": "AND",
+          //   "field": "strID",
+          //   "relationship": "LIKE",
+          //   "condition": "110%"
+          // },
           {
             "relation": "AND",
             "field": "strWeapon",

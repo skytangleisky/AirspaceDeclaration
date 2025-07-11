@@ -1,5 +1,5 @@
 <template>
-    <div class="modal absolute w-full h-full left-0 top-0" v-show="show">
+    <div class="modal absolute w-full h-full left-0 top-0" v-if="show">
         <div class="dragDialog">
             <div class="item-box">
                 <div class="item-label">发报单位</div>
@@ -274,7 +274,7 @@
                     <el-time-picker
                         :teleported="false"
                         value-format="HH:mm:ss"
-                        v-model="data.workBeginTime"
+                        v-model="workBeginTime"
                         placeholder="请输入开始时间"
                     />
                 </div>
@@ -305,7 +305,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, onBeforeUnmount } from "vue";
+import { reactive, onMounted, onBeforeUnmount,computed } from "vue";
 import moment from "moment";
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
@@ -329,6 +329,11 @@ const rejectOptions = reactive([
     { value: 2, label: "军航有飞行" },
 ]);
 const accept = (data: prevRequestDataType) => {
+    if(moment(moment().format('YYYY-MM-DD')+' '+data.workBeginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+        data.workBeginTime = moment().format('HH:mm:ss')
+    }else{
+        data.workBeginTime = val
+    }
     emit("accept", data);
 };
 const reject = (data: prevRequestDataType) => {
@@ -369,6 +374,18 @@ const data = defineModel<prevRequestDataType>('data',{
         beginTime: "",
         duration: 1,
         unitName: "",
+    }
+})
+const workBeginTime = computed({
+    get(){
+        return data.workBeginTime
+    },
+    set(val){
+        if(moment(moment().format('YYYY-MM-DD')+' '+val,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            data.workBeginTime = moment().format('HH:mm:ss')
+        }else{
+            data.workBeginTime = val
+        }
     }
 })
 const emit = defineEmits(["update:show", "accept", "reject"]);

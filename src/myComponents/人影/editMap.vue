@@ -397,14 +397,14 @@ function 网络上报(data:prevRequestDataType){
   })
   emits('update:prevRequestShow',false)//关闭弹窗
 }
-// function 过滤({altitude,ssrCode}){
-//   if((setting.人影.监控.飞机高度下限<=altitude&&altitude<=setting.人影.监控.飞机高度上限)&&
-//     (setting.人影.监控.二次码下限<=ssrCode&&ssrCode<=setting.人影.监控.二次码上限)){
-//     return true
-//   }else{
-//     return false
-//   }
-// }
+function 过滤({altitude,ssrCode}){
+  if((setting.人影.监控.飞机高度下限<=altitude&&altitude<=setting.人影.监控.飞机高度上限)&&
+    (setting.人影.监控.二次码下限<=ssrCode&&ssrCode<=setting.人影.监控.二次码上限)){
+    return true
+  }else{
+    return false
+  }
+}
 function 移除draw绘制的所有图形(){
   draw&&draw.deleteAll()
 }
@@ -473,12 +473,8 @@ function 处理飞机实时位置(d:Array<{
       }
     }
     if(has){
-      if(performance.now()-data.features[i].properties.lastTime>30*1000){
-        data.features.splice(i--,1)
-      }else{
-        Object.assign(data.features[i].properties,{time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:1,lastTime:performance.now()})
-        data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
-      }
+      Object.assign(data.features[i].properties,{time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0'),opacity:1,lastTime:performance.now()})
+      data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
     }else{
       if(d[j]){
         data.features.push({
@@ -492,6 +488,16 @@ function 处理飞机实时位置(d:Array<{
       }else{
         console.log(`共${d.length}架，第${j}架飞机数据错误`,d[j])
       }
+    }
+  }
+  for(let k=0;k<data.features.length;k++){
+    if(performance.now() - data.features[k].properties.lastTime>10*1e3){
+      for(let l=0;l<trackFeatures.length;l++){
+        if(trackFeatures[l].properties.uiTrackNo===data.features[k].properties.uiTrackNo){
+          trackFeatures.splice(l--,1)
+        }
+      }
+      data.features.splice(k--,1)
     }
   }
   setting.人影.监控.飞机数据.splice(0,setting.人影.监控.飞机数据.length,...data.features)
@@ -558,7 +564,7 @@ function 处理ADSB(d:Array<{
       }
     }
     if(has){
-      if(performance.now() - data.features[i].properties.lastTime>30*1000){
+      if(performance.now() - data.features[i].properties.lastTime>10*1000){
         data.features.splice(i--,1)
       }else{
         Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed).toFixed()+'km/h',lastTime:performance.now()})
@@ -577,6 +583,16 @@ function 处理ADSB(d:Array<{
       }else{
         console.log(`共${d.length}架，第${j}架飞机数据错误`,d[j])
       }
+    }
+  }
+  for(let k=0;k<data.features.length;k++){
+    if(performance.now() - data.features[k].properties.lastTime>10*1e3){
+      for(let l=0;l<adsbTrackFeatures.length;l++){
+        if(adsbTrackFeatures[l].properties.uiTrackNo===data.features[k].properties.uiTrackNo){
+          adsbTrackFeatures.splice(l--,1)
+        }
+      }
+      data.features.splice(k--,1)
     }
   }
   map?.getSource("adsb原数据")?.setData(data);
@@ -763,9 +779,9 @@ onMounted(async() => {
     })
     await 多源融合实况分析产品().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
-      const imageUrl = await getImage(data.data,extent)
+      // const imageUrl = await getImage(data.data,extent)
       const obj = {
-        url: imageUrl,
+        url: data.data,
         coordinates: [
           [extent[0], extent[3]],
           [extent[2], extent[3]],
@@ -902,9 +918,9 @@ onMounted(async() => {
       })
       多源融合实况分析产品().then(async({data})=>{
         const extent = data.extent.split(',').map(Number)
-        const imageUrl = await getImage(data.data,extent)
+        // const imageUrl = await getImage(data.data,extent)
         const obj = {
-          url: imageUrl,
+          url: data.data,
           coordinates: [
             [extent[0], extent[3]],
             [extent[2], extent[3]],
@@ -987,8 +1003,7 @@ onMounted(async() => {
         },
       },
       paint: {
-        // "line-color": "rgb(52,52,52)",
-        "line-color": "rgb(255,0,0)",
+        "line-color": "rgb(52,52,52)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -1015,7 +1030,7 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(0,0,255)",
+        "line-color": "rgb(255,0,0)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -1042,7 +1057,7 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(0,255,0)",
+        "line-color": "rgb(0,38,115)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -1069,7 +1084,7 @@ onMounted(async() => {
         },
       },
       paint: {
-        "line-color": "rgb(255,255,0)",
+        "line-color": "rgb(38,110,0)",
         "line-width": 1,
         // "line-dasharray": [1, 1],
       },
@@ -1105,7 +1120,7 @@ for(let i=0;i<8;i++){
       'line-cap': 'round'
     },
     paint: {
-      'line-color': 'rgb(0,255,255)',
+      'line-color': 'rgb(255,0,0)',
       'line-width': 1
     }
   });
@@ -1176,14 +1191,17 @@ for(let i=0;i<8;i++){
     })
     await loadImage2Map(map,circleUrl,12,24,{
       'projectile-white':{
-        style:"fill:#0f0;stroke:cyan;stroke-width:10px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#2f6ef6;stroke:black;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-red':{
-        style:"fill:red;stroke:black;stroke-width:10px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#f00;stroke:black;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
-      'projectile-gray':{
-        style:"fill:#fff;stroke:transparent;stroke-width:10px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
-      }
+      'projectile-blue':{
+        style:"fill:#2f6ef6;stroke:transparent;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      },
+      'projectile-orange':{
+        style:"fill:#0f0;stroke:black;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      },
     })
     await loadImage2Map(map,trackSvg,8,8,{
       'trackSvg':{
@@ -1213,7 +1231,7 @@ for(let i=0;i<8;i++){
             type: "区域固定作业点585",
             strName: city,
             unitName: province,
-            "icon-image": "projectile-gray",
+            "icon-image": "projectile-blue",
           },
           geometry: {
             type: "Point",
@@ -1230,7 +1248,7 @@ for(let i=0;i<8;i++){
             type: "移动作业点346",
             strName: city,
             unitName: province,
-            "icon-image": "projectile-gray",
+            "icon-image": "projectile-red",
           },
           geometry: {
             type: "Point",
@@ -2427,7 +2445,7 @@ for(let i=0;i<8;i++){
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              "icon-image": "projectile-white",
+              "icon-image": "projectile-orange",
               // "icon-image": "火箭弹图标",
               发报单位:'110000000',
               delayTimeLen:10,
@@ -2726,11 +2744,11 @@ for(let i=0;i<8;i++){
       });
       active = () => {
         zydFeatures = zydFeatures.map((item: any) => {
-          if (item.properties.id == station.人影界面被选中的设备) {
-            item.properties["icon-image"] = "projectile-white";
-          } else {
-            item.properties["icon-image"] = "projectile-white";
-          }
+          // if (item.properties.id == station.人影界面被选中的设备) {
+          //   item.properties["icon-image"] = "projectile-orange";
+          // } else {
+          //   item.properties["icon-image"] = "projectile-orange";
+          // }
           return item;
         });
         let source = map.getSource("zydSource");

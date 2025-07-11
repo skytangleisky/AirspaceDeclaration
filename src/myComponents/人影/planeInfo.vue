@@ -1,7 +1,7 @@
 <template>
   <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
     <el-table-column prop="protocol" label="数据类型" />
-    <el-table-column prop="sign" label="飞机标识"/>
+    <el-table-column prop="sign" label="飞机标识" style="white-space: nowrap;"/>
     <el-table-column prop="address" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
     <el-table-column prop="height" label="高度" />
     <el-table-column prop="update_time" label="最后更新时间" width="180"/>

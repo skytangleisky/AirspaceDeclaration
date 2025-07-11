@@ -63,7 +63,11 @@ const test = computed({
         return Number(data.value.address).toString(8).padStart(4,'0')
     },
     set(val){
-        data.value.address = parseInt(val,8).toString(10)
+        if(val==null||val==''){
+            return
+        }else{
+            data.value.address = parseInt(val,8).toString(10)
+        }
     }
 })
 const rowGutter =20

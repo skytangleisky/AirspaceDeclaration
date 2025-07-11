@@ -24,7 +24,7 @@
                         </div>
                     </template>
                     </el-table-column>
-                    <el-table-column prop="sign" label="飞机标识" width="80" />
+                    <el-table-column prop="sign" label="飞机标识" width="100" />
                     <el-table-column prop="address" label="地址/代码" width="120" :formatter="(row, column, cellValue) => Number(cellValue).toString(8).padStart(4,'0')" />
                     <el-table-column prop="protocol" label="类型" width="60" />
                     <el-table-column prop="plane_type" label="机型" width="100" />

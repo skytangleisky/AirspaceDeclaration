@@ -1,5 +1,5 @@
 <template>
-    <div class="modal absolute w-full h-full left-0 top-0" v-show="show">
+    <div class="modal absolute w-full h-full left-0 top-0" v-if="show">
         <div class="dragDialog">
             <div class="item-box">
                 <div class="item-label">代码</div>
@@ -138,7 +138,7 @@
                     <el-time-picker
                         :teleported="false"
                         value-format="HH:mm:ss"
-                        v-model="data.beginTime"
+                        v-model="beginTime"
                         placeholder="请输入开始时间"
                     />
                 </div>
@@ -172,7 +172,19 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, onBeforeUnmount } from "vue";
+import { reactive, onMounted, onBeforeUnmount,computed } from "vue";
+const beginTime = computed({
+    get(){
+        return props.data.beginTime
+    },
+    set(val){
+        if(moment(moment().format('YYYY-MM-DD')+' '+val,'YYYY-MM-DD').isBefore(moment())){
+            props.data.beginTime = moment().format('HH:mm:ss')
+        }else{
+            props.data.beginTime = val
+        }
+    }
+})
 import moment from "moment";
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
@@ -191,6 +203,11 @@ const workOptions = reactive([
     { value: 4, label: "其他" },
 ]);
 const click = (data: prevRequestDataType) => {
+    if(moment(moment().format('YYYY-MM-DD')+' '+data.beginTime,'YYYY-MM-DD').isBefore(moment())){
+        props.data.beginTime = moment().format('HH:mm:ss')
+    }else{
+        props.data.beginTime = val
+    }
     emit("click", data);
 };
 type zyddataType = {

@@ -399,9 +399,9 @@ export const useSettingStore = defineStore('setting',{
         roadMap:false,
         是否显示工具箱:false,
         landColor:{
-          r:34,
-          g:41,
-          b:53,
+          r:255,
+          g:255,
+          b:255,
           a:1
         },
         zoom: 9,

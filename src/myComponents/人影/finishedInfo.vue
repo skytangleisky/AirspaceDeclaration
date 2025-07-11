@@ -35,7 +35,7 @@
     </el-select>
     <el-button type="primary" @click="handleClick" >新增</el-button>
   </div>
-  <el-table :data="tableData" style="width: 100%">
+  <el-table :data="tableData" style="width: 100%;white-space: nowrap;">
     <el-table-column fixed label="操作" min-width="200">
       <template #default="{row}">
         <div style="display: flex;">
@@ -79,23 +79,23 @@
         {{ workCat[row.workTool] }}
       </template>
     </el-table-column>
-    <el-table-column prop="numPD" label="炮弹用量" width="80" />
-    <el-table-column prop="numHJ" label="火箭用量" width="80" />
-    <el-table-column prop="numYT" label="烟条用量" width="80" />
-    <el-table-column prop="numOther" label="其他用量" width="80" />
-    <el-table-column prop="shootDirect" label="开始射向" width="80">
+    <el-table-column prop="numPD" label="炮弹用量" width="100" />
+    <el-table-column prop="numHJ" label="火箭用量" width="100" />
+    <el-table-column prop="numYT" label="烟条用量" width="100" />
+    <el-table-column prop="numOther" label="其他用量" width="100" />
+    <el-table-column prop="shootDirect" label="开始射向" width="100">
       <template #default="{row}">{{Number(row.shootDirect.substring(0,3))}}</template>
     </el-table-column>
-    <el-table-column prop="shootDirect" label="结束射向" width="80">
+    <el-table-column prop="shootDirect" label="结束射向" width="100">
       <template #default="{row}">{{Number(row.shootDirect.substring(3,6))}}</template>
     </el-table-column>
-    <el-table-column prop="shootDirect" label="开始射角" width="80">
+    <el-table-column prop="shootDirect" label="开始射角" width="100">
       <template #default="{row}">{{Number(row.shootDirect.substring(0,2))}}</template>
     </el-table-column>
-    <el-table-column prop="shootAngle" label="结束射角" width="80">
+    <el-table-column prop="shootAngle" label="结束射角" width="100">
       <template #default="{row}">{{Number(row.shootAngle.substring(2,4))}}</template>
     </el-table-column>
-    <el-table-column prop="workArea" label="作业面积" width="80" />
+    <el-table-column prop="workArea" label="作业面积" width="100" />
     <el-table-column prop="beforeWeather" label="作业前天气" width="120">
       <template #default="{row}">{{weather[row.beforeWeather]}}</template>
     </el-table-column>
@@ -256,7 +256,7 @@ const revert = (row)=>{
     ElMessageBox.prompt('请输入密码', '提示', {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
-      inputPattern: /G7#mX2q!/,
+      inputPattern: /123/,
       inputErrorMessage: '密码错误',
     }).then(({ value }) => {
       恢复(row)
