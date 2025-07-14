@@ -1,7 +1,7 @@
 <template>
   <div @click="modelValue.opened=!modelValue.opened" class="folder" tabindex="-1">
     <span class="label">{{ modelValue.label }}</span>
-    <div class="value" style="flex:1;display: flex;align-items: center;justify-content: right;">
+    <div class="value" style="flex:1;display: flex;align-items: center;justify-content: flex-end;">
       <div class="logo_symbol" :style="`transform: rotate(${modelValue.opened?'0deg':'90deg'});transition:transform 0.2s linear;`"></div>
     </div>
   </div>

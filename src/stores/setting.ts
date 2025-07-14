@@ -406,8 +406,8 @@ export const useSettingStore = defineStore('setting',{
         },
         zoom: 9,
         center: [
-          116.403414,
-          39.914714
+          116.418757,
+          40.197544
         ],
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,

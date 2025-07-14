@@ -35,11 +35,14 @@ export function getImage(url,extent){
 
       // console.log(`转换后的图片尺寸为：${w_3857} × ${h_3857}`);
 
-
       const canvas = document.createElement('canvas')
       canvas.width = w_3857;
       canvas.height = h_3857;
       const gl = canvas.getContext("webgl");
+      gl.viewport(0, 0, w_3857, h_3857);
+      // 清除上一帧内容（可选但推荐）
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
 
       function createShader(gl, type, source) {
         const shader = gl.createShader(type);
@@ -131,13 +134,13 @@ export function getImage(url,extent){
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
 
+      const result = canvas.toDataURL()
       gl.deleteShader(vs);
       gl.deleteShader(fs);
       gl.deleteProgram(program);
       gl.deleteTexture(tex);
       gl.deleteBuffer(positionBuffer);
-      const result = canvas.toDataURL()
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      canvas.remove()
       resolve(result)
     };
     image.onerror = (e)=>{

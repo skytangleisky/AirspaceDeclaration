@@ -755,26 +755,28 @@ onMounted(async() => {
           [extent[0], extent[1]],
         ]
       }
-      if(map&&!map.getLayer('overlay-layer1')){
-        map.addLayer({
-          id: 'overlay-layer1',
-          source: {
-            type: 'image',
-            ...obj
-          },
-          type: 'raster',
-          layout: {
-            visibility: setting.人影.监控.红外云图?'visible':'none'
-          },
-          paint: {
-            'raster-opacity': 0.8,
-            'raster-resampling': 'nearest'
-          }
-        });
-      }else{
-        const sourceName = map.getLayer('overlay-layer1').source
-        const source = map.getSource(sourceName)
-        source.updateImage(obj);
+      if(map){
+        if(!map.getLayer('overlay-layer1')){
+          map.addLayer({
+            id: 'overlay-layer1',
+            source: {
+              type: 'image',
+              ...obj
+            },
+            type: 'raster',
+            layout: {
+              visibility: setting.人影.监控.红外云图?'visible':'none'
+            },
+            paint: {
+              'raster-opacity': 0.8,
+              'raster-resampling': 'nearest'
+            }
+          });
+        }else{
+          const sourceName = map.getLayer('overlay-layer1').source
+          const source = map.getSource(sourceName)
+          source.updateImage(obj);
+        }
       }
     })
     await 多源融合实况分析产品().then(async({data})=>{
@@ -789,26 +791,28 @@ onMounted(async() => {
           [extent[0], extent[1]],
         ]
       }
-      if(!map.getLayer('overlay-layer3')){
-        map.addLayer({
-          id: 'overlay-layer3',
-          source: {
-            type: 'image',
-            ...obj
-          },
-          type: 'raster',
-          layout: {
-            visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
-          },
-          paint: {
-            'raster-opacity': 1,
-            'raster-resampling': 'nearest'
-          }
-        });
-      }else{
-        const sourceName = map.getLayer('overlay-layer3').source
-        const source = map.getSource(sourceName)
-        source.updateImage(obj);
+      if(map){
+        if(!map.getLayer('overlay-layer3')){
+          map.addLayer({
+            id: 'overlay-layer3',
+            source: {
+              type: 'image',
+              ...obj
+            },
+            type: 'raster',
+            layout: {
+              visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
+            },
+            paint: {
+              'raster-opacity': 1,
+              'raster-resampling': 'nearest'
+            }
+          });
+        }else{
+          const sourceName = map.getLayer('overlay-layer3').source
+          const source = map.getSource(sourceName)
+          source.updateImage(obj);
+        }
       }
     })
     await 组合反射率().then(async({data})=>{
@@ -823,30 +827,33 @@ onMounted(async() => {
           [extent[0], extent[1]],
         ]
       }
-      if(!map.getLayer('overlay-layer2')){
-        map.addLayer({
-          id: 'overlay-layer2',
-          source: {
-            type: 'image',
-            ...obj
-          },
-          type: 'raster',
-          layout: {
-            visibility: setting.人影.监控.组合反射率?'visible':'none'
-          },
-          paint: {
-            'raster-opacity': 1,
-            'raster-resampling': 'nearest'
-          }
-        });
-      }else{
-        const sourceName = map.getLayer('overlay-layer2').source
-        const source = map.getSource(sourceName)
-        source.updateImage(obj);
+      if(map){
+        if(!map.getLayer('overlay-layer2')){
+          map.addLayer({
+            id: 'overlay-layer2',
+            source: {
+              type: 'image',
+              ...obj
+            },
+            type: 'raster',
+            layout: {
+              visibility: setting.人影.监控.组合反射率?'visible':'none'
+            },
+            paint: {
+              'raster-opacity': 1,
+              'raster-resampling': 'nearest'
+            }
+          });
+        }else{
+          const sourceName = map.getLayer('overlay-layer2').source
+          const source = map.getSource(sourceName)
+          source.updateImage(obj);
+        }
       }
     })
     fifteenMinutesTimer = setInterval(()=>{
       红外云图().then(async({data})=>{
+        if(!map)return;
         const extent = data.extent.split(',').map(Number)
         const imageUrl = await getImage(data.data,extent)
         const obj = {
@@ -883,6 +890,7 @@ onMounted(async() => {
     },60*1000*15)
     sixMinutesTimer = setInterval(()=>{
       组合反射率().then(async({data})=>{
+        if(!map)return;
         const extent = data.extent.split(',').map(Number)
         const imageUrl = await getImage(data.data,extent)
         const obj = {
@@ -917,6 +925,7 @@ onMounted(async() => {
         }
       })
       多源融合实况分析产品().then(async({data})=>{
+        if(!map)return;
         const extent = data.extent.split(',').map(Number)
         // const imageUrl = await getImage(data.data,extent)
         const obj = {
