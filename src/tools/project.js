@@ -129,7 +129,16 @@ export function getImage(url,extent){
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
-      resolve(canvas.toDataURL())
+
+
+      gl.deleteShader(vs);
+      gl.deleteShader(fs);
+      gl.deleteProgram(program);
+      gl.deleteTexture(tex);
+      gl.deleteBuffer(positionBuffer);
+      const result = canvas.toDataURL()
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      resolve(result)
     };
     image.onerror = (e)=>{
       reject(e)

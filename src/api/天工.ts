@@ -373,19 +373,19 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
   //   limit:size,
   // }
   const data = {
-    "where": [
-        {
-            "relation": "AND",
-            "field": "isquxianconfirmed",
-            "relationship": "=",
-            "condition": "1"
-        }
-    ],
+    // "where": [
+    //     {
+    //         "relation": "AND",
+    //         "field": "isquxianconfirmed",
+    //         "relationship": "=",
+    //         "condition": "1"
+    //     }
+    // ],
     "orderby": [
-        {
-            "field": "beginTm",
-            "order": "desc"
-        }
+      {
+        "field": "beginTm",
+        "order": "desc"
+      }
     ],
     distinct:false,
     offset:(page-1)*size,
@@ -503,14 +503,14 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
         "COUNT(*) AS Num",
         "MAX(beginTm) AS Last"
     ],
-    "where": [
-        {
-            "relation": "AND",
-            "field": "isquxianconfirmed",
-            "relationship": "=",
-            "condition": "1"
-        }
-    ],
+    // "where": [
+    //     {
+    //         "relation": "AND",
+    //         "field": "isquxianconfirmed",
+    //         "relationship": "=",
+    //         "condition": "1"
+    //     }
+    // ],
     "groupby":[
         "strZydID"
     ],

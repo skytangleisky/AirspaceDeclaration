@@ -241,6 +241,7 @@ const weatherOptions = reactive([
 ])
 const confirm = async(data) => {
     data.isconfirmed = 1
+    data.isquxianconfirmed = 1
     delete data.strZydIDName
     修改完成信息(data).then(async(res)=>{
         delete data.isquxianconfirmed

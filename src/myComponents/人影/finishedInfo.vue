@@ -117,7 +117,7 @@ import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
 import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息} from '~/api/天工.ts'
-import { watch,reactive,ref,provide,onMounted,onBeforeUnmount } from 'vue'
+import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,toRaw } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
 const viewShow = ref(false)
@@ -209,7 +209,7 @@ const handleClick = () => {
   addShow.value = true
 }
 const 待确认 = (row) => {
-  rowData.value = row
+  rowData.value = toRaw(row)
   confirmShow.value = true
 }
 const 详情 = (row) => {
