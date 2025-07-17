@@ -9,15 +9,15 @@
     </div>
     <div class="btn-box disabled"><div class="favoritesClass"></div></div>
   </div>
-  <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position:absolute;top:calc( 26px + 40px + 10px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
+  <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position:absolute;top:calc( 26px + 40px + 20px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
     <div class="toolKitBgClass"></div>
-  </el-scrollbar> -->
-  <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
-    <control-pane style="position:relative" :list="list" theme="default"></control-pane>
   </el-scrollbar>
-  <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
+  <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
     <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-  </div> -->
+  </el-scrollbar> -->
+  <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
+    <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+  </div>
 </template>
 <script lang="ts" setup>
 import {reactive,computed,defineAsyncComponent} from 'vue'
@@ -26,21 +26,21 @@ import toolkitSvg from '~/assets/toolkit.svg?raw'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
 const toolkitButtonClick = (e: any) => {
-  setting.人影.监控.是否显示工具箱 = !setting.人影.监控.是否显示工具箱
-  if (setting.人影.监控.是否显示工具箱) {
-    e.currentTarget.classList.add('active')
-  } else {
-    e.currentTarget.classList.remove('active')
-  }
-
-
-
   // setting.人影.监控.是否显示工具箱 = !setting.人影.监控.是否显示工具箱
   // if (setting.人影.监控.是否显示工具箱) {
   //   e.currentTarget.classList.add('active')
   // } else {
   //   e.currentTarget.classList.remove('active')
   // }
+
+
+
+  setting.人影.监控.是否显示工具箱 = !setting.人影.监控.是否显示工具箱
+  if (setting.人影.监控.是否显示工具箱) {
+    e.currentTarget.classList.add('active')
+  } else {
+    e.currentTarget.classList.remove('active')
+  }
 }
 import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
@@ -393,12 +393,12 @@ const list = reactive(
     background-color: #eaf1ff;
     border: 0.01rem solid var(--el-border-color);
     cursor:pointer;
-    // &.active{
-    //   background:#fff;
-    //   .productsClass .triangleClass {
-    //     display: block;
-    //   }
-    // }
+    &.active{
+      background:red;
+      .toolClass .triangleClass {
+        display: block;
+      }
+    }
     .distributionClass{
       background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAndJREFUWEftVr9rE2EYft5EB8H/IN9ld1B0Eiq0FXTp0IASewFBJ9cWh+YSBFuw5stS28HBrRYkXyoOLUpBFNuCRkQQEfwDvEsHOzjoYkvvlWuTmlzu+t0l1S698b3ne57ne3/dEQ75oUPWx5GBrjKQlevpJG1fBtN1ImwAtAGXf4DxolIUtThljWUg+/D7ycTP33MEuhomQoSn7jbmq0XxPIqRyAbMe3UDx3gewKCemLdcTgwtFFKvdNhIBrLTdiqxScsEnNYRtrxfB7kZlU9/3O9MJAMj0i4TaDyGeBP6QVnifE8GclP2GU7SewAnOoiYJwGsAHQOhOlAIcIllRevQ3tGdytTOlMAigHiF1XBWGmNm9LhAL4HyhK3uzdQdh6BcauNgLGkCiLjJ81Je5xB5bY4oabyoq97A9J5BuBKuwGeVAVjwk9qluxBEL3xx5UlQntN24SmdDxC/+gtK0sMBRiYANFdXzwQ28ToDZTrw2BeDGrA1iyE3R4cnK3IBjygKetfAT7VWUd6CXZrjSkYDqozA2erlvjcdQ/sGCjZQanVDRAQ0qytB7Ul8MC734DNdzE3IVy4AwtWeq2nRdQ8nLvv3OAE5vTX3kUQMFuxxJgOHykDTRKz5CyCEFhr3+zb2KIL6k7KPlAD1+S3/gQSqzpSBo9VLWNWh2tkKgrsLyYnnRkGRsO7mtYqVmogKmusEuxMhPdfcJzfgmEEihBlVD619M8MeMQj0h4l0EyHCOGxyoubUcW7KsHeVMj6KoP798QYv5LEfU8s48t/MWD6V7Rm5fa0CcMONzak13Cf9vvmH8giipPWONjYUxCHPAr2yMChZ+APmHzOIV5Te7wAAAAASUVORK5CYII=);
       width:32px;
@@ -413,6 +413,13 @@ const list = reactive(
       height:29px;
       background-repeat: no-repeat;
       background-size: 100% 100%;
+    }
+    .toolClass{
+      width:32px;
+      height:32px;
+      background-size:100% 100%;
+      background-repeat: no-repeat;
+      background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAdtJREFUWEftlr9Lw1AQx+/SikMnQQdNCy0IgnXTQTddFBcHQZuCboJLRyGtCNalP3TTScRNbdTBQScXu7jpIKjo1EJbC/4J2uYkrYHan++lkVZpphDu7vu573u59xBa/GCL9eFvAkjh1GQt55SAI87jKpcDC6Fsn0XIv9cTIKD7U79jjBWCC6DQOeKNJoIEV+UiiMI4Ac0A0RSrE4YAagnogE0DSNH0PhBMA4CT1UqGuCQgXCuyfbU0tsIBKZwKAuImQ0FjIURbSsAR1JN/AEjhhBOwK2GsMkcWfbqUgCupZZQBFDcZRyljoSWbtAPQhg4A1ByzhQUXBAJVLYKXvvPthrg+qLgGEZ8GW7SxJSBhXgkMXEiRNOkyit+O3u2Ml1Q6aSjd9F+AuKLI4qEUyTwCkBsBL2N+cc4TTfmQcO/3AQCfFL844g2+9VJ33qdPNimS1mZI/T2k0TXtQLHFuKrixtm6eOsNpSdIwAPNjYbdmwjApFU1yCQHOgD/0IGlaGYoR/RivDW2TIvV4j5e63+uuA9oHzyR1B0CjrKV4o9ChPOYbF+seiP6BpgFgF0EHOQvXz+j2pW96mG0vPNg+8j1DCOgzSwIqyBkj2Txtbxee52GZnXLU6flDnwBwAvsIT+rrzoAAAAASUVORK5CYII=);
       .triangleClass{
         position: absolute;
         top:100%;
@@ -423,13 +430,6 @@ const list = reactive(
         display: none;
         // background: red;
       }
-    }
-    .toolClass{
-      width:32px;
-      height:32px;
-      background-size:100% 100%;
-      background-repeat: no-repeat;
-      background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAdtJREFUWEftlr9Lw1AQx+/SikMnQQdNCy0IgnXTQTddFBcHQZuCboJLRyGtCNalP3TTScRNbdTBQScXu7jpIKjo1EJbC/4J2uYkrYHan++lkVZpphDu7vu573u59xBa/GCL9eFvAkjh1GQt55SAI87jKpcDC6Fsn0XIv9cTIKD7U79jjBWCC6DQOeKNJoIEV+UiiMI4Ac0A0RSrE4YAagnogE0DSNH0PhBMA4CT1UqGuCQgXCuyfbU0tsIBKZwKAuImQ0FjIURbSsAR1JN/AEjhhBOwK2GsMkcWfbqUgCupZZQBFDcZRyljoSWbtAPQhg4A1ByzhQUXBAJVLYKXvvPthrg+qLgGEZ8GW7SxJSBhXgkMXEiRNOkyit+O3u2Ml1Q6aSjd9F+AuKLI4qEUyTwCkBsBL2N+cc4TTfmQcO/3AQCfFL844g2+9VJ33qdPNimS1mZI/T2k0TXtQLHFuKrixtm6eOsNpSdIwAPNjYbdmwjApFU1yCQHOgD/0IGlaGYoR/RivDW2TIvV4j5e63+uuA9oHzyR1B0CjrKV4o9ChPOYbF+seiP6BpgFgF0EHOQvXz+j2pW96mG0vPNg+8j1DCOgzSwIqyBkj2Txtbxee52GZnXLU6flDnwBwAvsIT+rrzoAAAAASUVORK5CYII=);
     }
     .favoritesClass{
       width:29px;
