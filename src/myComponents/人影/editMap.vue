@@ -171,7 +171,9 @@ const emits = defineEmits([
   'update:prevReplyData',
 ]);
 let 批量申请 = () => {
-  setting.人影.监控.是否显示工具箱 = false
+  setting.人影.监控.是否显示分布面板 = false
+  setting.人影.监控.是否显示产品面板 = false
+  setting.人影.监控.是否显示工具面板 = false
   let list = []
   for(let j=0;j<dialogOptions.menus.length;j++){
     let station = dialogOptions.menus[j];
@@ -261,7 +263,9 @@ const 手动移除=async () => {
   })
 }
 let 作业申请 = () => {
-  setting.人影.监控.是否显示工具箱 = false
+  setting.人影.监控.是否显示分布面板 = false
+  setting.人影.监控.是否显示产品面板 = false
+  setting.人影.监控.是否显示工具面板 = false
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   emits("update:prevRequestShow", true);
@@ -2934,11 +2938,12 @@ for(let i=0;i<8;i++){
             row.ubyStatus = 100
           }
         }
-        console.log(forewarningFeaturesData.features.length,forewarningFeaturesData.features.length)
         let source1 = map?.getSource("最大射程source");
         source1?.setData(circleFeaturesData);
         let source2 = map?.getSource("警戒圈source");
         source2?.setData(forewarningFeaturesData);
+      }).catch(()=>{
+        console.log('当前作业查询被终止')
       });
     }
     // getDevice().then((res) => {

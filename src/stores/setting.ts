@@ -397,7 +397,9 @@ export const useSettingStore = defineStore('setting',{
         需要重点关注的飞机:shallowReactive([]),
         注册飞机列表显示:false,
         roadMap:false,
-        是否显示工具箱:false,
+        是否显示分布面板:false,
+        是否显示产品面板:false,
+        是否显示工具面板:false,
         landColor:{
           r:255,
           g:255,

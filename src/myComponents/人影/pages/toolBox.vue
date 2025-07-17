@@ -1,47 +1,47 @@
 <template>
-  <div class="tool-btns">
-    <div class="btn-box disabled"><div class="distributionClass"></div></div>
-    <div class="btn-box disabled"><div class="productsClass"></div></div>
-    <div :class="`btn-box ${setting.人影.监控.是否显示工具箱?'active':''}`" @click="toolkitButtonClick">
-      <div class="toolClass">
-        <div class="triangleClass"></div>
-      </div>
+  <div>
+    <div class="tool-btns">
+      <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
+      <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
+      <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
+      <div class="btn-box disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
     </div>
-    <div class="btn-box disabled"><div class="favoritesClass"></div></div>
-  </div>
-  <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position:absolute;top:calc( 26px + 40px + 20px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
-    <div class="toolKitBgClass"></div>
-  </el-scrollbar>
-  <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具箱" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
-    <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-  </el-scrollbar> -->
-  <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
-    <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+    <el-scrollbar v-if="showPanel" style="position:absolute;top:calc(31px + 40px + 10px);bottom:16px;right:18px;height:auto;width:fit-content;pointer-events: none;">
+      <MenuPanel></MenuPanel>
+    </el-scrollbar>
+    <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具面板" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
+      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+    </el-scrollbar> -->
+    <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
+      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
+import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent} from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import toolkitSvg from '~/assets/toolkit.svg?raw'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
-const toolkitButtonClick = (e: any) => {
-  // setting.人影.监控.是否显示工具箱 = !setting.人影.监控.是否显示工具箱
-  // if (setting.人影.监控.是否显示工具箱) {
-  //   e.currentTarget.classList.add('active')
-  // } else {
-  //   e.currentTarget.classList.remove('active')
-  // }
-
-
-
-  setting.人影.监控.是否显示工具箱 = !setting.人影.监控.是否显示工具箱
-  if (setting.人影.监控.是否显示工具箱) {
-    e.currentTarget.classList.add('active')
-  } else {
-    e.currentTarget.classList.remove('active')
-  }
+const distributionButtonClick = (e: any) => {
+  setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
+  setting.人影.监控.是否显示产品面板 = false
+  setting.人影.监控.是否显示工具面板 = false
 }
+const productsButtonClick = (e: any) => {
+  setting.人影.监控.是否显示分布面板 = false
+  setting.人影.监控.是否显示产品面板 = !setting.人影.监控.是否显示产品面板
+  setting.人影.监控.是否显示工具面板 = false
+}
+const toolkitButtonClick = (e: any) => {
+  setting.人影.监控.是否显示分布面板 = false
+  setting.人影.监控.是否显示产品面板 = false
+  setting.人影.监控.是否显示工具面板 = !setting.人影.监控.是否显示工具面板
+}
+const showPanel = computed(()=>{
+  return setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板
+})
 import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
 
@@ -378,9 +378,10 @@ const list = reactive(
 .tool-btns {
   position: absolute;
   right: 18px;
-  top: 26px;
+  top: 31px;
   display: flex;
   .btn-box {
+    position:relative;
     box-sizing: border-box;
     display: flex;
     justify-content: center;
@@ -394,8 +395,8 @@ const list = reactive(
     border: 0.01rem solid var(--el-border-color);
     cursor:pointer;
     &.active{
-      background:red;
-      .toolClass .triangleClass {
+      background:#fff;
+      .triangleClass {
         display: block;
       }
     }
@@ -407,7 +408,6 @@ const list = reactive(
       background-repeat: no-repeat;
     }
     .productsClass{
-      position: relative;
       background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAA+lJREFUWEe1l19oHFUUxr8zqUgtFUGwkrkT8yqioBIUW8Q+2NIKImp3Z1sq2kpVCkVLde4kIA3iZjax1n+ISrWoNHO3qYIPxhYsBius9kV9ENGAoDObWvomWKFm58jM7qybdDZztyT3aWbvd873m3PP3rlDWOZheyGDUAPjW2bUVhmoHXNE2M2GltkfCcCiwaDxqjSdLK8VAAjeAuhmBt9BoOtSUwZ+IaaScs3vO0GWHSBNvqtyYe1F/vtWoG8vQNvbpsyjyrUOpvcrBtD5lMXK3MPE0Sfpb8YqY3DyQP/v8f2yA9hjwSQTneljmp10zS87QTr6Y0ZJsTEToPTy+XXApXXzqzE7td/6p9cmXdCERL5yzHb57UpYBsNtGpPjS3N8QQVKE8Ft3KAfE1OmUeWa7bXSBcn6Fygp2j62Vz8F8KY4Xx/BWgBge+EZABvaZmS8pJz+F3XNU11xLNgDwh4C3dkq8+u+FM/G1yVvbgMjin3AjEIHWTAB0IEMs7KSYqRXiFhve+FXAO5LzaqumNrmzQ30IUoaEMDhBMAuhzth4KNuJgTyfGkma7d47Jz484Z/o2iAgQEDGGjw/M9XXbOmdmzf9X8VyvX1hsHfJFUgnvAd64UmWP0cwDfGO2YTYCz8DIQHl3rKzt3M9sJXAawHcAuANYvjGDxelZazoxKKBiNoVoCnq671QKsyNQB3J2Bb3pi9+tqLqy8QsDa/zPSKkubzyVpWwuPM2JYVQ4Rp3xGJWd6gQjnYahj0eZ6wY/6wkmJ/DkRbk5eXSl54iIEkoe4g4P+uzqgEAU/7Uryrk486O1UnINUQ6E1fmvsyK8G8UbnWjE6+KwZoNhberrpib6uxpgA8Gl9fasz3fzoyeG7FARIDwjvKEc/El0UvPEHAkJLiJh3zJPxKl2CBAeE95Yin0uXwHVHQBih54QkGHtEN6K7j95W0nuw1D5Uq9SeY+YNeA7P0DBytSrGrl1yUbKWN+fO9BC2pZXyoXPG4br7mVuyF0wC26Abl6ggfK0c8lqtLT0R2pb4bzEd0AvQ1PKmktSNP334dl7z6SQZvzgvoZZ4A5UtRWiqmDVDw/thswDjZiwGAGWKqM/FDWW/FVq7jSopit7yLTkTBEYB260Aw8ENVitubPRScBWioWxyDt1al9UXW/GWnYttLPiyS7TVvUIR7GBzBIAVgsCtAhOeqw+I1LYBYVPQCSaCxPACteaKDyjFHtZagU2R7wXaA4rfdXVpGl4tOI+IRNWx9p9WE3UQtkHhjuV8PhH8ioqO+Iw7p6LW/jIrjc5vA0RAx3Zue61sGvwF0mhB9HUV0tjosftUxTjX/AQEme8tlW1W4AAAAAElFTkSuQmCC);
       width:29px;
       height:29px;
@@ -415,21 +415,12 @@ const list = reactive(
       background-size: 100% 100%;
     }
     .toolClass{
+      position: relative;
       width:32px;
       height:32px;
       background-size:100% 100%;
       background-repeat: no-repeat;
       background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAdtJREFUWEftlr9Lw1AQx+/SikMnQQdNCy0IgnXTQTddFBcHQZuCboJLRyGtCNalP3TTScRNbdTBQScXu7jpIKjo1EJbC/4J2uYkrYHan++lkVZpphDu7vu573u59xBa/GCL9eFvAkjh1GQt55SAI87jKpcDC6Fsn0XIv9cTIKD7U79jjBWCC6DQOeKNJoIEV+UiiMI4Ac0A0RSrE4YAagnogE0DSNH0PhBMA4CT1UqGuCQgXCuyfbU0tsIBKZwKAuImQ0FjIURbSsAR1JN/AEjhhBOwK2GsMkcWfbqUgCupZZQBFDcZRyljoSWbtAPQhg4A1ByzhQUXBAJVLYKXvvPthrg+qLgGEZ8GW7SxJSBhXgkMXEiRNOkyit+O3u2Ml1Q6aSjd9F+AuKLI4qEUyTwCkBsBL2N+cc4TTfmQcO/3AQCfFL844g2+9VJ33qdPNimS1mZI/T2k0TXtQLHFuKrixtm6eOsNpSdIwAPNjYbdmwjApFU1yCQHOgD/0IGlaGYoR/RivDW2TIvV4j5e63+uuA9oHzyR1B0CjrKV4o9ChPOYbF+seiP6BpgFgF0EHOQvXz+j2pW96mG0vPNg+8j1DCOgzSwIqyBkj2Txtbxee52GZnXLU6flDnwBwAvsIT+rrzoAAAAASUVORK5CYII=);
-      .triangleClass{
-        position: absolute;
-        top:100%;
-        width: 25px;
-        height: 28px;
-        background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAchJREFUWEftlL1rFEEchp93QSUYbUWsBCsjHCkUnfMDO1FiRPCYJKWWagTFVi2FWBiwTBPEm6QJkSikEiW3pxYS4ldh7T9gDKSQ/cmeF41wxt3z9BB2qoWZed9nn90Z0eWhLvdTABQGCgP/t4HwwkqRUOWAFtu9T/7IQIhtBpB3OvPPAap1Oy1jNi2O4GzFKYXJPdo2EGJ7BfQ3G5e8Uyl3e6qvnU2hZpcQ48CnbwLoTYxrw2XdyZuXG2D6ifUmW/gIbJcYRWyyhDFgeSVh1/nDWs4DkRsg1G0M4yrw1jvtS8tCbB+APQb3hpwu/jWABwvWF0W8aRYMeKe5BkDdRjDup8/JF0rDR7WUFSKXganYZgzSIzfvnU6sLwmxPQOOYDz2ZZ3qOMDUcztpCY8axy6ir3JQ734CqNl+xMvGvBisHNLDLBCZDYTYXgPpN5/wThdahYfYpoFzwHvvtLdjANWaXZa4mwbu2EnP8d1abRU+OW9bN2/jc3Puindq7Nlo/NJAtWY31zZKXAd6zLjVKiyKsCT5cadI3ABWzbi9tn6orO956zM2BJA49rs3yDJvxtPcAFmCO7Em80/YibJWGQVAYaAw0HUDXwFq2IEhfOfa3gAAAABJRU5ErkJggg==);
-        background-size: 100% 100%;
-        display: none;
-        // background: red;
-      }
     }
     .favoritesClass{
       width:29px;
@@ -437,6 +428,18 @@ const list = reactive(
       background-size:100% 100%;
       background-repeat: no-repeat;
       background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAhNJREFUWEftlzFoE1Ecxr/vXVNXEUFqLtjBxQhOVVxdCi6Cg+nVSRw6C4q5TNZBkjoo2sVJQdBcEFQcXBx0cNHo2OggtHCJIOLYoaXeJ0mMpMHmcpdeWsSbjuP//77f+97j3XvEDj/cYX+0AGZKjWeE9kaCET5bKWvx0ZWJWqS+nmI6RX8e5LU4IgTulF37UpzeTs9QAJJeEqiGAhgjBMGm6SbNj7KbXhwKINQ4pEBCrhtgleJzIfgyrHDffsMJCHOtGul6F4Cqnps5kaj5b3GnVH8A4EIPAN54rn1qJACdhb85gVFY93j8B/g3EhDuyWCVwuXIq2gbEnjnufbJ9v+kfptAtG15WADy53Q5f+hVE8ApLk+CqeVIKcQD4BKpmgLVvEJmvtuw+WOjYVZiFtDRUJioAM29u1Kwn4QKt6bEPw3gLsHDW9ZHBTAyU48LBz8OAtCaloX6dwj7tw0A4JI1ZnJhh5DZG98OyNp4CGi6L2zUBNpi/SHO3fL3WWt8DeJYaFLxAABxI1vJT376m8HMwsoRamywY1pMgHXPtff0G51Tqq8BGE8oAX3w3MzxjrhTbFxsvnuF9P0/30p+FeBUQgBYkYKcZI0b6iqIM+3TDV4E4k3D9QaQegsinRRAqO7ABTHXwMD6oYW7BODrWTB4GkqbQAENz7evZkV/juRsAh5b78Lg+4qbzu+Oy+koR97r9Qu1GxEUrW28KwAAAABJRU5ErkJggg==);
+    }
+    .triangleClass{
+      position: absolute;
+      left:50%;
+      transform: translateX(-50%);
+      pointer-events: none;
+      bottom:-20px;
+      width: 25px;
+      height: 28px;
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAchJREFUWEftlL1rFEEchp93QSUYbUWsBCsjHCkUnfMDO1FiRPCYJKWWagTFVi2FWBiwTBPEm6QJkSikEiW3pxYS4ldh7T9gDKSQ/cmeF41wxt3z9BB2qoWZed9nn90Z0eWhLvdTABQGCgP/t4HwwkqRUOWAFtu9T/7IQIhtBpB3OvPPAap1Oy1jNi2O4GzFKYXJPdo2EGJ7BfQ3G5e8Uyl3e6qvnU2hZpcQ48CnbwLoTYxrw2XdyZuXG2D6ifUmW/gIbJcYRWyyhDFgeSVh1/nDWs4DkRsg1G0M4yrw1jvtS8tCbB+APQb3hpwu/jWABwvWF0W8aRYMeKe5BkDdRjDup8/JF0rDR7WUFSKXganYZgzSIzfvnU6sLwmxPQOOYDz2ZZ3qOMDUcztpCY8axy6ir3JQ734CqNl+xMvGvBisHNLDLBCZDYTYXgPpN5/wThdahYfYpoFzwHvvtLdjANWaXZa4mwbu2EnP8d1abRU+OW9bN2/jc3Puindq7Nlo/NJAtWY31zZKXAd6zLjVKiyKsCT5cadI3ABWzbi9tn6orO956zM2BJA49rs3yDJvxtPcAFmCO7Em80/YibJWGQVAYaAw0HUDXwFq2IEhfOfa3gAAAABJRU5ErkJggg==);
+      background-size: 100% 100%;
+      display: none;
     }
   }
   .btn-box.disabled{
@@ -464,11 +467,13 @@ const list = reactive(
       background-repeat: no-repeat;
     }
     .toolClass{
+      position: relative;
       background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAdFJREFUWEftlr9rFFEQx78zcFyR1vQnCEJilxQGjvfuNYY0KSwEeyFN/oSAyb+QVCK2NhYW2pzN2/fu0iWdiqlMF8j/cDOywYXL/dp9m5VTyVbLMjPf7/vsMPMIS35oyfr4Nw1473vzyDnnshSqSQRijKuqel0icG6t3axqIslAfnJm9gDOReTzpAgzPwWwLSKuKolaBuYJFAbvbCCE8AbAMwCdqigrxF0C+GKt3RuPnSLgvT9k5tcVCtYKEZEj59xhkXzLgPe+w8w/a1VOSBKRh865nMjtOTDWZAnl0kPHe2SSQNHl6VUTMu4NLCQAYO6YzSkzs4rIza8bf0/4A3loVgyqpEGUKFIpvFYTqurzXq/3MYSghYq1lgaDwUsReV+m3EQTvrLWvosxflXVdQCfrLW7McZ9VT354waI6Jsx5on3/gGA/WKyxRi9qi7sodxcEwRARPnePzDGnGZZtsXMb3/TKAPQjIFSlQUBjRC4N/B/EhgOh49Ho9GPu5yuSi4RrRtjvk/dB/IPIYQzABtVCtWJIaIPxpgXM29EN1siy3YAHBPRozoCJTlTV/aZy6jf76+02+01VV1pykSr1brqdrsXk/X+rm3Y1GlT6iydwC9J1QIwQShSFwAAAABJRU5ErkJggg==);
       width:26px;
       height:26px;
       background-size:100% 100%;
       background-repeat: no-repeat;
+      border:1px soldi red;
     }
     .favoritesClass{
       background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAVBJREFUWEftl91xwjAQhNedQCXhKgFXkrgSSCVHJziVJKxy9tiBsXQSyDMZ7sUvkvbT6f7cYGVrVtZHo6obAO8A+PVaKyK9d9N0PQE+DCDnnE5EuD/bSgF4+89M9TOAvhQgU3vc1v4FOAH4Kj01sv8NwM7WdFOAXkS2TxYPx6vq8er+A4AZAG/f1QAAQAB6YQZQSXsm8wL4Hx4IBcWi2htHxR4YU1dVLxn9pBiAzYjpy9xmWqnTBdkAQVRE2qmgNTZWOnbWlO7qAuA788Z886iZR1hwlkBcABTdpvZ/mzMYF0vmBqAXJAZh4kO5fSgAD4tC6DUYJh3v4QAWf/djIdH1A5T7CcJGEVkcZh01IQtgNjdYtBNqzI4aT8DBZZimh+mGABxSz6r6Hc3T3wVZHkg8O2nZCyB4gMMhi8Ya1oV0Moh9ZQJmU7v+z2nlW9/I/QALgbkWzqLbRgAAAABJRU5ErkJggg==);
@@ -478,18 +483,5 @@ const list = reactive(
       background-repeat: no-repeat;
     }
   }
-}
-.toolKitBgClass{
-  border-radius:5px;
-  top:0;
-  left:0;
-  width:391px;
-  height:559px;
-  border:1px solid #bdd4ff;
-  background-color: #f4f8ff;
-}
-.dark .toolKitBgClass{
-  border:1px solid #c1d3fb;
-  background-color: #273347;
 }
 </style>
