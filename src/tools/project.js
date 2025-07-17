@@ -1,153 +1,76 @@
-//4326->3857
-export function getImage(url,extent){
+export function getImage(url, extent) {
   return new Promise((resolve, reject) => {
-    // 加载纹理图像（EPSG:4326 图）
     const image = new Image();
-    function lonLatTo3857(lon, lat) {
-      const R = 6378137.0;
-      const x = R * lon * Math.PI / 180;
-      const y = R * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
-      return { x, y };
-    }
-    image.crossOrigin = "";
+    image.crossOrigin = "anonymous";
     image.src = url;
     image.onload = () => {
-      // 输入数据
+      const [minLon, minLat, maxLon, maxLat] = extent;
       const w_4326 = image.width;
       const h_4326 = image.height;
-      // extent = [73.0, 12.2, 135.0, 54.2]
-      const minLon = extent[0], maxLon = extent[2];
-      const minLat = extent[1], maxLat = extent[3];
-      // 坐标转换
-      const { x: x1, y: y1 } = lonLatTo3857(minLon, minLat);
-      const { x: x2, y: y2 } = lonLatTo3857(maxLon, maxLat);
 
-      // 计算米数宽高
-      const width_m = Math.abs(x2 - x1);
-      const height_m = Math.abs(y2 - y1);
-
-      // 保持宽度像素数不变，计算每像素多少米
+      // 将经纬度转为3857米坐标
+      const R = 6378137.0;
+      const lonLatTo3857 = (lon, lat) => {
+        const x = R * lon * Math.PI / 180;
+        const y = R * Math.log(Math.tan(Math.PI / 4 + lat * Math.PI / 360));
+        return { x, y };
+      };
+      const xy1 = lonLatTo3857(minLon, minLat);
+      const xy2 = lonLatTo3857(maxLon, maxLat);
+      const width_m = Math.abs(xy2.x - xy1.x);
+      const height_m = Math.abs(xy2.y - xy1.y);
       const meter_per_pixel = width_m / w_4326;
-
-      // 计算新图像的像素高度
+      const w_3857 = w_4326;
       const h_3857 = Math.round(height_m / meter_per_pixel);
-      const w_3857 = w_4326; // 宽度保持不变
 
-      // console.log(`转换后的图片尺寸为：${w_3857} × ${h_3857}`);
+      // 创建源 canvas
+      const sourceCanvas = document.createElement("canvas");
+      sourceCanvas.width = w_4326;
+      sourceCanvas.height = h_4326;
+      const srcCtx = sourceCanvas.getContext("2d");
+      srcCtx.drawImage(image, 0, 0);
+      const srcData = srcCtx.getImageData(0, 0, w_4326, h_4326);
 
-      const canvas = document.createElement('canvas')
-      canvas.width = w_3857;
-      canvas.height = h_3857;
-      const gl = canvas.getContext("webgl");
-      gl.viewport(0, 0, w_3857, h_3857);
-      // 清除上一帧内容（可选但推荐）
-      gl.clearColor(0, 0, 0, 0);
-      gl.clear(gl.COLOR_BUFFER_BIT);
+      // 创建目标 canvas
+      const destCanvas = document.createElement("canvas");
+      destCanvas.width = w_3857;
+      destCanvas.height = h_3857;
+      const destCtx = destCanvas.getContext("2d");
+      const destImg = destCtx.createImageData(w_3857, h_3857);
 
-      function createShader(gl, type, source) {
-        const shader = gl.createShader(type);
-        gl.shaderSource(shader, source);
-        gl.compileShader(shader);
-        return shader;
+      // yToLat 反变换
+      const yToLat = (y) =>
+        (180 / Math.PI) * (2 * Math.atan(Math.exp(y / R)) - Math.PI / 2);
+
+      // 开始重采样
+      for (let y3857 = 0; y3857 < h_3857; y3857++) {
+        for (let x3857 = 0; x3857 < w_3857; x3857++) {
+          const x_m = xy1.x + (x3857 / w_3857) * width_m;
+          const y_m = xy2.y - (y3857 / h_3857) * height_m;
+          const lon = (x_m / R) * (180 / Math.PI);
+          const lat = yToLat(y_m);
+
+          // 经纬度映射回原图像素坐标
+          const u = (lon - minLon) / (maxLon - minLon);
+          const v = (maxLat - lat) / (maxLat - minLat);
+          const sx = Math.floor(u * w_4326);
+          const sy = Math.floor(v * h_4326);
+
+          if (sx >= 0 && sx < w_4326 && sy >= 0 && sy < h_4326) {
+            const srcIdx = (sy * w_4326 + sx) * 4;
+            const dstIdx = (y3857 * w_3857 + x3857) * 4;
+            destImg.data[dstIdx] = srcData.data[srcIdx];
+            destImg.data[dstIdx + 1] = srcData.data[srcIdx + 1];
+            destImg.data[dstIdx + 2] = srcData.data[srcIdx + 2];
+            destImg.data[dstIdx + 3] = srcData.data[srcIdx + 3];
+          }
+        }
       }
 
-
-      const vsSource = `attribute vec2 a_position;
-      varying vec2 v_texcoord;
-      void main() {
-        v_texcoord = a_position * 0.5 + 0.5;
-        gl_Position = vec4(a_position, 0, 1);
-      }`;
-      const fsSource = `precision highp float;
-      varying vec2 v_texcoord;
-      uniform sampler2D u_image;
-      uniform float minLat;
-      uniform float maxLat;
-      uniform float minLon;
-      uniform float maxLon;
-
-      const float R = 6378137.0;
-
-      float latToY(float lat) {
-        float rad = radians(lat);
-        return R * log(tan(3.1415926 / 4.0 + rad / 2.0));
-      }
-
-      float yToLat(float y) {
-        return degrees(2.0 * atan(exp(y / R)) - 3.1415926 / 2.0);
-      }
-
-      void main() {
-        // EPSG:3857 Y 范围
-        float y0 = latToY(minLat);
-        float y1 = latToY(maxLat);
-        float y = mix(y0, y1, v_texcoord.y);
-        float lat = yToLat(y);
-
-        float lon = mix(minLon, maxLon, v_texcoord.x);
-
-        float u = (lon - minLon) / (maxLon - minLon);
-        float v = (maxLat - lat) / (maxLat - minLat);
-
-        vec4 color = texture2D(u_image, vec2(u, v));
-        gl_FragColor = color;
-      }`;
-
-      const vs = createShader(gl, gl.VERTEX_SHADER, vsSource);
-      const fs = createShader(gl, gl.FRAGMENT_SHADER, fsSource);
-
-      const program = gl.createProgram();
-      gl.attachShader(program, vs);
-      gl.attachShader(program, fs);
-      gl.linkProgram(program);
-      gl.useProgram(program);
-
-      // 顶点数据（两个三角形构成矩形）
-      const positionBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-      const positions = new Float32Array([
-        -1, -1, 1, -1, -1, 1,
-        1, -1, 1,  1, -1, 1
-      ]);
-      gl.bufferData(gl.ARRAY_BUFFER, positions, gl.STATIC_DRAW);
-
-      const aPosition = gl.getAttribLocation(program, "a_position");
-      gl.enableVertexAttribArray(aPosition);
-      gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
-
-      // 设置 uniform 经纬度范围
-      gl.uniform1f(gl.getUniformLocation(program, "minLat"), minLat);
-      gl.uniform1f(gl.getUniformLocation(program, "maxLat"), maxLat);
-      gl.uniform1f(gl.getUniformLocation(program, "minLon"), minLon);
-      gl.uniform1f(gl.getUniformLocation(program, "maxLon"), maxLon);
-
-
-
-      const tex = gl.createTexture();
-      gl.bindTexture(gl.TEXTURE_2D, tex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA,gl.UNSIGNED_BYTE, image);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-
-      const result = canvas.toDataURL()
-      gl.deleteShader(vs);
-      gl.deleteShader(fs);
-      gl.deleteProgram(program);
-      gl.deleteTexture(tex);
-      gl.deleteBuffer(positionBuffer);
-      canvas.remove()
-      resolve(result)
+      // 输出新图
+      destCtx.putImageData(destImg, 0, 0);
+      resolve(destCanvas.toDataURL());
     };
-    image.onerror = (e)=>{
-      reject(e)
-    }
-    image.onabort = (e)=>{
-      reject(e)
-    }
-  })
+    image.onerror = reject;
+  });
 }

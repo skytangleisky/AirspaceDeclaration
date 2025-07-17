@@ -239,26 +239,6 @@ const weatherOptions = reactive([
     { value: 16, label: "雷电" },
     { value: 17, label: "多云" },
 ])
-const confirm = async(data) => {
-    data.isconfirmed = false
-    data.isquxianconfirmed = true
-    console.log(data)
-    delete data.strZydIDName
-    修改完成信息(data).then((res)=>{
-        console.log(res)
-        ElMessage({
-            message: '确认成功',
-            type: 'success',
-        })
-        触发完成信息查询.value = Date.now()
-        show.value = false;
-    }).catch(err=>{
-        ElMessage({
-            message: '确认失败',
-            type:'error',
-        })
-    })
-};
 const show = defineModel('show',{
     default:true
 })

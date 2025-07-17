@@ -386,9 +386,6 @@ const props = withDefaults(
         今日作业记录: () => new Array<planDataType>(),
     }
 );
-watch(props.今日作业记录, (newValue) => {
-    console.log(newValue);
-});
 function 获取空域状态(item: planDataType) {
     if (item.ubyStatus == 91) {
         return "地面作业使用中";
