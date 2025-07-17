@@ -1,5 +1,5 @@
 <template>
-    <div class="modal absolute w-full h-full left-0 top-0" v-if="show">
+    <div class="modal" v-if="show">
         <div class="dragDialog">
             <div class="item-box">
                 <div class="item-label">代码</div>
@@ -138,8 +138,9 @@
                     <el-time-picker
                         :teleported="false"
                         value-format="HH:mm:ss"
-                        v-model="beginTime"
+                        v-model="data.beginTime"
                         placeholder="请输入开始时间"
+                        @clear="beginTimeClear"
                     />
                 </div>
             </div>
@@ -172,19 +173,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, onBeforeUnmount,computed } from "vue";
-const beginTime = computed({
-    get(){
-        return props.data.beginTime
-    },
-    set(val){
-        if(moment(moment().format('YYYY-MM-DD')+' '+val,'YYYY-MM-DD').isBefore(moment())){
-            props.data.beginTime = moment().format('HH:mm:ss')
-        }else{
-            props.data.beginTime = val
-        }
-    }
-})
+import { reactive, onMounted, onBeforeUnmount } from "vue";
 import moment from "moment";
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
@@ -203,13 +192,11 @@ const workOptions = reactive([
     { value: 4, label: "其他" },
 ]);
 const click = (data: prevRequestDataType) => {
-    if(moment(moment().format('YYYY-MM-DD')+' '+data.beginTime,'YYYY-MM-DD').isBefore(moment())){
-        props.data.beginTime = moment().format('HH:mm:ss')
-    }else{
-        props.data.beginTime = val
-    }
     emit("click", data);
 };
+const beginTimeClear = ()=>{
+    props.data.beginTime = moment().format('HH:mm:ss')
+}
 type zyddataType = {
     strID: string;
     strCode: string;
@@ -245,7 +232,7 @@ const props = withDefaults(
             iWorkType: 1,
             iShotRangeBegin: 0,
             iShotRangeEnd: 1000,
-            beginTime: "",
+            beginTime: moment().format('HH:mm:ss'),
             duration: 1,
             unitName: "",
         }),
@@ -255,18 +242,25 @@ const emit = defineEmits(["update:show", "click"]);
 const cancel = () => {
     emit("update:show", false);
 };
-// let timer:number;
+let timer:any;
 onMounted(() => {
-    // timer = setInterval(()=>{
-    //   props.data.beginTime = moment().format('HH:mm:ss')
-    // },1000)
+    timer = setInterval(()=>{
+        if(moment(moment().format('YYYY-MM-DD ') + props.data.beginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            props.data.beginTime = moment().format('HH:mm:ss')
+        }
+    },1000)
 });
 onBeforeUnmount(() => {
-    // clearInterval(timer)
+    clearInterval(timer)
 });
 </script>
 <style scoped lang="scss">
 .modal {
+    position: absolute;
+    width:100%;
+    height:100%;
+    left:0;
+    top:0;
     z-index: 4;
     background: #00000088;
     position: relative;

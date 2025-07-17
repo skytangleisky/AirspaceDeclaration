@@ -9,7 +9,6 @@ const item = defineModel('item',{
   default:{strName:"太平庄炮站"}
 })
 
-// let videoSrc = 'http://172.18.7.210:83/openUrl/vsigFGNO7le17fa52612afb457085fb8/live.m3u8';
 let videoSrc = 'http://172.18.7.210:83/openUrl/vsigkAbJ5aUb5549f19ae7e402c8502f/live.m3u8';
 onMounted(()=>{
   const video = videoRef.value

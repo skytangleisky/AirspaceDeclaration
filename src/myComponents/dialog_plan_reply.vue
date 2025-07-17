@@ -161,7 +161,7 @@
                 <div class="item-value">
                     <el-input
                         disabled
-                        name="发报单位"
+                        name="申请作业时间"
                         :value="data.beginTime"
                         @mousedown.stop
                     />
@@ -274,7 +274,7 @@
                     <el-time-picker
                         :teleported="false"
                         value-format="HH:mm:ss"
-                        v-model="workBeginTime"
+                        v-model="data.workBeginTime"
                         placeholder="请输入开始时间"
                     />
                 </div>
@@ -329,11 +329,6 @@ const rejectOptions = reactive([
     { value: 2, label: "军航有飞行" },
 ]);
 const accept = (data: prevRequestDataType) => {
-    if(moment(moment().format('YYYY-MM-DD')+' '+data.workBeginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
-        data.workBeginTime = moment().format('HH:mm:ss')
-    }else{
-        data.workBeginTime = val
-    }
     emit("accept", data);
 };
 const reject = (data: prevRequestDataType) => {
@@ -359,7 +354,7 @@ export type prevRequestDataType = {
 const show = defineModel('show',{
     default:true
 })
-const data = defineModel<prevRequestDataType>('data',{
+const data = defineModel<any>('data',{
     default: {
         strID: "",
         strCode: "",
@@ -374,32 +369,23 @@ const data = defineModel<prevRequestDataType>('data',{
         beginTime: "",
         duration: 1,
         unitName: "",
-    }
-})
-const workBeginTime = computed({
-    get(){
-        return data.workBeginTime
-    },
-    set(val){
-        if(moment(moment().format('YYYY-MM-DD')+' '+val,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
-            data.workBeginTime = moment().format('HH:mm:ss')
-        }else{
-            data.workBeginTime = val
-        }
+        workBeginTime: moment().format('HH:mm:ss')
     }
 })
 const emit = defineEmits(["update:show", "accept", "reject"]);
 const cancel = () => {
     emit("update:show", false);
 };
-// let timer:number;
+let timer:number;
 onMounted(() => {
-    // timer = setInterval(()=>{
-    //   props.data.beginTime = moment().format('HH:mm:ss')
-    // },1000)
+    timer = setInterval(()=>{
+        if(moment(moment().format('YYYY-MM-DD ')+data.workBeginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            data.workBeginTime = moment().format('HH:mm:ss')
+        }
+    },1000)
 });
 onBeforeUnmount(() => {
-    // clearInterval(timer)
+    clearInterval(timer)
 });
 </script>
 <style scoped lang="scss">
