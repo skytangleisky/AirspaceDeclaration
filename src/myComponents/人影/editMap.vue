@@ -63,7 +63,9 @@
       <Tool-Box />
     </div>
     <div v-if="planProps.当前作业进度.length>0" style="position:relative;width:500px;overflow: auto;">
-      <Video v-for="item in planProps.当前作业进度" :item="item" :key="item.strWorkID"></Video>
+      <template v-for="item in planProps.当前作业进度" :key="item.strWorkID">
+        <Video v-if="item.strZydID.startsWith('110')" :item="item"></Video>
+      </template>
     </div>
   </div>
 </template>
@@ -82,6 +84,7 @@ import { point, polygon } from "@turf/helpers";
 import BatchDialog from "./batchDialog.vue";
 import Batch2Dialog from "./batch2Dialog.vue";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import transparentPng from '~/assets/transparent.png?url'
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import styles from './drawTheme/theme.js'
 import mapboxgl from 'mapbox-gl_wstd'
@@ -577,12 +580,8 @@ function 处理ADSB(d:Array<{
       }
     }
     if(has){
-      if(performance.now() - data.features[i].properties.lastTime>10*1000){
-        data.features.splice(i--,1)
-      }else{
-        Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed).toFixed()+'km/h',lastTime:performance.now()})
-        data.features[i].geometry.coordinates = wgs84togcj02(d[j].longitude,d[j].latitude)
-      }
+      Object.assign(data.features[i].properties,d[j],{label:(d[j].ground_speed).toFixed()+'km/h',lastTime:performance.now()})
+      data.features[i].geometry.coordinates = wgs84togcj02(d[j].longitude,d[j].latitude)
     }else{
       if(d[j]){
         data.features.push({
@@ -601,11 +600,11 @@ function 处理ADSB(d:Array<{
   for(let k=0;k<data.features.length;k++){
     if(performance.now() - data.features[k].properties.lastTime>10*1e3){
       for(let l=0;l<adsbTrackFeatures.length;l++){
-        if(adsbTrackFeatures[l].properties.uiTrackNo===data.features[k].properties.uiTrackNo){
-          adsbTrackFeatures.splice(l--,1)
+        if(adsbTrackFeatures[l].properties.id===data.features[k].properties.id){
+          adsbTrackFeatures.splice(l--,1)//删除轨迹
         }
       }
-      data.features.splice(k--,1)
+      data.features.splice(k--,1)//删除飞机
     }
   }
   map?.getSource("adsb原数据")?.setData(data);
@@ -756,9 +755,67 @@ onMounted(async() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
+    const extent = [0, 0, 0, 0];
     红外云图().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
-      if((atob(data.data.slice(22)).includes('IEND'))){
+      const imageUrl = await getImage(data.data,extent)
+      const obj = {
+        url: imageUrl,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(map){
+        const source = map.getSource(map.getLayer('overlay-layer1').source)
+        source.updateImage(obj);
+      }
+    }).catch((err=>{
+      console.log(err)
+    }))
+    多源融合实况分析产品().then(async({data})=>{
+      const extent = data.extent.split(',').map(Number)
+      // const imageUrl = await getImage(data.data,extent)
+      const obj = {
+        url: data.data,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(map){
+        const source = map.getSource(map.getLayer('overlay-layer3').source)
+        source.updateImage(obj);
+      }
+    }).catch(err=>{
+      console.log(err)
+    })
+    组合反射率().then(async({data})=>{
+      const extent = data.extent.split(',').map(Number)
+      const imageUrl = await getImage(data.data,extent)
+      const obj = {
+        url: imageUrl,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(map){
+        const source = map.getSource(map.getLayer('overlay-layer2').source)
+        source.updateImage(obj);
+      }
+    }).catch(err=>{
+      console.log(err)
+    })
+    fifteenMinutesTimer = setInterval(()=>{
+      红外云图().then(async({data})=>{
+        const extent = data.extent.split(',').map(Number)
         const imageUrl = await getImage(data.data,extent)
         const obj = {
           url: imageUrl,
@@ -770,34 +827,17 @@ onMounted(async() => {
           ]
         }
         if(map){
-          if(!map.getLayer('overlay-layer1')){
-            map.addLayer({
-              id: 'overlay-layer1',
-              source: {
-                type: 'image',
-                ...obj
-              },
-              type: 'raster',
-              layout: {
-                visibility: setting.人影.监控.红外云图?'visible':'none'
-              },
-              paint: {
-                'raster-opacity': 0.8,
-                'raster-resampling': 'nearest'
-              }
-            });
-          }else{
-            const sourceName = map.getLayer('overlay-layer1').source
-            const source = map.getSource(sourceName)
-            source.updateImage(obj);
-          }
+          const source = map.getSource(map.getLayer('overlay-layer1').source)
+          source.updateImage(obj);
         }
-      }
-    })
-    多源融合实况分析产品().then(async({data})=>{
-      const extent = data.extent.split(',').map(Number)
-      // const imageUrl = await getImage(data.data,extent)
-      if(atob(data.data.slice(22)).includes('IEND')){
+      }).catch((err=>{
+        console.log(err)
+      }))
+    },15*60*1e3)
+    sixMinutesTimer = setInterval(()=>{
+      多源融合实况分析产品().then(async({data})=>{
+        const extent = data.extent.split(',').map(Number)
+        // const imageUrl = await getImage(data.data,extent)
         const obj = {
           url: data.data,
           coordinates: [
@@ -808,36 +848,15 @@ onMounted(async() => {
           ]
         }
         if(map){
-          if(!map.getLayer('overlay-layer3')){
-            map.addLayer({
-              id: 'overlay-layer3',
-              source: {
-                type: 'image',
-                ...obj
-              },
-              type: 'raster',
-              layout: {
-                visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
-              },
-              paint: {
-                'raster-opacity': 1,
-                'raster-resampling': 'nearest'
-              }
-            });
-          }else{
-            const sourceName = map.getLayer('overlay-layer3').source
-            const source = map.getSource(sourceName)
-            source.updateImage(obj);
-          }
+          const source = map.getSource(map.getLayer('overlay-layer3').source)
+          source.updateImage(obj);
         }
-      }else{
-        console.log('多源融合实况分析产品','数据格式错误',data.data)
-      }
-    })
-    组合反射率().then(async({data})=>{
-      const extent = data.extent.split(',').map(Number)
-      const imageUrl = await getImage(data.data,extent)
-      if((atob(data.data.slice(22)).includes('IEND'))){
+      }).catch(err=>{
+        console.log(err)
+      })
+      组合反射率().then(async({data})=>{
+        const extent = data.extent.split(',').map(Number)
+        const imageUrl = await getImage(data.data,extent)
         const obj = {
           url: imageUrl,
           coordinates: [
@@ -848,143 +867,11 @@ onMounted(async() => {
           ]
         }
         if(map){
-          if(!map.getLayer('overlay-layer2')){
-            map.addLayer({
-              id: 'overlay-layer2',
-              source: {
-                type: 'image',
-                ...obj
-              },
-              type: 'raster',
-              layout: {
-                visibility: setting.人影.监控.组合反射率?'visible':'none'
-              },
-              paint: {
-                'raster-opacity': 1,
-                'raster-resampling': 'nearest'
-              }
-            });
-          }else{
-            const sourceName = map.getLayer('overlay-layer2').source
-            const source = map.getSource(sourceName)
-            source.updateImage(obj);
-          }
-        }
-      }
-    })
-    fifteenMinutesTimer = setInterval(()=>{
-      setting.人影.监控.红外云图&&红外云图().then(async({data})=>{
-        if(!(atob(data.data.slice(22)).includes('IEND')))return;
-        if(!map)return;
-        const extent = data.extent.split(',').map(Number)
-        const imageUrl = await getImage(data.data,extent)
-        const obj = {
-          url: imageUrl,
-          coordinates: [
-            [extent[0], extent[3]],
-            [extent[2], extent[3]],
-            [extent[2], extent[1]],
-            [extent[0], extent[1]],
-          ]
-        }
-        if(!map.getLayer('overlay-layer1')){
-          map.addLayer({
-            id: 'overlay-layer1',
-            source: {
-              type: 'image',
-              ...obj
-            },
-            type: 'raster',
-            layout: {
-              visibility: setting.人影.监控.红外云图?'visible':'none'
-            },
-            paint: {
-              'raster-opacity': 1,
-              'raster-resampling': 'nearest'
-            }
-          });
-        }else{
-          const sourceName = map.getLayer('overlay-layer1').source
-          const source = map.getSource(sourceName)
+          const source = map.getSource(map.getLayer('overlay-layer2').source)
           source.updateImage(obj);
         }
-      })
-    },15*60*1e3)
-    sixMinutesTimer = setInterval(()=>{
-      setting.人影.监控.组合反射率&&组合反射率().then(async({data})=>{
-        if(!(atob(data.data.slice(22)).includes('IEND')))return;
-        if(!map)return;
-        const extent = data.extent.split(',').map(Number)
-        const imageUrl = await getImage(data.data,extent)
-        const obj = {
-          url: imageUrl,
-          coordinates: [
-            [extent[0], extent[3]],
-            [extent[2], extent[3]],
-            [extent[2], extent[1]],
-            [extent[0], extent[1]],
-          ]
-        }
-        if(!map.getLayer('overlay-layer2')){
-          map.addLayer({
-            id: 'overlay-layer2',
-            source: {
-              type: 'image',
-              ...obj
-            },
-            type: 'raster',
-            layout: {
-              visibility: setting.人影.监控.组合反射率?'visible':'none'
-            },
-            paint: {
-              'raster-opacity': 1,
-              'raster-resampling': 'nearest'
-            }
-          });
-        }else{
-          const sourceName = map.getLayer('overlay-layer2').source
-          const source = map.getSource(sourceName)
-          source.updateImage(obj);
-        }
-      })
-      setting.人影.监控.多源融合实况分析产品&&多源融合实况分析产品().then(async({data})=>{
-        if(!map)return;
-        const extent = data.extent.split(',').map(Number)
-        // const imageUrl = await getImage(data.data,extent)
-        if((atob(data.data.slice(22)).includes('IEND'))){
-          const obj = {
-            url: data.data,
-            coordinates: [
-              [extent[0], extent[3]],
-              [extent[2], extent[3]],
-              [extent[2], extent[1]],
-              [extent[0], extent[1]],
-            ]
-          }
-          if(!map.getLayer('overlay-layer3')){
-            map.addLayer({
-              id: 'overlay-layer3',
-              source: {
-                type: 'image',
-                ...obj
-              },
-              type: 'raster',
-              layout: {
-                visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
-              },
-              paint: {
-                'raster-opacity': 1,
-                'raster-resampling': 'nearest'
-              }
-            });
-          }else{
-            const sourceName = map.getLayer('overlay-layer3').source
-            const source = map.getSource(sourceName)
-            source.updateImage(obj);
-          }
-        }else{
-          console.log('多源融合实况分析产品','数据格式错误',data.data)
-        }
+      }).catch(err=>{
+        console.log(err)
       })
     },6*60*1e3)
     // axios.get('/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{

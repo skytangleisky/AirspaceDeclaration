@@ -289,8 +289,8 @@ const list = reactive(
     ]
   },
   {label: '红外云图', value: modelRef(setting, '人影.监控.红外云图'), type: 'checkbox'},
-  {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
   {label: '多源融合实况分析产品', value: modelRef(setting, '人影.监控.多源融合实况分析产品'), type: 'checkbox'},
+  {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
   {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
   {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},

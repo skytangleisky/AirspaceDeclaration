@@ -2,6 +2,9 @@ import city from './省界.json?url'
 import beijing from './北京市.json?url'
 import beijingBorder from './北京市.geojson?url'
 import { useSettingStore } from '~/stores/setting';
+import transparentPng from '~/assets/transparent.png?url'
+import huabeiUrl from '~/assets/huabei.json?url'
+const extent = [0, 0, 0, 0];
 export default function(){
 	const setting = useSettingStore()
 	return {
@@ -277,6 +280,36 @@ export default function(){
 			// 	// url: 'mapbox://mapbox.mapbox-terrain-v2'
 			// 	tiles: ['https://dem.tanglei.site?lyrs=d&x={x}&y={y}&z={z}'],
 			// },
+			'source1':{
+				type: 'image',
+				url: transparentPng,
+				coordinates: [
+					[extent[0], extent[3]],
+					[extent[2], extent[3]],
+					[extent[2], extent[1]],
+					[extent[0], extent[1]],
+				]
+			},
+			'source3':{
+				type: 'image',
+				url: transparentPng,
+				coordinates: [
+					[extent[0], extent[3]],
+					[extent[2], extent[3]],
+					[extent[2], extent[1]],
+					[extent[0], extent[1]],
+				]
+			},
+			'source2':{
+				type: 'image',
+				url: transparentPng,
+				coordinates: [
+					[extent[0], extent[3]],
+					[extent[2], extent[3]],
+					[extent[2], extent[1]],
+					[extent[0], extent[1]],
+				]
+			},
 			"district":{
 				"type":"geojson",
 				"data": city
@@ -291,7 +324,7 @@ export default function(){
 			},
 			"huabeiBorder":{
 				"type":"geojson",
-				"data": '/resources/huabei.json'
+				"data": huabeiUrl
 			},
 			// "composite": {
 			// 		"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
@@ -380,6 +413,42 @@ export default function(){
 					"maxzoom": 22,
 					layout:{
 						visibility:'none'
+					}
+				},
+				{
+					id: 'overlay-layer1',
+					source: 'source1',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.红外云图?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
+					}
+				},
+				{
+					id: 'overlay-layer3',
+					source: 'source3',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
+					}
+				},
+				{
+					id: 'overlay-layer2',
+					source: 'source2',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.组合反射率?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
 					}
 				},
 				{
