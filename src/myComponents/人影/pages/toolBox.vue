@@ -16,7 +16,6 @@
       <control-pane style="position:relative" :list="list" theme="default"></control-pane>
     </div>
   </div>
-  
 </template>
 <script lang="ts" setup>
 
@@ -48,11 +47,6 @@ import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
 
 const theme = useTheme()
-// const list = reactive([
-//   {
-//     label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children:
-//   },
-// ]);
 const list = reactive(
   [{label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
   {

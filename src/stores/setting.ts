@@ -38,7 +38,7 @@ export const useSettingStore = defineStore('setting',{
     在线人数:'',
     网络状态:'',
     内存占用:'',
-    devtoolsOpen:true,
+    devtoolsOpen:false,
     menus:true,
     canvas:{
       devtoolsOpen:false,

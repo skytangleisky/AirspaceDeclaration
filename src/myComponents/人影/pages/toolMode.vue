@@ -61,7 +61,6 @@
             type: Array
         },
     })
-    console.log("model", props.model)
     type Dict = {
         value: number, label: string, isActive: boolean, icon?: string
     }

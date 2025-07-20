@@ -29,9 +29,7 @@ const inputValue = ref<any>(toRefs(modelValue.value).value)
 const rangerRef = ref()
 onMounted(()=>{
   rangerRef.value.addEventListener('mousedown',mousedown)
-  requestAnimationFrame(()=>{
-    setValue(modelValue.value.value)
-  })
+  setValue(modelValue.value.value)
 })
 const isDragging = ref(false)
 function mousedown(evt:MouseEvent){

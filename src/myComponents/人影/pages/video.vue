@@ -13,9 +13,11 @@ let videoSrc = 'http://172.18.7.210:83/openUrl/vsigkAbJ5aUb5549f19ae7e402c8502f/
 onMounted(()=>{
   const video = videoRef.value
   所有站点的视频信息().then(({data})=>{
+    let has = false
     for(let i=0;i<data.data.length;i++){
       const it = data.data[i]
       if(it.cameraName.includes(item.value.strName.substring(0,2))&&it.cameraName.includes('作业平台')){
+        has = true
         m3u8(it.cameraIndexCode).then(res=>{
           const url = new URL(res.data.data.url)
           videoSrc = url.pathname + url.search
@@ -38,6 +40,9 @@ onMounted(()=>{
         })
         break
       }
+    }
+    if(!has){
+      console.log(`${item.value.strName}无视频流数据!`)
     }
   })
 })
