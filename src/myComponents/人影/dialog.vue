@@ -3,8 +3,9 @@
         <div class="top">
             <div
                 class="box map-btn"
+                style="user-select: none;cursor: pointer;"
                 :class="{ active: tabActive == 1 }"
-                @click="tabActive = 1"
+                @click="tabActive == 1 ? tabActive = 0 : tabActive = 1"
             >
                 <svg-icon name="table"></svg-icon>
                 <span class="label">作业点列表</span>

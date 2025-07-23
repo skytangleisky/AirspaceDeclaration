@@ -755,6 +755,7 @@ onMounted(async() => {
     GIS_DATA_REGION: 33,//新的面图元数据
   }
   map.on("load", async () => {
+    if(!map)return;
     const extent = [0, 0, 0, 0];
     红外云图().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
@@ -1106,9 +1107,9 @@ for(let i=0;i<8;i++){
         style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
     })
-    await loadImage2Map(map,adsbUrl,14,14,{
+    await loadImage2Map(map,adsbUrl,22,22,{
       'adsb':{
-        style:"fill:orange;stroke:transparent;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:orange;stroke:#000;stroke-width:1px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       }
       // fill="#1296db"
     })
@@ -1180,7 +1181,7 @@ for(let i=0;i<8;i++){
         }
       );
     })
-    map.addLayer({
+    map?.addLayer({
       id: "moveZydLayer",
       type: "symbol",
       source: {
@@ -1580,8 +1581,7 @@ for(let i=0;i<8;i++){
         })
         areas.push([points])
       }
-
-      map.addLayer({
+      map?.addLayer({
         id: "华北飞行区域area",
         type: "fill",
         source: {
@@ -3763,10 +3763,12 @@ watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
   }
 })
 watch(()=>setting.人影.监控.beijingOptions.districtLine,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("beijingLineOver", "visibility", "visible");
-  }else{
-    map.setLayoutProperty("beijingLineOver", "visibility", "none");
+  if(map.getLayer("beijingLineOver")){
+    if(newVal){
+      map.setLayoutProperty("beijingLineOver", "visibility", "visible");
+    }else{
+      map.setLayoutProperty("beijingLineOver", "visibility", "none");
+    }
   }
 })
 watch(()=>setting.人影.监控.beijingOptions.districtLineOpacity,(newVal)=>{
@@ -3805,19 +3807,25 @@ watch(
 watch(
   () => setting.人影.监控.districtOptions.districtLineColor,
   (newVal) => {
-    map.setPaintProperty("districtLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    if(map.getLayer("districtLineOver")){
+      map.setPaintProperty("districtLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    }
   }
 );
 watch(
   () => setting.人影.监控.beijingOptions.districtLineColor,
   (newVal) => {
-    map.setPaintProperty("beijingLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    if(map.getLayer('beijingLineOver')){
+      map.setPaintProperty("beijingLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    }
   }
 );
 watch(
   () => setting.人影.监控.beijingOptions.districtBaseColor,
   (newVal) => {
-    map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    if(map.getLayer('beijingLineBase')){
+      map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    }
   }
 );
 watch(
@@ -3835,69 +3843,101 @@ watch(
 watch(
   () => setting.人影.监控.beijingOptions.districtFillColor,
   (newVal) => {
-    map.setPaintProperty("beijingLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    if(map.getLayer('beijingLayer')){
+      map.setPaintProperty("beijingLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    }
   }
 );
 watch(()=>setting.人影.监控.ryAirspaces.fill,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("华北飞行区域area","visibility","visible")
-  }else{
-    map.setLayoutProperty("华北飞行区域area","visibility","none")
+  if(map.getLayer('华北飞行区域area')){
+    if(newVal){
+      map.setLayoutProperty("华北飞行区域area","visibility","visible")
+    }else{
+      map.setLayoutProperty("华北飞行区域area","visibility","none")
+    }
   }
 })
 watch(()=>setting.人影.监控.ryAirspaces.fillOpacity,(newVal)=>{
-  map.setPaintProperty("华北飞行区域area","fill-opacity",newVal)
+  if(map.getLayer('华北飞行区域area')){
+    map.setPaintProperty("华北飞行区域area","fill-opacity",newVal)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.fillColor,(newVal)=>{
-  map.setPaintProperty("华北飞行区域area","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  if(map.getLayer('华北飞行区域area')){
+    map.setPaintProperty("华北飞行区域area","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.base,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("华北飞行区域baseLine","visibility","visible")
-  }else{
-    map.setLayoutProperty("华北飞行区域baseLine","visibility","none")
+  if(map.getLayer('华北飞行区域baseLine')){
+    if(newVal){
+      map.setLayoutProperty("华北飞行区域baseLine","visibility","visible")
+    }else{
+      map.setLayoutProperty("华北飞行区域baseLine","visibility","none")
+    }
   }
 })
 watch(()=>setting.人影.监控.ryAirspaces.baseOpacity,(newVal)=>{
-  map.setPaintProperty("华北飞行区域baseLine","line-opacity",newVal)
+  if(map.getLayer('华北飞行区域baseLine')){
+    map.setPaintProperty("华北飞行区域baseLine","line-opacity",newVal)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.baseWidth,(newVal)=>{
-  map.setPaintProperty("华北飞行区域baseLine","line-width",newVal)
+  if(map.getLayer('华北飞行区域baseLine')){
+    map.setPaintProperty("华北飞行区域baseLine","line-width",newVal)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.baseColor,(newVal)=>{
-  map.setPaintProperty("华北飞行区域baseLine","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  if(map.getLayer('华北飞行区域baseLine')){
+    map.setPaintProperty("华北飞行区域baseLine","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.line,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("华北飞行区域line","visibility","visible")
-  }else{
-    map.setLayoutProperty("华北飞行区域line","visibility","none")
+  if(map.getLayer('华北飞行区域line')){
+    if(newVal){
+      map.setLayoutProperty("华北飞行区域line","visibility","visible")
+    }else{
+      map.setLayoutProperty("华北飞行区域line","visibility","none")
+    }
   }
 })
 watch(()=>setting.人影.监控.ryAirspaces.lineOpacity,(newVal)=>{
-  map.setPaintProperty("华北飞行区域line","line-opacity",newVal)
+  if(map.getLayer('华北飞行区域line')){
+    map.setPaintProperty("华北飞行区域line","line-opacity",newVal)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.lineWidth,(newVal)=>{
-  map.setPaintProperty("华北飞行区域line","line-width",newVal)
+  if(map.getLayer('华北飞行区域line')){
+    map.setPaintProperty("华北飞行区域line","line-width",newVal)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.lineColor,(newVal)=>{
-  map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  if(map.getLayer('华北飞行区域line')){
+    map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.lineColor,(newVal)=>{
-  map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  if(map.getLayer('华北飞行区域line')){
+    map.setPaintProperty("华北飞行区域line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.label,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("华北飞行区域标签","visibility","visible")
-  }else{
-    map.setLayoutProperty("华北飞行区域标签","visibility","none")
+  if(map.getLayer('华北飞行区域标签')){
+    if(newVal){
+      map.setLayoutProperty("华北飞行区域标签","visibility","visible")
+    }else{
+      map.setLayoutProperty("华北飞行区域标签","visibility","none")
+    }
   }
 })
 watch(()=>setting.人影.监控.ryAirspaces.labelColor,(newVal)=>{
-  map.setPaintProperty("华北飞行区域标签","text-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  if(map.getLayer('华北飞行区域标签')){
+    map.setPaintProperty("华北飞行区域标签","text-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+  }
 })
 watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
-  map.setPaintProperty("华北飞行区域标签","text-opacity",newVal)
+  if(map.getLayer('华北飞行区域标签')){
+    map.setPaintProperty("华北飞行区域标签","text-opacity",newVal)
+  }
 })
 </script>
 

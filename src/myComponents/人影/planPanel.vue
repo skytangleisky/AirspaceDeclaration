@@ -234,14 +234,15 @@
                 v-for="(item, index) in tabList"
                 :key="index"
                 class="top-item"
-                @click="switchTab(item.label)"
+                @click="tabActive == item.label ? tabActive = '' : tabActive = item.label"
             >
                 <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
                     <div
                         :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
+                        style="user-select: none;cursor:pointer"
                     >
                         <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
-                        <span class="label" style="white-space:nowrap">{{ item.label }}</span>
+                        <span class="label" style="white-space:nowrap;">{{ item.label }}</span>
                     </div>
                 </el-badge>
             </div>
@@ -294,10 +295,6 @@ const tabList = reactive([
     },
 ]);
 const tabActive = ref("");
-// 切换top按钮
-const switchTab = (label) => {
-    tabActive.value = label;
-};
 
 const station = useStationStore();
 const click = (item: planDataType) => {
