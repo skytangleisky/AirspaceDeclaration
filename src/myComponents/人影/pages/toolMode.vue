@@ -3,7 +3,7 @@
         <div class="tool-mode-title">
             <div class="title-left">
                 <svg-icon name="layer"></svg-icon>
-                <span>{{ props.title }}</span>
+                <span style="user-select: none;cursor:default;">{{ props.title }}</span>
             </div>
             <div class="title-right">
                 <slot name="select"></slot>
@@ -14,7 +14,7 @@
         <div class="tool-mode-content">
             <slot name="content"></slot>
             <template v-if="props.model==='radio'">
-                <div class="tool-mode-item radio-item" v-for="(item,index) in props.renderDict" :key="item.value"
+                <div class="tool-mode-item radio-item" style="white-space: nowrap;" v-for="(item,index) in props.renderDict" :key="item.value"
                      :class="{active:item.isActive}" @click="changeVal(item)">{{
                         item.label
                     }}
@@ -114,12 +114,14 @@
             newRenderDict.value.forEach((item: Dict) => {
                 item.isActive = false
             })
-            if (props.modelValue == item.value) {
-                emits('update:modelValue', undefined)
-            } else {
-                emits('update:modelValue', item.value)
-                item.isActive = true
-            }
+            // if (props.modelValue == item.value) {
+            //     emits('update:modelValue', undefined)
+            // } else {
+            //     emits('update:modelValue', item.value)
+            //     item.isActive = true
+            // }
+            emits('update:modelValue', item.value)
+            item.isActive = true
         }
         //多选模式设置表单属性值
         const setFormValCheck = (item: Dict) => {
@@ -134,7 +136,6 @@
             }
             emits('update:modelValue', newArr)
         }
-        
         switch (props.model) {
             case "radio":
                 setFormValRadio(item)
@@ -154,7 +155,6 @@
         background-color: var(--el-bg-color);
         border-radius: $border-radius-1;
         padding: $grid-1;
-        
         .tool-mode-title {
             display: flex;
             justify-content: space-between;
@@ -177,6 +177,7 @@
         .tool-mode-content {
             width: 100%;
             display: flex;
+            justify-content: space-between;
             flex-wrap: wrap;
             margin-bottom: -$grid-1;
             
@@ -189,21 +190,20 @@
             }
             
             .radio-item {
-                width: calc((100% - $grid-1 * 2) / 3);
+                cursor: pointer;
+                user-select: none;;
                 text-align: center;
                 //border: 1px solid var(--el-border-color);
                 border: 1px solid transparent;
                 border-radius: $border-radius-1;
-                
-                &:not(:nth-child(3n)) {
-                    margin-right: $grid-1;
-                }
-                
+                width:20%;
+                // padding: 0 10px;
+                // margin:0 10px;
                 &:hover {
                     border-color: var(--el-color-primary);
                 }
             }
-            
+
             .radio-item.active {
                 background-color: var(--el-color-primary);
                 border-color: var(--el-color-primary);

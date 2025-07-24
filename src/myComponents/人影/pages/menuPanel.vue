@@ -15,20 +15,70 @@
             </tool-mode>
         </div>
         <div v-if="setting.人影.监控.是否显示产品面板">
-            <tool-mode :key="1" :render-dict="cmaBjDict" title="CMA-BJ模式" @change="changeVal" v-model="form.cmaBj"></tool-mode>
+            <SatelliteProduct v-model="form.卫星产品"></SatelliteProduct>
+            <tool-mode :key="2" style="margin-top:10px" :render-dict="zdzDic" title="自动站雨量" @change="changeVal" v-model="form.自动站雨量"></tool-mode>
         </div>
         <div v-if="setting.人影.监控.是否显示工具面板">
-            <tool-mode :key="1" v-model:render-dict="地图列表" title="" v-model="setting.人影.监控.tile"></tool-mode>
+            <BaseLayer v-model="setting.人影.监控.tile"></BaseLayer>
+            <MapTool v-model="地图工具值" style="margin-top:10px;"></MapTool>
+            <DrawTool style="margin-top:10px;" v-model="标绘工具值"></DrawTool>
         </div>
     </div>
 </template>
 <script lang="ts" setup>
+    import BaseLayer from './工具/基础底图.vue'
+    import MapTool from './工具/地图工具.vue'
+    import DrawTool from './工具/标绘工具.vue'
+    import SatelliteProduct from './产品/卫星产品.vue'
     import {useSettingStore} from '~/stores/setting';
     import toolMode from './toolMode.vue';
 
     const setting = useSettingStore();
     import {reactive,ref} from "vue";
-    const cmaBjDict = [{
+    const 地图工具值 = ref(-1)
+    const 标绘工具列表 = reactive([
+        {label:'标点',value:'0'},
+        {label:'标线',value:'1'},
+        {label:'标面',value:'2'},
+        {label:'清除',value:'3'},
+    ])
+    const 标绘工具值 = ref(-1)
+    const zdzDic = reactive([{
+        label: '基本站',
+        value: "key1"
+    },{
+        label: '一般站',
+        value: "key2"
+    },{
+        label: '区域站',
+        value: "key3"
+    }])
+    const airspaceCommandDict = [{
+        label: "机场",
+        value: "key1",
+        icon: 'layer'
+    }, {
+        label: '空域分布',
+        value: "key2"
+
+    }]
+    const form = reactive({
+        airspaceCommand: ["key1"],
+        cmaBj: "key1",
+        卫星产品:0,
+        自动站雨量:'',
+    })
+    let airspaceCommand = ref([])
+    /**
+     * @author yhl 2025/7/17 14:05
+     * @description 当值发生改变时
+     * @params value 新值
+     */
+    const changeVal = (value: string | number) => {
+        //console.log("changeVal", value,);
+    }
+    const value = ref('key1')
+    const options=reactive([{
         label: '云宏观场',
         value: "key1"
     }, {
@@ -43,42 +93,7 @@
     }, {
         label: '潜力预报',
         value: "key5"
-    }]
-    const 地图列表 = reactive([{
-        label: '白板地图',
-        value: 0
-    }, {
-        label: '矢量地图',
-        value: 3
-    }, {
-        label: '影像地图',
-        value: 2
-    }, {
-        label: '地形地图',
-        value: 1
     }])
-    const airspaceCommandDict = [{
-        label: "机场",
-        value: "key1",
-        icon: 'layer'
-    }, {
-        label: '空域分布',
-        value: "key2"
-
-    }]
-    const form = reactive({
-        airspaceCommand: ["key1"],
-        cmaBj: "key1"
-    })
-    let airspaceCommand = ref([])
-    /**
-     * @author yhl 2025/7/17 14:05
-     * @description 当值发生改变时
-     * @params value 新值
-     */
-    const changeVal = (value: string | number) => {
-        //console.log("changeVal", value,);
-    }
 </script>
 <style lang="scss" scoped>
     .toolKitBgClass {

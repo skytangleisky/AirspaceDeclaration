@@ -489,7 +489,7 @@ export const useSettingStore = defineStore('setting',{
         },
         showColorSelector:-1,
         loadmap:false,
-        红外云图:false,组合反射率:false,多源融合实况分析产品:false,
+        红外云图:false,组合反射率:false,多源融合实况分析产品:false,睿图雷达:false,
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{

@@ -1041,6 +1041,110 @@ export function 多源融合实况分析产品(){
   })
 }
 
+export function 睿图雷达(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:`/ryyth-meteordata/bjInterface/ramapsRada/getDataFileList`,
+      method:'get',
+      params:{
+        date:moment().format('YYYY-MM-DD'),
+        ottProduct:'Z',
+        order:'desc'
+      }
+    }).then(({data})=>{
+      if(data&&data.data.length>0){
+        request({
+          url:'/ryyth-meteordata/bjInterface/ramapsRada/getDataFile',
+          method:'get',
+          params:{
+            ottProduct:'Z',
+            filePath:data.data[0].path,
+            height:3000,
+          }
+        }).then(({data})=>{
+          resolve(data)
+        }).catch(e=>{
+          reject(e)
+        })
+      }else{
+        reject('暂无多源融合实况分析产品')
+      }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}
+
+export function 基本站(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/ryyth-meteordata/md1000/autoStation/getRainLayer?staLvs=11,12&dateTimes=2025-07-17+00:00&dataSource=localJsonData&fileNames=20250716160000.txt&sdpTime=1752682497478',
+      method:'get',
+      headers:{
+        'Authorization':'adab0f55f1b4f78819ad00f858db5f6f'
+      }
+    }).then(({data})=>{
+      console.log('->',data)
+      resolve(data)
+      // if(data&&data.data.length>0){
+      //   resolve(data.data)
+      // }else{
+      //   reject('暂无基本站')
+      // }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}
+基本站()
+export function 一般站(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/ryyth-meteordata/md1000/autoStation/getRainLayer',
+      method:'get',
+      params:{
+        staLvs:'11,12,13',
+        dateTimes:'2025-07-17+00:00',
+        dataSource:'localJsonData',
+        fileNames:'20250716160000.txt',
+        sdpTime:'1752682520302'
+      }
+    }).then(({data})=>{
+      if(data&&data.data.length>0){
+        resolve(data.data)
+      }else{
+        reject('暂无基本站')
+      }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}
+export function 区域站(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/ryyth-meteordata/md1000/autoStation/getRainLayer',
+      method:'get',
+      params:{
+        staLvs:'11,12,13,14',
+        dateTimes:'2025-07-17+00:00',
+        dataSource:'localJsonData',
+        fileNames:'20250716160000.txt',
+        sdpTime:'1752682552541'
+      }
+    }).then(({data})=>{
+      if(data&&data.data.length>0){
+        resolve(data.data)
+      }else{
+        reject('暂无基本站')
+      }
+    }).catch(e=>{
+      reject(e)
+    })
+  })
+}
+
+
 
 export function 注册飞机查询({page,size}){
   return request({

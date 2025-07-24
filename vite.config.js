@@ -188,6 +188,12 @@ export default defineConfig({
         changeOrigin:true,
         secure:false,
       },
+      '/ryyth-meteordata':{//睿图雷达
+        agent,
+        target:'http://10.225.6.188:3141',
+        changeOrigin:true,
+        secure:false,
+      },
       '/qt':{
         agent,
         // target:'http://10.225.6.184:8001',

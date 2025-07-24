@@ -310,6 +310,16 @@ export default function(){
 					[extent[0], extent[1]],
 				]
 			},
+			'source4':{
+				type: 'image',
+				url: transparentPng,
+				coordinates: [
+					[extent[0], extent[3]],
+					[extent[2], extent[3]],
+					[extent[2], extent[1]],
+					[extent[0], extent[1]],
+				]
+			},
 			"district":{
 				"type":"geojson",
 				"data": city
@@ -359,6 +369,15 @@ export default function(){
 				tiles:['/tile/xbry/maps/DataServer?T=cia_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}'],
 				tileSize:256,
 			},
+			'wms-source':{
+				type: 'raster',
+				tiles: [
+					// 'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12-13-14&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
+					'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
+					// 'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12-13-14&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
+				],
+				tileSize: 256
+			}
 			// "mapbox-dem": {
 			// 	"type": "raster-dem",
 			// 	"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -445,6 +464,30 @@ export default function(){
 					type: 'raster',
 					layout: {
 						visibility: setting.人影.监控.组合反射率?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
+					}
+				},
+				{
+					id: 'overlay-layer4',
+					source: 'source4',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.睿图雷达?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
+					}
+				},
+				{
+					id: 'wms-layer',
+					source: 'wms-source',
+					type: 'raster',
+					layout: {
+						visibility: 'visible'
 					},
 					paint: {
 						'raster-opacity': 1,

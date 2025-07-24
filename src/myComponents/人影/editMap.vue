@@ -143,7 +143,7 @@ let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,机场,当前作业查询,ADSB,红外云图,组合反射率,多源融合实况分析产品,历史作业查询,空域申请移除} from '~/api/天工'
+import {华北飞行区域,作业点,机场,当前作业查询,ADSB,红外云图,组合反射率,多源融合实况分析产品,睿图雷达,历史作业查询,空域申请移除} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -795,6 +795,25 @@ onMounted(async() => {
     }).catch(err=>{
       console.log(err)
     })
+    睿图雷达().then(async({data})=>{
+      const extent = data.extent.split(',').map(Number)
+      const imageUrl = await getImage(data.data,extent)
+      const obj = {
+        url: imageUrl,
+        coordinates: [
+          [extent[0], extent[3]],
+          [extent[2], extent[3]],
+          [extent[2], extent[1]],
+          [extent[0], extent[1]],
+        ]
+      }
+      if(map){
+        const source = map.getSource(map.getLayer('overlay-layer4').source)
+        source.updateImage(obj);
+      }
+    }).catch(err=>{
+      console.log(err)
+    })
     组合反射率().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
       const imageUrl = await getImage(data.data,extent)
@@ -850,6 +869,25 @@ onMounted(async() => {
         }
         if(map){
           const source = map.getSource(map.getLayer('overlay-layer3').source)
+          source.updateImage(obj);
+        }
+      }).catch(err=>{
+        console.log(err)
+      })
+      睿图雷达().then(async({data})=>{
+        const extent = data.extent.split(',').map(Number)
+        // const imageUrl = await getImage(data.data,extent)
+        const obj = {
+          url: data.data,
+          coordinates: [
+            [extent[0], extent[3]],
+            [extent[2], extent[3]],
+            [extent[2], extent[1]],
+            [extent[0], extent[1]],
+          ]
+        }
+        if(map){
+          const source = map.getSource(map.getLayer('overlay-layer4').source)
           source.updateImage(obj);
         }
       }).catch(err=>{
@@ -1115,16 +1153,16 @@ for(let i=0;i<8;i++){
     })
     await loadImage2Map(map,circleUrl,12,24,{
       'projectile-white':{
-        style:"fill:#2f6ef6;stroke:black;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-red':{
-        style:"fill:#f00;stroke:black;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#E14D27;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-blue':{
-        style:"fill:#2f6ef6;stroke:transparent;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#4594D5;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-orange':{
-        style:"fill:#0f0;stroke:black;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#0f0;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
     })
     await loadImage2Map(map,trackSvg,8,8,{
@@ -1147,6 +1185,7 @@ for(let i=0;i<8;i++){
     })
     const moveZyd = new Array<any>()
     await addFeatherImages(map);
+    /*
     区域固定作业点585.split(/\r\n|\r|\n/).map(item=>{
       const [index,province,lng,lat,city] = item.split(/\t/)
       moveZyd.push({
@@ -1213,6 +1252,7 @@ for(let i=0;i<8;i++){
       },
       // filter: ["==", ["get", "type"], "协同作业点"],
     });
+    */
     /*
     axios({
       method: 'get',
@@ -1559,6 +1599,7 @@ for(let i=0;i<8;i++){
       return { x: Cx, y: Cy };
     }
     await 华北飞行区域().then((res)=>{
+      if(!map)return;
       let areas:any[] = []
       let features:any[] = []
       for(let i=0;i<res.data.results.length;i++){
@@ -2365,7 +2406,7 @@ for(let i=0;i<8;i++){
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              "icon-image": "projectile-orange",
+              "icon-image": item.iType == 1 ? "projectile-red" : "projectile-blue",
               // "icon-image": "火箭弹图标",
               发报单位:'110000000',
               delayTimeLen:10,
@@ -3427,6 +3468,9 @@ watch(()=>setting.人影.监控.组合反射率,(val)=>{
 })
 watch(()=>setting.人影.监控.多源融合实况分析产品,(val)=>{
   map.getLayer('overlay-layer3')&&map.setLayoutProperty('overlay-layer3','visibility',val?'visible':'none')
+})
+watch(()=>setting.人影.监控.睿图雷达,(val)=>{
+  map.getLayer('overlay-layer4')&&map.setLayoutProperty('overlay-layer4','visibility',val?'visible':'none')
 })
 watch([()=>setting.人影.监控.飞机高度下限,()=>setting.人影.监控.飞机高度上限,()=>setting.人影.监控.二次码下限,()=>setting.人影.监控.二次码上限],()=>{
   trackFeatures.map((item)=>{
