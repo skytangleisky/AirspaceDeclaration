@@ -14,13 +14,13 @@
     </el-scrollbar> -->
     <div style="position: absolute;padding:10px;width:fit-content;height: 100%;top:0;right:0;box-sizing: border-box;pointer-events: none;">
       <el-scrollbar style="width:fit-content;box-sizing: border-box;">
-        <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+        <control-pane style="position:relative;pointer-events: auto;" :list="list" :theme="isDark?'default':'light'"></control-pane>
       </el-scrollbar>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
-
+import { isDark } from '~/theme'
 import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent} from 'vue'
 import {useSettingStore} from '~/stores/setting'
@@ -62,12 +62,12 @@ const list = reactive(
   //   value: modelRef(setting,'人影.监控.roadMap'),
   //   type: 'checkbox',
   // },
-  {
-    label: '地图',
-    value: modelRef(setting,'人影.监控.tile'),
-    type: 'select',
-    options: setting.地图列表
-  },
+  // {
+  //   label: '地图',
+  //   value: modelRef(setting,'人影.监控.tile'),
+  //   type: 'select',
+  //   options: setting.地图列表
+  // },
   {label: '准心', value: modelRef(setting, '人影.监控.准心'), type: 'checkbox'},
   {label: '菜单', value: modelRef(setting, 'menus'), type: 'checkbox'},
   // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
