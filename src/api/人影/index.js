@@ -36,7 +36,7 @@ export function airspaceApply(data){
   let pos = fromDMS(data.strPos)
   let targetData = {
     "zydID": data.strID,
-    "workRevID": "990201000",//北京分区对应的ID
+    "workRevID": "990701000",//北京分区对应的ID：990201000|西南空管中心：990701000
     "longitude": pos[0].toString(),
     "latitude": pos[1].toString(),
     "shootRange": data.iMaxShotRange,

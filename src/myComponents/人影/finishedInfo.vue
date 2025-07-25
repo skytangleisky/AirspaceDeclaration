@@ -194,7 +194,8 @@ watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查
 },{
   immediate:true
 })
-watch(range,()=>{
+
+watch([range,触发完成信息查询],()=>{
   globalOptions.length = 0
   完成信息查询中一段时间内作业点数据(range.value).then(res=>{
     res.data.results.forEach(item=>{

@@ -408,8 +408,8 @@ export const useSettingStore = defineStore('setting',{
         },
         zoom: 9,
         center: [
-          116.418757,
-          40.197544
+          104.065837,
+          30.657349,
         ],
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,
@@ -445,7 +445,7 @@ export const useSettingStore = defineStore('setting',{
           districtBaseOpacity:0.5,
           districtLineOpened:true,
           districtLine:true,
-          districtLineWidth:2,
+          districtLineWidth:0.3,
           districtLineColor:{r:50,g:59,b:73,a:1},
           districtLineOpacity:1,
         },

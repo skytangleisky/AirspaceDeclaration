@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="tool-btns">
+    <div class="tool-btns" style="display:none">
       <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
@@ -12,8 +12,10 @@
     <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具面板" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
       <control-pane style="position:relative" :list="list" theme="default"></control-pane>
     </el-scrollbar> -->
-    <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
-      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+    <div style="position: absolute;padding:10px;width:fit-content;height: 100%;top:0;right:0;box-sizing: border-box;pointer-events: none;">
+      <el-scrollbar style="width:fit-content;box-sizing: border-box;">
+        <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+      </el-scrollbar>
     </div>
   </div>
 </template>
@@ -55,11 +57,11 @@ const list = reactive(
     type: 'select',
     options: [{value: 'light', label: '亮色'}, {value: 'dark', label: '暗色'}, {value: 'auto', label: '自动'}]
   },
-  {
-    label: '道路',
-    value: modelRef(setting,'人影.监控.roadMap'),
-    type: 'checkbox',
-  },
+  // {
+  //   label: '道路',
+  //   value: modelRef(setting,'人影.监控.roadMap'),
+  //   type: 'checkbox',
+  // },
   {
     label: '地图',
     value: modelRef(setting,'人影.监控.tile'),
@@ -142,7 +144,7 @@ const list = reactive(
     ]
   },
   {
-    label: '北京行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.beijingOptionsOpened'), children: [
+    label: '四川省行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.beijingOptionsOpened'), children: [
       {
         label: '填充',
         type: 'folder',
@@ -212,85 +214,85 @@ const list = reactive(
       },
     ]
   },
-  {
-    label: '华北飞行区域', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspacesOpened'), children: [
-      {
-        label: '填充', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.fillOpened'), children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.fill'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.fillColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.ryAirspaces.fillOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-        ]
-      },
-      {
-        label: '底线', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.baseOpened'), children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.base'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.baseColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.ryAirspaces.baseOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-          {
-            label: '宽度',
-            value: modelRef(setting, '人影.监控.ryAirspaces.baseWidth'),
-            type: 'range',
-            min: 0,
-            max: 5,
-            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
-          },
-        ]
-      },
-      {
-        label: '界线', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.lineOpened'), children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.line'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.lineColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.ryAirspaces.lineOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-          {
-            label: '宽度',
-            value: modelRef(setting, '人影.监控.ryAirspaces.lineWidth'),
-            type: 'range',
-            min: 0,
-            max: 5,
-            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
-          },
-        ]
-      },
-      {
-        label: '标签', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.labelOpened'), children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.label'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.labelColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.ryAirspaces.labelOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-        ]
-      }
-    ]
-  },
-  {label: '红外云图', value: modelRef(setting, '人影.监控.红外云图'), type: 'checkbox'},
-  {label: '多源融合实况分析产品', value: modelRef(setting, '人影.监控.多源融合实况分析产品'), type: 'checkbox'},
-  {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
+  // {
+  //   label: '华北飞行区域', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspacesOpened'), children: [
+  //     {
+  //       label: '填充', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.fillOpened'), children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.fill'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.fillColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.ryAirspaces.fillOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '底线', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.baseOpened'), children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.base'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.baseColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.ryAirspaces.baseOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //         {
+  //           label: '宽度',
+  //           value: modelRef(setting, '人影.监控.ryAirspaces.baseWidth'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 5,
+  //           arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '界线', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.lineOpened'), children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.line'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.lineColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.ryAirspaces.lineOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //         {
+  //           label: '宽度',
+  //           value: modelRef(setting, '人影.监控.ryAirspaces.lineWidth'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 5,
+  //           arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '标签', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.labelOpened'), children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.ryAirspaces.label'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.ryAirspaces.labelColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.ryAirspaces.labelOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //       ]
+  //     }
+  //   ]
+  // },
+  // {label: '红外云图', value: modelRef(setting, '人影.监控.红外云图'), type: 'checkbox'},
+  // {label: '多源融合实况分析产品', value: modelRef(setting, '人影.监控.多源融合实况分析产品'), type: 'checkbox'},
+  // {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
   {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
   {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},

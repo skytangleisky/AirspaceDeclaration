@@ -62,11 +62,11 @@
       </div>
       <Tool-Box />
     </div>
-    <div v-if="planProps.当前作业进度.length>0" style="position:relative;width:500px;overflow: auto;">
+    <!-- <div v-if="planProps.当前作业进度.length>0" style="position:relative;width:500px;overflow: auto;">
       <template v-for="item in planProps.当前作业进度" :key="item.strWorkID">
         <Video v-if="item.strZydID.startsWith('110')" :item="item"></Video>
       </template>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts" setup>
@@ -301,7 +301,7 @@ type zydparaType = {
   strCode: "110108082";
   strName: "北马场作业站烟炉";
   strRelayUnit: "110108000";
-  strMgrUnit: "990201000";
+  strMgrUnit: "990701000";
   strPos: "116090001E39584800N";
   strWeapon: 3;
   iMaxShotHei: 8000;
@@ -448,6 +448,7 @@ function 处理飞机实时位置(d:Array<{
   "ubyEmitterCat": 5,
   "strCallCode": ""
 }>){
+  if(!map)return;
   //飞机航迹开始
   for(let j=0;j<d.length;j++){
     let has = false;
@@ -526,7 +527,7 @@ function 处理ADSB(d:Array<{
 		"altitude": 41075,
 		"callsign": "TGW180",
 		"destination_airport_iata": "NKG",
-		"ground_speed": 487,
+		"ground_speed": number,
 		"heading": 3,
 		"icao_24bit": "76BCCA",
 		"id": "39f58fa6",
@@ -756,6 +757,7 @@ onMounted(async() => {
   }
   map.on("load", async () => {
     if(!map)return;
+    /*
     const extent = [0, 0, 0, 0];
     红外云图().then(async({data})=>{
       const extent = data.extent.split(',').map(Number)
@@ -913,6 +915,7 @@ onMounted(async() => {
         console.log(err)
       })
     },6*60*1e3)
+    */
     // axios.get('/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{
     //   const extent = data.data.extent.split(',').map(Number)
     //   console.log(data)
@@ -940,7 +943,7 @@ onMounted(async() => {
 
 
 
-    const center: [number, number] = wgs84togcj02(116.3913,39.907105) as [
+    const center: [number, number] = wgs84togcj02(104.065837,30.657349) as [
       number,
       number
     ]; // 圆心点的经纬
@@ -1123,6 +1126,7 @@ for(let i=0;i<8;i++){
     }
     const image = new Image()
     image.onload = ()=>{
+      if(!map)return;
       map.addImage('pop',image,{ sdf: true })
     }
     image.src = popSvg
@@ -1185,6 +1189,7 @@ for(let i=0;i<8;i++){
     })
     const moveZyd = new Array<any>()
     await addFeatherImages(map);
+    if(!map)return;
     /*
     区域固定作业点585.split(/\r\n|\r|\n/).map(item=>{
       const [index,province,lng,lat,city] = item.split(/\t/)
@@ -1734,6 +1739,16 @@ for(let i=0;i<8;i++){
         }
       });
       map.addLayer({
+				"id": "routeLineLayer",
+				"type": "raster",
+				"source": "raster-route",
+				"minzoom": 0,
+				"maxzoom": 22,
+				layout:{
+					visibility:setting.人影.监控.routeLine?'visible':'none'
+				}
+			})
+      map.addLayer({
 				'id': 'beijingLayer',
 				'type': 'fill',
 				'source': 'beijing', // reference the data source
@@ -1803,19 +1818,25 @@ for(let i=0;i<8;i++){
 				},
 				'paint': {
 					'line-color': '#99B2D6',
-					'line-width':4,
+					'line-width':2,
           'line-opacity':1,
 					// 'line-dasharray': [1,1],
 				}
 			})
       map.addLayer({
-				"id": "routeLineLayer",
-				"type": "raster",
-				"source": "raster-route",
-				"minzoom": 0,
-				"maxzoom": 22,
-				layout:{
-					visibility:setting.人影.监控.routeLine?'visible':'none'
+				'id': 'countyLayer',
+				'type': 'line',
+				'source': 'county',
+				'layout': {
+					'visibility':'visible',
+					'line-join':'round',
+					'line-cap':'round',
+				},
+				'paint': {
+					'line-color': '#99B2D6',
+					'line-width':1,
+          'line-opacity':1,
+					// 'line-dasharray': [1,1],
 				}
 			})
     })
@@ -1824,6 +1845,7 @@ for(let i=0;i<8;i++){
       url:'/resources/导航台.map',
       responseType: 'arraybuffer',
     }).then(async(res)=>{
+      if(!map)return;
       let view = new View(res.data,true);
       let result = {
         filehead:{
@@ -2022,7 +2044,7 @@ for(let i=0;i<8;i++){
     //     },
     //   });
     // }
-    if(!map.getSource("trackSource")){
+    if(map&&!map.getSource("trackSource")){
       map.addSource("trackSource", {
         type: "geojson",
         data: {
@@ -2031,7 +2053,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
-    if(!map.getLayer("trackLayer")){
+    if(map&&!map.getLayer("trackLayer")){
       map.addLayer({
         id: "trackLayer",
         type: "symbol",
@@ -2074,7 +2096,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
-    if(!map.getSource("adsbTrackSource")){
+    if(map&&!map.getSource("adsbTrackSource")){
       map.addSource("adsbTrackSource", {
         type: "geojson",
         data: {
@@ -2083,7 +2105,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
-    if(!map.getLayer("adsbTrackLayer")){
+    if(map&&!map.getLayer("adsbTrackLayer")){
       map.addLayer({
         id: "adsbTrackLayer",
         type: "symbol",
@@ -2126,6 +2148,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
+    if(!map)return
     map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
     map.addSource("adsb原数据", {type:'geojson',data:adsbData});
     map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
@@ -2260,6 +2283,7 @@ for(let i=0;i<8;i++){
       },
     });
     机场().then((res)=>{
+      if(!map)return;
       let data = res.data.results
       let airports:any[] = [];
       for (let i = 0; i < data.length; i++) {
@@ -2376,6 +2400,7 @@ for(let i=0;i<8;i++){
     //   planProps.今日作业记录 = res.data.data;
     // })
     作业点().then((res) => {
+      if(!map)return;
       dialogOptions.menus = res.data.results;
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
@@ -2852,6 +2877,7 @@ for(let i=0;i<8;i++){
         }
         map?.getSource('zydSource').setData(zydFeaturesData)
         const tmp = await 历史作业查询()
+        if(!map)return;
         planProps.今日作业记录.splice(0,planProps.今日作业记录.length,...tmp.data.results);
         for(let i=planProps.今日作业记录.length-1;i>=0;i--){
           let row = planProps.今日作业记录[i]
@@ -3734,10 +3760,12 @@ watch(
   }
 );
 watch(()=>setting.人影.监控.navigationStation,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("导航台图层","visibility","visible")
-  }else{
-    map.setLayoutProperty("导航台图层","visibility","none")
+  if(map.getLayer("导航台图层")){
+    if(newVal){
+      map.setLayoutProperty("导航台图层","visibility","visible")
+    }else{
+      map.setLayoutProperty("导航台图层","visibility","none")
+    }
   }
 })
 watch(

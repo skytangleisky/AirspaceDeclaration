@@ -173,7 +173,7 @@ const handlePointDialogClose = () => {
 };
 function confirm() {
   const data = {
-    "workRevID": "990201000",//作业接收单位
+    "workRevID": "990701000",//作业接收单位
     "applyBeginTime": "2025-04-20 14:30:00",//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
     "workTimeLen": 180,//申请作业时长(单位：秒)
     "workCat": 0,//作业类型

@@ -239,6 +239,7 @@ let cvs = document.createElement('canvas')
 let ctx = cvs.getContext('2d',{willReadFrequently:true}) as CanvasRenderingContext2D
 export async function loadImage2Map(map:any,url:string,width:number,height:number,options:any){
   let result = await loadImage(url, width, height, options) as {[key:string]:any};
+  if(!map)return;
   for(let k in result){
     map.addImage(k,result[k])
   }
@@ -531,6 +532,7 @@ export const addFeatherImages = async( map:any, fill:string ) => {
     feather58: getCoord(0, 3, 58,fill),
     feather60: getCoord(1, 3, 60,fill),
   }) as unknown as {[key:string]:any};
+  if(!map)return;
   for (let k in result) {
     map.hasImage(k) && map.removeImage(k)
     map.addImage(k, result[k]);

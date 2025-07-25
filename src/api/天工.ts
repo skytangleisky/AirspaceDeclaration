@@ -1096,7 +1096,6 @@ export function 基本站(){
     })
   })
 }
-基本站()
 export function 一般站(){
   return new Promise((resolve,reject)=>{
     request({

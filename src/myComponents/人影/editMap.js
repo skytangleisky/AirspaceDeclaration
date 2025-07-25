@@ -1,6 +1,7 @@
 import city from './省界.json?url'
-import beijing from './北京市.json?url'
-import beijingBorder from './北京市.geojson?url'
+import beijing from './四川市.geojson?url'
+import beijingBorder from './四川省.geojson?url'
+import county  from './成都县.geojson?url'
 import { useSettingStore } from '~/stores/setting';
 import transparentPng from '~/assets/transparent.png?url'
 import huabeiUrl from '~/assets/huabei.json?url'
@@ -377,7 +378,11 @@ export default function(){
 					// 'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12-13-14&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
 				],
 				tileSize: 256
-			}
+			},
+			'county':{
+				"type":"geojson",
+				"data": county
+			},
 			// "mapbox-dem": {
 			// 	"type": "raster-dem",
 			// 	"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
@@ -487,7 +492,7 @@ export default function(){
 					source: 'wms-source',
 					type: 'raster',
 					layout: {
-						visibility: 'visible'
+						visibility: 'none'
 					},
 					paint: {
 						'raster-opacity': 1,
@@ -538,22 +543,22 @@ export default function(){
 						// 'line-dasharray': [1,1],
 					}
 				},
-				{
-					'id': 'huabeiLineOver',
-					'type': 'line',
-					'source': 'huabeiBorder',
-					'layout': {
-						'visibility':'visible',
-						'line-join':'round',
-						'line-cap':'round',
-					},
-					'paint': {
-						'line-color': '#CD9E46',
-						'line-width': 2,
-						'line-opacity': 1,
-						// 'line-dasharray': [1,1],
-					}
-				},
+				// {
+				// 	'id': 'huabeiLineOver',
+				// 	'type': 'line',
+				// 	'source': 'huabeiBorder',
+				// 	'layout': {
+				// 		'visibility':'visible',
+				// 		'line-join':'round',
+				// 		'line-cap':'round',
+				// 	},
+				// 	'paint': {
+				// 		'line-color': '#CD9E46',
+				// 		'line-width': 2,
+				// 		'line-opacity': 1,
+				// 		// 'line-dasharray': [1,1],
+				// 	}
+				// },
 				// {
 				// 	'id': 'terrain-data',
 				// 	'type': 'line',
