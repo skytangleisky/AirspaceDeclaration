@@ -12,6 +12,7 @@
   <script src="vue-demi.iife.js"></script>
   <script src="pinia.iife.prod.js"></script>
   <script src="pinia-plugin-persistedstate.prod.js"></script>
+  <script src="hls.js"></script>
   <link rel="stylesheet" href="airspace-application.css">
   <style>
     html,
@@ -38,7 +39,7 @@
   </div>
   <script src="index.umd.js"></script>
   <script type="module">
-    const {SmokeStove, RgyxWorkPoint, Rgy,SvgIcon,resize,dragable} = index;
+    const {SmokeStove, RgyxWorkPoint, SvgIcon, resize, dragable} = index;
     const {createPinia} = Pinia;
     const {createApp} = Vue;
     const { createPersistedState } = piniaPluginPersistedstate;

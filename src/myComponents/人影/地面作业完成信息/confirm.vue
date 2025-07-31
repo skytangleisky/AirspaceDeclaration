@@ -127,7 +127,7 @@
                     </el-col>
                 </el-row>
                 <div class="page-btns">
-                    <el-button type="primary" @mousedown.stop @click="confirm(data)">确认</el-button>
+                    <el-button type="primary" @mousedown.stop @click="confirm(toRaw(data))">确认</el-button>
                     <el-button @click="cancel" type="default" @mousedown.stop>取消</el-button>
                 </div>
             </div>
@@ -136,7 +136,7 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {修改完成信息,增加完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息} from "~/api/天工.ts";
+import {修改完成信息,增加完成信息确认,判断是否有完成信息,判断是否有完成信息确认,通过workID获取完成信息,getMask} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject,computed,toRaw } from "vue";
 const date = computed({
@@ -240,8 +240,14 @@ const weatherOptions = reactive([
     { value: 17, label: "多云" },
 ])
 const confirm = async(data) => {
-    data.isconfirmed = 1
-    data.isquxianconfirmed = 1
+    const mask = getMask()
+    if(mask=='%%'){
+        data.isconfirmed = 1
+        data.isquxianconfirmed = 1
+    }else{
+        data.isconfirmed = 0
+        data.isquxianconfirmed = 1
+    }
     delete data.strZydIDName
     修改完成信息(data).then(async(res)=>{
         delete data.isquxianconfirmed

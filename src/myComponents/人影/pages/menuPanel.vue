@@ -1,8 +1,8 @@
 <template>
     <div class="toolKitBgClass">
         <div v-if="setting.人影.监控.是否显示分布面板">
-            <tool-mode :key="2" :render-dict="airspaceCommandDict" title="空域指挥" v-model="airspaceCommand" model="check">
-                <template v-slot:select>
+            <GroundCommand>
+                <!-- <template v-slot:select>
                     <el-select v-model="value" size="small" placeholder="请选择" style="width: 120px">
                         <el-option
                             v-for="item in options"
@@ -11,12 +11,13 @@
                             :value="item.value"
                         />
                     </el-select>
-                </template>
-            </tool-mode>
+                </template> -->
+            </GroundCommand>
         </div>
         <div v-if="setting.人影.监控.是否显示产品面板">
-            <SatelliteProduct v-model="form.卫星产品"></SatelliteProduct>
-            <tool-mode :key="2" style="margin-top:10px" :render-dict="zdzDic" title="自动站雨量" @change="changeVal" v-model="form.自动站雨量"></tool-mode>
+            <SatelliteProduct></SatelliteProduct>
+            <ZydProduct style="margin-top:10px;"></ZydProduct>
+            <!-- <tool-mode :key="2" style="margin-top:10px" :render-dict="zdzDic" title="自动站雨量" @change="changeVal" v-model="form.自动站雨量"></tool-mode> -->
         </div>
         <div v-if="setting.人影.监控.是否显示工具面板">
             <BaseLayer v-model="setting.人影.监控.tile"></BaseLayer>
@@ -30,6 +31,8 @@
     import MapTool from './工具/地图工具.vue'
     import DrawTool from './工具/标绘工具.vue'
     import SatelliteProduct from './产品/卫星产品.vue'
+    import ZydProduct from './产品/自动站产品.vue'
+    import GroundCommand from './分布/地面指挥.vue'
     import {useSettingStore} from '~/stores/setting';
     import toolMode from './toolMode.vue';
 
@@ -43,32 +46,10 @@
         {label:'清除',value:'3'},
     ])
     const 标绘工具值 = ref(-1)
-    const zdzDic = reactive([{
-        label: '基本站',
-        value: "key1"
-    },{
-        label: '一般站',
-        value: "key2"
-    },{
-        label: '区域站',
-        value: "key3"
-    }])
-    const airspaceCommandDict = [{
-        label: "机场",
-        value: "key1",
-        icon: 'layer'
-    }, {
-        label: '空域分布',
-        value: "key2"
-
-    }]
     const form = reactive({
         airspaceCommand: ["key1"],
         cmaBj: "key1",
-        卫星产品:0,
-        自动站雨量:'',
     })
-    let airspaceCommand = ref([])
     /**
      * @author yhl 2025/7/17 14:05
      * @description 当值发生改变时

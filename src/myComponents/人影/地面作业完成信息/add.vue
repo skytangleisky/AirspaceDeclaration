@@ -154,7 +154,7 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {作业点,增加完成信息,判断是否有完成信息,判断是否有完成信息确认} from "~/api/天工.ts";
+import {作业点,增加完成信息,判断是否有完成信息,判断是否有完成信息确认,getMask} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject,computed } from "vue";
 const beginDate = computed({
@@ -284,6 +284,7 @@ const save = async(data) => {
     //     })
     //     return
     // }
+    const mask = getMask()
     增加完成信息({
         workID,
         strZydID: data.strID,
@@ -303,7 +304,7 @@ const save = async(data) => {
         afterWeather:data.weatherAfter,
         workEffect:data.effect,
         isconfirmed:0,
-        isquxianconfirmed:1,
+        isquxianconfirmed:mask=='%%'?1:0,//如果是北京人影指挥中心，默认确认，是区县人影办，为待确认
         recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),
     }).then((res)=>{
         ElMessage({

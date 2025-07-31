@@ -13,7 +13,7 @@ import { HttpProxyAgent } from 'http-proxy-agent'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 // const agent = new HttpProxyAgent('http://172.18.7.38:4444')
-const agent = new HttpsProxyAgent('https://127.0.0.1:4444')
+const agent = new HttpProxyAgent('http://127.0.0.1:4444')
 import {
   presetAttributify,
   presetIcons,
@@ -29,11 +29,11 @@ export default defineConfig({
       iconDirs: [path.resolve(process.cwd(), "src/assets/icons")],
       symbolId: "icon-[name]",
     }),
-    AutoImport({
-      resolvers: [ElementPlusResolver({
-        locale: zhCn,
-      })],
-    }),
+    // AutoImport({
+    //   resolvers: [ElementPlusResolver({
+    //     locale: zhCn,
+    //   })],
+    // }),
     Components({
       // allow auto load markdown components under `./src/components/`
       extensions: ['vue', 'md'],
@@ -177,6 +177,12 @@ export default defineConfig({
         secure:false,
       },
       '/cdb':{
+        agent,
+        target:'http://10.225.6.188:3141',
+        changeOrigin:true,
+        secure:false,
+      },
+      '/geoserver':{
         agent,
         target:'http://10.225.6.188:3141',
         changeOrigin:true,

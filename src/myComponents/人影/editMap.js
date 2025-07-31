@@ -4,7 +4,8 @@ import beijingBorder from './北京市.geojson?url'
 import { useSettingStore } from '~/stores/setting';
 import transparentPng from '~/assets/transparent.png?url'
 import huabeiUrl from '~/assets/huabei.json?url'
-const extent = [0, 0, 0, 0];
+import transparent256x256 from './256x256.png?url'
+const extent = [0, 0, 1, 1];
 export default function(){
 	const setting = useSettingStore()
 	return {
@@ -369,12 +370,24 @@ export default function(){
 				tiles:['/tile/xbry/maps/DataServer?T=cia_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}'],
 				tileSize:256,
 			},
-			'wms-source':{
+			'wms-source1':{
 				type: 'raster',
 				tiles: [
-					// 'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12-13-14&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
-					'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
-					// 'http://10.225.6.188:3141/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=local_rain_202507241300_11-12-13-14&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}'
+					transparent256x256,
+				],
+				tileSize: 256
+			},
+			'wms-source2':{
+				type: 'raster',
+				tiles: [
+					transparent256x256,
+				],
+				tileSize: 256
+			},
+			'wms-source3':{
+				type: 'raster',
+				tiles: [
+					transparent256x256,
 				],
 				tileSize: 256
 			}
@@ -451,7 +464,7 @@ export default function(){
 					source: 'source3',
 					type: 'raster',
 					layout: {
-						visibility: setting.人影.监控.多源融合实况分析产品?'visible':'none'
+						visibility: setting.人影.监控.CMPAS降水融合3km?'visible':'none'
 					},
 					paint: {
 						'raster-opacity': 1,
@@ -483,11 +496,35 @@ export default function(){
 					}
 				},
 				{
-					id: 'wms-layer',
-					source: 'wms-source',
+					id: 'wms-layer1',
+					source: 'wms-source1',
 					type: 'raster',
 					layout: {
-						visibility: 'visible'
+						visibility: setting.人影.监控.基本站?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
+					}
+				},
+				{
+					id: 'wms-layer2',
+					source: 'wms-source2',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.一般站?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
+					}
+				},
+				{
+					id: 'wms-layer3',
+					source: 'wms-source3',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.区域站?'visible':'none'
 					},
 					paint: {
 						'raster-opacity': 1,

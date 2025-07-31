@@ -15,7 +15,7 @@
       placeholder="作业点名称过滤"
       :filter-method="filterMethod"
       style="margin:0 12px; width:240px"
-
+      @visible-change="onVisibleChange"
       :value-on-clear="null"
     >
       <el-option
@@ -39,15 +39,27 @@
     <el-table-column fixed label="操作" min-width="200">
       <template #default="{row}">
         <div style="display: flex;">
-          <template v-if="row.isconfirmed=='1'">
-            <el-button type="success" size="small" disabled>已确认</el-button>
-            <el-button type="info" size="small" @click="revert(row)">恢复</el-button>
+          <template v-if="getMask()=='%%'">
+            <template v-if="row.isconfirmed=='1'">
+              <el-button type="success" size="small" disabled>已确认</el-button>
+              <el-button type="info" size="small" @click="revert(row)">恢复</el-button>
+            </template>
+            <template v-else>
+              <el-button type="warning" size="small" @click="待确认(row)">待确认</el-button>
+              <el-button type="danger" size="small" @click="删除(row)">删除</el-button>
+            </template>
+            <el-button type="primary" size="small" @click="详情(row)">详情</el-button>
           </template>
           <template v-else>
-            <el-button type="warning" size="small" @click="待确认(row)">待确认</el-button>
-            <el-button type="danger" size="small" @click="删除(row)">删除</el-button>
+            <template v-if="row.isquxianconfirmed=='1'">
+              <el-button type="success" size="small" disabled>已确认</el-button>
+              <el-button type="primary" size="small" @click="详情(row)">详情</el-button>
+            </template>
+            <template v-else>
+              <el-button type="warning" size="small" @click="待确认(row)">待确认</el-button>
+              <el-button type="danger" size="small" @click="删除(row)">删除</el-button>
+            </template>
           </template>
-          <el-button type="primary" size="small" @click="详情(row)">详情</el-button>
         </div>
         <!-- <el-popconfirm
           v-else
@@ -116,8 +128,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
-import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息} from '~/api/天工.ts'
-import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,toRaw } from 'vue'
+import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息,getMask} from '~/api/天工.ts'
+import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,toRaw,computed } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
 const viewShow = ref(false)
@@ -194,17 +206,28 @@ watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查
 },{
   immediate:true
 })
-watch(range,()=>{
-  globalOptions.length = 0
-  完成信息查询中一段时间内作业点数据(range.value).then(res=>{
-    res.data.results.forEach(item=>{
-      globalOptions.push({label:item.strZydIDName,value:item.strZydID,count:item.count})
+function onVisibleChange(visible){
+  if(visible){
+    globalOptions.length = 0
+    完成信息查询中一段时间内作业点数据(range.value).then(res=>{
+      res.data.results.forEach(item=>{
+        globalOptions.push({label:item.strZydIDName,value:item.strZydID,count:item.count})
+      })
+      options.splice(0,options.length,...globalOptions.slice())
     })
-    options.splice(0,options.length,...globalOptions.slice())
-  })
-},{
-  immediate:true,
-})
+  }
+}
+// watch(range,()=>{
+//   globalOptions.length = 0
+//   完成信息查询中一段时间内作业点数据(range.value).then(res=>{
+//     res.data.results.forEach(item=>{
+//       globalOptions.push({label:item.strZydIDName,value:item.strZydID,count:item.count})
+//     })
+//     options.splice(0,options.length,...globalOptions.slice())
+//   })
+// },{
+//   immediate:true,
+// })
 const handleClick = () => {
   addShow.value = true
 }

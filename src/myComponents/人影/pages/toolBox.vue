@@ -20,7 +20,7 @@
 <script lang="ts" setup>
 
 import MenuPanel from './menuPanel.vue'
-import {reactive,computed,defineAsyncComponent} from 'vue'
+import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import toolkitSvg from '~/assets/toolkit.svg?raw'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
@@ -29,23 +29,32 @@ const distributionButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
+  setting.devtoolsOpen = false
 }
 const productsButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = !setting.人影.监控.是否显示产品面板
   setting.人影.监控.是否显示工具面板 = false
+  setting.devtoolsOpen = false
 }
 const toolkitButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = !setting.人影.监控.是否显示工具面板
+  setting.devtoolsOpen = false
 }
 const showPanel = computed(()=>{
   return setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板
 })
 import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
-
+watch(()=>setting.devtoolsOpen,(val)=>{
+  if(val){
+    setting.人影.监控.是否显示分布面板 = false
+    setting.人影.监控.是否显示产品面板 = false
+    setting.人影.监控.是否显示工具面板 = false
+  }
+})
 const theme = useTheme()
 const list = reactive(
   [{label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
@@ -289,11 +298,14 @@ const list = reactive(
     ]
   },
   {label: '红外云图', value: modelRef(setting, '人影.监控.红外云图'), type: 'checkbox'},
-  {label: '多源融合实况分析产品', value: modelRef(setting, '人影.监控.多源融合实况分析产品'), type: 'checkbox'},
+  {label: 'CMPAS降水融合3km', value: modelRef(setting, '人影.监控.CMPAS降水融合3km'), type: 'checkbox'},
   {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
+  {label: '睿图雷达产品', value: modelRef(setting, '人影.监控.睿图雷达'), type: 'checkbox'},
   {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
+  {label: '规划航线', value: modelRef(setting, '人影.监控.规划航线'), type: 'checkbox'},
   {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
+  {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
   {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
   {label: '二次雷达信号', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
   {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
@@ -367,9 +379,6 @@ const list = reactive(
     }
   },
 ]}])
-
-   
-    
 
 
 </script>

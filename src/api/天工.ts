@@ -88,6 +88,28 @@ export function 烟炉数据() {
     }
   })
 }
+export function 协同作业点(){
+  return request({
+    url:'/qt/select/zydpara',
+    method:'post',
+    data:{
+      "where": [
+        {
+          "relation": "AND",
+          "field": "strID",
+          "relationship": "NOT LIKE",
+          "condition": getMask()
+        },
+        {
+          "relation": "AND",
+          "field": "strWeapon",
+          "relationship": "!=",
+          "condition": "3"
+        },
+      ]
+    }
+  })
+}
 export function 作业点(){
   // return request({
   //   url: '/backend/transaction?'+database2,
@@ -103,18 +125,18 @@ export function 作业点(){
     method:'post',
     data:{
       "where": [
-          // {
-          //   "relation": "AND",
-          //   "field": "strID",
-          //   "relationship": "LIKE",
-          //   "condition": "110%"
-          // },
-          {
-            "relation": "AND",
-            "field": "strWeapon",
-            "relationship": "!=",
-            "condition": "3"
-          }
+        {
+          "relation": "AND",
+          "field": "strID",
+          "relationship": "LIKE",
+          "condition": getMask()
+        },
+        {
+          "relation": "AND",
+          "field": "strWeapon",
+          "relationship": "!=",
+          "condition": "3"
+        },
       ]
     }
   })
@@ -125,10 +147,18 @@ export function 当前作业查询(signal){
     method:'post',
     signal,
     data:{
+      "where": [
+        {
+          "relation": "AND",
+          "field": "strZydID",
+          "relationship": "LIKE",
+          "condition": getMask()
+        },
+      ],
       "orderby": [
         {
           "field": "tmBeginApply",
-          "order": "desc"
+          "order": "desc",
         }
       ]
     }
@@ -140,18 +170,24 @@ export function 历史作业查询(){
     method:'post',
     data:{
       "where": [
-      {
+        {
           "relation": "AND",
-          "field": "tmBeginApply",
-          "relationship": "<=",
-          "condition": `${moment().format('YYYY-MM-DD')} 23:59:59`
-      },
-      {
-          "relation": "AND",
-          "field": "tmBeginApply",
-          "relationship": ">=",
-          "condition": `${moment().format('YYYY-MM-DD')} 00:00:00`
-      }
+          "field": "strZydID",
+          "relationship": "LIKE",
+          "condition": getMask()
+        },
+        {
+            "relation": "AND",
+            "field": "tmBeginApply",
+            "relationship": "<=",
+            "condition": `${moment().format('YYYY-MM-DD')} 23:59:59`
+        },
+        {
+            "relation": "AND",
+            "field": "tmBeginApply",
+            "relationship": ">=",
+            "condition": `${moment().format('YYYY-MM-DD')} 00:00:00`
+        }
       ],
       "orderby": [
         {
@@ -178,6 +214,7 @@ export function 作业状态数据(){
 export function ADSB(){
   return request({
     url: '/adsb/getPlaneInfo',
+    timeout:10000,
     method: 'get',
   })
 }
@@ -374,14 +411,7 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
   //   limit:size,
   // }
   const data = {
-    "where": [
-        {
-            "relation": "AND",
-            "field": "isquxianconfirmed",
-            "relationship": "=",
-            "condition": "1"
-        }
-    ],
+    "where": new Array<any>(),
     "orderby": [
       {
         "field": "beginTm",
@@ -392,6 +422,31 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
     offset:(page-1)*size,
     limit:size,
     simple:0
+  }
+  if(getMask()=='%%'){//北京人影办显示的数据需要满足已经区县确认
+    data.where.push(
+      {
+        "relation": "AND",
+        "field": "isquxianconfirmed",
+        "relationship": "=",
+        "condition": "1"
+      },
+      {
+        "relation": "AND",
+        "field": "strZydID",
+        "relationship": "like",
+        "condition": getMask()
+      }
+    )
+  }else{
+    data.where.push(
+      {
+        "relation": "AND",
+        "field": "strZydID",
+        "relationship": "like",
+        "condition": getMask()
+      }
+    )
   }
   if(range){
     data.where.push({
@@ -510,6 +565,12 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
             "field": "isquxianconfirmed",
             "relationship": "=",
             "condition": "1"
+        },
+        {
+            "relation": "AND",
+            "field": "strZydID",
+            "relationship": "like",
+            "condition": getMask()
         }
     ],
     "groupby":[
@@ -1007,8 +1068,8 @@ export function 组合反射率(){
     })
   })
 }
-//1km分辨率多源融合实况分析产品
-export function 多源融合实况分析产品(){
+//1km分辨率CMPAS降水融合3km
+export function CMPAS降水融合3km(){
   return new Promise((resolve,reject)=>{
     request({
       url:'/zcgk/api/v1/cmpas1kmProduct/findDateList',
@@ -1033,7 +1094,7 @@ export function 多源融合实况分析产品(){
           reject(e)
         })
       }else{
-        reject('暂无多源融合实况分析产品')
+        reject('暂无CMPAS降水融合3km')
       }
     }).catch(e=>{
       reject(e)
@@ -1053,21 +1114,17 @@ export function 睿图雷达(){
       }
     }).then(({data})=>{
       if(data&&data.data.length>0){
+        console.log(data.data[0].path)
         request({
-          url:'/ryyth-meteordata/bjInterface/ramapsRada/getDataFile',
+          url:`/ryyth-meteordata/bjInterface/ramapsRada/getDataFile?ottProduct=Z&filePath=${data.data[0].path}&height=3000`,
           method:'get',
-          params:{
-            ottProduct:'Z',
-            filePath:data.data[0].path,
-            height:3000,
-          }
         }).then(({data})=>{
           resolve(data)
         }).catch(e=>{
           reject(e)
         })
       }else{
-        reject('暂无多源融合实况分析产品')
+        reject('暂无睿图雷达数据')
       }
     }).catch(e=>{
       reject(e)
@@ -1078,42 +1135,49 @@ export function 睿图雷达(){
 export function 基本站(){
   return new Promise((resolve,reject)=>{
     request({
-      url:'/ryyth-meteordata/md1000/autoStation/getRainLayer?staLvs=11,12&dateTimes=2025-07-17+00:00&dataSource=localJsonData&fileNames=20250716160000.txt&sdpTime=1752682497478',
+      url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
       method:'get',
+      params:{
+        staLvs:'11,12',
+        dataSource:'localJsonData',
+        dateTimes:moment().format('YYYY-MM-DD 00:00'),
+        fileNames:moment().format('YYYYMMDDHH')+`0000.txt`,
+        sdpTime:'1752682497478'
+      },
       headers:{
-        'Authorization':'adab0f55f1b4f78819ad00f858db5f6f'
+        'Authorization':'09ef3716291116453d7e1d76229631ae'
       }
     }).then(({data})=>{
-      console.log('->',data)
-      resolve(data)
-      // if(data&&data.data.length>0){
-      //   resolve(data.data)
-      // }else{
-      //   reject('暂无基本站')
-      // }
+      if(data.data){
+        resolve(data)
+      }else{
+        reject('暂未基本站数据')
+      }
     }).catch(e=>{
       reject(e)
     })
   })
 }
-基本站()
 export function 一般站(){
   return new Promise((resolve,reject)=>{
     request({
-      url:'/ryyth-meteordata/md1000/autoStation/getRainLayer',
+      url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
       method:'get',
       params:{
         staLvs:'11,12,13',
-        dateTimes:'2025-07-17+00:00',
         dataSource:'localJsonData',
-        fileNames:'20250716160000.txt',
-        sdpTime:'1752682520302'
+        dateTimes:moment().format('YYYY-MM-DD 00:00'),
+        fileNames:moment().format('YYYYMMDDHH')+`0000.txt`,
+        sdpTime:'1752682497478'
+      },
+      headers:{
+        'Authorization':'09ef3716291116453d7e1d76229631ae'
       }
     }).then(({data})=>{
-      if(data&&data.data.length>0){
-        resolve(data.data)
+      if(data.data){
+        resolve(data)
       }else{
-        reject('暂无基本站')
+        reject('暂无一般站数据')
       }
     }).catch(e=>{
       reject(e)
@@ -1123,20 +1187,23 @@ export function 一般站(){
 export function 区域站(){
   return new Promise((resolve,reject)=>{
     request({
-      url:'/ryyth-meteordata/md1000/autoStation/getRainLayer',
+      url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
       method:'get',
       params:{
-        staLvs:'11,12,13,14',
-        dateTimes:'2025-07-17+00:00',
+        staLvs:'11,12,13',
         dataSource:'localJsonData',
-        fileNames:'20250716160000.txt',
-        sdpTime:'1752682552541'
+        dateTimes:moment().format('YYYY-MM-DD 00:00'),
+        fileNames:moment().format('YYYYMMDDHH')+`0000.txt`,
+        sdpTime:'1752682497478'
+      },
+      headers:{
+        'Authorization':'09ef3716291116453d7e1d76229631ae'
       }
     }).then(({data})=>{
-      if(data&&data.data.length>0){
-        resolve(data.data)
+      if(data.data){
+        resolve(data)
       }else{
-        reject('暂无基本站')
+        reject('暂无区域站数据')
       }
     }).catch(e=>{
       reject(e)
@@ -1191,5 +1258,34 @@ export function 修改飞机(data){
     url:'/qt/update/regplane',
     method:'post',
     data
+  })
+}
+
+import {csv2list} from '~/tools'
+import unitsStr from '/units.csv?url&raw'
+
+export function getMask(){
+  const units = csv2list(unitsStr)
+  const config = localStorage.getItem('config')!
+  const name = JSON.parse(config).userInfo.name
+  const results = units.filter(item=>item.strName == name)
+  if(results.length===1){
+    const result = results[0]
+    const strID = result.strID
+    if(strID.endsWith('110000000')){//北京人影办
+      return '%%'
+    }else if(strID.endsWith('000')){//区县人影办
+      return strID.substring(0, strID.length - 3)+'%'
+    }
+    // return '110116%'
+  }else{
+    throw('未找权限信息')
+  }
+}
+
+export function getTrack(){
+  return request({
+    url:'/backend/tracks?unSsrCode=1777&uiTrackNo=',
+    method:'get',
   })
 }

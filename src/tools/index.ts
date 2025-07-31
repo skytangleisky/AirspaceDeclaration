@@ -239,6 +239,7 @@ let cvs = document.createElement('canvas')
 let ctx = cvs.getContext('2d',{willReadFrequently:true}) as CanvasRenderingContext2D
 export async function loadImage2Map(map:any,url:string,width:number,height:number,options:any){
   let result = await loadImage(url, width, height, options) as {[key:string]:any};
+  if(!map)return;
   for(let k in result){
     map.addImage(k,result[k])
   }
@@ -531,6 +532,7 @@ export const addFeatherImages = async( map:any, fill:string ) => {
     feather58: getCoord(0, 3, 58,fill),
     feather60: getCoord(1, 3, 60,fill),
   }) as unknown as {[key:string]:any};
+  if(!map)return;
   for (let k in result) {
     map.hasImage(k) && map.removeImage(k)
     map.addImage(k, result[k]);
@@ -585,6 +587,7 @@ export const addArrowImages = async( map:any,fill:string ) => {
     arrow58: getCoord(0, 3, 58,fill),
     arrow60: getCoord(1, 3, 60,fill),
   }) as unknown as {[key:string]:any};
+  if(!map)return;
   for (let k in result) {
     map.hasImage(k) && map.removeImage(k)
     map.addImage(k, result[k]);
@@ -706,4 +709,26 @@ export function removeLayerAndSource(map:any, layerId:string) {
       map.removeSource(layerId);
     }
   }
+}
+
+export function csv2list(csv:string){
+  const data = new Array<{[key:string]:string}>()
+  const headers = new Array<string>()
+  const lines = csv.split(/\r\n|\r|\n/)
+  const reg = /,(?=(?:[^"]*"[^"]*")*[^"]*$)/
+  lines.forEach((str:string,k:number)=>{
+    if(k==0){//表头
+      str.split(reg).forEach((field:string) => {
+        headers.push(field)
+      })
+    }else if(k<lines.length-1){//数据
+      const fields = str.split(reg)
+      const obj:{[key:string]:string} = {}
+      fields.forEach((field,index) => {
+        obj[headers[index]] = field
+      })
+      data.push(obj)
+    }
+  })
+  return data
 }

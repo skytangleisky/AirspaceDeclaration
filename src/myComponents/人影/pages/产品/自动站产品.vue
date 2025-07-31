@@ -33,10 +33,9 @@
     })
     type Dict = {[key:string]:any}
     const renderDict = ref([
-        {label: '红外云图',value:modelRef(setting,'人影.监控.红外云图')},
-        {label: 'CMPAS降水融合3km',value: modelRef(setting,'人影.监控.CMPAS降水融合3km')},
-        {label: '组合反射率',value: modelRef(setting,'人影.监控.组合反射率')},
-        {label: '睿图雷达数据',value: modelRef(setting,'人影.监控.睿图雷达')},
+        {label: '基本站',value:modelRef(setting,'人影.监控.基本站')},
+        {label: '一般站',value: modelRef(setting,'人影.监控.一般站')},
+        {label: '区域站',value: modelRef(setting,'人影.监控.区域站')},
     ])
     /**
      * @author yhl 2025/7/17 14:16

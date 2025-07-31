@@ -14,5 +14,9 @@ import Websocket from "~/myComponents/websocket/websocket.vue";
   position: relative;
   height: 100%;
   width: 100%;
+  color: #000;
+}
+.dark .wstd-main-container{
+  color:#fff;
 }
 </style>
