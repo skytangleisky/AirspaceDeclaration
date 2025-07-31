@@ -23,6 +23,7 @@ import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import toolkitSvg from '~/assets/toolkit.svg?raw'
+import {getMask} from '~/api/天工'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
 const distributionButtonClick = (e: any) => {
@@ -56,8 +57,8 @@ watch(()=>setting.devtoolsOpen,(val)=>{
   }
 })
 const theme = useTheme()
-const list = reactive(
-  [{label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
+const mask = getMask()
+const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
   {
     label: '主题',
     value: theme,
@@ -307,8 +308,7 @@ const list = reactive(
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
   {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
   {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
-  {label: '二次雷达信号', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
-  {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
+  ...(mask=='%%'?[{label: '二次雷达信号', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},{label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
   {label: '飞机标牌', value: modelRef(setting, '人影.监控.planeLabel'), type: 'checkbox'},
   {label: '航迹', value: modelRef(setting, '人影.监控.track'), type: 'checkbox'},
   {
@@ -318,7 +318,7 @@ const list = reactive(
     min: 0,
     max: 99,
     arr: Array.from({length: 101}, (_, i: number) => i)
-  },
+  }]:[]),
   {
     label: '位置',
     value: computed(() => {
@@ -379,8 +379,6 @@ const list = reactive(
     }
   },
 ]}])
-
-
 </script>
 <style lang="scss" scoped>
 .tool-btns {

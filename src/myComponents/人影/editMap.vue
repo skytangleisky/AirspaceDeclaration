@@ -54,6 +54,7 @@
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
+          <li v-if="menuType=='批量操作'" @click="清除区域()">清除区域</li>
           <!-- <li>查看作业点信息</li> -->
           <!-- <li>人工批复</li>
           <li>人工移除</li>
@@ -70,6 +71,10 @@
   </div>
 </template>
 <script lang="ts" setup>
+function 清除区域(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  移除draw绘制的所有图形()
+}
 import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
 import 机场名称 from './机场名称.json'
@@ -81,7 +86,6 @@ import 机场位置 from './机场位置.json'
     }
   }
 })
-console.log(机场名称)
 let loaded1,loaded2,loaded3,loaded4;//用于记录雷达数据是否加载过，解决首页卡顿问题
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
@@ -1370,15 +1374,26 @@ for(let i=0;i<8;i++){
     }
     image.src = popSvg
 
-    map.removeImage('airport');
-    // await loadImage2Map(map,JYJCurl,24,24,{
-    //   JYJC:{}
-    // })
     const img = new Image()
     img.onload = ()=>{
       map.addImage('MYJC',img)
     }
     img.src = MYJCurl
+
+
+
+    const img2 = new Image()
+    img2.onload = ()=>{
+      map.addImage('JYJC',img2)
+    }
+    img2.src = JYJCurl
+
+
+
+
+
+
+    map.removeImage('airport');
     await loadImage2Map(map,banSvg,16,16,{
       airport:{
         style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
@@ -2630,7 +2645,15 @@ for(let i=0;i<8;i++){
         type: "symbol",
         source: "军用机场数据",
         layout: {
-          "icon-image": "MYJC",
+          "icon-image": [
+            'match',
+            ['get', 'name'],
+            '忻州五寨', 'JYJC',
+            '忻州定襄', 'JYJC',
+            '大同云冈机场', 'JYJC',
+            '沙河机场', 'JYJC',
+            'MYJC' // fallback
+          ],
           // "icon-size": {
           //   base: 1,
           //   stops: [

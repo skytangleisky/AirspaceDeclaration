@@ -421,7 +421,7 @@ export const useSettingStore = defineStore('setting',{
         二次码上限:Infinity,
         track:false,
         trackCount:10,
-        plane:true,
+        plane:false,
         adsb:false,
         planeLabel:false,
         gridValue:false,
