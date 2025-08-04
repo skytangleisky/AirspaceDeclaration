@@ -1030,7 +1030,7 @@ onMounted(async() => {
     // })
 
     getPlanPath().then(规划航线数据=>{
-
+      if(!map)return
       const 机场去重 = new Map()
       let airportsFeatures:any = {
           type: "FeatureCollection",
@@ -1439,12 +1439,14 @@ for(let i=0;i<8;i++){
     }
     const image = new Image()
     image.onload = ()=>{
+      if(!map)return
       map.addImage('pop',image,{ sdf: true })
     }
     image.src = popSvg
 
     const img = new Image()
     img.onload = ()=>{
+      if(!map)return
       map.addImage('MYJC',img)
     }
     img.src = MYJCurl
@@ -1453,6 +1455,7 @@ for(let i=0;i<8;i++){
 
     const img2 = new Image()
     img2.onload = ()=>{
+      if(!map)return
       map.addImage('JYJC',img2)
     }
     img2.src = JYJCurl
@@ -2651,6 +2654,7 @@ for(let i=0;i<8;i++){
       },
     });
     机场().then((res)=>{
+      if(!map)return
       let data = res.data.results
       let airports:any[] = [];
       for (let i = 0; i < data.length; i++) {
@@ -2770,6 +2774,7 @@ for(let i=0;i<8;i++){
     //   planProps.今日作业记录 = res.data.data;
     // })
     作业点().then((res) => {
+      if(!map)return
       dialogOptions.menus = res.data.results;
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
@@ -3006,6 +3011,7 @@ for(let i=0;i<8;i++){
           },
         });
         协同作业点().then(res=>{
+          if(!map)return
           res.data.results.forEach(item=>{
             if(item.strPos){
               let position = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [number, number]
