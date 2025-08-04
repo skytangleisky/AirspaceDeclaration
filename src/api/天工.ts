@@ -1114,7 +1114,6 @@ export function 睿图雷达(){
       }
     }).then(({data})=>{
       if(data&&data.data.length>0){
-        console.log(data.data[0].path)
         request({
           url:`/ryyth-meteordata/bjInterface/ramapsRada/getDataFile?ottProduct=Z&filePath=${data.data[0].path}&height=3000`,
           method:'get',
@@ -1135,24 +1134,35 @@ export function 睿图雷达(){
 export function 基本站(){
   return new Promise((resolve,reject)=>{
     request({
-      url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
+      url:'ryyth-meteordata/md1000/autoStation/findDateList?date=&sdpTime=1754292267633',
       method:'get',
-      params:{
-        staLvs:'11,12',
-        dataSource:'localJsonData',
-        dateTimes:moment().format('YYYY-MM-DD 00:00'),
-        fileNames:moment().format('YYYYMMDDHH')+`0000.txt`,
-        sdpTime:'1752682497478'
-      },
       headers:{
         'Authorization':'09ef3716291116453d7e1d76229631ae'
       }
-    }).then(({data})=>{
-      if(data.data){
-        resolve(data)
-      }else{
-        reject('暂未基本站数据')
-      }
+    }).then(res=>{
+      const it = res.data.data.dateList[0]
+      request({
+        url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
+        method:'get',
+        params:{
+          staLvs:'11,12',
+          dateTimes:it.date,
+          dataSource:'localJsonData',
+          fileNames:it.fileName,
+          sdpTime:1754296746550
+        },
+        headers:{
+          'Authorization':'09ef3716291116453d7e1d76229631ae'
+        }
+      }).then(({data})=>{
+        if(data.data){
+          resolve(data)
+        }else{
+          reject('暂无基本站数据')
+        }
+      }).catch(e=>{
+        reject(e)
+      })
     }).catch(e=>{
       reject(e)
     })
@@ -1161,50 +1171,76 @@ export function 基本站(){
 export function 一般站(){
   return new Promise((resolve,reject)=>{
     request({
-      url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
+      url:'ryyth-meteordata/md1000/autoStation/findDateList?date=&sdpTime=1754292267633',
       method:'get',
-      params:{
-        staLvs:'11,12,13',
-        dataSource:'localJsonData',
-        dateTimes:moment().format('YYYY-MM-DD 00:00'),
-        fileNames:moment().format('YYYYMMDDHH')+`0000.txt`,
-        sdpTime:'1752682497478'
-      },
       headers:{
         'Authorization':'09ef3716291116453d7e1d76229631ae'
       }
-    }).then(({data})=>{
-      if(data.data){
-        resolve(data)
-      }else{
-        reject('暂无一般站数据')
-      }
+    }).then(res=>{
+      const it = res.data.data.dateList[0]
+      console.log(it)
+      request({
+        url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
+        method:'get',
+        params:{
+          staLvs:'13',
+          dateTimes:it.date,
+          dataSource:'localJsonData',
+          fileNames:it.fileName,
+          sdpTime:1754296746550
+        },
+        headers:{
+          'Authorization':'09ef3716291116453d7e1d76229631ae'
+        }
+      }).then(({data})=>{
+        console.log(data)
+        if(data.data){
+          resolve(data)
+        }else{
+          reject('暂无一般站数据')
+        }
+      }).catch(e=>{
+        reject(e)
+      })
     }).catch(e=>{
       reject(e)
     })
   })
 }
+
+
 export function 区域站(){
   return new Promise((resolve,reject)=>{
     request({
-      url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
+      url:'ryyth-meteordata/md1000/autoStation/findDateList?date=&sdpTime=1754292267633',
       method:'get',
-      params:{
-        staLvs:'11,12,13',
-        dataSource:'localJsonData',
-        dateTimes:moment().format('YYYY-MM-DD 00:00'),
-        fileNames:moment().format('YYYYMMDDHH')+`0000.txt`,
-        sdpTime:'1752682497478'
-      },
       headers:{
         'Authorization':'09ef3716291116453d7e1d76229631ae'
       }
-    }).then(({data})=>{
-      if(data.data){
-        resolve(data)
-      }else{
-        reject('暂无区域站数据')
-      }
+    }).then(res=>{
+      const it = res.data.data.dateList[0]
+      request({
+        url:`/ryyth-meteordata/md1000/autoStation/getRainLayer`,
+        method:'get',
+        params:{
+          staLvs:'14',
+          dateTimes:it.date,
+          dataSource:'localJsonData',
+          fileNames:it.fileName,
+          sdpTime:1754296746550
+        },
+        headers:{
+          'Authorization':'09ef3716291116453d7e1d76229631ae'
+        }
+      }).then(({data})=>{
+        if(data.data){
+          resolve(data)
+        }else{
+          reject('暂无区域站数据')
+        }
+      }).catch(e=>{
+        reject(e)
+      })
     }).catch(e=>{
       reject(e)
     })
@@ -1283,9 +1319,36 @@ export function getMask(){
   }
 }
 
-export function getTrack(){
+export function getTrack(beginDateTime:string,endDateTime:string,unSsrCode:number,uiTrackNo:number){
   return request({
-    url:'/backend/tracks?unSsrCode=1777&uiTrackNo=',
+    url:`/backend/tracks`,
     method:'get',
+    params:{
+      beginDateTime,
+      endDateTime,
+      unSsrCode,
+      uiTrackNo
+    }
+  })
+}
+
+export function getPlanPath(){
+  return new Promise((resolve,reject)=>{
+    request({
+      url:'/weatherModification/dicts/getTypeById?id=43',
+      method:'get',
+    }).then(res=>{
+      const url = res.data.data[0].main_plan.replace('http://10.225.3.150:8091','/planPath')
+      request({
+        url,
+        method:'get',
+      }).then(res=>{
+        resolve(res.data)
+      }).catch(err=>{
+        reject(err)
+      })
+    }).catch(err=>{
+      reject(err)
+    })
   })
 }

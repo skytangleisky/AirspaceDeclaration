@@ -274,6 +274,7 @@
                     <el-time-picker
                         :teleported="false"
                         value-format="HH:mm:ss"
+                        format="HH:mm:ss"
                         v-model="data.workBeginTime"
                         placeholder="请输入开始时间"
                     />
@@ -376,11 +377,11 @@ const emit = defineEmits(["update:show", "accept", "reject"]);
 const cancel = () => {
     emit("update:show", false);
 };
-let timer:number;
+let timer;
 onMounted(() => {
     timer = setInterval(()=>{
-        if(moment(moment().format('YYYY-MM-DD ')+data.workBeginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
-            data.workBeginTime = moment().format('HH:mm:ss')
+        if(moment(moment().format('YYYY-MM-DD ') + data.value.workBeginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            data.value.workBeginTime = moment().format('HH:mm:ss')
         }
     },1000)
 });

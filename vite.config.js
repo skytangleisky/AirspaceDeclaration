@@ -14,6 +14,7 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 // const agent = new HttpProxyAgent('http://172.18.7.38:4444')
 const agent = new HttpProxyAgent('http://127.0.0.1:4444')
+// const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
 import {
   presetAttributify,
   presetIcons,
@@ -207,7 +208,20 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/qt/,''),
         changeOrigin:true,
         secure:false,
-      }
+      },
+      '/weatherModification':{
+        agent,
+        target:'http://10.225.3.150:18185',
+        changeOrigin:true,
+        secure:false,
+      },
+      '/planPath':{
+        agent,
+        target:'http://10.225.3.150:8091',
+        rewrite:path=>path.replace(/^\/planPath/,''),
+        changeOrigin:true,
+        secure:false,
+      },
     }
   }
 });

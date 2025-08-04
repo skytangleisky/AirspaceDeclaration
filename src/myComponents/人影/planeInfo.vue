@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
+  <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%;max-height: 500px;"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
     <el-table-column prop="protocol" label="数据类型" />
     <el-table-column prop="sign" label="飞机标识" style="white-space: nowrap;"/>
     <el-table-column prop="address" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
@@ -8,7 +8,6 @@
     <el-table-column prop="speed" label="速度" :formatter="(a,b,val)=>(val*3.6).toFixed(2)+'km/h'"/>
     <el-table-column prop="orientation" label="航向" :formatter="(a,b,val)=>val.toFixed(2)+'&deg;'"/>
   </el-table>
-  <el-pagination size="small" v-model:current-page="pageOption.page" :page-size="pageOption.size"  layout="prev,pager, next, jumper, total" :total="pageOption.total" />
   <List></List>
   <Add v-model:show="addShow"></Add>
   <Edit v-model:show="confirmShow"></Edit>
@@ -36,11 +35,6 @@ const defaultDates = [
   new Date(now.getFullYear(), now.getMonth() - 1, 1), // 上个月
   new Date(now.getFullYear(), now.getMonth(), 1)      // 当前月
 ]
-const pageOption = reactive({
-  page:1,
-  size:10,
-  total:0,
-})
 const globalOptions:any[] = []
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
@@ -48,13 +42,12 @@ const 触发注册飞机查询 = ref(Date.now())
 import {eventbus} from '~/eventbus'
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 provide('触发注册飞机查询',触发注册飞机查询)
-watch([()=>pageOption.page,()=>pageOption.size,触发注册飞机查询],()=>{
+watch(触发注册飞机查询,()=>{
   if(currentController!=null){
     currentController.abort()
   }
   currentController = new AbortController()
-  注册飞机查询({page:pageOption.page,size:pageOption.size},currentController.signal).then(res=>{
-    pageOption.total = res.data.total
+  注册飞机查询({page:0,size:0},currentController.signal).then((res)=>{
     setting.人影.监控.注册飞机数据.splice(0,setting.人影.监控.注册飞机数据.length,...res.data.results)
   }).catch(e=>{
   })

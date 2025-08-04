@@ -13,6 +13,9 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    标点:false,
+    标线:false,
+    标面:false,
     地图列表:[
       {
         value:0,
@@ -390,7 +393,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        规划航线:false,
+        规划航线:true,
         基本站:false,
         一般站:false,
         区域站:false,
@@ -939,7 +942,10 @@ export const useSettingStore = defineStore('setting',{
     },
     测距(){
       console.log('测距')
-    }
+    },
+    清除(){
+      console.log('清除')
+    },
   },
   // persist: {
   //   serializer: {

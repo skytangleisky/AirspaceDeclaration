@@ -3,7 +3,7 @@
         <div class="tool-mode-title">
             <div class="title-left">
                 <svg-icon name="layer"></svg-icon>
-                <span style="user-select: none;cursor:default;">卫星观测</span>
+                <span style="user-select: none;cursor:default;">自动站雨量</span>
             </div>
             <div class="title-right">
                 <slot name="select"></slot>

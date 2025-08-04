@@ -90,7 +90,7 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
-import {reactive,ref,watch,onMounted} from 'vue'
+import {reactive,ref,watch,onMounted, onBeforeUnmount} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
 import { airspacesApply } from '../../api/人影';
@@ -102,6 +102,17 @@ const applyPointForm = reactive({
   workTimeLen: 3,
   workCat: 2,
 });
+let timer
+onMounted(()=>{
+  timer = setInterval(()=>{
+    if(moment(moment().format('YYYY-MM-DD ')+applyPointForm.time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+      applyPointForm.time = moment().format('HH:mm:ss')
+    }
+  },1000)
+})
+onBeforeUnmount(()=>{
+  clearInterval(timer)
+})
 // 作业目的配置项
 const purposeOptions = [
   {
@@ -136,7 +147,11 @@ const pointDialogVisible = defineModel<boolean>('pointDialogVisible',{
 const batchList = defineModel<Array<any>>('batchList',{
   default: [],
 });
-
+watch(pointDialogVisible,(val)=>{
+  if(val){
+    applyPointForm.time = moment().format('HH:mm:ss')
+  }
+})
 let checkAllPoint = ref(true);
 let isIndeterminate = ref(false);
 let checkedPoints = ref(new Array<any>());

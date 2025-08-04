@@ -54,7 +54,7 @@
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
-          <li v-if="menuType=='批量操作'" @click="清除区域()">清除区域</li>
+          <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <!-- <li>查看作业点信息</li> -->
           <!-- <li>人工批复</li>
           <li>人工移除</li>
@@ -71,26 +71,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-function 清除区域(){
+function 清除形状(){
+  setting.标点 = setting.标线 = setting.标面 = false
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   移除draw绘制的所有图形()
 }
 import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
-import 机场名称 from './机场名称.json'
-import 机场位置 from './机场位置.json'
-机场名称.data.map(item=>{
-  for(let i=0;i<机场位置.data.length;i++){
-    if(item.AirportName==机场位置.data[i].Name){
-      item.位置 = 机场位置.data[i]
-    }
-  }
-})
 let loaded1,loaded2,loaded3,loaded4;//用于记录雷达数据是否加载过，解决首页卡顿问题
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let adsbTimer:any;
-import 规划航线数据 from './层状云西北.json'
+import 规划航线数据 from './PlanTrack-西北.json'
 import 区域固定作业点585 from './区域固定585.txt?raw'
 import 区域移动346 from './区域移动346.txt?raw'
 const decoder = new TextDecoder('gbk')
@@ -102,6 +94,7 @@ import { point, polygon } from "@turf/helpers";
 import BatchDialog from "./batchDialog.vue";
 import Batch2Dialog from "./batch2Dialog.vue";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
+
 import transparentPng from '~/assets/transparent.png?url'
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
 import styles from './drawTheme/theme.js'
@@ -111,6 +104,7 @@ import adsbSvg from '~/assets/adsb.svg?url'
 import banSvg from '~/assets/ban.svg?url'
 import planeUrl from "~/assets/飞机.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
+import triangleUrl from "~/assets/triangle.svg?url"
 import circleUrl from '~/assets/circle.svg?url'
 import 导航台图标 from '~/assets/navigationStation.svg?url'
 import 火箭弹图标 from '~/assets/火箭弹.svg?url'
@@ -174,7 +168,7 @@ let synergyFeaturesData:any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack} from '~/api/天工'
+import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -312,7 +306,6 @@ import {
 } from "~/tools/index.ts";
 import { prevRequestDataType } from "../dialog_plan_request.vue";
 mapboxgl.accessToken = "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
-const Map = mapboxgl.Map;
 const Marker = mapboxgl.Marker;
 const Popup = mapboxgl.Popup;
 const NavigationControl = mapboxgl.NavigationControl;
@@ -703,11 +696,16 @@ const 经纬度 = ()=>{
 const 测距 = ()=>{
   draw?.changeMode('custom_draw_line_with_distance');
 }
+const 清除 = ()=>{
+  清除形状()
+}
+
 setting.zoomIn = zoomIn
 setting.zoomOut = zoomOut
 setting.批量操作 = 批量操作
 setting.经纬度 = 经纬度
 setting.测距 = 测距
+setting.清除 = 清除
 let draw:MapboxDraw;
 defineExpose({
   zoomIn,
@@ -739,6 +737,10 @@ let trackLinesFeaturesData = {
   type: "FeatureCollection",
   features: new Array<any>(),
 }
+let trackPointsFeaturesData = {
+  type: "FeatureCollection",
+  features: new Array<any>(),
+}
 
 function convertMultiPointToLineString(multiPointFeature) {
   if (
@@ -762,7 +764,7 @@ import { ElMessage } from 'element-plus';
 onMounted(async() => {
   document.addEventListener("keydown", keydownFunc);
   aid = requestAnimationFrame(loop)
-  map = new Map({
+  map = new mapboxgl.Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     projection: "mercator",//mercator|globe|equirectangular
     // style: raster,/Users/admin/Desktop/3D/mapbox-gl-js/dist/mapbox-gl.js.map
@@ -810,17 +812,17 @@ onMounted(async() => {
   map.on("load", async () => {
     if(!map)return;
     setting.人影.监控.基本站 && 基本站().then(({data})=>{
-      map.getSource('wms-source1').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
+      map.getSource('wms-source1').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
     }).catch(e=>{
       console.log(e)
     })
     setting.人影.监控.一般站 && 一般站().then(({data})=>{
-      map.getSource('wms-source2').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
+      map.getSource('wms-source2').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
     }).catch(e=>{
       console.log(e)
     })
     setting.人影.监控.区域站 && 区域站().then(({data})=>{
-      map.getSource('wms-source3').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
+      map.getSource('wms-source3').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
     }).catch(e=>{
       console.log(e)
     })
@@ -1027,157 +1029,224 @@ onMounted(async() => {
     //   });
     // })
 
-    for(let i=0;i<规划航线数据[0].flyCasesList.length;i++){
-      const airlineData = {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: new Array<[number,number]>()
-        }
-      }
+    getPlanPath().then(规划航线数据=>{
 
+      const 机场去重 = new Map()
+      let airportsFeatures:any = {
+          type: "FeatureCollection",
+          features: new Array(),
+        };
+      map.addSource("军用机场数据", {
+        type: "geojson",
+        data: airportsFeatures,
+      });
       map.addLayer({
-        id: 'airline-layer'+i,
-        type: 'line',
-        source: {
-          type: 'geojson',
-          data: airlineData
-        },
+        id: "军用机场图层",
+        type: "symbol",
+        source: "军用机场数据",
         layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
+          "icon-image": [
+            'match',
+            ['get', 'name'],
+            '忻州五寨', 'JYJC',
+            '忻州定襄', 'JYJC',
+            '大同机场', 'JYJC',
+            '北京沙河机场', 'JYJC',
+            'MYJC' // fallback
+          ],
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-size": 0.3,
+          "icon-rotate": ["get", "deg"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility:setting.人影.监控.规划航线?'visible':'none',
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-size": 14,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
         },
         paint: {
-          'line-color': '#92b6ce',
-          'line-width': 2
-        }
+          "icon-opacity": 1,
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
       });
 
-      规划航线数据[0].flyCasesList[i].nodeInfo.forEach(item=>{
-        airlineData.geometry.coordinates.push(wgs84togcj02(item.longitude,item.latitude))
-      })
-      map.getSource('airline-layer'+i).setData(airlineData)
-    }
 
 
-    const obj = {
-      "type": "FeatureCollection",
-      "features": [
-        // {
-        //   "type": "Feature",
-        //   "geometry": {
-        //     "type": "Point",
-        //     "coordinates": [116.3913, 39.9075]
-        //   },
-        //   "properties": {
-        //     "label": "北京"
-        //   }
-        // },
-        // {
-        //   "type": "Feature",
-        //   "geometry": {
-        //     "type": "Point",
-        //     "coordinates": [121.4737, 31.2304]
-        //   },
-        //   "properties": {
-        //     "label": "上海"
-        //   }
-        // }
-      ]
-    }
 
-    for(let i=0;i<规划航线数据[0].flyCasesList.length;i++){
-      const airlineData = {
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: new Array<[number,number]>()
+
+
+
+
+
+
+
+      for(let i=0;i<规划航线数据[0].flyCasesList.length;i++){
+        const airlineData = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: new Array<[number,number]>()
+          }
         }
-      }
 
-      map.addLayer({
-        id: 'workline-layer'+i,
-        type: 'line',
-        source: {
-          type: 'geojson',
-          data: airlineData
-        },
-        layout: {
-          'line-join': 'round',
-          'line-cap': 'round'
-        },
-        paint: {
-          'line-color': '#ff0000',
-          'line-width': 4
-        }
-      });
-
-      规划航线数据[0].flyCasesList[i].nodeInfo.forEach((item:any)=>{
-        if(['A点','B点','C点','D点'].includes(item.name)){
+        map.addLayer({
+          id: 'airline-layer'+i,
+          type: 'line',
+          source: {
+            type: 'geojson',
+            data: airlineData
+          },
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#92b6ce',
+            'line-width': 2
+          }
+        });
+        规划航线数据[0].flyCasesList[i].trajectoryInfo.forEach(item=>{
           airlineData.geometry.coordinates.push(wgs84togcj02(item.longitude,item.latitude))
-          obj.features.push({
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": wgs84togcj02(item.longitude,item.latitude)
-            },
-            "properties": {
-              "label": item.name
-            }
-          })
-        }
-      })
-      if(airlineData.geometry.coordinates.length>0){
-        airlineData.geometry.coordinates.push(airlineData.geometry.coordinates[0])
+        })
+        map.getSource('airline-layer'+i).setData(airlineData)
       }
-      map.getSource('workline-layer'+i).setData(airlineData)
-    }
 
-  map.addLayer({
-    id: 'text-layer',
-    type: 'symbol',
-    source: {
-      type:'geojson',
-      data:obj
-    },
-    layout: {
-      'text-field': ['get', 'label'], // 从属性中获取文字
-      'text-size': 14,
-      'text-offset': [0, 1.2],
-      'text-anchor': 'top',
-      'text-font': ['simkai']
-    },
-    paint: {
-      'text-color': '#000000'
-    }
-  });
+      const obj = {
+        "type": "FeatureCollection",
+        "features": new Array()
+        // [
+        //   {
+        //     "type": "Feature",
+        //     "geometry": {
+        //       "type": "Point",
+        //       "coordinates": [116.3913, 39.9075]
+        //     },
+        //     "properties": {
+        //       "label": "北京"
+        //     }
+        //   },
+        //   {
+        //     "type": "Feature",
+        //     "geometry": {
+        //       "type": "Point",
+        //       "coordinates": [121.4737, 31.2304]
+        //     },
+        //     "properties": {
+        //       "label": "上海"
+        //     }
+        //   }
+        // ]
+      }
+
+      for(let i=0;i<规划航线数据[0].flyCasesList.length;i++){
+        const airlineData = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: new Array<[number,number]>()
+          }
+        }
+
+        map.addLayer({
+          id: 'workline-layer'+i,
+          type: 'line',
+          source: {
+            type: 'geojson',
+            data: airlineData
+          },
+          layout: {
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#ff0000',
+            'line-width': 4
+          }
+        });
+        规划航线数据[0].flyCasesList[i].nodeInfo.forEach((item:any,key:number)=>{
+          if(key==0){
+            机场去重.set(item.name,item)
+          }
+          if(['A点','B点','C点','D点'].includes(item.name)){
+            airlineData.geometry.coordinates.push(wgs84togcj02(item.longitude,item.latitude))
+            obj.features.push({
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": wgs84togcj02(item.longitude,item.latitude)
+              },
+              "properties": {
+                "label": item.name
+              }
+            })
+          }
+        })
+        if(airlineData.geometry.coordinates.length>0){
+          airlineData.geometry.coordinates.push(airlineData.geometry.coordinates[0])
+        }
+        map.getSource('workline-layer'+i).setData(airlineData)
+      }
+
+      map.addLayer({
+        id: 'text-layer',
+        type: 'symbol',
+        source: {
+          type:'geojson',
+          data:obj
+        },
+        layout: {
+          'text-field': ['get', 'label'], // 从属性中获取文字
+          'text-size': 14,
+          'text-offset': [0, 1.2],
+          'text-anchor': 'top',
+          'text-font': ['simkai']
+        },
+        paint: {
+          'text-color': '#92b6ce'
+        }
+      });
 
 
 
-    // getTrack().then(({data})=>{
-    //   console.log(data)
-
-    //   const coordinates = new Array()
-    //   data.forEach(item=>{
-    //     const line = new Array()
-    //     item.tracks.forEach(it=>{
-    //       line.push(wgs84togcj02(it.fLongitude,it.fLatitude))
-    //     })
-    //     coordinates.push(line)
-    //   })
-    //   trackLinesFeaturesData.features.push({
-    //     type: 'Feature',
-    //     geometry: {
-    //       type: 'MultiLineString',
-    //       coordinates,
-    //     },
-    //     properties: {}
-    //   })
-
-    //   map?.getSource('track')?.setData(trackLinesFeaturesData)
-    // })
-
-
+      for(let item of 机场去重.values()){
+        airportsFeatures.features.push({
+          type: "Feature",
+          properties: {
+            name: item.name,
+            // code: 机场名称.data[i].位置,
+            deg: 0,
+          },
+          geometry: {
+            type: "Point",
+            coordinates: wgs84togcj02(item.longitude,item.latitude),
+            // coordinates: [0, 0],
+          },
+        });
+      }
+      map.getSource('军用机场数据').setData(airportsFeatures)
+    }).catch(err=>{
+      console.log(err)
+    })
 
 
 
@@ -1406,7 +1475,7 @@ for(let i=0;i<8;i++){
     // })
     await loadImage2Map(map,planeUrl,24,24,{
       airplane:{
-        style: 'fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+        style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
       airplaneMock:{
         style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
@@ -1418,18 +1487,23 @@ for(let i=0;i<8;i++){
       }
       // fill="#1296db"
     })
-    await loadImage2Map(map,circleUrl,12,24,{
+    await loadImage2Map(map,circleUrl,14,14,{
       'projectile-white':{
         style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
-      'projectile-red':{
-        style:"fill:#E14D27;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
-      },
+      // 'projectile-red':{
+      //   style:"fill:#E14D27;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      // },
       'projectile-blue':{
-        style:"fill:#4594D5;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-orange':{
         style:"fill:#0f0;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      },
+    })
+    await loadImage2Map(map,triangleUrl,14,14,{
+      'triangle-blue':{
+        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
     })
     await loadImage2Map(map,trackSvg,6,6,{
@@ -2274,6 +2348,7 @@ for(let i=0;i<8;i++){
           throw new Error('Unknow GISTYPE: '+result.tagLayerPara.sLayerType)
       }
     })
+    if(!map)return;
     // 模拟飞机
     // for (let i = 0; i < 60; i++) {
     //   airplanesMockData.features.push({
@@ -2290,7 +2365,7 @@ for(let i=0;i<8;i++){
     //     },
     //   });
     // }
-    if(!map.getSource("trackSource")){
+    if(map&&!map.getSource("trackSource")){
       map.addSource("trackSource", {
         type: "geojson",
         data: {
@@ -2299,7 +2374,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
-    if(!map.getLayer("trackLayer")){
+    if(map&&!map.getLayer("trackLayer")){
       map.addLayer({
         id: "trackLayer",
         type: "symbol",
@@ -2342,7 +2417,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
-    if(!map.getSource("adsbTrackSource")){
+    if(map&&!map.getSource("adsbTrackSource")){
       map.addSource("adsbTrackSource", {
         type: "geojson",
         data: {
@@ -2351,7 +2426,7 @@ for(let i=0;i<8;i++){
         },
       });
     }
-    if(!map.getLayer("adsbTrackLayer")){
+    if(map&&!map.getLayer("adsbTrackLayer")){
       map.addLayer({
         id: "adsbTrackLayer",
         type: "symbol",
@@ -2408,6 +2483,38 @@ for(let i=0;i<8;i++){
       paint: {
         'line-color': '#ff0000',
         'line-width': 1
+      }
+    });
+    map.addLayer({
+      id: 'trackPoint',
+      type: 'symbol',
+      source: {
+        type:'geojson',
+        data:trackPointsFeaturesData
+      },
+      layout: {
+        "icon-anchor": "center",
+        "icon-image": "trackSvg",
+        // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+        "icon-rotate": 0,
+        // "icon-offset": [10, 0],
+        "icon-rotation-alignment": "map",
+        "text-pitch-alignment": "map",
+        "icon-allow-overlap": true,
+        "icon-ignore-placement": true,
+        "text-field": '',
+        "text-font": ["simkai"],
+        "text-size": 16,
+        "text-transform": "uppercase",
+        // "text-letter-spacing": 0.05,
+        "text-anchor": "bottom",
+        "text-line-height": 1,
+        "text-justify": "center",
+        "text-offset": [0, -1],
+        "text-ignore-placement": true,
+        "text-allow-overlap": true,
+        "text-rotation-alignment": "map",
+        "text-max-width": 400,
       }
     });
     map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
@@ -2612,87 +2719,6 @@ for(let i=0;i<8;i++){
 
 
 
-
-
-
-
-      let airports:any[] = [];
-      for (let i = 0; i < 机场名称.data.length; i++) {
-        airports.push({
-          type: "Feature",
-          properties: {
-            name: 机场名称.data[i].位置.Name,
-            // code: 机场名称.data[i].位置,
-            deg: 0,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: wgs84togcj02(机场名称.data[i].位置.Longitude,机场名称.data[i].位置.Latitude),
-            // coordinates: [0, 0],
-          },
-        });
-      }
-      map.addSource("军用机场数据", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: airports,
-        },
-      });
-
-      map.addLayer({
-        id: "军用机场图层",
-        type: "symbol",
-        source: "军用机场数据",
-        layout: {
-          "icon-image": [
-            'match',
-            ['get', 'name'],
-            '忻州五寨', 'JYJC',
-            '忻州定襄', 'JYJC',
-            '大同云冈机场', 'JYJC',
-            '沙河机场', 'JYJC',
-            'MYJC' // fallback
-          ],
-          // "icon-size": {
-          //   base: 1,
-          //   stops: [
-          //     [0, 0.5],
-          //     [22, 1],
-          //   ],
-          // },
-          "icon-size": 0.3,
-          "icon-rotate": ["get", "deg"],
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          visibility: "visible",
-          "text-pitch-alignment": "map",
-          "text-field": ["get", "name"],
-          "text-font": ["simkai"],
-          "text-size": 16,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "left",
-          "text-line-height": 1,
-          "text-justify": "left",
-          "text-offset": [1, 0],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "icon-opacity": 1,
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-      });
-
-
-
-
     // map.addLayer(CustomLayer);
     map.addLayer({
       id: "maine",
@@ -2771,7 +2797,7 @@ for(let i=0;i<8;i++){
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              "icon-image": item.iType == 1 ? "projectile-red" : "projectile-blue",
+              "icon-image": item.iType == 1 ? "triangle-blue" : "projectile-blue",
               // "icon-image": "火箭弹图标",
               发报单位:'110000000',
               delayTimeLen:10,
@@ -2886,12 +2912,12 @@ for(let i=0;i<8;i++){
             "fill-color": [
               "match",
               ["get", "ubyStatus"],
-              '作业申请待批复','#888',
+              '作业申请待批复','#fa0',
               '作业批准','#00f',
               '作业开始','#f00',
-              '作业结束','#000',
-              '作业不批准','#000',
-              '空闲','#000',
+              '作业结束','#888',
+              '作业不批准','#888',
+              '空闲','#888',
               '#fff'
             ],
             "fill-opacity": ['get','opacity'],
@@ -2910,7 +2936,7 @@ for(let i=0;i<8;i++){
             "line-color": [
               "match",
               ["get", "ubyStatus"],
-              '作业申请待批复','#0f0',
+              '作业申请待批复','#fa0',
               '作业批准','#888',
               '作业开始','#f00',
               '#fff'
@@ -2939,7 +2965,7 @@ for(let i=0;i<8;i++){
             "line-color": [
               "match",
               ["get", "ubyStatus"],
-              '作业申请待批复','#0f0',
+              '作业申请待批复','#fa0',
               '作业批准','#ff0',
               '作业开始','#f00',
               '#fff'
@@ -3781,6 +3807,7 @@ for(let i=0;i<8;i++){
       draw.add(feature)
     })
     map.getCanvas().style.cursor = "default";
+    setting.标点 = setting.标线 = setting.标面 = false
   })
   map.on('draw.update',(e)=>{
     console.log(e)
@@ -3818,6 +3845,84 @@ for(let i=0;i<8;i++){
         marker.remove()
       });
     }
+  })
+  map.on('mouseenter', '飞机', () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', '飞机', () => {
+    map.getCanvas().style.cursor = 'default';
+  });
+  map.on('click','飞机',function(e){
+    const features = e.features;
+    if (!features || features.length === 0) return;
+
+    const props = features[0].properties;
+    const coordinates = features[0].geometry.coordinates.slice();
+    console.log(props)
+
+
+
+
+    trackLinesFeaturesData.features.length = 0
+    // props.unSsrCode
+    // getTrack('2025-08-03 12:00:00',moment().format('YYYY-MM-DD HH:mm:ss'),props.unSsrCode,'').then(({data})=>{
+    //   console.log(data)
+
+    //   const coordinates = new Array()
+    //   data.forEach(item=>{
+    //     const line = new Array()
+    //     item.tracks.forEach(it=>{
+    //       line.push(wgs84togcj02(it.fLongitude,it.fLatitude))
+    //     })
+    //     coordinates.push(line)
+    //   })
+    //   trackLinesFeaturesData.features.push({
+    //     type: 'Feature',
+    //     geometry: {
+    //       type: 'MultiLineString',
+    //       coordinates,
+    //     },
+    //     properties: {}
+    //   })
+    //   map?.getSource('track')?.setData(trackLinesFeaturesData)
+
+
+
+
+
+
+
+    //   trackPointsFeaturesData.features.length = 0
+    //   const coordinates2 = new Array()
+    //   data.forEach(item=>{
+    //     item.tracks.forEach(it=>{
+    //       coordinates2.push(wgs84togcj02(it.fLongitude,it.fLatitude))
+    //     })
+    //   })
+    //   trackPointsFeaturesData.features.push({
+    //     type: 'Feature',
+    //     geometry: {
+    //       type: 'MultiPoint',
+    //       coordinates:coordinates2
+    //     },
+    //     properties: {}
+    //   })
+    //   map?.getSource('trackPoint')?.setData(trackPointsFeaturesData)
+    // })
+
+
+
+
+
+
+
+
+
+
+
+
+
   })
   map.on("zoom", zoomFunc);
   map.on("pitch", pitchFunc);
@@ -3882,6 +3987,24 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch(()=>setting.标点,(val)=>{
+  if(val){
+    setting.标线 = setting.标面 = false
+    draw?.changeMode('draw_point')
+  }
+})
+watch(()=>setting.标线,(val)=>{
+  if(val){
+    setting.标点 = setting.标面 = false
+    draw?.changeMode('draw_line_string')
+  }
+})
+watch(()=>setting.标面,(val)=>{
+  if(val){
+    setting.标点 = setting.标线 = false
+    draw?.changeMode('draw_polygon')
+  }
+})
 watch(()=>setting.人影.监控.规划航线,()=>{
   const layers = map.getStyle().layers
   layers.forEach(layer=>{
@@ -3889,10 +4012,16 @@ watch(()=>setting.人影.监控.规划航线,()=>{
       map.setLayoutProperty(layer.id,'visibility',setting.人影.监控.规划航线?'visible':'none')
     }
   })
+  if(map.getLayer('军用机场图层')){
+    map.setLayoutProperty('军用机场图层','visibility',setting.人影.监控.规划航线?'visible':'none')
+  }
+  if(map.getLayer('text-layer')){
+    map.setLayoutProperty('text-layer','visibility',setting.人影.监控.规划航线?'visible':'none')
+  }
 })
 watch(()=>setting.人影.监控.基本站,(val)=>{
   setting.人影.监控.基本站 && 基本站().then(({data})=>{
-    map.getSource('wms-source1').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
+    map.getSource('wms-source1').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
   }).catch(e=>{
     console.log(e)
   })
@@ -3904,7 +4033,7 @@ watch(()=>setting.人影.监控.基本站,(val)=>{
 })
 watch(()=>setting.人影.监控.一般站,(val)=>{
   setting.人影.监控.一般站 && 一般站().then(({data})=>{
-    map.getSource('wms-source2').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
+    map.getSource('wms-source2').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
   }).catch(e=>{
     console.log(e)
   })
@@ -3916,7 +4045,7 @@ watch(()=>setting.人影.监控.一般站,(val)=>{
 })
 watch(()=>setting.人影.监控.区域站,(val)=>{
   setting.人影.监控.区域站 && 区域站().then(({data})=>{
-    map.getSource('wms-source3').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
+    map.getSource('wms-source3').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
   }).catch(e=>{
     console.log(e)
   })
@@ -4552,6 +4681,9 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 </script>
 
 <style scoped lang="scss">
+.custom-marker{
+  background:black;
+}
 .center{
   position:absolute;
   left:50%;
@@ -4670,7 +4802,7 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   outline: none;
 }
 // 标牌
-.marker-content{
+::v-deep(.marker-content){
   padding:5px;
   --line-width:2px;
   --border-color:gray;
