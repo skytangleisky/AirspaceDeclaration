@@ -1314,8 +1314,10 @@ export function getMask(){
       return strID.substring(0, strID.length - 3)+'%'
     }
     // return '110116%'
+  }else if(results.length===0){
+    throw('未找到权限信息')
   }else{
-    throw('未找权限信息')
+    throw('权限配置错误')
   }
 }
 

@@ -1,6 +1,5 @@
 strID,strName,strPos,ubyType,strMgrID,strIP,iRevPort,strSimNo,bReport,strPhoneNo,strAddress,strMark,strDKSJCode,bMonitor,vStrReportZyd,connectType,bAutoUp,dataver
 000000001,wstd,000000000E00000000N,0,110000000,,0,,0,,,,,0,,0,0,0
-110000000,马西锋,116190100E40021800N,2,,192.168.1.61,0,,1,,,,,1,,0,1,0
 110000000,北京人影办,116190100E40021800N,2,,192.168.1.61,0,,1,,,,,1,,0,1,0
 110000000,北京市人影办,116190100E40021800N,2,,192.168.1.61,0,,1,,,,,1,,0,1,0
 110000000,北京市人工影响天气中心,116190100E40021800N,2,,192.168.1.61,0,,1,,,,,1,,0,1,0
