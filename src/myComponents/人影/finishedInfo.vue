@@ -296,6 +296,7 @@ function filterMethod(val:string){
 const tableData = reactive<any>([])
 let timer:any = 0
 onMounted(()=>{
+  onVisibleChange(true)//主动获取一下数据
   timer = setInterval(()=>{
     触发完成信息查询.value = Date.now()
   },1000)

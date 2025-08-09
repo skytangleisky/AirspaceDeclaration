@@ -1109,7 +1109,7 @@ export function 睿图雷达(){
       method:'get',
       params:{
         date:moment().format('YYYY-MM-DD'),
-        ottProduct:'Z',
+        ottProduct:'Cr',
         order:'desc'
       }
     }).then(({data})=>{
@@ -1323,6 +1323,7 @@ export function getMask(){
 
 export function getTrack(beginDateTime:string,endDateTime:string,unSsrCode:number,uiTrackNo:number){
   return request({
+    // url:`/test/backend/tracks`,
     url:`/backend/tracks`,
     method:'get',
     params:{

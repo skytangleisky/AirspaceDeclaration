@@ -60,6 +60,7 @@ setting.人影.监控.需要重点关注的飞机 = computed(()=>{
     setting.人影.监控.注册飞机数据.forEach(row=>{
       if(properties.unSsrCode == row.address){
         results.push({
+          reg_time:row.reg_time,
           protocol:row.protocol,
           sign:row.sign,
           address:row.address,

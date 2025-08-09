@@ -6,7 +6,7 @@
       <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
       <div class="btn-box disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
     </div>
-    <el-scrollbar v-if="showPanel" style="position:absolute;top:calc(31px + 40px + 10px - 6px);bottom:16px;right:18px;height:auto;width:fit-content;">
+    <el-scrollbar v-if="showPanel" style="position:absolute;top:calc(31px + 40px + 10px - 6px);bottom:16px;right:18px;height:fit-content;width:fit-content;">
       <MenuPanel></MenuPanel>
     </el-scrollbar>
     <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具面板" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
@@ -316,8 +316,8 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     value: modelRef(setting, '人影.监控.trackCount'),
     type: 'range',
     min: 0,
-    max: 99,
-    arr: Array.from({length: 101}, (_, i: number) => i)
+    max: 3000,
+    arr: Array.from({length: 3001}, (_, i: number) => i)
   }]:[]),
   {
     label: '位置',

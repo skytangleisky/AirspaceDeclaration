@@ -17,7 +17,7 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">协议类型:</span>
-                        <el-select v-model="data.protocol" placeholder="请选择" style="width: 100%" clearable filterable allow-create>
+                        <el-select v-model="data.protocol" placeholder="请选择" style="width: 100%" clearable filterable>
                             <el-option v-for="item in protocolOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -25,9 +25,21 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">机型:</span>
-                        <el-select v-model="data.plane_type" placeholder="请选择" style="width: 100%" clearable filterable allow-create>
+                        <el-select v-model="data.plane_type" placeholder="请选择" style="width: 100%" clearable filterable allow-create default-first-option>
                             <el-option v-for="item in plane_typeOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
+                    </el-col>
+                </el-row>
+                <el-row :gutter="rowGutter">
+                    <el-col :span="24">
+                        <span class="label">注册时间:</span>
+                        <el-date-picker
+                            style="width: 100%;"
+                            v-model="data.reg_time"
+                            type="datetime"
+                            placeholder="选择日期时间"
+                            value-format="YYYY-MM-DD HH:mm:ss"
+                        />
                     </el-col>
                 </el-row>
                 <div class="page-btns">
@@ -49,7 +61,6 @@ const plane_typeOptions = reactive([
     { value: '空中国王', label: "空中国王" },
     { value: '国王', label: "国王" },
     { value: '无人机', label: "无人机" },
-    { value: 'Y12', label: "Y12" },
     { value: '未知', label: "未知" },
 ]);
 const protocolOptions = reactive([
@@ -59,7 +70,6 @@ const protocolOptions = reactive([
 ]);
 
 const save = async(data) => {
-    data.reg_time = moment().format('YYYY-MM-DD HH:mm:ss')
     修改飞机(data).then((res)=>{
         ElMessage({
             message: '保存成功',
@@ -82,7 +92,7 @@ const data = defineModel('data',{
         "address": "1705",
         "plane_type": "国王",
         "protocol": "雷达",
-        "reg_time": "2025-07-05 09:00:00",
+        "reg_time": moment().format('YYYY-MM-DD HH:mm:ss'),
         "sign": "B102P"
     })
 })

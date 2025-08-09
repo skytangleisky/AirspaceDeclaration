@@ -13,6 +13,8 @@
                     </el-select>
                 </template> -->
             </GroundCommand>
+            <SecondaryRadar style="margin-top:10px;"></SecondaryRadar>
+            <AirspaceCommand style="margin-top:10px;"></AirspaceCommand>
         </div>
         <div v-if="setting.人影.监控.是否显示产品面板">
             <SatelliteProduct></SatelliteProduct>
@@ -33,6 +35,8 @@
     import SatelliteProduct from './产品/卫星产品.vue'
     import ZydProduct from './产品/自动站产品.vue'
     import GroundCommand from './分布/地面指挥.vue'
+    import SecondaryRadar from './分布/二次雷达.vue'
+    import AirspaceCommand from './分布/空域指挥.vue'
     import {useSettingStore} from '~/stores/setting';
     import toolMode from './toolMode.vue';
     const setting = useSettingStore();

@@ -134,12 +134,11 @@ export default defineConfig({
         // rewrite:path=>path.replace(/^\/backend/,''),
         ws:true,
       },
-      '/amap':{
-        agent,
-        // target:'http://192.168.0.135:8088',
-        target:'http://172.18.7.38:8088',
+      '/test':{
+        // agent,
+        target:'http://127.0.0.1:3000',
         changeOrigin:true,
-        rewrite:path=>path.replace(/^\/amap/,''),
+        rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
         agent,
@@ -203,8 +202,8 @@ export default defineConfig({
       },
       '/qt':{
         agent,
-        // target:'http://10.225.6.184:8001',
-        target:'http://172.18.7.38:8001',
+        target:'http://10.225.6.184:8001',
+        // target:'http://172.18.7.38:8001',
         rewrite:path=>path.replace(/^\/qt/,''),
         changeOrigin:true,
         secure:false,
