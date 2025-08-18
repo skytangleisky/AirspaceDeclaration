@@ -1,6 +1,6 @@
 {
   "name": "airspace-application",
-  "version": "1.1.93",
+  "version": "1.1.94",
   "description": "空域申请模块",
   "author": "tanglei",
   "componentChineseName": "空域申请模块",
@@ -42,7 +42,6 @@
     "element-plus": "^2.9.0",
     "gl-matrix": "^3.4.3",
     "gsap": "^3.12.7",
-    "http-proxy-agent": "^7.0.2",
     "https-proxy-agent": "^7.0.6",
     "jquery": "^3.7.1",
     "mapbox-gl_wstd": "^3.8.0",

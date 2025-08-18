@@ -9,11 +9,17 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import path from "path";
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import { HttpProxyAgent } from 'http-proxy-agent'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
-const agent = new HttpProxyAgent('http://172.18.7.38:4444')
-// const agent = new HttpProxyAgent('http://127.0.0.1:4444')
+const option = {
+  keepAlive: true,       // 开启长连接
+  keepAliveMsecs: 1000,  // TCP 空闲连接存活时间（默认 1000ms，可调大）
+  maxSockets: 256,       // 最大并发 socket 数
+  maxFreeSockets: 32     // 空闲 socket 上限
+}
+// const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
+const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
+// const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
 import {
   presetAttributify,
