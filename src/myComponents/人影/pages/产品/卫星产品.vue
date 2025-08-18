@@ -37,6 +37,7 @@
         {label: 'CMPAS降水融合3km',value: modelRef(setting,'人影.监控.CMPAS降水融合3km')},
         {label: '组合反射率',value: modelRef(setting,'人影.监控.组合反射率')},
         {label: '睿图雷达数据',value: modelRef(setting,'人影.监控.睿图雷达')},
+        {label: '真彩图',value: modelRef(setting,'人影.监控.真彩图')},
     ])
     /**
      * @author yhl 2025/7/17 14:16
@@ -44,15 +45,15 @@
      * @params
      */
     const changeVal = (item: Dict) => {
-        // for(let i=0;i<renderDict.value.length;i++){
-        //     const it = renderDict.value[i];
-        //     if(it==item){
-        //         it.value = !it.value
-        //     }else{
-        //         it.value = false
-        //     }
-        // }
-        item.value = !item.value
+        for(let i=0;i<renderDict.value.length;i++){
+            const it = renderDict.value[i];
+            if(it==item){
+                it.value = !it.value
+            }else{
+                it.value = false
+            }
+        }
+        // item.value = !item.value
     }
 
 </script>

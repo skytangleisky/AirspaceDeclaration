@@ -76,9 +76,9 @@
         </el-popconfirm> -->
       </template>
     </el-table-column>
-    <el-table-column prop="workID" label="作业ID" width="260" />
+    <!-- <el-table-column prop="workID" label="作业ID" width="260" /> -->
     <el-table-column prop="strZydIDName" label="作业点名称" width="120" />
-    <el-table-column prop="tagPos" label="经纬度" width="200" />
+    <!-- <el-table-column prop="tagPos" label="经纬度" width="200" /> -->
     <el-table-column prop="beginTm" label="作业时间" width="160" />
     <el-table-column prop="timeLen" label="作业时长（秒）" width="120" />
     <el-table-column label="作业类型" width="150">

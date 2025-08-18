@@ -13,7 +13,7 @@
                     </el-select>
                 </template> -->
             </GroundCommand>
-            <SecondaryRadar style="margin-top:10px;"></SecondaryRadar>
+            <SecondaryRadar v-if="showSecondaryRadar" style="margin-top:10px;"></SecondaryRadar>
             <AirspaceCommand style="margin-top:10px;"></AirspaceCommand>
         </div>
         <div v-if="setting.人影.监控.是否显示产品面板">
@@ -29,6 +29,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+    import {computed} from 'vue'
     import BaseLayer from './工具/基础底图.vue'
     import MapTool from './工具/地图工具.vue'
     import DrawTool from './工具/标绘工具.vue'
@@ -40,6 +41,11 @@
     import {useSettingStore} from '~/stores/setting';
     import toolMode from './toolMode.vue';
     const setting = useSettingStore();
+    import { getMask } from '~/api/天工'
+    const mask = getMask()
+    const showSecondaryRadar = computed(()=>{
+        return mask=='%%'
+    })
 </script>
 <style lang="scss" scoped>
     .toolKitBgClass {

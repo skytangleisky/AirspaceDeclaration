@@ -1,18 +1,19 @@
 <template>
-    <div class="!collapse dragDialog absolute wstd-container">
-        <div class="top">
+    <div class="!collapse dragDialog absolute wstd-container" style="width:fit-content;height: fit-content;pointer-events: none;">
+        <div class="top" style="display: flex;align-items: center;">
             <div
                 class="box map-btn"
-                style="user-select: none;cursor: pointer;"
+                style="user-select: none;cursor: pointer;pointer-events: auto;"
                 :class="{ active: tabActive == 1 }"
                 @click="tabActive == 1 ? tabActive = 0 : tabActive = 1"
             >
                 <svg-icon name="table"></svg-icon>
                 <span class="label">作业点列表</span>
             </div>
+            <div style="font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;">{{ 数据时间 }}</div>
         </div>
 
-        <div class="bottom wstd-content" style="position: relative;" v-if="tabActive">
+        <div class="bottom wstd-content" style="position: relative;pointer-events: auto;" v-if="tabActive">
             <div class="close-btn" @click="tabActive = 0">
                 <el-icon v-html="closeSvg"></el-icon>
             </div>
@@ -28,11 +29,11 @@
                     <!-- <el-icon
         class="dropdown"
         style="
-          width: 30px;
-          line-height: 14px;
-          font-size: 20px;
-          display: flex;
-          align-items: center;
+            width: 30px;
+            line-height: 14px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
         "
         @click="toggleCollapse"
         @mousedown.stop
@@ -139,7 +140,24 @@ import closeSvg from '~/assets/close.svg?raw'
 import { reactive, onMounted, watch, computed ,ref} from "vue";
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
+import { useSettingStore } from '~/stores/setting'
+const setting = useSettingStore()
+const 数据时间 = computed(()=>{
+    if(setting.人影.监控.红外云图){
+        return setting.人影.监控.红外云图时间
+    }else if(setting.人影.监控.CMPAS降水融合3km){
+        return setting.人影.监控.CMPAS降水融合3km时间
+    }else if(setting.人影.监控.组合反射率){
+        return setting.人影.监控.组合反射率时间
+    }else if(setting.人影.监控.睿图雷达){
+        return setting.人影.监控.睿图雷达时间
+    }else if(setting.人影.监控.真彩图){
+        return setting.人影.监控.真彩图时间
+    }
+    return ''
+})
 
+import moment from 'moment'
 let tabActive = ref(0);
 
 const formatWeapon = (weapon: number) =>
@@ -228,7 +246,8 @@ const toggleCollapse = () => {
 </script>
 <style scoped lang="scss">
 .dragDialog {
-    width: 500px;
+    min-width:500px;
+    width: fit-content;
 }
 .contain {
     position: relative;

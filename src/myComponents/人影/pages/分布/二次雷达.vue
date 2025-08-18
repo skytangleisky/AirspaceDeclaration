@@ -13,16 +13,16 @@
             <slot name="content"></slot>
             <el-checkbox v-model="setting.人影.监控.plane">
                 <div style="display: flex;align-items: center;">
-                <svg-icon name="greenPlane"></svg-icon>飞机图层</div>
+                <svg-icon name="greenPlane" width="20" height="20"></svg-icon>飞机图层</div>
             </el-checkbox>
             <el-checkbox v-model="setting.人影.监控.ryPlane">
-                <div style="display: flex;align-items: center;"><svg-icon name="colorfulPlane"></svg-icon>仅显示人影飞机</div>
+                <div style="display: flex;align-items: center;"><svg-icon name="colorfulPlane" width="20" height="20"></svg-icon>仅显示人影飞机</div>
             </el-checkbox>
             <el-checkbox v-model="setting.人影.监控.planeLabel">
-                <div style="display: flex;align-items: center;"><svg-icon name="bubble"></svg-icon>飞机标牌</div>
+                <div style="display: flex;align-items: center;"><svg-icon name="bubble" width="20" height="20"></svg-icon>飞机标牌</div>
             </el-checkbox>
             <el-checkbox v-model="setting.人影.监控.track">
-                <div style="display: flex;align-items: center;"><svg-icon name="track"></svg-icon>人影飞机轨迹</div>
+                <div style="display: flex;align-items: center;"><svg-icon name="track" width="20" height="20"></svg-icon>人影飞机轨迹</div>
             </el-checkbox>
         </div>
     </div>

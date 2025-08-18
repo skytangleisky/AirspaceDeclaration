@@ -266,8 +266,7 @@ const save = async(data) => {
         })
         return
     }
-    const workID = `RW${data.strID}${data.beginTm.replaceAll(RegExp(/[:\s]/g),"-")}`
-
+    const workID = `RW${data.strID}${moment(data.beginTm,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD-HH-mm')}`
     // const result1 = await 判断是否有完成信息(workID)
     // if(result1.data.results.length>0){
     //     ElMessage({

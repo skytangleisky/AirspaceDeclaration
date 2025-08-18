@@ -423,7 +423,7 @@ export const useSettingStore = defineStore('setting',{
         飞机高度上限:Infinity,
         二次码下限:-Infinity,
         二次码上限:Infinity,
-        track:false,
+        track:true,
         trackCount:3000,
         plane:false,
         adsb:false,
@@ -433,6 +433,7 @@ export const useSettingStore = defineStore('setting',{
         isobands:false,
         isolines:false,
         zdz:false,
+        test:false,//消云试验点
         zydTag:'all',//用于过滤作业点显示
         bearing:0,
         pitch:0,
@@ -500,7 +501,8 @@ export const useSettingStore = defineStore('setting',{
         },
         showColorSelector:-1,
         loadmap:false,
-        红外云图:false,组合反射率:false,CMPAS降水融合3km:false,睿图雷达:false,
+        红外云图:false,组合反射率:false,CMPAS降水融合3km:false,睿图雷达:false,真彩图:false,
+        卫星云图时间:'加载中',组合反射率时间:'加载中',CMPAS降水融合3km时间:'加载中',睿图雷达时间:'加载中',真彩图时间:'加载中',
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{

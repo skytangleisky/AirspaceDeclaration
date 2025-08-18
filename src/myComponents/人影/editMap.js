@@ -321,6 +321,16 @@ export default function(){
 					[extent[0], extent[1]],
 				]
 			},
+			'source5':{
+				type: 'image',
+				url: transparentPng,
+				coordinates: [
+					[extent[0], extent[3]],
+					[extent[2], extent[3]],
+					[extent[2], extent[1]],
+					[extent[0], extent[1]],
+				]
+			},
 			"district":{
 				"type":"geojson",
 				"data": city
@@ -445,6 +455,18 @@ export default function(){
 					"maxzoom": 22,
 					layout:{
 						visibility:'none'
+					}
+				},
+				{
+					id: 'overlay-layer5',
+					source: 'source5',
+					type: 'raster',
+					layout: {
+						visibility: setting.人影.监控.真彩图?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': 1,
+						'raster-resampling': 'nearest'
 					}
 				},
 				{

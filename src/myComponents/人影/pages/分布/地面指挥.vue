@@ -22,11 +22,18 @@
             </el-checkbox>
 
 
-            <el-checkbox v-model="northwest">
-                <div style="display: flex;align-items: center;">西北作业点</div>
+            <el-checkbox v-model="西南主力量">
+                <div style="display: flex;align-items: center;">西南主力量</div>
             </el-checkbox>
-            <el-checkbox v-model="west">
-                <div style="display: flex;align-items: center;">正西作业点</div>
+            <el-checkbox v-model="正西辅助力量">
+                <div style="display: flex;align-items: center;">正西辅助力量</div>
+            </el-checkbox>
+            <el-checkbox v-model="消云">
+                <div style="display: flex;align-items: center;">消云</div>
+            </el-checkbox>
+
+            <el-checkbox v-model="setting.人影.监控.test">
+                <div style="display: flex;align-items: center;">消云试验点</div>
             </el-checkbox>
         </div>
     </div>
@@ -72,25 +79,37 @@
             }
         }
     })
-    const northwest = computed({
+    const 西南主力量 = computed({
         get(){
-            return setting.人影.监控.zydTag == '西北'
+            return setting.人影.监控.zydTag == '西南主力量'
         },
         set(val){
             if(val){
-                setting.人影.监控.zydTag = '西北'
+                setting.人影.监控.zydTag = '西南主力量'
             }else{
                 setting.人影.监控.zydTag = 'all'
             }
         }
     })
-    const west = computed({
+    const 正西辅助力量 = computed({
         get(){
-            return setting.人影.监控.zydTag == '正西'
+            return setting.人影.监控.zydTag == '正西辅助力量'
         },
         set(val){
             if(val){
-                setting.人影.监控.zydTag = '正西'
+                setting.人影.监控.zydTag = '正西辅助力量'
+            }else{
+                setting.人影.监控.zydTag = 'all'
+            }
+        }
+    })
+    const 消云 = computed({
+        get(){
+            return setting.人影.监控.zydTag == '消云'
+        },
+        set(val){
+            if(val){
+                setting.人影.监控.zydTag = '消云'
             }else{
                 setting.人影.监控.zydTag = 'all'
             }

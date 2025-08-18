@@ -33,6 +33,7 @@ export function airspaceApply(data){
 //     "iconImage": "projectile-white",
 //     "v-51ca6517": ""
 // }
+console.log(data)
   let pos = fromDMS(data.strPos)
   let targetData = {
     "zydID": data.strID,
@@ -43,7 +44,7 @@ export function airspaceApply(data){
     "maxShootHeight": data.iMaxShotHei,
     "startShotDirention": data.iShotRangeBegin.toString(),
     "endShotDirention": data.iShotRangeEnd.toString(),
-    "applyBeginTime": moment(Date.now()+60e3).format('YYYY-MM-DD HH:mm:ss'),
+    "applyBeginTime": moment().format('YYYY-MM-DD ')+data.workBeginTime,
     "workTimeLen": data.duration*60,
     "workCat": 0//0:火箭 1:高炮 2:火箭+高炮 3:烟炉 4:火箭+烟炉 5:高炮+烟炉 6:火箭+高炮+烟炉
   }

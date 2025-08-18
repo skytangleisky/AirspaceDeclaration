@@ -1,6 +1,7 @@
 import moment from 'moment'
 import request from '../utils/request'
 import { orderBy } from 'element-plus/es/components/table/src/util.mjs'
+import { useSettingStore } from '~/stores/setting'
 
 //公司
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
@@ -136,6 +137,12 @@ export function 作业点(){
           "field": "strWeapon",
           "relationship": "!=",
           "condition": "3"
+        },
+        {
+          "relation": "AND",
+          "field": "strIP",
+          "relationship": "!=",
+          "condition": '1'
         },
       ]
     }
@@ -1005,6 +1012,8 @@ export function m3u8(indexCode){
 //红外云图：%s
 export function 红外云图(){
   return new Promise((resolve,reject)=>{
+    const setting = useSettingStore()
+    setting.人影.监控.红外云图时间 = '加载时间列表'
     request({
       url:'/zcgk/api/v1/satellite/product/getLocalFileList',
       method:'get',
@@ -1014,6 +1023,7 @@ export function 红外云图(){
       }
     }).then(({data})=>{
       if(data.data.dateList.length>0){
+        setting.人影.监控.红外云图时间 = '加载卫星数据'
         request({
           url:'/zcgk/api/v1/satellite/product/getProduct',
           method:'get',
@@ -1021,15 +1031,19 @@ export function 红外云图(){
             productType:'WMC-K.0008.0010.T',
             fileName:data.data.dateList[0].fileName,
           }
-        }).then(({data})=>{
-          resolve(data)
+        }).then(({data:tmpData})=>{
+          setting.人影.监控.红外云图时间 = data.data.dateList[0].obsTime
+          resolve(tmpData)
         }).catch(e=>{
+          setting.人影.监控.红外云图时间 = e.message
           reject(e)
         })
       }else{
+        setting.人影.监控.红外云图时间 = '暂无红外云图'
         reject('暂无红外云图')
       }
     }).catch(e=>{
+      setting.人影.监控.红外云图时间 = e.message
       reject(e)
     })
   })
@@ -1037,6 +1051,8 @@ export function 红外云图(){
 //全国拼图V3.0：组合反射率
 export function 组合反射率(){
   return new Promise((resolve,reject)=>{
+    const setting = useSettingStore()
+    setting.人影.监控.组合反射率时间 = '加载时间列表'
     request({
       url:'/zcgk/api/v1/rada/radarV3Product/findDateList',
       method:'get',
@@ -1047,6 +1063,7 @@ export function 组合反射率(){
       }
     }).then(({data})=>{
       if(data.data.dateList.length>0){
+        setting.人影.监控.组合反射率时间 = '加载雷达数据'
         request({
           url:'/zcgk/api/v1/rada/radarV3Product/getProduct',
           method:'get',
@@ -1055,12 +1072,15 @@ export function 组合反射率(){
             productType:'RADA_L3_MST_CREF_QC',
             smooth:false
           }
-        }).then(({data})=>{
-          resolve(data)
+        }).then(({data:tmpData})=>{
+          setting.人影.监控.组合反射率时间 = data.data.dateList[0].title
+          resolve(tmpData)
         }).catch(e=>{
+          setting.人影.监控.组合反射率时间 = e.message
           reject(e)
         })
       }else{
+        setting.人影.监控.组合反射率时间 = '暂无组合反射率数据'
         reject('暂无组合反射率')
       }
     }).catch(e=>{
@@ -1070,7 +1090,9 @@ export function 组合反射率(){
 }
 //1km分辨率CMPAS降水融合3km
 export function CMPAS降水融合3km(){
+  const setting = useSettingStore()
   return new Promise((resolve,reject)=>{
+    setting.人影.监控.CMPAS降水融合3km时间 = '加载时间列表'
     request({
       url:'/zcgk/api/v1/cmpas1kmProduct/findDateList',
       method:'get',
@@ -1081,6 +1103,7 @@ export function CMPAS降水融合3km(){
       }
     }).then(({data})=>{
       if(data&&data.data.length>0){
+        setting.人影.监控.CMPAS降水融合3km时间 = '加载雷达数据'
         request({
           url:'/zcgk/api/v1/cmpas1kmProduct/getProduct',
           method:'get',
@@ -1088,15 +1111,19 @@ export function CMPAS降水融合3km(){
             productType:'SURF_CMPAS_MUL_1KM_RT',
             fileName:data.data[0].fileName,
           }
-        }).then(({data})=>{
-          resolve(data)
+        }).then(({data: tmpData})=>{
+          setting.人影.监控.CMPAS降水融合3km时间 = data.data[0].title
+          resolve(tmpData)
         }).catch(e=>{
+          setting.人影.监控.CMPAS降水融合3km时间 = e.message
           reject(e)
         })
       }else{
+        setting.人影.监控.CMPAS降水融合3km时间 = '暂无CMPAS降水融合3km数据'
         reject('暂无CMPAS降水融合3km')
       }
     }).catch(e=>{
+      setting.人影.监控.CMPAS降水融合3km时间 = e.message
       reject(e)
     })
   })
@@ -1104,6 +1131,8 @@ export function CMPAS降水融合3km(){
 
 export function 睿图雷达(){
   return new Promise((resolve,reject)=>{
+    const setting = useSettingStore()
+    setting.人影.监控.睿图雷达时间 = '加载时间列表'
     request({
       url:`/ryyth-meteordata/bjInterface/ramapsRada/getDataFileList`,
       method:'get',
@@ -1114,23 +1143,65 @@ export function 睿图雷达(){
       }
     }).then(({data})=>{
       if(data&&data.data.length>0){
+        setting.人影.监控.睿图雷达时间 = '加载雷达数据'
         request({
-          url:`/ryyth-meteordata/bjInterface/ramapsRada/getDataFile?ottProduct=Z&filePath=${data.data[0].path}&height=3000`,
+          url:`/ryyth-meteordata/bjInterface/ramapsRada/getDataFile?ottProduct=Cr&filePath=${data.data[0].path}&height=3000`,
           method:'get',
         }).then(({data})=>{
+          setting.人影.监控.睿图雷达时间 = data.data.mapTitle
           resolve(data)
         }).catch(e=>{
+          setting.人影.监控.睿图雷达时间 = e.message
           reject(e)
         })
       }else{
+        setting.人影.监控.睿图雷达时间 = '暂无睿图雷达数据'
         reject('暂无睿图雷达数据')
       }
     }).catch(e=>{
+      setting.人影.监控.睿图雷达时间 = e.message
       reject(e)
     })
   })
 }
-
+export function 真彩图(){
+  return new Promise((resolve,reject)=>{
+    const setting = useSettingStore()
+    setting.人影.监控.真彩图时间 = '加载时间列表'
+    request({
+      url:`/cdb/api/v1/satellite/fy4/product/findLocalFileList`,
+      method:'get',
+      params:{
+        beginTimeBeijing:'',
+        endTimeBeijing:'',
+        type:'WMC-K.0008.0012.T',
+        order:'desc',
+        caseDate:'',
+        sdpTime:1755347692988
+      }
+    }).then(({data})=>{
+      if(data&&data.data&&data.data.dateList&&data.data.dateList.length>0){
+        setting.人影.监控.真彩图时间 = '加载卫星数据'
+        request({
+          url:`/cdb/api/v1/satellite/fy4/product/getProduct?productType=WMC-K.0008.0012.T&fileName=${data.data.dateList[0].fileName}&sdpTime=1755347693127`,
+          method:'get',
+        }).then(({data})=>{
+          setting.人影.监控.真彩图时间 = data.data.mapTitle
+          resolve(data)
+        }).catch(e=>{
+          setting.人影.监控.真彩图时间 = e.message
+          reject(e)
+        })
+      }else{
+        setting.人影.监控.真彩图时间 = '暂无真彩图数据'
+        reject('暂无真彩图数据')
+      }
+    }).catch(e=>{
+      setting.人影.监控.真彩图时间 = e.message
+      reject(e)
+    })
+  })
+}
 export function 基本站(){
   return new Promise((resolve,reject)=>{
     request({
@@ -1310,6 +1381,12 @@ export function getMask(){
     const strID = result.strID
     if(strID.endsWith('110000000')){//北京人影办
       return '%%'
+    }else if(strID.endsWith('120000000')){//天津人影办
+      return '12%'
+    }else if(strID.endsWith('130000000')){//河北人影办
+      return '13%'
+    }else if(strID.endsWith('140000000')){//山西人影办
+      return '14%'
     }else if(strID.endsWith('000')){//区县人影办
       return strID.substring(0, strID.length - 3)+'%'
     }
@@ -1329,8 +1406,7 @@ export function getTrack(beginDateTime:string,endDateTime:string,unSsrCode:numbe
     params:{
       beginDateTime,
       endDateTime,
-      unSsrCode,
-      uiTrackNo
+      unSsrCode
     }
   })
 }
@@ -1341,15 +1417,7 @@ export function getPlanPath(){
       url:'/weatherModification/dicts/getTypeById?id=43',
       method:'get',
     }).then(res=>{
-      const url = res.data.data[0].main_plan.replace('http://10.225.3.150:8091','/planPath')
-      request({
-        url,
-        method:'get',
-      }).then(res=>{
-        resolve(res.data)
-      }).catch(err=>{
-        reject(err)
-      })
+      resolve(res.data.data[0])
     }).catch(err=>{
       reject(err)
     })

@@ -1,7 +1,11 @@
 <template>
-  <video ref="videoRef" class="video" controls autoplay muted loop></video>
+  <div class="video-container">
+    <video ref="videoRef" class="video" controls autoplay muted loop></video>
+    <div class="close-btn" @click="item.visible=false"><el-icon v-html="closeUrl"></el-icon></div>
+  </div>
 </template>
 <script setup lang="ts">
+import closeUrl from '~/assets/close.svg?raw'
 import { onMounted, ref } from 'vue';
 const videoRef = ref()
 import {所有站点的视频信息,m3u8} from '~/api/天工'
@@ -48,8 +52,42 @@ onMounted(()=>{
 })
 </script>
 <style lang="scss" scoped>
-.video{
+.video-container{
   position: relative;
-  width:100%;
+  .video{
+    position: relative;
+    width:100%;
+  }
+  .close-btn {
+    right:10px;
+    top:10px;
+    position: absolute;
+    width:20px;
+    height:20px;
+    justify-content: center;
+    align-items:center;
+    font-size: 0.16rem;
+    z-index:999;
+    color:white;
+    display: none;
+    &:hover {
+      .el-icon {
+          color: #ff4d4f;
+      }
+    }
+    &:active {
+      transform: rotateX(180deg);
+      transition: transform 0.3s;
+      transition-timing-function: ease-in-out;
+      .el-icon {
+          color: #d32f2f;
+      }
+    }
+  }
+  &:hover{
+    .close-btn{
+      display: flex;
+    }
+  }
 }
 </style>

@@ -30,21 +30,34 @@ export function fromDMS(v:string):[number,number]{
   return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
 }
 export function toDMS(lng: number, lat: number): string {
-  const lngDegree = Math.floor(Math.abs(lng));
-  const lngMinFloat = Math.abs(lng) - lngDegree;
-  const lngMin = Math.floor(lngMinFloat * 60);
-  const lngSec = Math.round((lngMinFloat * 60 - lngMin) * 60);
+  // 经度
+  const lngDeg = Math.floor(lng);
+  const lngMinFull = (lng - lngDeg) * 60;
+  const lngMin = Math.floor(lngMinFull);
+  const lngSec = (lngMinFull - lngMin) * 60;
+  const lngSec100 = Math.round(lngSec * 100); // 秒保留两位小数（乘100）
 
-  const latDegree = Math.floor(Math.abs(lat));
-  const latMinFloat = Math.abs(lat) - latDegree;
-  const latMin = Math.floor(latMinFloat * 60);
-  const latSec = Math.round((latMinFloat * 60 - latMin) * 60);
+  // 纬度
+  const latDeg = Math.floor(lat);
+  const latMinFull = (lat - latDeg) * 60;
+  const latMin = Math.floor(latMinFull);
+  const latSec = (latMinFull - latMin) * 60;
+  const latSec100 = Math.round(latSec * 100);
 
-  const lngString = `${lngDegree.toFixed().padStart(3, '0')}${lngMin.toFixed().padStart(2,'0')}${String(lngSec).padStart(4, '0')}E`;
-  const latString = `${latDegree.toFixed().padStart(2, '0')}${latMin.toFixed().padStart(2,'0')}${String(latSec).padStart(4, '0')}N`;
+  // 按原格式补零
+  const lngStr = 
+    String(lngDeg).padStart(3, "0") +
+    String(lngMin).padStart(2, "0") +
+    String(lngSec100).padStart(4, "0");
 
-  return `${lngString}${latString}`;
+  const latStr = 
+    String(latDeg).padStart(2, "0") +
+    String(latMin).padStart(2, "0") +
+    String(latSec100).padStart(4, "0");
+
+  return `${lngStr}E${latStr}N`;
 }
+
 export const area = (vertices: Array<[number, number]>) => {
   let area = 0;
   for (let i = 0; i < vertices.length; i++) {

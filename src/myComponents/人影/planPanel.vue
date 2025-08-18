@@ -1,5 +1,5 @@
 <template>
-    <div class="planPanel wstd-container" style="z-index: 1;">
+    <div class="planPanel wstd-container" style="z-index: 1;height:fit-content;width: fit-content;">
         <div class="bottom wstd-content" style="position: relative;margin-bottom:10px;" v-show="tabActive !== ''">
             <div class="close-btn" @click="tabActive = ''">
                 <el-icon v-html="closeSvg"></el-icon>

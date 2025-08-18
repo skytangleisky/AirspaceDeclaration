@@ -302,6 +302,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {label: 'CMPAS降水融合3km', value: modelRef(setting, '人影.监控.CMPAS降水融合3km'), type: 'checkbox'},
   {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
   {label: '睿图雷达产品', value: modelRef(setting, '人影.监控.睿图雷达'), type: 'checkbox'},
+  {label: '真彩图', value: modelRef(setting, '人影.监控.真彩图'), type: 'checkbox'},
   {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
   {label: '规划航线', value: modelRef(setting, '人影.监控.规划航线'), type: 'checkbox'},
   {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},

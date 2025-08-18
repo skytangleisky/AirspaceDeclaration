@@ -12,8 +12,8 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { HttpProxyAgent } from 'http-proxy-agent'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
-// const agent = new HttpProxyAgent('http://172.18.7.38:4444')
-const agent = new HttpProxyAgent('http://127.0.0.1:4444')
+const agent = new HttpProxyAgent('http://172.18.7.38:4444')
+// const agent = new HttpProxyAgent('http://127.0.0.1:4444')
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
 import {
   presetAttributify,

@@ -1,5 +1,5 @@
 <template>
-  <div class="wstd-main-container">
+  <div class="wstd-container">
       <RgyxWorkPoint />
       <Websocket />
   </div>
@@ -10,13 +10,13 @@ import RgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue"; //空域�
 import Websocket from "~/myComponents/websocket/websocket.vue";
 </script>
 <style>
-.wstd-main-container {
+.wstd-container {
   position: relative;
   height: 100%;
   width: 100%;
   color: #000;
 }
-.dark .wstd-main-container{
+.dark .wstd-container{
   color:#fff;
 }
 </style>
