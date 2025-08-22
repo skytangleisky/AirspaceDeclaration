@@ -1,5 +1,5 @@
 <template>
-    <Test></Test>
+  <Test></Test>
 </template>
 <script setup>
 // import Test from "~/components/rgyx-work-point.vue";//示例

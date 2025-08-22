@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +8,15 @@
   <!-- <script src="https://unpkg.com/vue@3.3.4/dist/vue.global.prod.js"></script> -->
   <!-- <script src="https://unpkg.com/vue-demi"></script> -->
   <!-- <script src="https://unpkg.com/pinia@2.1.6/dist/pinia.iife.prod.js"></script> -->
-  <script src="vue.global.prod.js"></script>
-  <script src="vue-demi.iife.js"></script>
-  <script src="pinia.iife.prod.js"></script>
-  <script src="pinia-plugin-persistedstate.prod.js"></script>
-  <script src="hls.js"></script>
-  <link rel="stylesheet" href="airspace-application.css">
+  <script src="/kysq/vue.global.prod.js"></script>
+  <script src="/kysq/vue-demi.iife.js"></script>
+  <script src="/kysq/pinia.iife.prod.js"></script>
+  <script src="/kysq/pinia-plugin-persistedstate.prod.js"></script>
+  <script src="/kysq/hls.js"></script>
+  <link rel="stylesheet" href="/kysq/airspace-application.css">
+  <link rel="stylesheet" href="/kysq/element-plus@2.10.7/index.css">
+  <script src="/kysq/element-plus@2.10.7/index.full.js"></script>
+  <script src="/kysq/element-plus@2.10.7/locale/zh-cn.js"></script>
   <style>
     html,
     body {
@@ -30,13 +33,14 @@
   </style>
 </head>
 <body>
-  <div id="app">
+  <div id="app"></div>
+  <template id="template">
     <test></test>
     <!-- <div style="position: absolute;top:0;left:0;display: flex;flex-direction: column;">
       <div>{{ message }}</div>
-      <button @click="changeMessage">点击我改变消息</button>
+      <el-button @click="changeMessage">点击我改变消息</el-button>
     </div> -->
-  </div>
+  </template>
   <script src="index.umd.js"></script>
   <script type="module">
     const {SmokeStove, RgyxWorkPoint, SvgIcon, resize, dragable} = index;
@@ -54,9 +58,10 @@
           changeMessage,
         };
       },
-      components:{
-        Test:RgyxWorkPoint
-      }
+      template: '#template',
+      // components:{
+      //   Test:RgyxWorkPoint,
+      // }
     });
     const pinia = createPinia();
     pinia.use(createPersistedState());
@@ -64,7 +69,9 @@
     app.directive('resize',resize)
     app.directive('dragable',dragable)
     app.component('svg-icon',SvgIcon)
-    app.mount('#app');
+    app.use(ElementPlus, { locale: ElementPlusLocaleZhCn })
+    app.component('test',RgyxWorkPoint)
+    app.mount('#app')
   </script>
 
 </body>

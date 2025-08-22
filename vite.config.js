@@ -17,8 +17,8 @@ const option = {
   maxSockets: 256,       // 最大并发 socket 数
   maxFreeSockets: 32     // 空闲 socket 上限
 }
-// const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
+const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
+// const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
 import {
@@ -30,6 +30,7 @@ import {
 } from 'unocss'
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: '/kysq/',
   plugins: [
     vue(),
     createSvgIconsPlugin({
@@ -208,8 +209,8 @@ export default defineConfig({
       },
       '/qt':{
         agent,
-        target:'http://10.225.6.184:8001',
-        // target:'http://172.18.7.38:8001',
+        // target:'http://10.225.6.184:8001',
+        target:'http://172.18.7.38:8001',
         rewrite:path=>path.replace(/^\/qt/,''),
         changeOrigin:true,
         secure:false,

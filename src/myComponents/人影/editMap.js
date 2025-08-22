@@ -412,9 +412,9 @@ export default function(){
 		},
 		// "terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 		// "sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
-		"sprite": window.location.origin+"/resources/sprite",
+		"sprite": window.location.origin+"/kysq/resources/sprite",
 		// "glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
-		"glyphs": window.location.origin+"/resources/glyphs/{fontstack}/{range}.pbf",
+		"glyphs": window.location.origin+"/kysq/resources/glyphs/{fontstack}/{range}.pbf",
 		"projection": {"name": "mercator"},//albers, equalEarth, equirectangular, lambertConformalConic, mercator, naturalEarth, winkelTripel, globe
 		"layers": [
 				{
