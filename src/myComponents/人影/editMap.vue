@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%; overflow: hidden; position: absolute;display: flex;">
+  <div style="width: 100%; height: 100%; overflow: auto; position: relative;display: flex;">
     <div style="position: relative;flex:1;">
       <div
         v-resize="resize"
@@ -50,6 +50,7 @@
       <div class="menu" ref="stationMenuRef" @mousedown.stop>
         <ul>
           <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
+          <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
@@ -69,14 +70,24 @@
         <Video :item="item" v-if="item.visible"></Video>
       </template>
     </div>
+    <div v-dragable class="meeting" v-if="metting">
+      <iframe src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation"></iframe>
+      <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
+    </div>
   </div>
 </template>
 <script lang="ts" setup>
+import closeUrl from '~/assets/close.svg?raw'
+function 视频会议(){
+  metting.value=true
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+}
 function 清除形状(){
   setting.标点 = setting.标线 = setting.标面 = false
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   移除draw绘制的所有图形()
 }
+const metting = ref(false)
 import { 绘制主力量规划轨迹 } from './主力量规划航迹'
 import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
@@ -588,8 +599,6 @@ function 处理飞机实时位置(d:Array<{
   "ubyEmitterCat": 5,
   "strCallCode": ""
 }>){
-
-
   const tmp = d.filter(item=>{
     for(let plane of setting.人影.监控.注册飞机数据){
       if(item.unSsrCode == Number(plane.address)){
@@ -2371,375 +2380,6 @@ for(let i=0;i<8;i++){
     //     },
     //   });
     // }
-    if(map&&!map.getSource("trackSource")){
-      map.addSource("trackSource", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: trackFeatures,
-        },
-      });
-    }
-    if(map&&!map.getLayer("trackLayer")){
-      map.addLayer({
-        id: "trackLayer",
-        type: "symbol",
-        source: "trackSource",
-        layout: {
-          visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
-          // This icon is a part of the Mapbox Streets style.
-          // To view all images available in a Mapbox style, open
-          // the style in Mapbox Studio and click the "Images" tab.
-          // To add a new image to the style at runtime see
-          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-          "icon-anchor": "center",
-          "icon-image": "trackSvg",
-          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-          "icon-rotate": 0,
-          // "icon-offset": [10, 0],
-          "icon-rotation-alignment": "map",
-          "text-pitch-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          "text-field": ["get", "strName"],
-          "text-font": ["simkai"],
-          "text-size": 16,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "bottom",
-          "text-line-height": 1,
-          "text-justify": "center",
-          "text-offset": [0, -1],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "icon-opacity": ['get','opacity'],
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-        // filter:['==', ['get', 'icon'], 'airplaneMock']
-      });
-    }
-    if(map&&!map.getSource("adsbTrackSource")){
-      map.addSource("adsbTrackSource", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: adsbTrackFeatures,
-        },
-      });
-    }
-    if(map&&!map.getLayer("adsbTrackLayer")){
-      map.addLayer({
-        id: "adsbTrackLayer",
-        type: "symbol",
-        source: "adsbTrackSource",
-        layout: {
-          visibility: (setting.人影.监控.track&&setting.人影.监控.adsb) ? "visible" : "none",
-          // This icon is a part of the Mapbox Streets style.
-          // To view all images available in a Mapbox style, open
-          // the style in Mapbox Studio and click the "Images" tab.
-          // To add a new image to the style at runtime see
-          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-          "icon-anchor": "center",
-          "icon-image": "trackSvg",
-          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-          "icon-rotate": 0,
-          // "icon-offset": [10, 0],
-          "icon-rotation-alignment": "map",
-          "text-pitch-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          "text-field": ["get", "strName"],
-          "text-font": ["simkai"],
-          "text-size": 16,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "bottom",
-          "text-line-height": 1,
-          "text-justify": "center",
-          "text-offset": [0, -1],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "icon-opacity": 1,
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-      });
-    }
-    map.addLayer({
-      id: 'track',
-      type: 'line',
-      source: {
-        type:'geojson',
-        data:trackLinesFeaturesData
-      },
-      layout: {
-        visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
-        'line-join': 'round',
-        'line-cap': 'round'
-      },
-      paint: {
-        'line-color': '#0f0',
-        'line-width': 1
-      },
-      filter:
-      [
-        'all',
-        ['==', ['get', 'icon'], 'airplaneMock'],
-        ['==', ['get', 'active'], true]
-      ]
-    });
-    map.addLayer({
-      id: 'trackPoint',
-      type: 'symbol',
-      source: {
-        type:'geojson',
-        data:trackPointsFeaturesData
-      },
-      layout: {
-        visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
-        "icon-anchor": "center",
-        "icon-image": "trackSvg",
-        // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-        "icon-rotate": 0,
-        // "icon-offset": [10, 0],
-        "icon-rotation-alignment": "map",
-        "text-pitch-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        "text-field": '',
-        "text-font": ["simkai"],
-        "text-size": 16,
-        "text-transform": "uppercase",
-        // "text-letter-spacing": 0.05,
-        "text-anchor": "bottom",
-        "text-line-height": 1,
-        "text-justify": "center",
-        "text-offset": [0, -1],
-        "text-ignore-placement": true,
-        "text-allow-overlap": true,
-        "text-rotation-alignment": "map",
-        "text-max-width": 400,
-      },
-      filter:[
-        'all',
-        ['==', ['get', 'icon'], 'airplaneMock'],
-        ['==', ['get', 'active'], true],
-      ]
-    });
-    map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
-    map.addSource("adsb原数据", {type:'geojson',data:adsbData});
-    map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
-    map.addLayer({
-      id: "飞机",
-      type: "symbol",
-      source: "飞机原数据",
-      layout: {
-        "icon-image": ['get','icon'],
-        // "icon-size": {
-        //   base: 1,
-        //   stops: [
-        //     [0, 0.5],
-        //     [22, 1],
-        //   ],
-        // },
-        "icon-rotate": ["get", "fHeading"],
-        "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        visibility: props.plane ? "visible" : "none",
-      },
-      paint:{
-        "icon-opacity":['get','opacity'],
-      },
-      filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
-    });
-    map.addLayer({
-      id: "飞机气泡图层",
-      type: "symbol",
-      source: "飞机原数据",
-      layout: {
-        "icon-image": "pop",
-        // "icon-size": {
-        //   base: 1,
-        //   stops: [
-        //     [0, 0.5],
-        //     [22, 1],
-        //   ],
-        // },
-        // "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
-        'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
-        'text-field': ['get', 'label'],
-        // 'text-pitch-alignment':'map',
-        'icon-anchor': 'bottom',
-        'text-anchor': 'bottom',
-        'text-offset': [0, -1],
-        'text-font': ['simkai'],
-        'text-allow-overlap':true,
-        visibility: (setting.人影.监控.planeLabel)?"visible":'none',
-      },
-      paint:{
-        'icon-color':'#5272ba',
-        "icon-opacity":1,
-        'text-color':'white'
-      },
-      filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
-    });
-    map.addLayer({
-      id: "adsb气泡图层",
-      type: "symbol",
-      source: "adsb原数据",
-      layout: {
-        "icon-image": "pop",
-        // "icon-size": {
-        //   base: 1,
-        //   stops: [
-        //     [0, 0.5],
-        //     [22, 1],
-        //   ],
-        // },
-        // "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
-        'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
-        'text-field': ['get', 'label'],
-        // 'text-pitch-alignment':'map',
-        'icon-anchor': 'bottom',
-        'text-anchor': 'bottom',
-        'text-offset': [0, -1],
-        'text-font': ['simkai'],
-        'text-allow-overlap':true,
-        visibility: (setting.人影.监控.planeLabel&&setting.人影.监控.adsb)?"visible":'none',
-      },
-      paint:{
-        'icon-color':'white',
-        "icon-opacity":1,
-      }
-    });
-    map.addLayer({
-      id: "adsb图层",
-      type: "symbol",
-      source: "adsb原数据",
-      layout: {
-        "icon-image": "adsb",
-        // "icon-size": {
-        //   base: 1,
-        //   stops: [
-        //     [0, 0.5],
-        //     [22, 1],
-        //   ],
-        // },
-        "icon-rotate": ["get", "heading"],
-        "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        visibility: setting.人影.监控.adsb?"visible":"none",
-      },
-      paint:{
-        "icon-opacity":1,
-      }
-    });
-    map.addLayer({
-      id: "模拟飞机图层",
-      type: "symbol",
-      source: "模拟飞机",
-      layout: {
-        "icon-image": "airplaneMock",
-        // "icon-size": {
-        //   base: 1,
-        //   stops: [
-        //     [0, 0.5],
-        //     [22, 1],
-        //   ],
-        // },
-        "icon-rotate": ["get", "fHeading"],
-        "icon-rotation-alignment": "map",
-        "icon-allow-overlap": true,
-        "icon-ignore-placement": true,
-        visibility: props.plane ? "visible" : "none",
-      },
-    });
-    机场().then((res)=>{
-      if(!map)return
-      let data = res.data.results
-      let airports:any[] = [];
-      for (let i = 0; i < data.length; i++) {
-        airports.push({
-          type: "Feature",
-          properties: {
-            name: data[i].name,
-            code:data[i].code,
-            deg: 0,
-          },
-          geometry: {
-            type: "Point",
-            coordinates: wgs84togcj02(...fromDMS(data[i].strLonLat)),
-            // coordinates: [0, 0],
-          },
-        });
-      }
-      map.addSource("机场数据", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features: airports,
-        },
-      });
-      map.addLayer({
-        id: "机场图层",
-        type: "symbol",
-        source: "机场数据",
-        layout: {
-          "icon-image": "airport",
-          // "icon-size": {
-          //   base: 1,
-          //   stops: [
-          //     [0, 0.5],
-          //     [22, 1],
-          //   ],
-          // },
-          "icon-rotate": ["get", "deg"],
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          visibility: props.airport?"visible":'none',
-          "text-pitch-alignment": "map",
-          "text-field": ["get", "name"],
-          "text-font": ["simkai"],
-          "text-size": 16,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "left",
-          "text-line-height": 1,
-          "text-justify": "left",
-          "text-offset": [1, 0],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "icon-opacity": 1,
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-      });
-    })
 
 
 
@@ -2793,7 +2433,7 @@ for(let i=0;i<8;i++){
     // getTodayRecords().then((res:any)=>{
     //   planProps.今日作业记录 = res.data.data;
     // })
-    作业点().then((res) => {
+    await 作业点().then(async(res) => {
       if(!map)return
       dialogOptions.menus = res.data.results;
       zydFeaturesData.features.length = 0
@@ -2945,6 +2585,7 @@ for(let i=0;i<8;i++){
         map.addSource("最大射程source", {
           type: "geojson",
           data: circleFeaturesData,
+          promoteId:'strID'
         });
       }
       if(!map.getLayer('最大射程-fill')){
@@ -3001,6 +2642,7 @@ for(let i=0;i<8;i++){
         map.addSource("警戒圈source", {
           type: "geojson",
           data: forewarningFeaturesData,
+          promoteId:'strID'
         });
       }
       if(!map.getLayer("预警圈-line")){
@@ -3116,6 +2758,7 @@ for(let i=0;i<8;i++){
         map.addSource("zydSource", {
           type: "geojson",
           data: zydFeaturesData,
+          promoteId:'strID'
         });
       }
       if(!map.getLayer("zydLayer")){
@@ -3351,15 +2994,12 @@ for(let i=0;i<8;i++){
         source = map.getSource("警戒圈source");
         source?.setData(forewarningFeaturesData);
       };
-      taskTimer = setInterval(() => {
-        work();
-      }, 1000);
-      getPlanPath().then((data)=>{
+      await getPlanPath().then(async(data)=>{
         if(!map)return
 
         // 辅助力量站点
         if(data.standby_station){
-          axios({
+          await axios({
             url:data.standby_station.replace('http://10.225.3.150:8091','/planPath'),
             method:'get',
           }).then(res=>{
@@ -3378,7 +3018,7 @@ for(let i=0;i<8;i++){
 
         // 主力量站点
         if(data.main_station){
-          axios({
+          await axios({
             url:data.main_station.replace('http://10.225.3.150:8091','/planPath'),
             method:'get',
           }).then(res=>{
@@ -3396,7 +3036,7 @@ for(let i=0;i<8;i++){
         }
         // 主力量轨迹
         if(data.main_plan){
-          axios({
+          await axios({
             url:data.main_plan.replace('http://10.225.3.150:8091','/planPath'),
             method:'get',
           }).then(res=>{
@@ -3405,7 +3045,7 @@ for(let i=0;i<8;i++){
         }
 
         // 辅助力量轨迹
-        if(data.standby_plan){
+        /*if(data.standby_plan){
           const url = data.standby_plan.replace('http://10.225.3.150:8091','/planPath')
           axios({
             url,
@@ -3687,7 +3327,7 @@ for(let i=0;i<8;i++){
 
 
           })
-        }
+        }*/
 
         // 消云
         if(data.three_plan){
@@ -3696,6 +3336,25 @@ for(let i=0;i<8;i++){
             url,
             method:'get',
           }).then(res=>{
+            const polygonsFeatues = {
+              type: "FeatureCollection",
+              features: [
+                // {
+                //   'type': 'Feature',
+                //   'properties': { 'name': '区域', tag:'all', tags:['消云','all']},
+                //   'geometry': {
+                //     'type': 'Polygon',
+                //     'coordinates': [[
+                //       [116.7, 39.95],
+                //       [117.0, 39.95],
+                //       [117.0, 39.75],
+                //       [116.7, 39.75],
+                //       [116.7, 39.95]
+                //     ]]
+                //   }
+                // }
+              ]
+            }
 
 
 
@@ -3891,24 +3550,36 @@ for(let i=0;i<8;i++){
               // ]
             }
 
+
             for(let i=0;i<规划航线数据[0].flyCasesList.length;i++){
-              // 规划航线数据[0].flyCasesList[i].nodeInfo&&规划航线数据[0].flyCasesList[i].nodeInfo.forEach((item:any,key:number)=>{
-              //   if(key==0){
-              //     机场去重.set(item.name,item)
-              //   }
-              //   if(['A点','B点','C点','D点'].includes(item.name)){
-              //     obj.features.push({
-              //       "type": "Feature",
-              //       "geometry": {
-              //         "type": "Point",
-              //         "coordinates": wgs84togcj02(item.longitude,item.latitude)
-              //       },
-              //       "properties": {
-              //         "label": item.name
-              //       }
-              //     })
-              //   }
-              // })
+              const nodeInfo = 规划航线数据[0].flyCasesList[i].nodeInfo
+              const feature = {
+                'type': 'Feature',
+                'properties': { 'name': '区域A', 'tag': 'all', tags:['消云', 'all'] },
+                'geometry': {
+                'type': 'Polygon',
+                'coordinates':[[]]
+                }
+              }
+              nodeInfo&&nodeInfo.forEach((item:any,key:number)=>{
+                if(key==0){
+                  机场去重.set(item.name,item)
+                }
+                obj.features.push(
+                  {
+                    "type": "Feature",
+                    "geometry": {
+                    "type": "Point",
+                    "coordinates": wgs84togcj02(Number(item.longitude),Number(item.latitude))
+                  },
+                  "properties": {
+                    "label": item.name
+                  }
+                })
+                feature.geometry.coordinates[0].push(wgs84togcj02(Number(item.longitude),Number(item.latitude)))
+              })
+
+              polygonsFeatues.features.push(feature)
               const workInfo = 规划航线数据[0].flyCasesList[i].workInfo
               if(workInfo){
                 obj.features.push({
@@ -3924,6 +3595,7 @@ for(let i=0;i<8;i++){
               }
             }
 
+
             map.addLayer({
               id: 'text-layer3',
               type: 'symbol',
@@ -3932,7 +3604,7 @@ for(let i=0;i<8;i++){
                 data:obj
               },
               layout: {
-                visibility:'none',
+                visibility:'visible',
                 'text-field': ['get', 'label'], // 从属性中获取文字
                 'text-size': 20,
                 'text-offset': [0, 0],
@@ -3965,8 +3637,37 @@ for(let i=0;i<8;i++){
             map.getSource('军用机场数据three_plan').setData(airportsFeatures)
 
 
+            map.addSource('polygons_threePlan', {
+              'type': 'geojson',
+              'data': polygonsFeatues
+            });
+            // 填充多边形
+            map.addLayer({
+              'id': 'polygon-fill_threePlan',
+              'type': 'fill',
+              'source': 'polygons_threePlan',
+              'layout': {
+                visibility:setting.人影.监控.规划航线?'visible':'none'
+              },
+              'paint': {
+                'fill-color': 'rgb(155,155,253)',
+                'fill-opacity': 0.5
+              },
+              filter: ['in', ['get', 'tag'], ['get', 'tags']]
+            });
 
-
+            // 添加边框
+              map.addLayer({
+                'id': 'polygon-outline_threePlan',
+                'type': 'line',
+                'source': 'polygons_threePlan',
+                'layout': {},
+                'paint': {
+                  'line-color': '#fff',
+                  'line-width': 1
+                },
+                filter: ['in', ['get', 'tag'], ['get', 'tags']]
+              });
 
 
 
@@ -3976,12 +3677,381 @@ for(let i=0;i<8;i++){
       }).catch(err=>{
         console.log(err)
       })
-    })
-    let abortController:AbortController;
-    function work(){
-      if(abortController){
-        abortController.abort()
+      {
+        if(map&&!map.getSource("trackSource")){
+          map.addSource("trackSource", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: trackFeatures,
+            },
+          });
+        }
+        if(map&&!map.getLayer("trackLayer")){
+          map.addLayer({
+            id: "trackLayer",
+            type: "symbol",
+            source: "trackSource",
+            layout: {
+              visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
+              // This icon is a part of the Mapbox Streets style.
+              // To view all images available in a Mapbox style, open
+              // the style in Mapbox Studio and click the "Images" tab.
+              // To add a new image to the style at runtime see
+              // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+              "icon-anchor": "center",
+              "icon-image": "trackSvg",
+              // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+              "icon-rotate": 0,
+              // "icon-offset": [10, 0],
+              "icon-rotation-alignment": "map",
+              "text-pitch-alignment": "map",
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              "text-field": ["get", "strName"],
+              "text-font": ["simkai"],
+              "text-size": 16,
+              "text-transform": "uppercase",
+              // "text-letter-spacing": 0.05,
+              "text-anchor": "bottom",
+              "text-line-height": 1,
+              "text-justify": "center",
+              "text-offset": [0, -1],
+              "text-ignore-placement": true,
+              "text-allow-overlap": true,
+              "text-rotation-alignment": "map",
+              "text-max-width": 400,
+            },
+            paint: {
+              "icon-opacity": ['get','opacity'],
+              "text-color": "white",
+              "text-halo-color": "black",
+              "text-halo-width": 1,
+            },
+            // filter:['==', ['get', 'icon'], 'airplaneMock']
+          });
+        }
+        if(map&&!map.getSource("adsbTrackSource")){
+          map.addSource("adsbTrackSource", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: adsbTrackFeatures,
+            },
+          });
+        }
+        if(map&&!map.getLayer("adsbTrackLayer")){
+          map.addLayer({
+            id: "adsbTrackLayer",
+            type: "symbol",
+            source: "adsbTrackSource",
+            layout: {
+              visibility: (setting.人影.监控.track&&setting.人影.监控.adsb) ? "visible" : "none",
+              // This icon is a part of the Mapbox Streets style.
+              // To view all images available in a Mapbox style, open
+              // the style in Mapbox Studio and click the "Images" tab.
+              // To add a new image to the style at runtime see
+              // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+              "icon-anchor": "center",
+              "icon-image": "trackSvg",
+              // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+              "icon-rotate": 0,
+              // "icon-offset": [10, 0],
+              "icon-rotation-alignment": "map",
+              "text-pitch-alignment": "map",
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              "text-field": ["get", "strName"],
+              "text-font": ["simkai"],
+              "text-size": 16,
+              "text-transform": "uppercase",
+              // "text-letter-spacing": 0.05,
+              "text-anchor": "bottom",
+              "text-line-height": 1,
+              "text-justify": "center",
+              "text-offset": [0, -1],
+              "text-ignore-placement": true,
+              "text-allow-overlap": true,
+              "text-rotation-alignment": "map",
+              "text-max-width": 400,
+            },
+            paint: {
+              "icon-opacity": 1,
+              "text-color": "white",
+              "text-halo-color": "black",
+              "text-halo-width": 1,
+            },
+          });
+        }
+        map.addLayer({
+          id: 'track',
+          type: 'line',
+          source: {
+            type:'geojson',
+            data:trackLinesFeaturesData
+          },
+          layout: {
+            visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
+            'line-join': 'round',
+            'line-cap': 'round'
+          },
+          paint: {
+            'line-color': '#0f0',
+            'line-width': 1
+          },
+          filter:
+          [
+            'all',
+            ['==', ['get', 'icon'], 'airplaneMock'],
+            ['==', ['get', 'active'], true]
+          ]
+        });
+        map.addLayer({
+          id: 'trackPoint',
+          type: 'symbol',
+          source: {
+            type:'geojson',
+            data:trackPointsFeaturesData
+          },
+          layout: {
+            visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
+            "icon-anchor": "center",
+            "icon-image": "trackSvg",
+            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+            "icon-rotate": 0,
+            // "icon-offset": [10, 0],
+            "icon-rotation-alignment": "map",
+            "text-pitch-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-field": '',
+            "text-font": ["simkai"],
+            "text-size": 16,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "bottom",
+            "text-line-height": 1,
+            "text-justify": "center",
+            "text-offset": [0, -1],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          filter:[
+            'all',
+            ['==', ['get', 'icon'], 'airplaneMock'],
+            ['==', ['get', 'active'], true],
+          ]
+        });
+        map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
+        map.addSource("adsb原数据", {type:'geojson',data:adsbData});
+        map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
+        map.addLayer({
+          id: "飞机",
+          type: "symbol",
+          source: "飞机原数据",
+          layout: {
+            "icon-image": ['get','icon'],
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            "icon-rotate": ["get", "fHeading"],
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            visibility: props.plane ? "visible" : "none",
+          },
+          paint:{
+            "icon-opacity":['get','opacity'],
+          },
+          filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
+        });
+        map.addLayer({
+          id: "飞机气泡图层",
+          type: "symbol",
+          source: "飞机原数据",
+          layout: {
+            "icon-image": "pop",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            // "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
+            'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
+            'text-field': ['get', 'label'],
+            // 'text-pitch-alignment':'map',
+            'icon-anchor': 'bottom',
+            'text-anchor': 'bottom',
+            'text-offset': [0, -1],
+            'text-font': ['simkai'],
+            'text-allow-overlap':true,
+            visibility: (setting.人影.监控.planeLabel)?"visible":'none',
+          },
+          paint:{
+            'icon-color':'#5272ba',
+            "icon-opacity":1,
+            'text-color':'white'
+          },
+          filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
+        });
+        map.addLayer({
+          id: "adsb气泡图层",
+          type: "symbol",
+          source: "adsb原数据",
+          layout: {
+            "icon-image": "pop",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            // "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
+            'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
+            'text-field': ['get', 'label'],
+            // 'text-pitch-alignment':'map',
+            'icon-anchor': 'bottom',
+            'text-anchor': 'bottom',
+            'text-offset': [0, -1],
+            'text-font': ['simkai'],
+            'text-allow-overlap':true,
+            visibility: (setting.人影.监控.planeLabel&&setting.人影.监控.adsb)?"visible":'none',
+          },
+          paint:{
+            'icon-color':'white',
+            "icon-opacity":1,
+          }
+        });
+        map.addLayer({
+          id: "adsb图层",
+          type: "symbol",
+          source: "adsb原数据",
+          layout: {
+            "icon-image": "adsb",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            "icon-rotate": ["get", "heading"],
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            visibility: setting.人影.监控.adsb?"visible":"none",
+          },
+          paint:{
+            "icon-opacity":1,
+          }
+        });
+        map.addLayer({
+          id: "模拟飞机图层",
+          type: "symbol",
+          source: "模拟飞机",
+          layout: {
+            "icon-image": "airplaneMock",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            "icon-rotate": ["get", "fHeading"],
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            visibility: props.plane ? "visible" : "none",
+          },
+        });
+        机场().then((res)=>{
+          if(!map)return
+          let data = res.data.results
+          let airports:any[] = [];
+          for (let i = 0; i < data.length; i++) {
+            airports.push({
+              type: "Feature",
+              properties: {
+                name: data[i].name,
+                code:data[i].code,
+                deg: 0,
+              },
+              geometry: {
+                type: "Point",
+                coordinates: wgs84togcj02(...fromDMS(data[i].strLonLat)),
+                // coordinates: [0, 0],
+              },
+            });
+          }
+          map.addSource("机场数据", {
+            type: "geojson",
+            data: {
+              type: "FeatureCollection",
+              features: airports,
+            },
+          });
+          map.addLayer({
+            id: "机场图层",
+            type: "symbol",
+            source: "机场数据",
+            layout: {
+              "icon-image": "airport",
+              // "icon-size": {
+              //   base: 1,
+              //   stops: [
+              //     [0, 0.5],
+              //     [22, 1],
+              //   ],
+              // },
+              "icon-rotate": ["get", "deg"],
+              "icon-rotation-alignment": "map",
+              "icon-allow-overlap": true,
+              "icon-ignore-placement": true,
+              visibility: props.airport?"visible":'none',
+              "text-pitch-alignment": "map",
+              "text-field": ["get", "name"],
+              "text-font": ["simkai"],
+              "text-size": 16,
+              "text-transform": "uppercase",
+              // "text-letter-spacing": 0.05,
+              "text-anchor": "left",
+              "text-line-height": 1,
+              "text-justify": "left",
+              "text-offset": [1, 0],
+              "text-ignore-placement": true,
+              "text-allow-overlap": true,
+              "text-rotation-alignment": "map",
+              "text-max-width": 400,
+            },
+            paint: {
+              "icon-opacity": 1,
+              "text-color": "white",
+              "text-halo-color": "black",
+              "text-halo-width": 1,
+            },
+          });
+        })
       }
+    })
+    let abortController:AbortController|null = null;
+    function work(){
+      abortController?.abort()
       abortController = new AbortController()
       当前作业查询(abortController.signal).then(async(res) => {
         zydFeaturesData.features.forEach(feature=>feature.properties.ubyStatus = '空闲')//确保手动移除后，能做空域申请
@@ -4112,6 +4182,10 @@ for(let i=0;i<8;i++){
         console.log('当前作业查询被终止')
       });
     }
+
+    taskTimer = setInterval(() => {
+      work();
+    }, 1000);
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -4828,6 +4902,12 @@ watch(()=>setting.人影.监控.zydTag,(tag)=>{
     if(map.getLayer('text-layer3')){
       map.setLayoutProperty('text-layer3','visibility','none')
     }
+    if(map.getLayer('polygon-outline_threePlan')){
+      map.setLayoutProperty('polygon-outline_threePlan','visibility','visible')
+    }
+    if(map.getLayer('polygon-fill_threePlan')){
+      map.setLayoutProperty('polygon-fill_threePlan','visibility','visible')
+    }
   }else if(tag=='西南主力量'){
     layers.forEach(layer=>{
       if(layer.id.startsWith('main_arrive')||layer.id.startsWith('main_workline')||layer.id.startsWith('main_leave')){
@@ -4866,6 +4946,12 @@ watch(()=>setting.人影.监控.zydTag,(tag)=>{
     }
     if(map.getLayer('text-layer3')){
       map.setLayoutProperty('text-layer3','visibility','none')
+    }
+    if(map.getLayer('polygon-outline_threePlan')){
+      map.setLayoutProperty('polygon-outline_threePlan','visibility','none')
+    }
+    if(map.getLayer('polygon-fill_threePlan')){
+      map.setLayoutProperty('polygon-fill_threePlan','visibility','none')
     }
   }else if(tag=='正西辅助力量'){
     layers.forEach(layer=>{
@@ -4906,6 +4992,12 @@ watch(()=>setting.人影.监控.zydTag,(tag)=>{
     if(map.getLayer('text-layer3')){
       map.setLayoutProperty('text-layer3','visibility','none')
     }
+    if(map.getLayer('polygon-outline_threePlan')){
+      map.setLayoutProperty('polygon-outline_threePlan','visibility','none')
+    }
+    if(map.getLayer('polygon-fill_threePlan')){
+      map.setLayoutProperty('polygon-fill_threePlan','visibility','none')
+    }
   }else{
     layers.forEach(layer=>{
       if(layer.id.startsWith('main_arrive')||layer.id.startsWith('main_workline')||layer.id.startsWith('main_leave')){
@@ -4944,6 +5036,12 @@ watch(()=>setting.人影.监控.zydTag,(tag)=>{
     }
     if(map.getLayer('text-layer3')){
       map.setLayoutProperty('text-layer3','visibility','none')
+    }
+    if(map.getLayer('polygon-outline_threePlan')){
+      map.setLayoutProperty('polygon-outline_threePlan','visibility','visible')
+    }
+    if(map.getLayer('polygon-fill_threePlan')){
+      map.setLayoutProperty('polygon-fill_threePlan','visibility','visible')
     }
   }
 })
@@ -5004,6 +5102,12 @@ watch(()=>setting.人影.监控.规划航线,()=>{
   }
   if(map.getLayer('text-layer3')){
     map.setLayoutProperty('text-layer3','visibility','none')
+  }
+  if(map.getLayer('polygon-outline_threePlan')){
+    map.setLayoutProperty('polygon-outline_threePlan','visibility',setting.人影.监控.规划航线?'visible':'none')
+  }
+  if(map.getLayer('polygon-fill_threePlan')){
+    map.setLayoutProperty('polygon-fill_threePlan','visibility',setting.人影.监控.规划航线?'visible':'none')
   }
 })
 watch(()=>setting.人影.监控.基本站,(val)=>{
@@ -5867,6 +5971,58 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
     background: #000;
     &>svg{
       fill: #000;
+    }
+  }
+}
+
+.meeting{
+  border-radius:4px;
+  box-sizing:border-box;
+  width:800px;
+  height:400px;
+  background:var(--el-bg-color-opacity-8);
+  border:1px solid var(--el-border-color);
+  position:absolute;
+  left:calc(50% - 400px);
+  top:calc(50% - 200px);
+  padding:4px;
+  z-index:9999;
+  cursor:move;
+  iframe{
+    width:100%;
+    height:100%;
+    user-select:none;
+  }
+
+  &:has(iframe:hover) .close-btn{
+    display: flex;
+  }
+  .close-btn {
+    right:4px;
+    top:4px;
+    position: absolute;
+    width:20px;
+    height:20px;
+    justify-content: center;
+    align-items:center;
+    font-size: 0.16rem;
+    z-index:999;
+    color:white;
+    display: none;
+    cursor:pointer;
+    &:hover {
+      display: flex;
+      .el-icon {
+        color: #ff4d4f;
+      }
+    }
+    &:active {
+      transform: rotateX(180deg);
+      transition: transform 0.3s;
+      transition-timing-function: ease-in-out;
+      .el-icon {
+          color: #d32f2f;
+      }
     }
   }
 }

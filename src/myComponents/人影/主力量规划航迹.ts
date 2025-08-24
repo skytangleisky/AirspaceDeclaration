@@ -1,5 +1,4 @@
 export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84togcj02){
-
   const polygonsFeatues = {
     type: "FeatureCollection",
     features: new Array<any>([
@@ -36,7 +35,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
     'paint': {
       'fill-color': 'rgb(155,155,253)',
       'fill-opacity': 0.5
-    }
+    },
+    filter: ['in', ['get', 'tag'], ['get', 'tags']]
   });
 
   // 添加边框
@@ -49,6 +49,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
   //     'line-color': '#fff',
   //     'line-width': 1
   //   }
+  //   filter: ['in', ['get', 'tag'], ['get', 'tags']]
   // });
 
 
@@ -109,6 +110,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       "text-halo-color": "black",
       "text-halo-width": 1,
     },
+    filter: ['in', ['get', 'tag'], ['get', 'tags']]
   });
 
 
@@ -118,6 +120,9 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
 
     const worklineData = {
       type: 'Feature',
+      properties:{
+        tag:'all', tags:['西南主力量','all']
+      },
       geometry: {
         type: 'LineString',
         coordinates: new Array<[number,number]>()
@@ -126,6 +131,9 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
 
     const arriveData = {
       type: 'Feature',
+      properties:{
+        tag:'all', tags:['西南主力量','all']
+      },
       geometry: {
         type: 'LineString',
         coordinates: new Array<[number,number]>()
@@ -133,6 +141,9 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
     }
     const leaveData = {
       type: 'Feature',
+      properties:{
+        tag:'all', tags:['西南主力量','all']
+      },
       geometry: {
         type: 'LineString',
         coordinates: new Array<[number,number]>()
@@ -153,7 +164,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       paint: {
         'line-color': 'rgb(228, 208, 10)',
         'line-width': 1
-      }
+      },
+      filter: ['in', ['get', 'tag'], ['get', 'tags']]
     });
     map.addLayer({
       id: 'main_leave-layer'+i,
@@ -169,7 +181,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       paint: {
         'line-color': '#5555ff',
         'line-width': 1
-      }
+      },
+      filter: ['in', ['get', 'tag'], ['get', 'tags']]
     });
 
     map.addLayer({
@@ -186,7 +199,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       paint: {
         'line-color': '#ff0000',
         'line-width': 2
-      }
+      },
+      filter: ['in', ['get', 'tag'], ['get', 'tags']]
     });
 
     const trajectoryInfo = 规划航线数据[0].flyCasesList[i].trajectoryInfo
@@ -239,7 +253,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
   for(let i=0;i<规划航线数据[0].flyCasesList.length;i++){
     const feature = {
       'type': 'Feature',
-      'properties': { 'name': '区域' },
+      'properties': { 'name': '区域', tag:'all', tags:['西南主力量','all']},
       'geometry': {
         'type': 'Polygon',
         'coordinates': [[
@@ -258,19 +272,21 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       const C = 规划航线数据[0].flyCasesList[i].nodeInfo[3]
       const D = 规划航线数据[0].flyCasesList[i].nodeInfo[4]
       机场去重.set(O.name,O);
-      // [A,B,C,D].forEach(item=>{
-      //   obj.features.push({
-      //     "type": "Feature",
-      //     "geometry": {
-      //       "type": "Point",
-      //       "coordinates": wgs84togcj02(item.longitude,item.latitude)
-      //     },
-      //     "properties": {
-      //       "label": item.name
-      //     }
-      //   })
-      // })
       if(O.routeName=='无人机'){
+        [A,B,C,D].forEach(item=>{
+          obj.features.push({
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": wgs84togcj02(item.longitude,item.latitude)
+            },
+            "properties": {
+              tag:'all',
+              tags:['西南主力量','all'],
+              "label": item.name
+            }
+          })
+        })
         feature.geometry.coordinates = [[
           [A.longitude, A.latitude],
           [B.longitude, B.latitude],
@@ -279,6 +295,20 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
           [A.longitude, A.latitude]
         ]]
       }else{
+        [A,B,C,D].forEach(item=>{
+          obj.features.push({
+            "type": "Feature",
+            "geometry": {
+              "type": "Point",
+              "coordinates": wgs84togcj02(item.longitude,item.latitude)
+            },
+            "properties": {
+              tag:'all',
+              tags:['西南主力量','all'],
+              "label": item.name
+            }
+          })
+        })
         feature.geometry.coordinates = [[
           [A.longitude, A.latitude],
           [C.longitude, C.latitude],
@@ -301,6 +331,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
           "coordinates": wgs84togcj02(Number(workInfo.longitude),Number(workInfo.latitude))
         },
         "properties": {
+          tag:'all',
+          tags:['西南主力量','all'],
           "label": workInfo.routeName
         }
       })
@@ -325,7 +357,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
     },
     paint: {
       'text-color': '#f00'
-    }
+    },
+    filter: ['in', ['get', 'tag'], ['get', 'tags']]
   });
 
 
@@ -338,6 +371,8 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
         // code: 机场名称.data[i].位置,
         armyType:item.armyType,
         deg: 0,
+        tag:'all',
+        tags:['西南主力量','all']
       },
       geometry: {
         type: "Point",

@@ -20,6 +20,7 @@ service.interceptors.request.use(
     //   // please modify it according to the actual situation
     //   config.headers['X-Token'] = getToken()
     // }
+    config.headers['Authorization'] = localStorage.getItem('access_token')
     return config
   },
   error => {
