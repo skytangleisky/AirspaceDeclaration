@@ -57,6 +57,8 @@
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
           <li v-if="menuType=='批量操作'" @click="显示射界()">显示射界</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
+          <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
+          <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <!-- <li>查看作业点信息</li> -->
           <!-- <li>人工批复</li>
           <li>人工移除</li>
@@ -330,36 +332,8 @@ function 显示射界(){
       list.push(station)
     }
   }
-
-
-  circleFeaturesData.features = circleFeaturesData.features.map((item: any) => {
-    if (list.filter((it:any)=>it.strID == item.properties.strID).length > 0
-      ||item.properties.ubyStatus == '作业申请待批复'
-      ||item.properties.ubyStatus == '作业批准'
-      ||item.properties.ubyStatus == '作业开始'
-    ) {
-      item.properties.opacity = 0.5;
-    } else {
-      item.properties.opacity = 0;
-    }
-    return item;
-  });
-  forewarningFeaturesData.features = forewarningFeaturesData.features.map((item: any) => {
-    if (list.filter((it:any)=>it.strID == item.properties.strID).length > 0
-      ||item.properties.ubyStatus == '作业申请待批复'
-      ||item.properties.ubyStatus == '作业批准'
-      ||item.properties.ubyStatus == '作业开始'
-    ) {
-      item.properties.opacity = 0.5
-    } else {
-      item.properties.opacity = 0
-    }
-    return item;
-  });
-  source = map.getSource("最大射程source");
-  source?.setData(circleFeaturesData);
-  source = map.getSource("警戒圈source");
-  source?.setData(forewarningFeaturesData);
+  list.forEach((item:any)=>map.setFeatureState({source:'最大射程source',id:item.strID},{opacity:0.5}))
+  list.forEach((item:any)=>map.setFeatureState({source:'警戒圈source',id:item.strID},{opacity:0.5}))
 }
 let 批量批复 = () => {
   let list = []
@@ -410,6 +384,19 @@ const 手动移除=async () => {
       message: '移除成功',
       type: 'success',
     })
+    map.setFeatureState({source:'最大射程source',id:properties.strID},{
+      ubyStatus:'空闲',
+      opacity:0
+    })
+    map.setFeatureState({source:'警戒圈source',id:properties.strID},{
+      ubyStatus:'空闲',
+      opacity:0
+    })
+    map.setFeatureState({source:'zydSource',id:properties.strID},{
+      ubyStatus:'空闲',
+      opacity:0
+    })
+    station.人影界面被选中的设备 = ''
   }).catch(e=>{
     ElMessage({
       message: '移除失败',
@@ -1048,6 +1035,51 @@ onMounted(async() => {
   }
   map.on("load", async () => {
     if(!map)return;
+
+
+/*
+      map.addSource('pointSource', {
+        type: 'geojson',
+        promoteId: 'strID',
+        data: {
+          type: 'FeatureCollection',
+          features: [{
+            type: 'Feature',
+            properties: {
+              strID:1
+            },
+            geometry: { type: 'Point', coordinates: [116.4, 39.9] }
+          }]
+        }
+      });
+
+      map.addLayer({
+        id: 'pointLayer',
+        type: 'circle',
+        source: 'pointSource',
+        paint: {
+          'circle-radius': 10,
+          'circle-color': [
+            'case',
+            ['boolean', ['feature-state', 'active'], false],
+            'red',
+            'gray'
+          ]
+        }
+      });
+
+      document.onclick = () => {
+        const state = map.getFeatureState({ source: 'pointSource', id: 1 })
+        console.log(state)
+        map.setFeatureState(
+          { source: 'pointSource', id: 1 },
+          { active:!state.active }
+        );
+      };
+*/
+
+
+
     map.addLayer({
       "id": "routeLineLayer",
       "type": "raster",
@@ -2433,6 +2465,21 @@ for(let i=0;i<8;i++){
     // getTodayRecords().then((res:any)=>{
     //   planProps.今日作业记录 = res.data.data;
     // })
+    if(!map.getSource("最大射程source")){
+      map.addSource("最大射程source", {
+        type: "geojson",
+        data: circleFeaturesData,
+        promoteId:'strID'
+      });
+    }
+
+          if(!map.getSource("警戒圈source")){
+            map.addSource("警戒圈source", {
+              type: "geojson",
+              data: forewarningFeaturesData,
+              promoteId:'strID'
+            });
+          }
     await 作业点().then(async(res) => {
       if(!map)return
       dialogOptions.menus = res.data.results;
@@ -2520,11 +2567,13 @@ for(let i=0;i<8;i++){
             );
             const sectorPolygon = turf.polygon([sectorPoints], {
               strID: item.strID,
-              opacity:0,
-              ubyStatus:'空闲',
               tags:item.tags,
-              tag:'all'
+              tag:'all',
             });
+            map.setFeatureState({source:'最大射程source',id:item.strID},{
+              ubyStatus:'空闲',
+              opacity:0,
+            })
             circleFeaturesData.features.push(sectorPolygon);
           } else {
             const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
@@ -2549,11 +2598,13 @@ for(let i=0;i<8;i++){
             );
             const sectorPolygon = turf.polygon([sectorPoints], {
               strID: item.strID,
-              opacity:0,
-              ubyStatus:'空闲',
               tags:item.tags,
-              tag:'all'
+              tag:'all',
             });
+            map.setFeatureState({source:'最大射程source',id:item.strID},{
+              ubyStatus:'空闲',
+              opacity:0,
+            })
             sectorPolygon.id = '空域'+item.strID
             circleFeaturesData.features.push(sectorPolygon);
           }
@@ -2573,21 +2624,20 @@ for(let i=0;i<8;i++){
           );
           const sectorPolygon = turf.polygon([sectorPoints], {
             strID: item.strID,
-            opacity:0,
+            ubyStatus:'空闲',
             tags:item.tags,
-            tag:'all'
+            tag:'all',
           });
+          map.setFeatureState({source:'警戒圈source',id:item.strID},{
+            ubyStatus:'空闲',
+            opacity:0,
+          })
           sectorPolygon.id = '警戒圈' + item.strID
           forewarningFeaturesData.features.push(sectorPolygon);
         }
       }
-      if(!map.getSource("最大射程source")){
-        map.addSource("最大射程source", {
-          type: "geojson",
-          data: circleFeaturesData,
-          promoteId:'strID'
-        });
-      }
+      map.getSource('警戒圈source').setData(forewarningFeaturesData)
+      map.getSource('最大射程source').setData(circleFeaturesData)
       if(!map.getLayer('最大射程-fill')){
         map.addLayer({
           id: "最大射程-fill",
@@ -2599,7 +2649,7 @@ for(let i=0;i<8;i++){
           paint: {
             "fill-color": [
               "match",
-              ["get", "ubyStatus"],
+              ['coalesce',["feature-state", "ubyStatus"],'空闲'],
               '作业申请待批复','#fa0',
               '作业批准','#00f',
               '作业开始','#f00',
@@ -2608,7 +2658,7 @@ for(let i=0;i<8;i++){
               '空闲','#888',
               '#fff'
             ],
-            "fill-opacity": ['get','opacity'],
+            "fill-opacity": ['coalesce',['feature-state','opacity'],0],
           },
         });
       }
@@ -2623,7 +2673,7 @@ for(let i=0;i<8;i++){
           paint: {
             "line-color": [
               "match",
-              ["get", "ubyStatus"],
+              ['coalesce',["feature-state", "ubyStatus"],'空闲'],
               '作业申请待批复','#fa0',
               '作业批准','#00f',
               '作业开始','#f00',
@@ -2633,16 +2683,9 @@ for(let i=0;i<8;i++){
               '#fff'
             ],
             "line-width": 1,
-            "line-opacity": ['get','opacity'],
+            "line-opacity": ['coalesce',['feature-state','opacity'],0]
             // "line-dasharray": [1, 1],
           },
-        });
-      }
-      if(!map.getSource("警戒圈source")){
-        map.addSource("警戒圈source", {
-          type: "geojson",
-          data: forewarningFeaturesData,
-          promoteId:'strID'
         });
       }
       if(!map.getLayer("预警圈-line")){
@@ -2656,7 +2699,7 @@ for(let i=0;i<8;i++){
           paint: {
             "line-color": [
               "match",
-              ["get", "ubyStatus"],
+              ['coalesce',["feature-state", "ubyStatus"],'空闲'],
               '作业申请待批复','#fa0',
               '作业批准','#00f',
               '作业开始','#f00',
@@ -2665,7 +2708,7 @@ for(let i=0;i<8;i++){
               '空闲','#82a9f5',
               '#fff'
             ],
-            "line-opacity": ['get','opacity'],
+            "line-opacity": ['coalesce',['feature-state','opacity'],0],
             "line-width": 2,
             "line-dasharray": [4, 2],
           },
@@ -2928,17 +2971,20 @@ for(let i=0;i<8;i++){
         const feature = fs[0];
         station.人影界面被选中的设备 = feature.properties.strID;
         marker.setLngLat(feature.geometry.coordinates);
-        if(feature.properties.ubyStatus=='作业申请待批复'){
+        const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
+        if(state.ubyStatus=='作业申请待批复'){
           menuType.value = '人工批复'
+        }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'){
+          menuType.value = '默认'
         }else{
           menuType.value = '地面作业申请'
         }
         $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
         $(stationMenuRef.value as HTMLDivElement).removeData();
-        $(stationMenuRef.value as HTMLDivElement).data(feature.properties);
+        $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
       });
       map.on("contextmenu", contextmenuFunc);
-      map.on("click", "zydLayer", (e: any) => {
+      map.on("mousedown", "zydLayer", (e: any) => {
         const fs = map.queryRenderedFeatures(e.point, {
           layers: ["zydLayer"],
         });
@@ -2947,53 +2993,40 @@ for(let i=0;i<8;i++){
         }
         const feature = fs[0];
         station.人影界面被选中的设备 = feature.properties.strID;
-        active()
       });
       map.on("mousedown", (e) => {
         // console.log([e.lngLat.lng,e.lngLat.lat])
         $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+        const fs = map.queryRenderedFeatures(e.point, {
+          layers: ["zydLayer"],
+        });
+        if(fs.length){
+          return;
+        }
+        if(e.originalEvent.button==0){
+          if(station.人影界面被选中的设备 != ''){
+            station.人影界面被选中的设备 = ''
+          }else{
+            active()
+          }
+        }
       });
       active = () => {
-        zydFeaturesData.features = zydFeaturesData.features.map((item: any) => {
-          // if (item.properties.id == station.人影界面被选中的设备) {
-          //   item.properties["icon-image"] = "projectile-orange";
-          // } else {
-          //   item.properties["icon-image"] = "projectile-orange";
-          // }
-          return item;
-        });
-        let source = map.getSource("zydSource");
-        source.setData(zydFeaturesData);
-
-        circleFeaturesData.features = circleFeaturesData.features.map((item: any) => {
-          if (item.properties.strID == station.人影界面被选中的设备
-            ||item.properties.ubyStatus == '作业申请待批复'
-            ||item.properties.ubyStatus == '作业批准'
-            ||item.properties.ubyStatus == '作业开始'
-          ) {
-            item.properties.opacity = 0.5;
-          } else {
-            item.properties.opacity = 0;
-          }
-          return item;
-        });
-        forewarningFeaturesData.features = forewarningFeaturesData.features.map((item: any) => {
-          if (item.properties.strID == station.人影界面被选中的设备
-            ||item.properties.ubyStatus == '作业申请待批复'
-            ||item.properties.ubyStatus == '作业批准'
-            ||item.properties.ubyStatus == '作业开始'
-          ) {
-            item.properties.opacity = 0.5
-          } else {
-            item.properties.opacity = 0
-          }
-          return item;
-        });
-        source = map.getSource("最大射程source");
-        source?.setData(circleFeaturesData);
-        source = map.getSource("警戒圈source");
-        source?.setData(forewarningFeaturesData);
-      };
+        circleFeaturesData.features.forEach((item:any)=>{
+          const state = map.getFeatureState({source:'最大射程source',id:item.properties.strID})
+          map.setFeatureState({source:'最大射程source',id:item.properties.strID},{
+          opacity:item.properties.strID == station.人影界面被选中的设备
+            ||state.ubyStatus == '作业申请待批复'
+            ||state.ubyStatus == '作业批准'
+            ||state.ubyStatus == '作业开始'?0.5:0})})
+        forewarningFeaturesData.features.forEach((item:any)=>{
+          const state = map.getFeatureState({source:'警戒圈source',id:item.properties.strID})
+          map.setFeatureState({source:'警戒圈source',id:item.properties.strID},{
+          opacity:item.properties.strID == station.人影界面被选中的设备
+            ||state.ubyStatus == '作业申请待批复'
+            ||state.ubyStatus == '作业批准'
+            ||state.ubyStatus == '作业开始'?0.5:0})})
+      }
       await getPlanPath().then(async(data)=>{
         if(!map)return
 
@@ -4054,9 +4087,9 @@ for(let i=0;i<8;i++){
       abortController?.abort()
       abortController = new AbortController()
       当前作业查询(abortController.signal).then(async(res) => {
-        zydFeaturesData.features.forEach(feature=>feature.properties.ubyStatus = '空闲')//确保手动移除后，能做空域申请
-        circleFeaturesData.features.forEach(feature=>feature.properties.ubyStatus = '空闲')//确保手动移除后，射界恢复默认颜色
-        forewarningFeaturesData.features.forEach(feature=>feature.properties.ubyStatus = '空闲')//确保手动移除后，警戒圈恢复默认颜色
+        zydFeaturesData.features.forEach(feature=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
+        circleFeaturesData.features.forEach(feature=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
+        forewarningFeaturesData.features.forEach(feature=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
         //实现空域闪烁效果
         function star(feature:any,row:any){
           if(row.ubyStatus == 75){
@@ -4088,21 +4121,17 @@ for(let i=0;i<8;i++){
             row.ubyStatus = 100
           }
           //传入workID
-          zydFeaturesData.features.forEach((item,i)=>{
-            if(item.properties.strID == row.strZydID){
-              item.properties.strWorkID = row.strWorkID;
-              item.properties.workBeginTime = moment().format('HH:mm:ss')
-              item.properties.ubyStatus = status2value(row.ubyStatus)
-            }
-          })
+          map.setFeatureState({source:'zydSource',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),workBeginTime:moment().format('HH:mm:ss'),strWorkID:row.strWorkID})
           for (let i = 0; i < circleFeaturesData.features.length; i++) {
             if (circleFeaturesData.features[i].properties.strID == row.strZydID) {
               Object.assign(circleFeaturesData.features[i].properties,row)
               circleFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
+              const state = map.getFeatureState({source:'最大射程source',id:row.strZydID})
               if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
-                circleFeaturesData.features[i].properties.opacity = 0.5;
+                state.opacity = 0.5;
               }
               // star(circleFeaturesData.features[i],row)
+              map.setFeatureState({source:'最大射程source',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),opacity:state.opacity})
               const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
                 number,
                 number
@@ -4151,14 +4180,16 @@ for(let i=0;i<8;i++){
           for(let i=0;i<forewarningFeaturesData.features.length;i++){
             if(forewarningFeaturesData.features[i].properties.strID == row.strZydID){
               forewarningFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
+              const state = map.getFeatureState({source:'警戒圈source',id:row.strZydID})
               if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
-                forewarningFeaturesData.features[i].properties.opacity = 0.5;
+                state.opacity = 0.5;
               }
               // star(forewarningFeaturesData.features[i],row)
+              map.setFeatureState({source:'警戒圈source',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),opacity:state.opacity})
             }
           }
         }
-        map?.getSource('zydSource').setData(zydFeaturesData)
+        // map?.getSource('zydSource').setData(zydFeaturesData)
         const tmp = await 历史作业查询()
         planProps.今日作业记录.splice(0,planProps.今日作业记录.length,...tmp.data.results);
         for(let i=planProps.今日作业记录.length-1;i>=0;i--){
@@ -4174,15 +4205,10 @@ for(let i=0;i<8;i++){
             row.ubyStatus = 100
           }
         }
-        let source1 = map?.getSource("最大射程source");
-        source1?.setData(circleFeaturesData);
-        let source2 = map?.getSource("警戒圈source");
-        source2?.setData(forewarningFeaturesData);
       }).catch(()=>{
         console.log('当前作业查询被终止')
       });
     }
-
     taskTimer = setInterval(() => {
       work();
     }, 1000);
@@ -4701,6 +4727,14 @@ for(let i=0;i<8;i++){
   });
 
   map.on('mouseleave', '飞机', () => {
+    map.getCanvas().style.cursor = 'default';
+  });
+
+  map.on('mouseenter', 'zydLayer', () => {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', 'zydLayer', () => {
     map.getCanvas().style.cursor = 'default';
   });
   map.on('click','飞机',function(e){

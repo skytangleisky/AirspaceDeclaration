@@ -49,13 +49,13 @@
                 <el-row>
                     <el-col :span="12" >
                         <span class="label">炮弹用量</span>
-                        <el-input-number v-model="data.numPD" :min="0" :max="99" style="width:100%">
+                        <el-input-number v-model="data.numPD" :min="0" :max="999" style="width:100%">
                             <template #suffix><span>发</span></template>
                         </el-input-number>
                     </el-col>
                     <el-col :span="12" >
                         <span class="label">火箭用量</span>
-                        <el-input-number v-model="data.numHJ" :min="0" :max="99" style="width:100%">
+                        <el-input-number v-model="data.numHJ" :min="0" :max="999" style="width:100%">
                             <template #suffix><span>发</span></template>
                         </el-input-number>
                     </el-col>
@@ -249,6 +249,7 @@ const confirm = async(data) => {
         data.isquxianconfirmed = 1
     }
     delete data.strZydIDName
+    data.recordTm = moment().format('YYYY-MM-DD HH:mm:ss')
     修改完成信息(data).then(async(res)=>{
         delete data.isquxianconfirmed
         await 增加完成信息确认(data)
@@ -288,7 +289,7 @@ const data = defineModel('data',{
         beforeWeather:0,//15
         afterWeather:7,//16
         workEffect:0,//17
-        recordTm:"",//18
+        recordTm:moment().format('YYYY-MM-DD HH:mm:ss'),//18
         isconfirmed:0,//19
         isquxianconfirmed:1,//20
     })

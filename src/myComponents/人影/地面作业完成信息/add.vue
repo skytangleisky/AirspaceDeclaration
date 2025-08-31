@@ -66,13 +66,13 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="12" >
                         <span class="label">炮弹用量</span>
-                        <el-input-number v-model="data.numPD" :min="0" :max="99" style="width:100%">
+                        <el-input-number v-model="data.numPD" :min="0" :max="999" style="width:100%">
                             <template #suffix><span>发</span></template>
                         </el-input-number>
                     </el-col>
                     <el-col :span="12" >
                         <span class="label">火箭用量</span>
-                        <el-input-number v-model="data.numHJ" :min="0" :max="99" style="width:100%">
+                        <el-input-number v-model="data.numHJ" :min="0" :max="999" style="width:100%">
                             <template #suffix><span>发</span></template>
                         </el-input-number>
                     </el-col>

@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "allowJs": true,
+    "baseUrl": ".",
+    "target": "esnext",
+    "useDefineForClassFields": true,
+    "noEmit":true,
+    "allowImportingTsExtensions": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "strict": true,
+    "jsx": "preserve",
+    "jsxImportSource": "vue",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "sourceMap": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "lib": ["esnext", "dom"],
+    "paths": {
+      "pinia": [
+        "./packages/pinia/src/index.d.ts"
+      ],
+      "~/*": ["src/*"]
+    },
+    "declarationDir":"lib/types",
+    "outDir": "lib",
+    "skipLibCheck": true,
+    "types": ["vite/client", "@types/jquery"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "lib"]
+}

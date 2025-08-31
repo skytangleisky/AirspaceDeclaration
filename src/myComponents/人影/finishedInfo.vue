@@ -199,6 +199,7 @@ watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查
   currentController = new AbortController()
   完成信息查询({page:pageOption.page,size:pageOption.size,range:range.value,zydID:zydID.value,simple:0},currentController.signal).then(res=>{
     pageOption.total = res.data.total
+    // console.log('完成信息查询',res.data.results)
     tableData.splice(0,tableData.length,...res.data.results)
   }).catch(e=>{
 
@@ -260,6 +261,7 @@ const 恢复 = (row) => {
   revertTime = Date.now()
   row.isconfirmed = 0
   delete row.strZydIDName
+  console.log('恢复',row)
   修改完成信息(row).then(async(res)=>{
     await 删除完成信息确认(row.workID)
     触发完成信息查询.value = Date.now()

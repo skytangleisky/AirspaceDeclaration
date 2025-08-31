@@ -33,7 +33,7 @@ export function airspaceApply(data){
 //     "iconImage": "projectile-white",
 //     "v-51ca6517": ""
 // }
-console.log(data)
+// console.log(data)
   let pos = fromDMS(data.strPos)
   let targetData = {
     "zydID": data.strID,
