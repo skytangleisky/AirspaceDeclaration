@@ -394,6 +394,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        色标:new Array<{value:number,color:string}>(),
         规划航线:true,
         基本站:false,
         一般站:false,
@@ -435,6 +436,9 @@ export const useSettingStore = defineStore('setting',{
         zdz:false,
         test:false,//消云试验点
         zydTag:'all',//用于过滤作业点显示
+        正西:true,
+        西北:false,
+        西南:false,
         bearing:0,
         pitch:0,
         routeLine:true,
@@ -502,7 +506,7 @@ export const useSettingStore = defineStore('setting',{
         showColorSelector:-1,
         loadmap:false,
         红外云图:false,组合反射率:false,CMPAS降水融合3km:false,睿图雷达:false,真彩图:false,
-        卫星云图时间:'加载中',组合反射率时间:'加载中',CMPAS降水融合3km时间:'加载中',睿图雷达时间:'加载中',真彩图时间:'加载中',
+        红外云图时间:'加载中',组合反射率时间:'加载中',CMPAS降水融合3km时间:'加载中',睿图雷达时间:'加载中',真彩图时间:'加载中',
         disappear:false,//右侧菜单
         prevPlanRequestShow:false,
         prevPlanRequestData:{

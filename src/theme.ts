@@ -3,13 +3,13 @@ const ThemeArray = ['dark', 'light', 'auto'] as const
 type Theme = (typeof ThemeArray)[number]
 let defaultTheme:Theme = 'auto'
 const _isDark = ref(false)
-const theme = ref<Theme>(localStorage.getItem('theme') as Theme || defaultTheme)
 for(let i=0;i<document.documentElement.classList.length;i++){
   if(ThemeArray.includes(document.documentElement.classList[i] as Theme)){
     defaultTheme = document.documentElement.classList[i] as Theme
     break;
   }
 }
+const theme = ref<Theme>(localStorage.getItem('theme') as Theme || defaultTheme)
 const match = matchMedia('(prefers-color-scheme: dark)')
 if(theme.value === 'auto'){
   auto()

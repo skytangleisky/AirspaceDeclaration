@@ -22,14 +22,14 @@
             </el-checkbox>
 
 
-            <el-checkbox v-model="西南主力量">
-                <div style="display: flex;align-items: center;">西南主力量</div>
+            <el-checkbox v-model="setting.人影.监控.正西">
+                <div style="display: flex;align-items: center;">正西</div>
             </el-checkbox>
-            <el-checkbox v-model="正西辅助力量">
-                <div style="display: flex;align-items: center;">正西辅助力量</div>
+            <el-checkbox v-model="setting.人影.监控.西北">
+                <div style="display: flex;align-items: center;">西北</div>
             </el-checkbox>
-            <el-checkbox v-model="消云">
-                <div style="display: flex;align-items: center;">消云</div>
+            <el-checkbox v-model="setting.人影.监控.西南">
+                <div style="display: flex;align-items: center;">西南</div>
             </el-checkbox>
 
             <el-checkbox v-model="setting.人影.监控.test">
@@ -79,42 +79,42 @@
             }
         }
     })
-    const 西南主力量 = computed({
-        get(){
-            return setting.人影.监控.zydTag == '西南主力量'
-        },
-        set(val){
-            if(val){
-                setting.人影.监控.zydTag = '西南主力量'
-            }else{
-                setting.人影.监控.zydTag = 'all'
-            }
-        }
-    })
-    const 正西辅助力量 = computed({
-        get(){
-            return setting.人影.监控.zydTag == '正西辅助力量'
-        },
-        set(val){
-            if(val){
-                setting.人影.监控.zydTag = '正西辅助力量'
-            }else{
-                setting.人影.监控.zydTag = 'all'
-            }
-        }
-    })
-    const 消云 = computed({
-        get(){
-            return setting.人影.监控.zydTag == '消云'
-        },
-        set(val){
-            if(val){
-                setting.人影.监控.zydTag = '消云'
-            }else{
-                setting.人影.监控.zydTag = 'all'
-            }
-        }
-    })
+    // const 西南主力量 = computed({
+    //     get(){
+    //         return setting.人影.监控.zydTag == '西南主力量'
+    //     },
+    //     set(val){
+    //         if(val){
+    //             setting.人影.监控.zydTag = '西南主力量'
+    //         }else{
+    //             setting.人影.监控.zydTag = 'all'
+    //         }
+    //     }
+    // })
+    // const 正西辅助力量 = computed({
+    //     get(){
+    //         return setting.人影.监控.zydTag == '正西辅助力量'
+    //     },
+    //     set(val){
+    //         if(val){
+    //             setting.人影.监控.zydTag = '正西辅助力量'
+    //         }else{
+    //             setting.人影.监控.zydTag = 'all'
+    //         }
+    //     }
+    // })
+    // const 消云 = computed({
+    //     get(){
+    //         return setting.人影.监控.zydTag == '消云'
+    //     },
+    //     set(val){
+    //         if(val){
+    //             setting.人影.监控.zydTag = '消云'
+    //         }else{
+    //             setting.人影.监控.zydTag = 'all'
+    //         }
+    //     }
+    // })
 </script>
 
 <style scoped lang="scss">

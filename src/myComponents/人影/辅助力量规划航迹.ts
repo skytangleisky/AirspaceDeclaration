@@ -1,4 +1,6 @@
-export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84togcj02){
+import { vi } from "element-plus/es/locale";
+
+export function 辅助力量规划航迹(map,规划航线数据,setting,wgs84togcj02){
   const polygonsFeatues = {
     type: "FeatureCollection",
     features: new Array<any>([
@@ -19,18 +21,18 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
     ])
   }
 
-  map.addSource('polygons', {
+  map.addSource('standby_polygons', {
     'type': 'geojson',
     'data': polygonsFeatues
   });
 
   // 填充多边形
   map.addLayer({
-    'id': 'polygon-fill',
+    'id': 'standby_polygon-fill',
     'type': 'fill',
-    'source': 'polygons',
+    'source': 'standby_polygons',
     'layout': {
-      visibility:setting.人影.监控.规划航线&&setting.人影.监控.正西?'visible':'none'
+      visibility:setting.人影.监控.规划航线&&setting.人影.监控.西北?'visible':'none'
     },
     'paint': {
       'fill-color': 'rgb(155,155,253)',
@@ -61,14 +63,14 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       type: "FeatureCollection",
       features: new Array(),
     };
-  map.addSource("军用机场数据_main", {
+  map.addSource("军用机场数据standby", {
     type: "geojson",
     data: airportsFeatures,
   });
   map.addLayer({
-    id: "军用机场图层_main",
+    id: "军用机场图层standby",
     type: "symbol",
-    source: "军用机场数据_main",
+    source: "军用机场数据standby",
     layout: {
       "icon-image": [
         'match',
@@ -88,7 +90,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       "icon-rotation-alignment": "map",
       "icon-allow-overlap": true,
       "icon-ignore-placement": true,
-      visibility:setting.人影.监控.规划航线&&setting.人影.监控.正西?'visible':'none',
+      visibility:setting.人影.监控.规划航线&&setting.人影.监控.西北?'visible':'none',
       "text-pitch-alignment": "map",
       "text-field": ["get", "name"],
       "text-font": ["simkai"],
@@ -151,7 +153,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
     }
 
     map.addLayer({
-      id: 'main_arrive-layer'+i,
+      id: 'standby_arrive-layer'+i,
       type: 'line',
       source: {
         type: 'geojson',
@@ -168,13 +170,14 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       filter: ['in', ['get', 'tag'], ['get', 'tags']]
     });
     map.addLayer({
-      id: 'main_leave-layer'+i,
+      id: 'standby_leave-layer'+i,
       type: 'line',
       source: {
         type: 'geojson',
         data: arriveData
       },
       layout: {
+        visibility:setting.人影.监控.规划航线&&setting.人影.监控.西南?'visible':'none',
         'line-join': 'round',
         'line-cap': 'round'
       },
@@ -186,13 +189,14 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
     });
 
     map.addLayer({
-      id: 'main_workline-layer'+i,
+      id: 'standby_workline-layer'+i,
       type: 'line',
       source: {
         type: 'geojson',
         data: worklineData
       },
       layout: {
+        visibility:setting.人影.监控.规划航线&&setting.人影.监控.西南?'visible':'none',
         'line-join': 'round',
         'line-cap': 'round'
       },
@@ -227,9 +231,9 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
 
 
 
-    map.getSource('main_arrive-layer'+i).setData(arriveData)
-    map.getSource('main_workline-layer'+i).setData(worklineData)
-    map.getSource('main_leave-layer'+i).setData(leaveData)
+    map.getSource('standby_arrive-layer'+i).setData(arriveData)
+    map.getSource('standby_workline-layer'+i).setData(worklineData)
+    map.getSource('standby_leave-layer'+i).setData(leaveData)
   }
 
 
@@ -338,17 +342,17 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       })
     }
   }
-  map.getSource('polygons').setData(polygonsFeatues)
+  map.getSource('standby_polygons').setData(polygonsFeatues)
 
   map.addLayer({
-    id: 'text-layer1',
+    id: 'text-layer2',
     type: 'symbol',
     source: {
       type:'geojson',
       data:obj
     },
     layout: {
-      visibility:setting.人影.监控.规划航线&&setting.人影.监控.正西?'visible':'none',
+      visibility:setting.人影.监控.规划航线&&setting.人影.监控.西北?'visible':'none',
       'text-field': ['get', 'label'], // 从属性中获取文字
       'text-size': 20,
       'text-offset': [0, 0],
@@ -381,5 +385,5 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       },
     });
   }
-  // map.getSource('军用机场数据_main').setData(airportsFeatures)
+  // map.getSource('军用机场数据standby').setData(airportsFeatures)
 }

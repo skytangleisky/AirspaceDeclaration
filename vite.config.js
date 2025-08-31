@@ -209,8 +209,8 @@ export default defineConfig({
       },
       '/qt':{
         agent,
-        // target:'http://10.225.6.184:8001',
-        target:'http://172.18.7.38:8001',
+        target:'http://10.225.6.184:8001',
+        // target:'http://172.18.7.38:8001',
         rewrite:path=>path.replace(/^\/qt/,''),
         changeOrigin:true,
         secure:false,

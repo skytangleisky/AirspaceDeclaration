@@ -10,9 +10,8 @@
                 <svg-icon name="table"></svg-icon>
                 <span class="label">作业点列表</span>
             </div>
-            <div style="font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;">{{ 数据时间 }}</div>
+            <div style="font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;display: flex;align-items: center;"><Colormap></Colormap><div style="margin-left:10px;">{{ 数据时间 }}</div></div>
         </div>
-
         <div class="bottom wstd-content" style="position: relative;pointer-events: auto;" v-if="tabActive">
             <div class="close-btn" @click="tabActive = 0">
                 <el-icon v-html="closeSvg"></el-icon>
@@ -136,6 +135,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import Colormap from './色标.vue'
 import closeSvg from '~/assets/close.svg?raw'
 import { reactive, onMounted, watch, computed ,ref} from "vue";
 import { useStationStore } from "~/stores/station";
