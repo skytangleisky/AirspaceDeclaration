@@ -73,15 +73,34 @@
       </template>
     </div>
     <div v-dragable class="meeting" v-if="metting">
-      <iframe src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation"></iframe>
+      <iframe ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
+      <!-- <iframe ref="iframeRef" src="http://localhost:8080" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe> -->
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
+import { csv2list } from '~/tools'
+import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
+const mettingList = csv2list(mettingData)
 import closeUrl from '~/assets/close.svg?raw'
 function 视频会议(){
-  metting.value=true
+  let has = false
+  for(let i=0;i<mettingList.length;i++){
+    const item = mettingList[i]
+    if(item.作业点编号 == station.人影界面被选中的设备){
+      has = true
+      break
+    }
+  }
+  if(!has){
+    ElMessage({
+      message: `当前作业点${station.人影界面被选中的设备}不支持视频会议!`,
+      type: 'warning',
+    })
+  }else{
+    metting.value=true
+  }
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
 function 清除形状(){
@@ -95,7 +114,6 @@ import { 辅助力量规划航迹 } from './辅助力量规划航迹.js'
 import { 紧急力量规划航迹 } from './紧急力量规划航迹.js'
 import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
-let loaded1 = false,loaded2 = false,loaded3 = false,loaded4 = false,loaded5 = false;//用于记录雷达数据是否加载过，解决首页卡顿问题
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
@@ -177,6 +195,7 @@ const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const dialogOptions = reactive({ menus: [] });
 const stationMenuRef = ref<HTMLDivElement>();
+const iframeRef = ref<HTMLIFrameElement>()
 const menuType=ref('地面作业申请');
 let circleFeaturesData: any = {
   type: "FeatureCollection",
@@ -983,11 +1002,33 @@ function convertMultiPointToLineString(multiPointFeature) {
 }
 import Plane from './三维物体/CustomLayer.js'
 import { ElMessage } from 'element-plus';
+function load(){
+  for(let i=0;i<mettingList.length;i++){
+    const item = mettingList[i]
+    if(item.作业点编号 == station.人影界面被选中的设备){
+      iframeRef.value?.contentWindow?.postMessage({
+        type:'hello',
+        meeting:item.终端号,
+        meetingName:'会议',
+      },'*')
+      break
+    }
+  }
+}
 onMounted(async() => {
   // ElMessage({
   //   message: '当前版本为1.1.97',
   //   type: 'info',
   // })
+
+  // 视频会议结束
+  window.addEventListener('message', (event) => {
+    if(event.data){
+      if(event.data.type==='close'){
+        metting.value = false
+      }
+    }
+  });
   document.addEventListener("keydown", keydownFunc);
   aid = requestAnimationFrame(loop)
   map = new mapboxgl.Map({
@@ -1200,7 +1241,6 @@ onMounted(async() => {
       if(map){
         const source = map.getSource(map.getLayer('overlay-layer1').source)
         source.updateImage(obj);
-        loaded1 = true
       }
     }).catch((err=>{
       console.log(err)
@@ -1220,7 +1260,6 @@ onMounted(async() => {
       if(map){
         const source = map.getSource(map.getLayer('overlay-layer5').source)
         source.updateImage(obj);
-        loaded1 = true
       }
     }).catch((err=>{
       console.log(err)
@@ -1240,7 +1279,6 @@ onMounted(async() => {
       if(map){
         const source = map.getSource(map.getLayer('overlay-layer3').source)
         source.updateImage(obj);
-        loaded2 = true
       }
     }).catch(err=>{
       console.log(err)
@@ -1260,12 +1298,11 @@ onMounted(async() => {
       if(map){
         const source = map.getSource(map.getLayer('overlay-layer4').source)
         source.updateImage(obj);
-        loaded4 = true
       }
     }).catch(err=>{
       console.log(err)
     })
-    setting.人影.监控.组合反射率 && 组合反射率().then(async({data})=>{
+    setting.人影.监控.组合反射率 && 组合反射率().then(async({data}:any)=>{
       const extent = data.extent.split(',').map(Number)
       const imageUrl = await getImage(data.data,extent)
       const obj = {
@@ -1279,8 +1316,7 @@ onMounted(async() => {
       }
       if(map){
         const source = map.getSource(map.getLayer('overlay-layer2').source)
-        source.updateImage(obj);
-        loaded3 = true
+        source.updateImage(obj)
       }
     }).catch(err=>{
       console.log(err)
@@ -1300,8 +1336,7 @@ onMounted(async() => {
         }
         if(map){
           const source = map.getSource(map.getLayer('overlay-layer1').source)
-          source.updateImage(obj);
-          loaded1 = true
+          source.updateImage(obj)
         }
       }).catch((err=>{
         console.log(err)
@@ -1320,8 +1355,7 @@ onMounted(async() => {
         }
         if(map){
           const source = map.getSource(map.getLayer('overlay-layer5').source)
-          source.updateImage(obj);
-          loaded1 = true
+          source.updateImage(obj)
         }
       }).catch((err=>{
         console.log(err)
@@ -1342,13 +1376,12 @@ onMounted(async() => {
         }
         if(map){
           const source = map.getSource(map.getLayer('overlay-layer3').source)
-          source.updateImage(obj);
-          loaded2 = true
+          source.updateImage(obj)
         }
       }).catch(err=>{
         console.log(err)
       })
-      setting.人影.监控.组合反射率 && 组合反射率().then(async({data})=>{
+      setting.人影.监控.组合反射率 && 组合反射率().then(async({data}:any)=>{
         const extent = data.extent.split(',').map(Number)
         const imageUrl = await getImage(data.data,extent)
         const obj = {
@@ -1362,31 +1395,30 @@ onMounted(async() => {
         }
         if(map){
           const source = map.getSource(map.getLayer('overlay-layer2').source)
-          source.updateImage(obj);
-          loaded3 = true
+          source.updateImage(obj)
         }
       }).catch(err=>{
         console.log(err)
       })
 
-      setting.人影.监控.基本站 && 基本站().then(({data})=>{
+      setting.人影.监控.基本站 && 基本站().then(async({data}:any)=>{
         map.getSource('wms-source1').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
       }).catch(e=>{
         console.log(e)
       })
-      setting.人影.监控.一般站 && 一般站().then(({data})=>{
+      setting.人影.监控.一般站 && 一般站().then(async({data}:any)=>{
         map.getSource('wms-source2').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
       }).catch(e=>{
         console.log(e)
       })
-      setting.人影.监控.区域站 && 区域站().then(({data})=>{
+      setting.人影.监控.区域站 && 区域站().then(async({data}:any)=>{
         map.getSource('wms-source3').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
       }).catch(e=>{
         console.log(e)
       })
     },6*60*1e3)
     threeMinutesTimer = setInterval(()=>{
-      setting.人影.监控.睿图雷达 && 睿图雷达().then(async({data})=>{
+      setting.人影.监控.睿图雷达 && 睿图雷达().then(async({data}:any)=>{
         const extent = data.extent.split(',').map(Number)
         const imageUrl = await getImage(data.data,extent)
         const obj = {
@@ -1400,8 +1432,7 @@ onMounted(async() => {
         }
         if(map){
           const source = map.getSource(map.getLayer('overlay-layer4').source)
-          source.updateImage(obj);
-          loaded4 = true
+          source.updateImage(obj)
         }
       }).catch(err=>{
         console.log(err)
@@ -4463,7 +4494,6 @@ watch(()=>setting.人影.监控.红外云图,(val)=>{
     if(data.legendData.vals){
       data.legendData.vals.forEach((item:number,key:number)=>setting.人影.监控.色标.push({value:item,color:data.legendData.colors[key]}))
     }
-    if(loaded1)return;
     const extent = data.extent.split(',').map(Number)
     // const imageUrl = await getImage(data.data,extent)
     const obj = {
@@ -4477,8 +4507,7 @@ watch(()=>setting.人影.监控.红外云图,(val)=>{
     }
     if(map){
       const source = map.getSource(map.getLayer('overlay-layer1').source)
-      source.updateImage(obj);
-      loaded1 = true
+      source.updateImage(obj)
     }
   }).catch((err=>{
     console.log(err)
@@ -4491,7 +4520,6 @@ watch(()=>setting.人影.监控.真彩图,(val)=>{
     if(data.legendData.vals){
       data.legendData.vals.forEach((item:number,key:number)=>setting.人影.监控.色标.push({value:item,color:data.legendData.colors[key]}))
     }
-    if(loaded5)return;
     const extent = data.extent.split(',').map(Number)
     // const imageUrl = await getImage(data.data,extent)
     const obj = {
@@ -4505,8 +4533,7 @@ watch(()=>setting.人影.监控.真彩图,(val)=>{
     }
     if(map){
       const source = map.getSource(map.getLayer('overlay-layer5').source)
-      source.updateImage(obj);
-      loaded5 = true
+      source.updateImage(obj)
     }
   }).catch((err=>{
     console.log(err)
@@ -4519,7 +4546,6 @@ watch(()=>setting.人影.监控.组合反射率,(val)=>{
     if(data.legendData.vals){
       data.legendData.vals.forEach((item:number,key:number)=>setting.人影.监控.色标.push({value:item,color:data.legendData.colors[key]}))
     }
-    if(loaded3)return;
     const extent = data.extent.split(',').map(Number)
     const imageUrl = await getImage(data.data,extent)
     const obj = {
@@ -4533,8 +4559,7 @@ watch(()=>setting.人影.监控.组合反射率,(val)=>{
     }
     if(map){
       const source = map.getSource(map.getLayer('overlay-layer2').source)
-      source.updateImage(obj);
-      loaded3 = true
+      source.updateImage(obj)
     }
   }).catch(err=>{
     console.log(err)
@@ -4547,7 +4572,6 @@ watch(()=>setting.人影.监控.CMPAS降水融合3km,(val)=>{
     if(data.legendData.vals){
       data.legendData.vals.forEach((item:number,key:number)=>setting.人影.监控.色标.push({value:item,color:data.legendData.colors[key]}))
     }
-    if(loaded2)return;
     const extent = data.extent.split(',').map(Number)
     const imageUrl = await getImage(data.data,extent)
     const obj = {
@@ -4561,8 +4585,7 @@ watch(()=>setting.人影.监控.CMPAS降水融合3km,(val)=>{
     }
     if(map){
       const source = map.getSource(map.getLayer('overlay-layer3').source)
-      source.updateImage(obj);
-      loaded2 = true
+      source.updateImage(obj)
     }
   }).catch(err=>{
     console.log(err)
@@ -4575,7 +4598,6 @@ watch(()=>setting.人影.监控.睿图雷达,(val)=>{
     if(data.legendData.vals){
       data.legendData.vals.forEach((item:number,key:number)=>setting.人影.监控.色标.push({value:item,color:data.legendData.colors[key]}))
     }
-    if(loaded4)return;
     const extent = data.extent.split(',').map(Number)
     const imageUrl = await getImage(data.data,extent)
     const obj = {
@@ -4589,8 +4611,7 @@ watch(()=>setting.人影.监控.睿图雷达,(val)=>{
     }
     if(map){
       const source = map.getSource(map.getLayer('overlay-layer4').source)
-      source.updateImage(obj);
-      loaded4 = true
+      source.updateImage(obj)
     }
   }).catch(err=>{
     console.log(err)
@@ -5309,10 +5330,11 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   padding:4px;
   z-index:9999;
   cursor:move;
-  iframe{
+  ::v-deep(iframe){
     width:100%;
     height:100%;
     user-select:none;
+    background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);
   }
 
   &:has(iframe:hover) .close-btn{

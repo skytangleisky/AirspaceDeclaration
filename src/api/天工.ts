@@ -1387,6 +1387,8 @@ export function getMask(){
       return '13%'
     }else if(strID.endsWith('140000000')){//山西人影办
       return '14%'
+    }else if(strID.endsWith('150000000')){//内蒙人影办
+      return '15%'
     }else if(strID.endsWith('000')){//区县人影办
       return strID.substring(0, strID.length - 3)+'%'
     }

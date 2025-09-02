@@ -1,5 +1,5 @@
 <template>
-    <div class="!collapse dragDialog absolute wstd-container" style="width:fit-content;height: fit-content;pointer-events: none;">
+    <div class="dragDialog absolute wstd-container" style="width:fit-content;height: fit-content;pointer-events: none;">
         <div class="top" style="display: flex;align-items: center;">
             <div
                 class="box map-btn"
@@ -25,33 +25,6 @@
                         placeholder="请输入过滤条件"
                         v-model="options.value"
                     />
-                    <!-- <el-icon
-        class="dropdown"
-        style="
-            width: 30px;
-            line-height: 14px;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-        "
-        @click="toggleCollapse"
-        @mousedown.stop
-        >
-        <svg
-          t="1692335429583"
-          class="icon"
-          viewBox="0 0 1024 1024"
-          version="1.1"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M64 320l64-64 384 384L896 256l64 64-448 448z"
-            p-id="9959"
-            data-spm-anchor-id="a313x.search_index.0.i4.4d423a814g60B1"
-          >
-          </path>
-        </svg>
-      </el-icon> -->
                 </div>
                 <div class="contain" @mousedown.stop>
                     <div
@@ -240,9 +213,6 @@ const flyTo = (event: any, v: any) => {
     station.人影界面被选中的设备 = v.strID;
     eventbus.emit("人影-将站点移动到屏幕中心", v);
 };
-const toggleCollapse = () => {
-    $(".dragDialog").toggleClass("collapse");
-};
 </script>
 <style scoped lang="scss">
 .dragDialog {
@@ -298,9 +268,6 @@ const toggleCollapse = () => {
             border-top: 1px solid grey;
         }
     }
-}
-.collapse.dragDialog .contain {
-    display: none;
 }
 
 // .dark .operation_filter {
