@@ -1,5 +1,5 @@
 <template>
-    <teleport to="#app">
+    <teleport to="#wstd-container">
         <div class="modal" v-if="setting.人影.监控.注册飞机列表显示">
             <div class="dragDialog">
                 <el-table :data="tableData" style="width: 100%">

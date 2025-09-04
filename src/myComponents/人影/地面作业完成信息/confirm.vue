@@ -1,5 +1,5 @@
 <template>
-    <teleport to="#app">
+    <teleport to="#wstd-container">
         <div class="modal" v-if="show">
             <div class="dragDialog">
                 <el-row>

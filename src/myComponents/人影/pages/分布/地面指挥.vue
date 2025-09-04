@@ -25,11 +25,11 @@
             <el-checkbox v-model="setting.人影.监控.正西">
                 <div style="display: flex;align-items: center;">正西</div>
             </el-checkbox>
-            <el-checkbox v-model="setting.人影.监控.西北">
+            <!-- <el-checkbox v-model="setting.人影.监控.西北">
                 <div style="display: flex;align-items: center;">西北</div>
-            </el-checkbox>
+            </el-checkbox> -->
             <el-checkbox v-model="setting.人影.监控.西南">
-                <div style="display: flex;align-items: center;">西南</div>
+                <div style="display: flex;align-items: center;">消云</div>
             </el-checkbox>
 
             <el-checkbox v-model="setting.人影.监控.test">

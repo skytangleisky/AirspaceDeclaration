@@ -72,17 +72,20 @@
         <Video :item="item" v-if="item.visible"></Video>
       </template>
     </div>
-    <div v-dragable class="meeting" v-if="metting">
-      <iframe ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
-      <!-- <iframe ref="iframeRef" src="http://localhost:8080" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe> -->
+    <!-- <div v-dragable class="meeting" v-if="metting">
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
-    </div>
+    </div> -->
+    <Frame v-model:render="metting">
+      <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
+    </Frame>
   </div>
 </template>
 <script lang="ts" setup>
+import Frame from '~/frames/frame.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
+let 作业点原始数据 = new Array()//存放作业点最原始的数据
 import closeUrl from '~/assets/close.svg?raw'
 function 视频会议(){
   let has = false
@@ -193,7 +196,7 @@ const station = useStationStore();
 import { useSettingStore,formatUrl } from "~/stores/setting.js";
 const setting = useSettingStore();
 import * as turf from "@turf/turf";
-const dialogOptions = reactive({ menus: [] });
+const dialogOptions = reactive({ menus: new Array() });
 const stationMenuRef = ref<HTMLDivElement>();
 const iframeRef = ref<HTMLIFrameElement>()
 const menuType=ref('地面作业申请');
@@ -2506,16 +2509,17 @@ for(let i=0;i<8;i++){
       });
     }
 
-          if(!map.getSource("警戒圈source")){
-            map.addSource("警戒圈source", {
-              type: "geojson",
-              data: forewarningFeaturesData,
-              promoteId:'strID'
-            });
-          }
+    if(!map.getSource("警戒圈source")){
+      map.addSource("警戒圈source", {
+        type: "geojson",
+        data: forewarningFeaturesData,
+        promoteId:'strID'
+      });
+    }
     await 作业点().then(async(res) => {
       if(!map)return
-      dialogOptions.menus = res.data.results;
+      作业点原始数据 = res.data.results;
+      dialogOptions.menus = JSON.parse(JSON.stringify(作业点原始数据))
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
       circleFeaturesData.features.length = 0;
@@ -3507,9 +3511,9 @@ for(let i=0;i<8;i++){
       abortController?.abort()
       abortController = new AbortController()
       当前作业查询(abortController.signal).then(async(res) => {
-        zydFeaturesData.features.forEach(feature=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
-        circleFeaturesData.features.forEach(feature=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
-        forewarningFeaturesData.features.forEach(feature=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
+        zydFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
+        circleFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
+        forewarningFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
         //实现空域闪烁效果
         function star(feature:any,row:any){
           if(row.ubyStatus == 75){
@@ -4287,6 +4291,28 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch(()=>setting.人影.监控.checkedKeys,(val)=>{
+  dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
+    for(let i=0;i<val.length;i++){
+      if(item.strID.startsWith(val[i])){
+        return true
+      }
+    }
+    return false
+  });
+  const features = zydFeaturesData.features.filter((feature:any)=>{
+    for(let i=0;i<val.length;i++){
+      if(feature.properties.strID.startsWith(val[i])){
+        return true
+      }
+    }
+    return false
+  })
+  map.getSource('zydSource').setData({
+    type:'FeatureCollection',
+    features,
+  })
+})
 watch(()=>setting.人影.监控.test,(val)=>{
   if(map.getLayer('testLayer')){
     map.setLayoutProperty('testLayer','visibility',val?'visible':'none')
@@ -5313,59 +5339,6 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
     background: #000;
     &>svg{
       fill: #000;
-    }
-  }
-}
-
-.meeting{
-  border-radius:4px;
-  box-sizing:border-box;
-  width:800px;
-  height:400px;
-  background:var(--el-bg-color-opacity-8);
-  border:1px solid var(--el-border-color);
-  position:absolute;
-  left:calc(50% - 400px);
-  top:calc(50% - 200px);
-  padding:4px;
-  z-index:9999;
-  cursor:move;
-  ::v-deep(iframe){
-    width:100%;
-    height:100%;
-    user-select:none;
-    background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);
-  }
-
-  &:has(iframe:hover) .close-btn{
-    display: flex;
-  }
-  .close-btn {
-    right:4px;
-    top:4px;
-    position: absolute;
-    width:20px;
-    height:20px;
-    justify-content: center;
-    align-items:center;
-    font-size: 0.16rem;
-    z-index:999;
-    color:white;
-    display: none;
-    cursor:pointer;
-    &:hover {
-      display: flex;
-      .el-icon {
-        color: #ff4d4f;
-      }
-    }
-    &:active {
-      transform: rotateX(180deg);
-      transition: transform 0.3s;
-      transition-timing-function: ease-in-out;
-      .el-icon {
-          color: #d32f2f;
-      }
     }
   }
 }

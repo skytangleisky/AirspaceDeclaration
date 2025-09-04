@@ -1,5 +1,5 @@
 <template>
-  <div class="wstd-container">
+  <div class="wstd-container" id="wstd-container">
       <RgyxWorkPoint />
       <Websocket />
   </div>

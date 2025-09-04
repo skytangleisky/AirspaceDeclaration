@@ -394,6 +394,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
         基本站:false,

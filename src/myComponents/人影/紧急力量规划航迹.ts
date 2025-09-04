@@ -268,57 +268,81 @@ export function 紧急力量规划航迹(map,规划航线数据,setting,wgs84tog
         ]]
       }
     }
-    if(规划航线数据[0].flyCasesList[i].nodeInfo){
-      const O = 规划航线数据[0].flyCasesList[i].nodeInfo[0]
-      const A = 规划航线数据[0].flyCasesList[i].nodeInfo[1]
-      const B = 规划航线数据[0].flyCasesList[i].nodeInfo[2]
-      const C = 规划航线数据[0].flyCasesList[i].nodeInfo[3]
-      const D = 规划航线数据[0].flyCasesList[i].nodeInfo[4]
-      机场去重.set(O.name,O);
-      if(O.routeName=='无人机'){
-        [A,B,C,D].forEach(item=>{
-          obj.features.push({
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": wgs84togcj02(item.longitude,item.latitude)
-            },
-            "properties": {
-              tag:'all',
-              tags:['西南主力量','all'],
-              "label": item.name
-            }
-          })
+
+    if(true){
+      // 消云
+      console.log(规划航线数据[0].flyCasesList[i].nodeInfo)
+      feature.geometry.coordinates = [[]]
+      规划航线数据[0].flyCasesList[i].nodeInfo.forEach((node:any) => {
+        obj.features.push({
+          "type": "Feature",
+          "geometry": {
+            "type": "Point",
+            "coordinates": wgs84togcj02(node.longitude,node.latitude)
+          },
+          "properties": {
+            tag:'all',
+            tags:['西南主力量','all'],
+            "label": node.name
+          }
         })
-        feature.geometry.coordinates = [[
-          [A.longitude, A.latitude],
-          [B.longitude, B.latitude],
-          [C.longitude, C.latitude],
-          [D.longitude, D.latitude],
-          [A.longitude, A.latitude]
-        ]]
-      }else{
-        [A,B,C,D].forEach(item=>{
-          obj.features.push({
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": wgs84togcj02(item.longitude,item.latitude)
-            },
-            "properties": {
-              tag:'all',
-              tags:['西南主力量','all'],
-              "label": item.name
-            }
+        feature.geometry.coordinates[0].push(wgs84togcj02(node.longitude,node.latitude))
+      });
+      polygonsFeatues.features.push(feature)
+    }else{
+      // 8字
+      if(规划航线数据[0].flyCasesList[i].nodeInfo){
+        const O = 规划航线数据[0].flyCasesList[i].nodeInfo[0]
+        const A = 规划航线数据[0].flyCasesList[i].nodeInfo[1]
+        const B = 规划航线数据[0].flyCasesList[i].nodeInfo[2]
+        const C = 规划航线数据[0].flyCasesList[i].nodeInfo[3]
+        const D = 规划航线数据[0].flyCasesList[i].nodeInfo[4]
+        机场去重.set(O.name,O);
+        if(O.routeName=='无人机'){
+          [A,B,C,D].forEach(item=>{
+            obj.features.push({
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": wgs84togcj02(item.longitude,item.latitude)
+              },
+              "properties": {
+                tag:'all',
+                tags:['西南主力量','all'],
+                "label": item.name
+              }
+            })
           })
-        })
-        feature.geometry.coordinates = [[
-          [A.longitude, A.latitude],
-          [C.longitude, C.latitude],
-          [B.longitude, B.latitude],
-          [D.longitude, D.latitude],
-          [A.longitude, A.latitude]
-        ]]
+          feature.geometry.coordinates = [[
+            [A.longitude, A.latitude],
+            [B.longitude, B.latitude],
+            [C.longitude, C.latitude],
+            [D.longitude, D.latitude],
+            [A.longitude, A.latitude]
+          ]]
+        }else{
+          [A,B,C,D].forEach(item=>{
+            obj.features.push({
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": wgs84togcj02(item.longitude,item.latitude)
+              },
+              "properties": {
+                tag:'all',
+                tags:['西南主力量','all'],
+                "label": item.name
+              }
+            })
+          })
+          feature.geometry.coordinates = [[
+            [A.longitude, A.latitude],
+            [C.longitude, C.latitude],
+            [B.longitude, B.latitude],
+            [D.longitude, D.latitude],
+            [A.longitude, A.latitude]
+          ]]
+        }
       }
     }
     const workInfo = 规划航线数据[0].flyCasesList[i].workInfo

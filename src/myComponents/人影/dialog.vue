@@ -17,14 +17,16 @@
                 <el-icon v-html="closeSvg"></el-icon>
             </div>
             <div class="bottom-content">
-                <div class="flex flex-row">
+                <div style="display: flex;flex-direction: row;align-items: center;">
                     <el-input
                         @mousedown.stop
                         name="过滤条件"
                         class="operation_filter flex-1"
                         placeholder="请输入过滤条件"
                         v-model="options.value"
+                        clearable
                     />
+                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="()=>show=true"/>
                 </div>
                 <div class="contain" @mousedown.stop>
                     <div
@@ -105,12 +107,18 @@
                 </div>
             </div>
         </div>
+        <Frame v-model:show="show">
+            <ZydFilter></ZydFilter>
+        </Frame>
     </div>
 </template>
 <script lang="ts" setup>
+import ZydFilter from './zydFilter.vue'
+import Frame from '~/frames/frame.vue'
 import Colormap from './色标.vue'
 import closeSvg from '~/assets/close.svg?raw'
 import { reactive, onMounted, watch, computed ,ref} from "vue";
+const show = ref(false)
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import { useSettingStore } from '~/stores/setting'
@@ -128,6 +136,14 @@ const 数据时间 = computed(()=>{
         return setting.人影.监控.真彩图时间
     }
     return ''
+})
+import {getMask} from '~/api/天工.ts'
+const mask = getMask()
+const 计算权限 = computed(()=>{
+    if(['%%','12%','13%','14%','15%'].includes(mask as string)){
+        return true
+    }
+    return false
 })
 
 import moment from 'moment'
@@ -157,6 +173,7 @@ const props = withDefaults(defineProps<{ menus?: Array<any> }>(), {
 });
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
+import { Filter } from '@element-plus/icons-vue'
 const bus = useBus();
 // const menus = reactive([
 //   { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },
