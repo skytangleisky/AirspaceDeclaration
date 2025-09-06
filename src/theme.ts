@@ -119,7 +119,7 @@ window.addEventListener('storage', (event:any) => {
   }
   observer.observe(document.documentElement, { attributes: true, attributeOldValue: true, attributeFilter: ['class'] });
 });
-function resetTheme(){
+export function resetTheme(){
   theme.value = defaultTheme
   localStorage.setItem('theme', defaultTheme)
   if(theme.value=='auto'){

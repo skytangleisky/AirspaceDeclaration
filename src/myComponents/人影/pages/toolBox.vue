@@ -24,6 +24,7 @@ import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import toolkitSvg from '~/assets/toolkit.svg?raw'
 import {getMask} from '~/api/天工'
+import {resetTheme} from '~/theme'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
 const distributionButtonClick = (e: any) => {
@@ -347,6 +348,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {
     label: '重置系统', type: 'button', click() {
       setting.$reset()
+      resetTheme()
     }
   },
   {
