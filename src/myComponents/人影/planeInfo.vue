@@ -1,8 +1,8 @@
 <template>
   <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%;max-height: 500px;"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
-    <el-table-column prop="protocol" label="数据类型" />
-    <el-table-column prop="sign" label="飞机标识" style="white-space: nowrap;"/>
-    <el-table-column prop="address" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
+    <el-table-column prop="strProtocol" label="数据类型" />
+    <el-table-column prop="strCallCode" label="飞机标识" style="white-space: nowrap;"/>
+    <el-table-column prop="iAddress" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
     <el-table-column prop="height" label="高度" />
     <el-table-column prop="update_time" label="最后更新时间" width="180"/>
     <el-table-column prop="speed" label="速度" :formatter="(a,b,val)=>(val*3.6).toFixed(2)+'km/h'"/>
@@ -58,12 +58,12 @@ setting.人影.监控.需要重点关注的飞机 = computed(()=>{
   const results = new Array()
   setting.人影.监控.飞机数据.forEach(({properties})=>{
     setting.人影.监控.注册飞机数据.forEach(row=>{
-      if(properties.unSsrCode == row.address){
+      if(properties.unSsrCode == row.iAddress){
         results.push({
-          reg_time:row.reg_time,
-          protocol:row.protocol,
-          sign:row.sign,
-          address:row.address,
+          dtRegTime:row.dtRegTime,
+          strProtocol:row.strProtocol,
+          strCallCode:row.strCallCode,
+          iAddress:row.iAddress,
           height:properties.iAltitudeADS,
           update_time:properties.time,
           speed:properties.fSpeed,

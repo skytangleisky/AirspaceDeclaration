@@ -258,7 +258,7 @@ let synergyFeaturesData:any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图} from '~/api/天工'
+import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -612,7 +612,7 @@ function 处理飞机实时位置(d:Array<{
 }>){
   const tmp = d.filter(item=>{
     for(let plane of setting.人影.监控.注册飞机数据){
-      if(item.unSsrCode == Number(plane.address)){
+      if(item.unSsrCode == Number(plane.iAddress)){
         return true
       }
     }
@@ -622,7 +622,7 @@ function 处理飞机实时位置(d:Array<{
   for(let j=0;j<tmp.length;j++){
     for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
       const item = setting.人影.监控.需要重点关注的飞机[i]
-      if(item.address == tmp[j].unSsrCode){
+      if(item.iAddress == tmp[j].unSsrCode){
         tmp[j].icon = 'airplaneMock'
       }
     }
@@ -639,7 +639,7 @@ function 处理飞机实时位置(d:Array<{
     if(!has){
       for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
         const item = setting.人影.监控.需要重点关注的飞机[i]
-        if(item.address == tmp[j].unSsrCode){
+        if(item.iAddress == tmp[j].unSsrCode){
           tmp[j].icon = 'airplaneMock';
           console.log(tmp[j].icon)
         }
@@ -671,7 +671,7 @@ function 处理飞机实时位置(d:Array<{
     if(!has){
       for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
         const item = setting.人影.监控.需要重点关注的飞机[i]
-        if(item.address == tmp[j].unSsrCode){
+        if(item.iAddress == tmp[j].unSsrCode){
           tmp[j].icon = 'airplaneMock';
           console.log(tmp[j].icon)
         }
@@ -702,7 +702,7 @@ function 处理飞机实时位置(d:Array<{
 
   //   for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
   //     const item = setting.人影.监控.需要重点关注的飞机[i]
-  //     if(item.address == d[j].unSsrCode){
+  //     if(item.iAddress == d[j].unSsrCode){
   //       d[j].icon = 'airplaneMock'
   //     }
   //   }
@@ -742,12 +742,10 @@ function 处理飞机实时位置(d:Array<{
     d[j].label = d[j].strCallCode
     for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
       const item = setting.人影.监控.需要重点关注的飞机[i]
-      if(item.address == d[j].unSsrCode){
-        d[j].label = setting.人影.监控.需要重点关注的飞机[i].sign
+      if(item.iAddress == d[j].unSsrCode){
+        d[j].label = setting.人影.监控.需要重点关注的飞机[i].strCallCode
       }
     }
-
-
 
     let has = false,i=0;
     for(;i<data.features.length;i++){
@@ -1081,8 +1079,6 @@ onMounted(async() => {
   }
   map.on("load", async () => {
     if(!map)return;
-
-
 /*
       map.addSource('pointSource', {
         type: 'geojson',
@@ -1597,39 +1593,39 @@ onMounted(async() => {
 
 
 
-for(let i=0;i<8;i++){
-  const bearing = 45*i;
-  const distance = 360;
-  const startPoint = turf.point(center);
-  const endPoint = turf.destination(startPoint, distance, bearing, { units: 'kilometers' });
-  map.addLayer({
-    id: 'line-layer'+i,
-    type: 'line',
-    source: {
-      type:'geojson',
-      data:{
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [
-            center,
-            endPoint.geometry.coordinates
-          ]
+    for(let i=0;i<8;i++){
+      const bearing = 45*i;
+      const distance = 360;
+      const startPoint = turf.point(center);
+      const endPoint = turf.destination(startPoint, distance, bearing, { units: 'kilometers' });
+      map.addLayer({
+        id: 'line-layer'+i,
+        type: 'line',
+        source: {
+          type:'geojson',
+          data:{
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: [
+                center,
+                endPoint.geometry.coordinates
+              ]
+            },
+            properties: {}
+          }
         },
-        properties: {}
-      }
-    },
-    layout: {
-      visibility:setting.人影.监控.北京保障圈?'visible':'none',
-      'line-join': 'round',
-      'line-cap': 'round'
-    },
-    paint: {
-      'line-color': 'rgb(255,0,0)',
-      'line-width': 1
+        layout: {
+          visibility:setting.人影.监控.北京保障圈?'visible':'none',
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': 'rgb(255,0,0)',
+          'line-width': 1
+        }
+      });
     }
-  });
-}
 
 
 
@@ -1712,8 +1708,13 @@ for(let i=0;i<8;i++){
         style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
       airplaneMock:{
-        style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+        style: 'fill:#fff;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
+    })
+    await loadImage2Map(map,trackSvg,6,6,{
+      'trackSvg':{
+        style:"fill:#fff;stroke:black;stroke-width:50px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      }
     })
     await loadImage2Map(map,adsbUrl,22,22,{
       'adsb':{
@@ -1742,11 +1743,6 @@ for(let i=0;i<8;i++){
       'triangle-blue':{
         style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
-    })
-    await loadImage2Map(map,trackSvg,6,6,{
-      'trackSvg':{
-        style:"fill:#00ff00;stroke:black;stroke-width:50px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
-      }
     })
     await loadImage2Map(map,导航台图标,14,14,{
       导航台图标:{
@@ -2517,7 +2513,8 @@ for(let i=0;i<8;i++){
       });
     }
     await 作业点().then(async(res) => {
-      if(!map)return
+      if(!map)
+        return
       作业点原始数据 = res.data.results;
       dialogOptions.menus = JSON.parse(JSON.stringify(作业点原始数据))
       zydFeaturesData.features.length = 0
@@ -3505,11 +3502,135 @@ for(let i=0;i<8;i++){
           });
         })
       }
+    }).catch(e=>{
+      console.log(e)
     })
     let abortController:AbortController|null = null;
     function work(){
       abortController?.abort()
       abortController = new AbortController()
+      作业状态数据(abortController.signal).then(res=>{
+        zydFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
+        circleFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
+        forewarningFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
+        //实现空域闪烁效果
+        function star(feature:any,row:any){
+          if(row.ubyStatus == 75){
+            feature.properties.fillColor = '#00f'
+          }else if(row.ubyStatus == 91){
+            feature.properties.fillColor = '#f00'
+          }else{
+            feature.properties.fillColor = '#000'
+          }
+          if(row.ubyStatus == 75||row.ubyStatus == 91){
+            const millisecond = moment().diff(moment(row.tmAnswerRev,'YYYY-MM-DD HH:mm:ss'),'ms')
+            feature.properties.opacity=(Math.floor(millisecond / 1000) % 2)?0.5:0;
+            if(millisecond>20e3){
+              feature.properties.opacity = 0.5
+            }
+          }
+        }
+        planProps.当前作业进度.splice(0,planProps.当前作业进度.length,...res.data[0]);
+        for(let i=planProps.当前作业进度.length-1;i>=0;i--){
+          let row = planProps.当前作业进度[i]
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          //传入workID
+          map.setFeatureState({source:'zydSource',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),workBeginTime:moment().format('HH:mm:ss'),strWorkID:row.strWorkID})
+          for (let i = 0; i < circleFeaturesData.features.length; i++) {
+            if (circleFeaturesData.features[i].properties.strID == row.strZydID) {
+              Object.assign(circleFeaturesData.features[i].properties,row)
+              circleFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
+              const state = map.getFeatureState({source:'最大射程source',id:row.strZydID})
+              if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
+                state.opacity = 0.5;
+              }
+              // star(circleFeaturesData.features[i],row)
+              map.setFeatureState({source:'最大射程source',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),opacity:state.opacity})
+              const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
+                number,
+                number
+              ]; // 圆心点的经纬度
+              const radius: number = row.iRange; // 半径（单位：米）
+              const startAngle: number = row.iAngleBegin; // 起始角度（单位：度）
+              const endAngle: number = row.iAngleEnd; // 终止角度（单位：度）
+              const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
+              const units: turf.Units = "meters"; // 半径的单位
+              if (endAngle - startAngle >= 360) {
+                const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
+                  number,
+                  number
+                ]; // 圆心点的经纬度
+                const radius: number = row.iRange; // 半径（单位：米
+                const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
+                const units: turf.Units = "meters"; // 半径的单位
+                const sectorPoints: [number, number][] = calculateCirclePoints(
+                  center,
+                  radius,
+                  steps,
+                  units
+                );
+                const sectorPolygon = turf.polygon([sectorPoints], {
+                  strID: row.strZydID,
+                  opacity:0
+                });
+                circleFeaturesData.features[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
+              } else {
+                // const sectorPoints: [number, number][] = calculateSectorPoints(
+                //   center,
+                //   radius,
+                //   startAngle,
+                //   endAngle,
+                //   steps,
+                //   units
+                // );
+                // const sectorPolygon = turf.polygon([sectorPoints], {
+                //   strID: row.strZydID,
+                //   opacity:0
+                // });
+                // circleFeaturesData.features[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
+              }
+            }
+          }
+          for(let i=0;i<forewarningFeaturesData.features.length;i++){
+            if(forewarningFeaturesData.features[i].properties.strID == row.strZydID){
+              forewarningFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
+              const state = map.getFeatureState({source:'警戒圈source',id:row.strZydID})
+              if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
+                state.opacity = 0.5;
+              }
+              // star(forewarningFeaturesData.features[i],row)
+              map.setFeatureState({source:'警戒圈source',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),opacity:state.opacity})
+            }
+          }
+        }
+        // map?.getSource('zydSource').setData(zydFeaturesData)
+        planProps.今日作业记录.splice(0,planProps.今日作业记录.length,...res.data[1]);
+        for(let i=planProps.今日作业记录.length-1;i>=0;i--){
+          let row = planProps.今日作业记录[i]
+          row.ubySendStatus = 3//发送成功
+          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+            row.ubyStatus = 91
+          }
+          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+            row.ubyStatus = 100
+          }
+        }
+      }).catch(()=>{
+        console.log('当前作业查询被终止')
+      })
+      /*
       当前作业查询(abortController.signal).then(async(res) => {
         zydFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
         circleFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
@@ -3632,6 +3753,7 @@ for(let i=0;i<8;i++){
       }).catch(()=>{
         console.log('当前作业查询被终止')
       });
+      */
     }
     taskTimer = setInterval(() => {
       work();
@@ -4172,7 +4294,7 @@ for(let i=0;i<8;i++){
     let ryPlane = null;
     for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
       const item = setting.人影.监控.需要重点关注的飞机[i]
-      if(item.address == props.unSsrCode){
+      if(item.iAddress == props.unSsrCode){
         ryPlane = item
       }
     }
@@ -4182,7 +4304,7 @@ for(let i=0;i<8;i++){
 
 
     // (beginDateTime:string,endDateTime:string,unSsrCode:number,uiTrackNo:number)
-    getTrack(ryPlane.reg_time,moment().format('YYYY-MM-DD HH:mm:ss'),props.unSsrCode,'').then(({data})=>{
+    getTrack(ryPlane.dtRegTime,moment().format('YYYY-MM-DD HH:mm:ss'),props.unSsrCode,'').then(({data})=>{
       /*
       data.forEach((item:any)=>{
         for(let j=0;j<trackLinesFeaturesData.features.length;j++){
@@ -4308,7 +4430,7 @@ watch(()=>setting.人影.监控.checkedKeys,(val)=>{
     }
     return false
   })
-  map.getSource('zydSource').setData({
+  map?.getSource('zydSource')?.setData({
     type:'FeatureCollection',
     features,
   })

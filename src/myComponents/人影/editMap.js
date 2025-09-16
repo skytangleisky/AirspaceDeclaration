@@ -392,7 +392,7 @@ export default function(){
 				tiles: [
 					transparent256x256,
 				],
-				tileSize: 256
+				tileSize: 256,
 			},
 			'wms-source3':{
 				type: 'raster',
@@ -465,7 +465,7 @@ export default function(){
 						visibility: setting.人影.监控.真彩图?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': 1,
+						'raster-opacity': 0.75,
 						'raster-resampling': 'nearest'
 					}
 				},
@@ -477,7 +477,7 @@ export default function(){
 						visibility: setting.人影.监控.红外云图?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': 1,
+						'raster-opacity': 0.75,
 						'raster-resampling': 'nearest'
 					}
 				},
@@ -489,7 +489,7 @@ export default function(){
 						visibility: setting.人影.监控.CMPAS降水融合3km?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': 1,
+						'raster-opacity': 0.75,
 						'raster-resampling': 'nearest'
 					}
 				},
@@ -501,7 +501,7 @@ export default function(){
 						visibility: setting.人影.监控.组合反射率?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': 1,
+						'raster-opacity': 0.75,
 						'raster-resampling': 'nearest'
 					}
 				},
@@ -513,7 +513,7 @@ export default function(){
 						visibility: setting.人影.监控.睿图雷达?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': 1,
+						'raster-opacity': 0.75,
 						'raster-resampling': 'nearest'
 					}
 				},

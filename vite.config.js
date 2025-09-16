@@ -17,8 +17,8 @@ const option = {
   maxSockets: 256,       // 最大并发 socket 数
   maxFreeSockets: 32     // 空闲 socket 上限
 }
-const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-// const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
+// const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
+const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
 import {
@@ -133,9 +133,9 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        agent,
-        // target:'http://192.168.0.114:3000',
-        target:'http://172.18.7.38:3000',
+        // agent,
+        target:'http://192.168.0.114:3000',
+        // target:'http://172.18.7.38:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
@@ -148,9 +148,9 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        agent,
-        // target:'http://192.168.0.135:8080',
-        target:'http://172.18.7.38:8080',
+        // agent,
+        target:'http://127.0.0.1:8080',
+        // target:'http://172.18.7.38:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
@@ -207,14 +207,15 @@ export default defineConfig({
         changeOrigin:true,
         secure:false,
       },
-      '/qt':{
-        agent,
-        target:'http://10.225.6.184:8001',
-        // target:'http://172.18.7.38:8001',
-        rewrite:path=>path.replace(/^\/qt/,''),
-        changeOrigin:true,
-        secure:false,
-      },
+      // '/qt':{
+      //   // agent,
+      //   // target:'http://10.225.6.184:8001',
+      //   // target:'http://172.18.7.38:8001',
+      //   target:'http://192.168.0.135:8153',
+      //   rewrite:path=>path.replace(/^\/qt/,''),
+      //   changeOrigin:true,
+      //   secure:false,
+      // },
       '/weatherModification':{
         agent,
         target:'http://10.225.3.150:18185',

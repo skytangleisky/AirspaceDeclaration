@@ -1,17 +1,17 @@
 import moment from 'moment'
 import request from '../utils/request'
-import { orderBy } from 'element-plus/es/components/table/src/util.mjs'
 import { useSettingStore } from '~/stores/setting'
+import { wrapKeys } from '~/tools'
 
 //公司
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
 let database1 = `${dbConfig}&database=union`
-let database2 = `${dbConfig}&database=ryplat_bjry`
+let database2 = `${dbConfig}&database=BEPK_RYB_GSYTHPT&type=xugu`
 
 //北京市
-dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
-database1 = `${dbConfig}&database=union`
-database2 = `${dbConfig}&database=ryplat`
+// dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
+// database1 = `${dbConfig}&database=union`
+// database2 = `${dbConfig}&database=BEPK_RYB_GSYTHPT`
 
 //华为
 // dbConfig = "host=127.0.0.1&port=3306&user=bjryb&password=ryb115"
@@ -24,50 +24,52 @@ database2 = `${dbConfig}&database=ryplat`
 // database2 = `${dbConfig}&database=ryplat_bjry`
 
 export function 机场(){
-  // return request({
-  //   url: '/backend/transaction?'+database1,
-  //   method: 'post',
-  //   data:{
-  //     sqls:[
-  //       "select * from `airport`"
-  //     ]
-  //   }
-  // })
   return request({
-    url: '/qt/select/airport',
+    url: '/backend/db/BEPK_RYB_GSYTHPT.airport?'+database2,
     method: 'post',
     data:{
-        "select": [
-        ],
-        "where": [
-        ],
-        "orderby": [
-        ]
+      select:['*'],
+      distinct:false,
+      offset:0,
+      limit:0,
     }
   })
+  // return request({
+  //   url: '/qt/select/airport',
+  //   method: 'post',
+  //   data:{
+  //       "select": [
+  //       ],
+  //       "where": [
+  //       ],
+  //       "orderby": [
+  //       ]
+  //   }
+  // })
 }
 export function 华北飞行区域(){
+  return request({
+    url: '/backend/db/BEPK_RYB_GSYTHPT.fly_area?'+database2,
+    method: 'post',
+    data:{
+      select:['*'],
+      distinct:false,
+      offset:0,
+      limit:0,
+    }
+  })
   // return request({
-  //   url: '/backend/transaction?'+database1,
+  //   url: '/qt/select/flyarea?'+database1,
   //   method: 'post',
   //   data:{
-  //     sqls:[
-  //       "select * from `华北飞行区域`"
+  //     "select": [
+  //     ],
+  //     "where": [
+  //     ],
+  //     "orderby": [
   //     ]
   //   }
   // })
-  return request({
-    url: '/qt/select/flyarea?'+database1,
-    method: 'post',
-    data:{
-      "select": [
-      ],
-      "where": [
-      ],
-      "orderby": [
-      ]
-    }
-  })
 }
 export function 烟炉数据() {
   return request({
@@ -90,11 +92,12 @@ export function 烟炉数据() {
   })
 }
 export function 协同作业点(){
-  return request({
-    url:'/qt/select/zydpara',
-    method:'post',
+    return request({
+    url: '/backend/db/BEPK_RYB_GSYTHPT.`zydpara` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strMgrUnit = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strRelayUnit = u2.strID?'+database2,
+    method: 'post',
     data:{
-      "where": [
+      select:["z.*","u1.strName as `strMgrUnitName`","u2.strName as `strRelayUnitName`"],
+      where:[
         {
           "relation": "AND",
           "field": "strID",
@@ -107,9 +110,38 @@ export function 协同作业点(){
           "relationship": "!=",
           "condition": "3"
         },
-      ]
+        {
+          "relation": "AND",
+          "field": "strIP",
+          "relationship": "!=",
+          "condition": '1'
+        },
+      ],
+      distinct:false,
+      offset:0,
+      limit:0,
     }
   })
+  // return request({
+  //   url:'/qt/select/zydpara',
+  //   method:'post',
+  //   data:{
+  //     "where": [
+  //       {
+  //         "relation": "AND",
+  //         "field": "strID",
+  //         "relationship": "NOT LIKE",
+  //         "condition": getMask()
+  //       },
+  //       {
+  //         "relation": "AND",
+  //         "field": "strWeapon",
+  //         "relationship": "!=",
+  //         "condition": "3"
+  //       },
+  //     ]
+  //   }
+  // })
 }
 export function 作业点(){
   // return request({
@@ -122,10 +154,11 @@ export function 作业点(){
   //   }
   // })
   return request({
-    url:'/qt/select/zydpara',
-    method:'post',
+    url: '/backend/db/BEPK_RYB_GSYTHPT.`zydpara` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strMgrUnit = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strRelayUnit = u2.strID?'+database2,
+    method: 'post',
     data:{
-      "where": [
+      select:["z.*","u1.strName as `strMgrUnitName`","u2.strName as `strRelayUnitName`"],
+      where:[
         {
           "relation": "AND",
           "field": "strID",
@@ -144,11 +177,40 @@ export function 作业点(){
           "relationship": "!=",
           "condition": '1'
         },
-      ]
+      ],
+      distinct:false,
+      offset:0,
+      limit:0,
     }
   })
+  // return request({
+  //   url:'/qt/select/zydpara',
+  //   method:'post',
+  //   data:{
+  //     "where": [
+  //       {
+  //         "relation": "AND",
+  //         "field": "strID",
+  //         "relationship": "LIKE",
+  //         "condition": getMask()
+  //       },
+  //       {
+  //         "relation": "AND",
+  //         "field": "strWeapon",
+  //         "relationship": "!=",
+  //         "condition": "3"
+  //       },
+  //       {
+  //         "relation": "AND",
+  //         "field": "strIP",
+  //         "relationship": "!=",
+  //         "condition": '1'
+  //       },
+  //     ]
+  //   }
+  // })
 }
-export function 当前作业查询(signal){
+export function 当前作业查询(signal:AbortSignal){
   return request({
     url:'/qt/select/zyddata',
     method:'post',
@@ -205,14 +267,16 @@ export function 历史作业查询(){
     }
   })
 }
-export function 作业状态数据(){
+
+export function 作业状态数据(signal:AbortSignal){
   return request({
+    signal,
     url: '/backend/transaction?'+database2,
     method: 'post',
     data:{
       sqls: [
-        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID ORDER BY z.tmBeginApply DESC",
-        "SELECT z.*,u1.strName as strATCUnitIDName,u2.strName as strUpApplyUnitName FROM `zydhisdata` z left join `units` u1 on z.strATCUnitID=u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = CURDATE() ORDER BY z.tmBeginApply DESC",//当天的数据
+        "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM BEPK_RYB_GSYTHPT.`zyddata` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strATCUnitID = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strUpApplyUnit = u2.strID ORDER BY z.tmBeginApply DESC",
+        "SELECT z.*,u1.strName AS `strATCUnitIDName`,u2.strName AS `strUpApplyUnitName` FROM BEPK_RYB_GSYTHPT.zydhisdata z LEFT JOIN BEPK_RYB_GSYTHPT.units u1 ON z.strATCUnitID = u1.strID LEFT JOIN BEPK_RYB_GSYTHPT.units u2 ON z.strUpApplyUnit = u2.strID WHERE z.tmBeginApply BETWEEN CURRENT_DATE() AND CURRENT_DATE() + 1 ORDER BY z.tmBeginApply DESC",//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
     }
@@ -363,22 +427,30 @@ export function 空域申请批准(data){
     }
   })
 }
-export function 空域申请移除(strWorkID){
+export function 空域申请移除(strWorkID:string){
+  console.log(strWorkID,'移除')
   return request({
-    url:'/qt/delete/zyddata',
-    method:'post',
-    data: {
-      //一般根据主键删除即可
-      "where": [
-          {
-              "relation": "AND",
-              "field": "strWorkID",
-              "relationship": "=",
-              "condition": strWorkID
-          }
-      ]
-    }
+    url:'/backend/db/BEPK_RYB_GSYTHPT.zyddata?'+database2,
+    method:'delete',
+    data: [{
+      strWorkID
+    }]
   })
+  // return request({
+  //   url:'/qt/delete/zyddata',
+  //   method:'post',
+  //   data: {
+  //     //一般根据主键删除即可
+  //     "where": [
+  //         {
+  //             "relation": "AND",
+  //             "field": "strWorkID",
+  //             "relationship": "=",
+  //             "condition": strWorkID
+  //         }
+  //     ]
+  //   }
+  // })
 }
 export function 空域申请拒绝(data){
   return request({
@@ -397,27 +469,8 @@ export function 空域申请拒绝(data){
 }
 
 export function 完成信息查询({page,size,range,zydID}:{page:number,size:number,range?:any,zydID?:string}={page:1,size:10},signal?:AbortSignal){
-  // const data = {
-  //   select:['o.*','z.strName as strZydIDName'],
-  //   where:[
-  //     {
-  //       relation:'AND',
-  //       field:'isquxianconfirmed',
-  //       relationship:'=',
-  //       condition:'1'
-  //     }
-  //   ],
-  //   orderby:[
-  //     {
-  //       field:'beginTm',
-  //       order:'desc',
-  //     }
-  //   ],
-  //   distinct:false,
-  //   offset:(page-1)*size,
-  //   limit:size,
-  // }
   const data = {
+    select:['o.*','z.strName as `strZydIDName`'],
     "where": new Array<any>(),
     "orderby": [
       {
@@ -477,145 +530,158 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
       condition:zydID
     })
   }
-  // return request({
-  //   signal,
-  //   url: 'backend/db/overinfo o left join  `zydpara` z on o.strZydID=z.strID?'+database2,
-  //   method: 'post',
-  //   data,
-  // })
-
   return request({
     signal,
-    url: '/qt/select/overinfo',
+    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo o left join  BEPK_RYB_GSYTHPT.`zydpara` z on o.strZydID=z.strID?'+database2,
     method: 'post',
     data,
   })
+
+  // return request({
+  //   signal,
+  //   url: '/qt/select/overinfo',
+  //   method: 'post',
+  //   data,
+  // })
 }
-// export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
-//   const data = {
-//     select:['o.strZydID as strZydID','z.strName as strZydIDName','count(*) count','max(o.beginTm) maxBeginTm'],
-//     where:[
-//       {
-//         relation:'AND',
-//         field:'isquxianconfirmed',
-//         relationship:'=',
-//         condition:'1'
-//       },
-//       {
-//         relation:'AND',
-//         field:'z.strName',
-//         relationship:'IS NOT',
-//         condition:null
-//       },
-//       {
-//         relation:'AND',
-//         field:'o.strZydID',
-//         relationship:'IS NOT',
-//         condition:null
-//       }
-//     ],
-//     groupby:['o.strZydID','z.strName'],
-//     orderby:[
-//       {
-//         field:'maxBeginTm',
-//         order:'desc',
-//       }
-//     ],
-//     distinct:false,
-//     offset:0,
-//     limit:0,
-//   }
-//   if(range){
-//     data.where.push({
-//       relation:'AND',
-//       field:'o.beginTm',
-//       relationship:'>=',
-//       condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
-//     },
-//     {
-//       relation:'AND',
-//       field:'o.beginTm',
-//       relationship:'<=',
-//       condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
-//     })
-//   }
-//   return request({
-//     signal,
-//     url: 'backend/db/overinfo o LEFT JOIN zydpara z ON o.strZydID=z.strID?'+database2,
-//     method: 'post',
-//     data,
-//   })
-// }
-// export function 获取作业点ID数据(){
-//   return request({
-//     url: 'backend/db/zydpara?'+database2,
-//     method: 'post',
-//     data:{
-//       select:['strID','strName','strPos'],
-//       where:[],
-//       distinct:true,
-//       offset:0,
-//       limit:0,
-//     }
-//   })
-// }
 export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
   const data = {
-    "select":[
-        "strZydID",
-        "COUNT(*) AS Num",
-        "MAX(beginTm) AS Last"
+    select:['o.strZydID as `strZydID`','z.strName as `strZydIDName`','count(*) `count`','max(o.beginTm) `maxBeginTm`'],
+    where:[
+      {
+        relation:'AND',
+        field:'isquxianconfirmed',
+        relationship:'=',
+        condition:'1'
+      },
+      {
+        "relation": "AND",
+        "field": "o.strZydID",
+        "relationship": "like",
+        "condition": getMask()
+      },
+      {
+        relation:'AND',
+        field:'z.strName',
+        relationship:'IS NOT',
+        condition:null
+      },
+      {
+        relation:'AND',
+        field:'o.strZydID',
+        relationship:'IS NOT',
+        condition:null
+      }
     ],
-    "where": [
-        {
-            "relation": "AND",
-            "field": "isquxianconfirmed",
-            "relationship": "=",
-            "condition": "1"
-        },
-        {
-            "relation": "AND",
-            "field": "strZydID",
-            "relationship": "like",
-            "condition": getMask()
-        }
+    groupby:['o.strZydID','z.strName'],
+    orderby:[
+      {
+        field:'maxBeginTm',
+        order:'desc',
+      }
     ],
-    "groupby":[
-        "strZydID"
-    ],
-    "orderby": [
-        {
-            "field": "Last",
-            "order": "desc"
-        }
-    ],
-    "distinct": false,
-    "simple":1
+    distinct:false,
+    offset:0,
+    limit:0,
   }
   if(range){
     data.where.push({
       relation:'AND',
-      field:'beginTm',
+      field:'o.beginTm',
       relationship:'>=',
       condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
     },
     {
       relation:'AND',
-      field:'beginTm',
+      field:'o.beginTm',
       relationship:'<=',
       condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
     })
   }
   return request({
     signal,
-    url:'/qt/select/overinfo',
-    method:'post',
-    data
+    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo o LEFT JOIN BEPK_RYB_GSYTHPT.zydpara z ON o.strZydID=z.strID?'+database2,
+    method: 'post',
+    data,
   })
 }
+export function 获取作业点ID数据(){
+  return request({
+    url: 'backend/db/BEPK_RYB_GSYTHPT.zydpara?'+database2,
+    method: 'post',
+    data:{
+      select:['strID','strName','strPos'],
+      where:[
+        {
+          "relation": "AND",
+          "field": "strID",
+          "relationship": "like",
+          "condition": getMask()
+        }
+      ],
+      distinct:true,
+      offset:0,
+      limit:0,
+    }
+  })
+}
+// export function 完成信息查询中一段时间内作业点数据(range,signal?:AbortSignal){
+//   const data = {
+//     "select":[
+//         "strZydID",
+//         "COUNT(*) AS Num",
+//         "MAX(beginTm) AS Last"
+//     ],
+//     "where": [
+//         {
+//             "relation": "AND",
+//             "field": "isquxianconfirmed",
+//             "relationship": "=",
+//             "condition": "1"
+//         },
+//         {
+//             "relation": "AND",
+//             "field": "strZydID",
+//             "relationship": "like",
+//             "condition": getMask()
+//         }
+//     ],
+//     "groupby":[
+//         "strZydID"
+//     ],
+//     "orderby": [
+//         {
+//             "field": "Last",
+//             "order": "desc"
+//         }
+//     ],
+//     "distinct": false,
+//     "simple":1
+//   }
+//   if(range){
+//     data.where.push({
+//       relation:'AND',
+//       field:'beginTm',
+//       relationship:'>=',
+//       condition:moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
+//     },
+//     {
+//       relation:'AND',
+//       field:'beginTm',
+//       relationship:'<=',
+//       condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
+//     })
+//   }
+//   return request({
+//     signal,
+//     url:'/qt/select/overinfo',
+//     method:'post',
+//     data
+//   })
+// }
 export function 判断是否有完成信息(workID){
   return request({
-    url: 'backend/db/overinfo?'+database2,
+    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
     method: 'post',
     data:{
       select:['workID'],
@@ -635,7 +701,7 @@ export function 判断是否有完成信息(workID){
 }
 export function 判断是否有完成信息确认(workID){
   return request({
-    url: 'backend/db/overinfo_confirmed?'+database2,
+    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo_confirmed?'+database2,
     method: 'post',
     data:{
       select:['workID'],
@@ -711,17 +777,27 @@ export function 判断是否有完成信息确认(workID){
 // }
 export function 增加完成信息(data){
   return request({
-    url:'/qt/insert/overinfo',
-    method:'post',
-    data
+    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
+    method: 'put',
+    data:[wrapKeys(data,key=>key=='workID')]
   })
+  // return request({
+  //   url:'/qt/insert/overinfo',
+  //   method:'post',
+  //   data
+  // })
 }
 export function 增加完成信息确认(data){
   return request({
-    url:'/qt/insert/overinfo_confirm',
-    method:'post',
-    data
+    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo_confirmed?'+database2,
+    method: 'put',
+    data:[wrapKeys(data,key=>key=='workID')]
   })
+  // return request({
+  //   url:'/qt/insert/overinfo_confirm',
+  //   method:'post',
+  //   data
+  // })
 }
 export function 通过workID获取完成信息(workID){
   return request({
@@ -864,44 +940,60 @@ export function 通过workID获取完成信息(workID){
 // }
 export function 修改完成信息(data){
   return request({
-    url:'/qt/update/overinfo',
-    method:'post',
-    data,
+    url:'/backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
+    method:'put',
+    data:[wrapKeys(data,(key)=>key=='workID')],
   })
+  // return request({
+  //   url:'/qt/update/overinfo',
+  //   method:'post',
+  //   data,
+  // })
 }
 export function 删除完成信息(workID){
+  console.log(workID)
   return request({
-    url:'/qt/delete/overinfo',
-    method:'post',
-    data: {
-        //一般根据主键删除即可
-        "where": [
-            {
-                "relation": "AND",
-                "field": "workID",
-                "relationship": "=",
-                "condition": workID
-            }
-        ]
-    }
+    url:'backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
+    method:'delete',
+    data: [{workID}]
   })
+  // return request({
+  //   url:'/qt/delete/overinfo',
+  //   method:'post',
+  //   data: {
+  //       //一般根据主键删除即可
+  //       "where": [
+  //           {
+  //               "relation": "AND",
+  //               "field": "workID",
+  //               "relationship": "=",
+  //               "condition": workID
+  //           }
+  //       ]
+  //   }
+  // })
 }
 export function 删除完成信息确认(workID){
   return request({
-    url:'/qt/delete/overinfo_confirm',
-    method:'post',
-    data: {
-        //一般根据主键删除即可
-        "where": [
-            {
-                "relation": "AND",
-                "field": "workID",
-                "relationship": "=",
-                "condition": workID
-            }
-        ]
-    }
+    url:'backend/db/BEPK_RYB_GSYTHPT.overinfo_confirmed?'+database2,
+    method:'delete',
+    data: [{workID}]
   })
+  // return request({
+  //   url:'/qt/delete/overinfo_confirm',
+  //   method:'post',
+  //   data: {
+  //       //一般根据主键删除即可
+  //       "where": [
+  //           {
+  //               "relation": "AND",
+  //               "field": "workID",
+  //               "relationship": "=",
+  //               "condition": workID
+  //           }
+  //       ]
+  //   }
+  // })
 }
 export function 通过workID恢复完成信息(workID){
   return request({
@@ -1320,52 +1412,101 @@ export function 区域站(){
 
 
 
-export function 注册飞机查询({page,size}){
+export function 注册飞机查询({page,size}:{page:number,size:number}){
   return request({
-    url:'/qt/select/regplane',
+    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
     method:'post',
     data:{
-      orderby: [
-        {
-          "field": "dtRegTime",
-          "order": "DESC"
-        }
-      ],
+      // orderby: [
+      //   {
+      //     "field": "dtRegTime",
+      //     "order": "DESC"
+      //   }
+      // ],
       "distinct": false,
       "offset": (page-1)*size,
       "limit": size
     }
   })
+  // return request({
+  //   url:'/qt/select/regplane',
+  //   method:'post',
+  //   data:{
+  //     orderby: [
+  //       {
+  //         "field": "dtRegTime",
+  //         "order": "DESC"
+  //       }
+  //     ],
+  //     "distinct": false,
+  //     "offset": (page-1)*size,
+  //     "limit": size
+  //   }
+  // })
 }
-export function 删除飞机(address:string){
+export function 判断飞机是否存在(iAddress:string){
   return request({
-    url:'/qt/delete/regplane',
+    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
     method:'post',
-    data: {
-      "where": [
-          {
-            "relation": "AND",
-            "field": "iAddress",
-            "relationship": "=",
-            "condition": address
-          }
-      ]
+    data:{
+      where:[
+        {
+          "relation": "AND",
+          "field": "iAddress",
+          "relationship": "=",
+          "condition": iAddress
+        }
+      ],
+      "distinct": false,
+      "offset": 0,
+      "limit": 0
     }
   })
 }
-export function 新增飞机(data){
+export function 删除飞机(iAddress:string){
   return request({
-    url:'/qt/insert/regplane',
-    method:'post',
-    data
+    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    method:'delete',
+    data: [{iAddress}]
   })
+  // return request({
+  //   url:'/qt/delete/regplane',
+  //   method:'post',
+  //   data: {
+  //     "where": [
+  //         {
+  //           "relation": "AND",
+  //           "field": "iAddress",
+  //           "relationship": "=",
+  //           "condition": address
+  //         }
+  //     ]
+  //   }
+  // })
 }
-export function 修改飞机(data){
+export function 新增飞机(data:any){
   return request({
-    url:'/qt/update/regplane',
-    method:'post',
+    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    method:'put',
     data
   })
+  // return request({
+  //   url:'/qt/insert/regplane',
+  //   method:'post',
+  //   data
+  // })
+}
+export function 修改飞机(data:any){
+  return request({
+    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    method:'put',
+    data
+  })
+  // return request({
+  //   url:'/qt/update/regplane',
+  //   method:'post',
+  //   data
+  // })
 }
 
 import {csv2list} from '~/tools'

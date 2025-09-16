@@ -5,7 +5,7 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="18">
                         <span class="label">飞机地址/代码:</span>
-                        <el-input-number v-model="address" :min="0" :max="4095"></el-input-number>
+                        <el-input-number v-model="iAddress" :min="0" :max="4095"></el-input-number>
                     </el-col>
                     <el-col :span="6">
                         <el-input v-model="test" style="width:100%"></el-input>
@@ -14,13 +14,13 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">飞机标识:</span>
-                        <el-input v-model="data.sign"></el-input>
+                        <el-input v-model="data.strCallCode"></el-input>
                     </el-col>
                 </el-row>
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">协议类型:</span>
-                        <el-select v-model="data.protocol" placeholder="请选择" style="width: 100%" clearable filterable>
+                        <el-select v-model="data.strProtocol" placeholder="请选择" style="width: 100%" clearable filterable>
                             <el-option v-for="item in protocolOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -28,7 +28,7 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">机型:</span>
-                        <el-select v-model="data.plane_type" placeholder="请选择" style="width: 100%" clearable filterable allow-create default-first-option>
+                        <el-select v-model="data.strPlane" placeholder="请选择" style="width: 100%" clearable filterable allow-create default-first-option>
                             <el-option v-for="item in plane_typeOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -38,7 +38,7 @@
                         <span class="label">注册时间:</span>
                         <el-date-picker
                             style="width: 100%;"
-                            v-model="data.reg_time"
+                            v-model="data.dtRegTime"
                             type="datetime"
                             placeholder="选择日期时间"
                             value-format="YYYY-MM-DD HH:mm:ss"
@@ -55,30 +55,30 @@
 </template>
 <script lang="ts" setup>
 import { ElMessage } from 'element-plus'
-import {新增飞机} from "~/api/天工.ts";
+import {新增飞机,判断飞机是否存在} from "~/api/天工.ts";
 import moment from "moment";
 import { reactive, onMounted, onBeforeUnmount,watch,ref,inject,computed } from "vue";
-const address = computed({
+const iAddress = computed({
     get(){
-        return Number(data.value.address)
+        return Number(data.value.iAddress)
     },
     set(val){
         if(val==null){
             return
         }else{
-            data.value.address = val.toString()
+            data.value.iAddress = val.toString()
         }
     }
 })
 const test = computed({
     get(){
-        return Number(data.value.address).toString(8).padStart(4,'0')
+        return Number(data.value.iAddress).toString(8).padStart(4,'0')
     },
     set(val){
         if(val==null||val==''){
             return
         }else{
-            data.value.address = parseInt(val,8).toString(10)
+            data.value.iAddress = parseInt(val,8).toString(10)
         }
     }
 })
@@ -95,30 +95,40 @@ const protocolOptions = reactive([
     { value: '雷达', label: "雷达" },
     { value: '电台', label: "电台" },
 ]);
-let timer
+let timer:number
 onMounted(()=>{
     timer = setInterval(()=>{
-        if(moment(data.value.reg_time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
-            data.value.reg_time = moment().format('YYYY-MM-DD HH:mm:ss')
+        if(moment(data.value.dtRegTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            data.value.dtRegTime = moment().format('YYYY-MM-DD HH:mm:ss')
         }
     },1000)
 })
 onBeforeUnmount(()=>{
     clearTimeout(timer)
 })
-const save = async(data) => {
-    新增飞机(data).then((res)=>{
-        ElMessage({
-            message: '保存成功',
-            type: 'success',
-        })
-        触发新增飞机信息查询.value = Date.now()
-        show.value = false;
-    }).catch(err=>{
-        ElMessage({
-            message: '保存失败',
-            type:'error',
-        })
+import { wrapKeys } from '~/tools';
+const save = async(data:any) => {
+    判断飞机是否存在(data.iAddress).then((res:any)=>{
+        if(res.data.count>0){
+            ElMessage({
+                message: '该飞机已经存在',
+                type:'error',
+            })
+        }else{
+            新增飞机([wrapKeys(data,key=>key=='iAddress')]).then((res)=>{
+                ElMessage({
+                    message: '保存成功',
+                    type: 'success',
+                })
+                触发新增飞机信息查询.value = Date.now()
+                show.value = false;
+            }).catch((err:Error)=>{
+                ElMessage({
+                    message: '保存失败',
+                    type:'error',
+                })
+            })
+        }
     })
 };
 const show = defineModel('show',{
@@ -126,11 +136,14 @@ const show = defineModel('show',{
 })
 const data = defineModel('data',{
     default:reactive({
-        "address": "1705",
-        "plane_type": "国王",
-        "protocol": "雷达",
-        "reg_time": moment().format('YYYY-MM-DD HH:mm:ss'),
-        "sign": "B102P"
+        "iAddress": "1705",
+        "strPlane": "国王",
+        "strProtocol": "雷达",
+        "dtRegTime": moment().format('YYYY-MM-DD HH:mm:ss'),
+        "strCallCode": "B102P",
+        ZHiAddress:null,
+        strPlaneIP:null,
+        strPhoneNo:null,
     })
 })
 const cancel = () => {

@@ -5,19 +5,19 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">飞机地址/代码:</span>
-                        <el-input :value="Number(data.address).toString(8).padStart(4,'0')" disabled></el-input>
+                        <el-input :value="Number(data.iAddress).toString(8).padStart(4,'0')" disabled></el-input>
                     </el-col>
                 </el-row>
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">飞机标识:</span>
-                        <el-input v-model="data.sign"></el-input>
+                        <el-input v-model="data.strCallCode"></el-input>
                     </el-col>
                 </el-row>
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">协议类型:</span>
-                        <el-select v-model="data.protocol" placeholder="请选择" style="width: 100%" clearable filterable>
+                        <el-select v-model="data.strProtocol" placeholder="请选择" style="width: 100%" clearable filterable>
                             <el-option v-for="item in protocolOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -25,7 +25,7 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="24">
                         <span class="label">机型:</span>
-                        <el-select v-model="data.plane_type" placeholder="请选择" style="width: 100%" clearable filterable allow-create default-first-option>
+                        <el-select v-model="data.strPlane" placeholder="请选择" style="width: 100%" clearable filterable allow-create default-first-option>
                             <el-option v-for="item in plane_typeOptions" :key="item.value" :label="item.label" :value="item.value" />
                         </el-select>
                     </el-col>
@@ -35,7 +35,7 @@
                         <span class="label">注册时间:</span>
                         <el-date-picker
                             style="width: 100%;"
-                            v-model="data.reg_time"
+                            v-model="data.dtRegTime"
                             type="datetime"
                             placeholder="选择日期时间"
                             value-format="YYYY-MM-DD HH:mm:ss"
@@ -68,9 +68,9 @@ const protocolOptions = reactive([
     { value: '雷达', label: "雷达" },
     { value: '电台', label: "电台" },
 ]);
-
-const save = async(data) => {
-    修改飞机(data).then((res)=>{
+import { wrapKeys } from '~/tools';
+const save = async(data:any) => {
+    修改飞机([wrapKeys(data,key=>key=='iAddress')]).then((res)=>{
         ElMessage({
             message: '保存成功',
             type: 'success',
@@ -89,11 +89,14 @@ const show = defineModel('show',{
 })
 const data = defineModel('data',{
     default:reactive({
-        "address": "1705",
-        "plane_type": "国王",
-        "protocol": "雷达",
-        "reg_time": moment().format('YYYY-MM-DD HH:mm:ss'),
-        "sign": "B102P"
+        "iAddress": "1705",
+        "strPlane": "国王",
+        "strProtocol": "雷达",
+        "dtRegTime": moment().format('YYYY-MM-DD HH:mm:ss'),
+        "strCallCode": "B102P",
+        ZHiAddress:null,
+        strPlaneIP:null,
+        strPhoneNo:null,
     })
 })
 const cancel = () => {

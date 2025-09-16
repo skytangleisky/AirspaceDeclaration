@@ -745,3 +745,11 @@ export function csv2list(csv:string){
   })
   return data
 }
+export function wrapKeys<T>(obj: any, predicate: (key: string) => boolean):T {
+  return Object.fromEntries(
+    Object.entries(obj).map(([k, v]) => [
+      predicate(k) ? `[${k}]` : k,
+      v
+    ])
+  ) as T;
+}

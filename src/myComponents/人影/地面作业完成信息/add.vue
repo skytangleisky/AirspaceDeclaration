@@ -267,22 +267,22 @@ const save = async(data) => {
         return
     }
     const workID = `RW${data.strID}${moment(data.beginTm,'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD-HH-mm-ss')}`
-    // const result1 = await 判断是否有完成信息(workID)
-    // if(result1.data.results.length>0){
-    //     ElMessage({
-    //         message: '\'完成信息\'已经存在',
-    //         type: 'error',
-    //     })
-    //     return
-    // }
-    // const result2 = await 判断是否有完成信息确认(workID)
-    // if(result2.data.results.length>0){
-    //     ElMessage({
-    //         message: '\'完成信息确认\'已经存在',
-    //         type: 'error',
-    //     })
-    //     return
-    // }
+    const result1 = await 判断是否有完成信息(workID)
+    if(result1.data.results.length>0){
+        ElMessage({
+            message: '\'完成信息\'已经存在',
+            type: 'error',
+        })
+        return
+    }
+    const result2 = await 判断是否有完成信息确认(workID)
+    if(result2.data.results.length>0){
+        ElMessage({
+            message: '\'完成信息确认\'已经存在',
+            type: 'error',
+        })
+        return
+    }
     const mask = getMask()
     增加完成信息({
         workID,

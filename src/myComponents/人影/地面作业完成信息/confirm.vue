@@ -252,7 +252,9 @@ const confirm = async(data) => {
     data.recordTm = moment().format('YYYY-MM-DD HH:mm:ss')
     修改完成信息(data).then(async(res)=>{
         delete data.isquxianconfirmed
-        await 增加完成信息确认(data)
+        if(mask=='%%'){//只有北京市确认，才能增加完成信息确认
+            await 增加完成信息确认(data)
+        }
         ElMessage({
             message: '确认成功',
             type: 'success',

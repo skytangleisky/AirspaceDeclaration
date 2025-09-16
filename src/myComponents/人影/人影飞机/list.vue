@@ -24,11 +24,11 @@
                         </div>
                     </template>
                     </el-table-column>
-                    <el-table-column prop="sign" label="飞机标识" width="100" />
-                    <el-table-column prop="address" label="地址/代码" width="120" :formatter="(row, column, cellValue) => Number(cellValue).toString(8).padStart(4,'0')" />
-                    <el-table-column prop="protocol" label="类型" width="60" />
-                    <el-table-column prop="plane_type" label="机型" width="100" />
-                    <el-table-column prop="reg_time" label="注册日期" width="200" />
+                    <el-table-column prop="strCallCode" label="飞机标识" width="100" />
+                    <el-table-column prop="iAddress" label="地址/代码" width="120" :formatter="(row, column, cellValue) => Number(cellValue).toString(8).padStart(4,'0')" />
+                    <el-table-column prop="strProtocol" label="类型" width="60" />
+                    <el-table-column prop="strPlane" label="机型" width="100" />
+                    <el-table-column prop="dtRegTime" label="注册日期" width="200" />
                 </el-table>
                 <el-pagination size="small" v-model:current-page="pageOption.page" :page-size="pageOption.size"  layout="prev,pager, next, jumper, total" :total="pageOption.total" style="margin-top:10px"/>
                 <div class="page-btns" style="display: flex;justify-content: flex-end;">
@@ -76,8 +76,8 @@ watch([()=>pageOption.page,()=>pageOption.size,触发新增飞机信息查询],(
 {
     immediate:true
 })
-function 删除(row){
-    删除飞机(row.address).then(res=>{
+function 删除(row:any){
+    删除飞机(row.iAddress).then(res=>{
         ElMessage({
             message: '删除成功',
             type:'success',
