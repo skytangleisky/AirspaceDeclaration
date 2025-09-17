@@ -1,18 +1,38 @@
 <template>
   <teleport to="#wstd-container">
-    <div v-dragable class="meeting" v-show="show" v-if="render">
+    <div v-dragable class="meeting" v-show="SHOW" v-if="IF">
       <slot></slot>
-      <div class="close-btn" @click="show=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
+      <div class="close-btn" @click="close" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div>
   </teleport>
 </template>
 <script setup lang="ts">
-const show = defineModel('show',{
-  default:true
+import {ref, watch} from 'vue'
+function close(){
+  if(once.value){
+    IF.value=false
+  }else{
+    SHOW.value=false
+  }
+  render.value = false
+}
+const SHOW = ref(true)
+const IF = ref(true)
+const once = defineModel('once',{
+  default:false
 })
 const render = defineModel('render',{
+  required:false,
   default:true
 })
+watch(render,(newVal,oldVal)=>{
+  if(once.value){
+    IF.value=newVal
+  }else{
+    SHOW.value=newVal
+  }
+},{immediate:true})
+
 import closeUrl from '~/assets/close.svg?raw'
 </script>
 <style lang="scss" scoped>

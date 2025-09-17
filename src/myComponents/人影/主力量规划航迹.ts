@@ -126,7 +126,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
       geometry: {
         type: 'LineString',
         coordinates: new Array<[number,number]>()
-      }
+      },
     }
 
     const arriveData = {
@@ -158,6 +158,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
         data: arriveData
       },
       layout: {
+        visibility:setting.人影.监控.规划航线&&setting.人影.监控.正西?'visible':'none',
         'line-join': 'round',
         'line-cap': 'round'
       },
@@ -175,6 +176,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
         data: arriveData
       },
       layout: {
+        visibility:setting.人影.监控.规划航线&&setting.人影.监控.正西?'visible':'none',
         'line-join': 'round',
         'line-cap': 'round'
       },
@@ -193,6 +195,7 @@ export function 绘制主力量规划轨迹(map,规划航线数据,setting,wgs84
         data: worklineData
       },
       layout: {
+        visibility:setting.人影.监控.规划航线&&setting.人影.监控.正西?'visible':'none',
         'line-join': 'round',
         'line-cap': 'round'
       },

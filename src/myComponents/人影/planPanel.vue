@@ -25,7 +25,7 @@
                                 }}</span>
 
                                 <span>{{ item.strZydID }}</span>
-                                <span class="font-size-14px font-extrabold">{{
+                                <span style="font-size: 14px;font-weight: bolder;">{{
                                     item.strName
                                 }}</span>
                             </div>
@@ -123,9 +123,10 @@
                                 </div>
                                 <div class="item-right-bottom">
                                     <div
-                                        :class="`flex justify-center items-center ${申请(
+                                        class="item-right-bottom-item"
+                                        :style="`display: flex;align-items: center;justify-content: center;${申请(
                                             item
-                                        )} item-right-bottom-item`"
+                                        )}`"
                                     >
                                         申请({{
                                             moment(item.tmBeginApply).format(
@@ -134,9 +135,10 @@
                                         }})
                                     </div>
                                     <div
-                                        :class="`flex-1 flex justify-center items-center ${批复(
+                                        class="item-right-bottom-item"
+                                        :style="`flex:1;display:flex;justify-content: center;align-items: center;${批复(
                                             item
-                                        )} item-right-bottom-item`"
+                                        )}`"
                                     >
                                         <template v-if="!item.bAnswerAccept">
                                             批复
@@ -153,16 +155,18 @@
                                         </template>
                                     </div>
                                     <div
-                                        :class="`flex-1 flex justify-center items-center ${开始(
+                                        class="item-right-bottom-item"
+                                        :style="`flex:1;display: flex;justify-content: center;align-items: center;${开始(
                                             item
-                                        )} item-right-bottom-item`"
+                                        )}`"
                                     >
                                         {{ beginText(item) }}
                                     </div>
                                     <div
-                                        :class="`flex-1 flex justify-center items-center ${结束(
+                                        class="item-right-bottom-item"
+                                        :style="`flex:1;display: flex;justify-content: center;align-items: center;${结束(
                                             item
-                                        )} item-right-bottom-item`"
+                                        )}`"
                                     >
                                         <template
                                             v-if="
@@ -173,11 +177,12 @@
                                         >
                                             (
                                             <div
-                                                :class="`${
+                                                class="item-right-bottom-item"
+                                                :style="`${
                                                     endSeconds(item) < 10
-                                                        ? 'color-#f00'
-                                                        : 'color-inherit'
-                                                } item-right-bottom-item`"
+                                                        ? 'color:#f00'
+                                                        : 'color:inherit'
+                                                }`"
                                             >
                                                 {{
                                                     Math.floor(
@@ -206,9 +211,10 @@
                                         </template>
                                     </div>
                                     <div
-                                        :class="`flex-1 flex justify-center items-center ${完成(
+                                        class="item-right-bottom-item"
+                                        :style="`flex:1;display: flex;justify-content: center;align-items: center;${完成(
                                             item
-                                        )} item-right-bottom-item`"
+                                        )}`"
                                     >
                                         完成
                                     </div>
@@ -429,63 +435,63 @@ const 发送状态格式化 = (key: number) => {
 const 申请 = (item: planDataType) => {
     switch (工作状态格式化(item.ubyStatus)) {
         case "作业结束":
-            return "bg-#3D5E86";
+            return "background-color:#3D5E86";
         case "作业申请待批复":
-            return "bg-#3ac8a5";
+            return "background-color:#3ac8a5";
         case "作业不批准":
-            return "bg-#3D5E86";
+            return "background-color:#3D5E86";
         case "作业批准":
-            return "bg-#3ac8a5";
+            return "background-color:#3ac8a5";
         case "作业开始":
-            return "bg-#3ac8a5";
+            return "background-color:#3ac8a5";
         default:
-            return "bg-#1E3148";
+            return "background-color:#1E3148";
     }
 };
 const 批复 = (item: planDataType) => {
     switch (工作状态格式化(item.ubyStatus)) {
         case "作业结束":
-            return "bg-#3D5E86";
+            return "background-color:#3D5E86";
         case "作业不批准":
-            return "bg-#3D5E86";
+            return "background-color:#3D5E86";
         case "作业批准":
-            return "bg-#3ac8a5";
+            return "background-color:#3ac8a5";
         case "作业开始":
-            return "bg-#3ac8a5";
+            return "background-color:#3ac8a5";
         default:
-            return "bg-#1E3148";
+            return "background-color:#1E3148";
     }
 };
 const 开始 = (item: planDataType) => {
     switch (工作状态格式化(item.ubyStatus)) {
         case "作业结束":
-            return "bg-#3D5E86";
+            return "background-color:#3D5E86";
         case "作业不批准":
-            return "bg-#f56c6c";
+            return "background-color:#f56c6c";
         case "作业开始":
-            return "bg-#3ac8a5";
+            return "background-color:#3ac8a5";
         default:
-            return "bg-#1E3148";
+            return "background-color:#1E3148";
     }
 };
 const 结束 = (item: planDataType) => {
     switch (工作状态格式化(item.ubyStatus)) {
         case "作业结束":
-            return "bg-#3D5E86";
+            return "background-color:#3D5E86";
         case "作业不批准":
-            return "bg-#f56c6c";
+            return "background-color:#f56c6c";
         default:
-            return "bg-#1E3148";
+            return "background-color:#1E3148";
     }
 };
 const 完成 = (item: planDataType) => {
     switch (工作状态格式化(item.ubyStatus)) {
         case "作业结束":
-            return "bg-#3D5E86";
+            return "backgournd-color:#3D5E86";
         case "作业不批准":
-            return "bg-#f56c6c";
+            return "background-color:#f56c6c";
         default:
-            return "bg-#1E3148";
+            return "background-color:#1E3148";
     }
 };
 </script>

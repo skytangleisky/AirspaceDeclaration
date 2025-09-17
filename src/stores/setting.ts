@@ -437,7 +437,7 @@ export const useSettingStore = defineStore('setting',{
         zdz:false,
         test:false,//消云试验点
         zydTag:'all',//用于过滤作业点显示
-        正西:true,
+        正西:false,
         西北:false,
         西南:false,
         bearing:0,

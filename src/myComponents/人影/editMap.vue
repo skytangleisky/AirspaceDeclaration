@@ -75,7 +75,7 @@
     <!-- <div v-dragable class="meeting" v-if="metting">
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div> -->
-    <Frame v-model:render="metting">
+    <Frame v-model:render="metting" :once="true">
       <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
     </Frame>
   </div>
@@ -396,7 +396,6 @@ let 批量批复 = () => {
 const 人工批复 = () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
-  properties.workBeginTime = moment().format('HH:mm:ss')
   emits("update:prevReplyShow", true);
   emits("update:prevReplyData", properties);
 }
@@ -1708,12 +1707,12 @@ onMounted(async() => {
         style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
       airplaneMock:{
-        style: 'fill:#fff;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+        style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
     })
     await loadImage2Map(map,trackSvg,6,6,{
       'trackSvg':{
-        style:"fill:#fff;stroke:black;stroke-width:50px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#0f0;stroke:black;stroke-width:50px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       }
     })
     await loadImage2Map(map,adsbUrl,22,22,{
@@ -3544,7 +3543,12 @@ onMounted(async() => {
             row.ubyStatus = 100
           }
           //传入workID
-          map.setFeatureState({source:'zydSource',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),workBeginTime:moment().format('HH:mm:ss'),strWorkID:row.strWorkID})
+          map.setFeatureState({source:'zydSource',id:row.strZydID},{
+            ubyStatus:status2value(row.ubyStatus),
+            workBeginTime:moment().format('HH:mm:ss'),
+            strWorkID:row.strWorkID,
+            tmBeginApply:row.tmBeginApply,
+          })
           for (let i = 0; i < circleFeaturesData.features.length; i++) {
             if (circleFeaturesData.features[i].properties.strID == row.strZydID) {
               Object.assign(circleFeaturesData.features[i].properties,row)

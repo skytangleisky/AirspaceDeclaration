@@ -5,7 +5,7 @@
     <el-table-column prop="iAddress" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
     <el-table-column prop="height" label="高度" />
     <el-table-column prop="update_time" label="最后更新时间" width="180"/>
-    <el-table-column prop="speed" label="速度" :formatter="(a,b,val)=>(val*3.6).toFixed(2)+'km/h'"/>
+    <el-table-column prop="speed" label="速度" width="140" :formatter="(a,b,val)=>(val*3.6).toFixed(2)+'km/h'"/>
     <el-table-column prop="orientation" label="航向" :formatter="(a,b,val)=>val.toFixed(2)+'&deg;'"/>
   </el-table>
   <List></List>

@@ -107,7 +107,7 @@
                 </div>
             </div>
         </div>
-        <Frame v-model:show="show">
+        <Frame v-model:render="show">
             <ZydFilter></ZydFilter>
         </Frame>
     </div>

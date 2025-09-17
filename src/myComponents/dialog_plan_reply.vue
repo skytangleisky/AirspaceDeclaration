@@ -162,7 +162,7 @@
                     <el-input
                         disabled
                         name="申请作业时间"
-                        :value="data.beginTime"
+                        :value="data.tmBeginApply"
                         @mousedown.stop
                     />
                     <!-- <el-time-picker

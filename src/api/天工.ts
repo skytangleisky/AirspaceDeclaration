@@ -73,7 +73,7 @@ export function 华北飞行区域(){
 }
 export function 烟炉数据() {
   return request({
-    url: 'backend/db/stoves?'+database2,
+    url: '/backend/db/BEPK_RYB_GSYTHPT.stoves?'+database2,
     method: 'post',
     data:{
       select:['*'],
