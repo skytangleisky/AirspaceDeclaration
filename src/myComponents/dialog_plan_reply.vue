@@ -1,5 +1,5 @@
 <template>
-    <div class="modal absolute w-full h-full left-0 top-0" v-if="show">
+    <div class="modal" v-if="show">
         <div class="dragDialog">
             <div class="item-box">
                 <div class="item-label">发报单位</div>
@@ -18,7 +18,7 @@
                     <el-input
                         disabled
                         name="发报时间"
-                        :value="data.beginTime"
+                        :value="data.tmUpdate"
                         @mousedown.stop
                     />
                 </div>
@@ -393,7 +393,10 @@ onBeforeUnmount(() => {
 .modal {
     z-index: 4;
     background: #00000088;
+    box-sizing: border-box;
     position: relative;
+    width:100%;
+    height: 100%;left:0;top:0;
     .dragDialog {
         position: absolute;
         width: 600px;

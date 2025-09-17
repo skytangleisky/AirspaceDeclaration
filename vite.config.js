@@ -3,7 +3,6 @@ import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
 import AutoImport from "unplugin-auto-import/vite";
 import inject from '@rollup/plugin-inject'
-import Unocss from 'unocss/vite'
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
@@ -21,13 +20,6 @@ const option = {
 const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
-import {
-  presetAttributify,
-  presetIcons,
-  presetUno,
-  transformerDirectives,
-  transformerVariantGroup,
-} from 'unocss'
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -55,20 +47,6 @@ export default defineConfig({
       $: "jquery",
       // jQuery: "jquery",
       // "window.jQuery": "jquery"
-    }),
-    Unocss({
-      presets: [
-        presetUno(),
-        presetAttributify(),
-        presetIcons({
-          scale: 1.2,
-          warn: true,
-        }),
-      ],
-      transformers: [
-        transformerDirectives(),
-        transformerVariantGroup(),
-      ]
     }),
   ],
   build: {

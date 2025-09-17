@@ -3548,6 +3548,7 @@ onMounted(async() => {
             workBeginTime:moment().format('HH:mm:ss'),
             strWorkID:row.strWorkID,
             tmBeginApply:row.tmBeginApply,
+            tmUpdate:row.tmUpdate,
           })
           for (let i = 0; i < circleFeaturesData.features.length; i++) {
             if (circleFeaturesData.features[i].properties.strID == row.strZydID) {
