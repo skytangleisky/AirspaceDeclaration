@@ -1017,7 +1017,7 @@ export function 通过workID恢复完成信息(workID){
 }
 export function 获取所有烟炉的预约点火信息(){
   return request({
-    url: 'backend/db/appoint?'+database2,
+    url: 'backend/db/BEPK_RYB_GSYTHPT.appoint?'+database2,
     method: 'post',
     data:{
       select:['*'],
@@ -1034,7 +1034,7 @@ export function 预约点火({beginTime,interval,flare,times,stoveID}){
     method: 'post',
     data:{
       sqls:[
-        "INSERT INTO `appoint` (`beginTime`, `interval`, `flare`, `times`, `stoveID`) VALUES (?,?,?,?,?);",
+        "INSERT INTO BEPK_RYB_GSYTHPT.appoint (`beginTime`, `interval`, `flare`, `times`, `stoveID`) VALUES (?,?,?,?,?);",
       ],
       vals:[
         [
@@ -1054,7 +1054,7 @@ export function 取消预约点火(stoveID){
     method: 'post',
     data:{
       sqls:[
-        "DELETE FROM `appoint` WHERE `stoveID` = ?;",
+        "DELETE FROM BEPK_RYB_GSYTHPT.appoint WHERE `stoveID` = ?;",
       ],
       vals:[
         [

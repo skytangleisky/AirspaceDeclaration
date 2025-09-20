@@ -5,158 +5,156 @@
             <div class="module-title-decoration"></div>
         </div>
         <div class="module-bottom">
-            <el-scrollbar height="100%">
-                <div class="form-item">
-                    <div class="item-title">预约点火</div>
-                    <div class="item-content">
-                        <el-form :model="appointForm" inline>
-                            <el-form-item label="间隔">
-                                <el-input-number
-                                    :disabled="appointed"
-                                    :min="0"
-                                    v-model="appointForm.interval"
-                                >
-                                    <template #suffix>
-                                        <span>分钟</span>
-                                    </template>
-                                </el-input-number>
-                            </el-form-item>
-                            <el-form-item label="每次点燃">
-                                <el-input-number
-                                    :disabled="appointed"
-                                    :min="0"
-                                    v-model="appointForm.flare"
-                                    ><template #suffix>
-                                        <span>支</span>
-                                    </template></el-input-number
-                                >
-                            </el-form-item>
-                            <el-form-item label="点火次数">
-                                <el-input-number
-                                    :disabled="appointed"
-                                    :min="0"
-                                    v-model="appointForm.times"
-                                ></el-input-number>
-                            </el-form-item>
+            <div class="form-item">
+                <div class="item-title">预约点火</div>
+                <div class="item-content">
+                    <el-form :model="appointForm" inline>
+                        <el-form-item label="间隔">
+                            <el-input-number
+                                :disabled="appointed"
+                                :min="0"
+                                v-model="appointForm.interval"
+                            >
+                                <template #suffix>
+                                    <span>分钟</span>
+                                </template>
+                            </el-input-number>
+                        </el-form-item>
+                        <el-form-item label="每次点燃">
+                            <el-input-number
+                                :disabled="appointed"
+                                :min="0"
+                                v-model="appointForm.flare"
+                                ><template #suffix>
+                                    <span>支</span>
+                                </template></el-input-number
+                            >
+                        </el-form-item>
+                        <el-form-item label="点火次数">
+                            <el-input-number
+                                :disabled="appointed"
+                                :min="0"
+                                v-model="appointForm.times"
+                            ></el-input-number>
+                        </el-form-item>
 
-                            <el-form-item label="起始时间">
-                                <el-date-picker
-                                    :disabled="appointed"
-                                    v-model="appointForm.beginTime"
-                                    value-format="YYYY-MM-DD HH:mm:ss"
-                                    format="YYYY-MM-DD HH:mm:ss"
-                                    type="datetime"
-                                    placeholder="请选择起始时间"
-                                    :clearable="false"
+                        <el-form-item label="起始时间">
+                            <el-date-picker
+                                :disabled="appointed"
+                                v-model="appointForm.beginTime"
+                                value-format="YYYY-MM-DD HH:mm:ss"
+                                format="YYYY-MM-DD HH:mm:ss"
+                                type="datetime"
+                                placeholder="请选择起始时间"
+                                :clearable="false"
+                            />
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button v-if="appointed" type="warning" @click="取消预约">取消预约</el-button>
+                            <el-button v-else type="primary" @click="预约">开始预约</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="item-title">即时点火</div>
+                <div class="item-content">
+                    <el-form :model="immedForm" inline>
+                        <el-form-item label="烟条个数">
+                            <el-input-number :min="1" :max="1" v-model="immedForm.num">
+                                <template #suffix>
+                                    <span>支</span>
+                                </template>
+                            </el-input-number>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="fire()">开始点火</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
+            <div class="form-item">
+                <div class="item-title">烟炉装载及卸载</div>
+                <div class="item-content">
+                    <el-form
+                        :model="stoveLoadForm"
+                        inline
+                    >
+                        <el-form-item>
+                            <el-select
+                                disabled
+                                v-model="stoveLoadForm.loadNum"
+                                placeholder="请选择装载烟炉"
+                            >
+                                <el-option
+                                    v-for="item in stoveOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
                                 />
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button v-if="appointed" type="warning" @click="取消预约">取消预约</el-button>
-                                <el-button v-else type="primary" @click="预约">开始预约</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                </div>
-                <div class="form-item">
-                    <div class="item-title">即时点火</div>
-                    <div class="item-content">
-                        <el-form :model="immedForm" inline>
-                            <el-form-item label="烟条个数">
-                                <el-input-number :min="1" :max="1" v-model="immedForm.num">
-                                    <template #suffix>
-                                        <span>支</span>
-                                    </template>
-                                </el-input-number>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" @click="fire()">开始点火</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                </div>
-                <div class="form-item">
-                    <div class="item-title">烟炉装载及卸载</div>
-                    <div class="item-content">
-                        <el-form
-                            :model="stoveLoadForm"
-                            inline
-                        >
-                            <el-form-item>
-                                <el-select
-                                    disabled
-                                    v-model="stoveLoadForm.loadNum"
-                                    placeholder="请选择装载烟炉"
-                                >
-                                    <el-option
-                                        v-for="item in stoveOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    />
-                                </el-select>
-                                <el-button type="primary" class="l-btn" @click="load">装载烟炉</el-button>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-select
-                                    disabled
-                                    v-model="stoveLoadForm.unloadNum"
-                                    placeholder="请选择卸载烟炉"
-                                >
-                                    <el-option
-                                        v-for="item in stoveOptions"
-                                        :key="item.value"
-                                        :label="item.label"
-                                        :value="item.value"
-                                    />
-                                </el-select>
-                                <el-button type="primary" class="l-btn" @click="unloadStove">卸载烟炉</el-button
-                                >
-                            </el-form-item>
-                            <el-form-item>
-                                <el-input-number
-                                    :min="1"
-                                    v-model="stoveLoadForm.smokeBarIndex"
-                                >
-                                </el-input-number>
-                                <el-button type="primary" class="l-btn" @click="unload">卸载烟条</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
-                </div>
-                <div class="form-item">
-                    <div class="item-title">系统时间设置及查询</div>
-                    <div class="item-content">
-                        <el-form :model="systenInfo" inline>
-                            <el-form-item>
-                                <el-button type="primary" @click="queryTime">查询时间</el-button>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-date-picker
-                                    v-model="systenInfo.time"
-                                    type="datetime"
-                                    placeholder="请选择时间"
-                                    :clearable="false"
+                            </el-select>
+                            <el-button type="primary" class="l-btn" @click="load">装载烟炉</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-select
+                                disabled
+                                v-model="stoveLoadForm.unloadNum"
+                                placeholder="请选择卸载烟炉"
+                            >
+                                <el-option
+                                    v-for="item in stoveOptions"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value"
                                 />
-                                <el-button type="primary" class="l-btn" @click="setTime">设置时间</el-button
-                                >
-                            </el-form-item>
-                        </el-form>
-                    </div>
+                            </el-select>
+                            <el-button type="primary" class="l-btn" @click="unloadStove">卸载烟炉</el-button
+                            >
+                        </el-form-item>
+                        <el-form-item>
+                            <el-input-number
+                                :min="1"
+                                v-model="stoveLoadForm.smokeBarIndex"
+                            >
+                            </el-input-number>
+                            <el-button type="primary" class="l-btn" @click="unload">卸载烟条</el-button>
+                        </el-form-item>
+                    </el-form>
                 </div>
-                <div class="form-item">
-                    <div class="item-title">信息获取</div>
-                    <div class="item-content">
-                        <el-form :model="systenInfo" inline>
-                            <el-form-item>
-                                <el-button type="primary" @click="click">查询站点信息</el-button>
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button type="primary" @click="queryWeatherInfo">查询站点气象信息</el-button>
-                            </el-form-item>
-                        </el-form>
-                    </div>
+            </div>
+            <div class="form-item">
+                <div class="item-title">系统时间设置及查询</div>
+                <div class="item-content">
+                    <el-form :model="systenInfo" inline>
+                        <el-form-item>
+                            <el-button type="primary" @click="queryTime">查询时间</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-date-picker
+                                v-model="systenInfo.time"
+                                type="datetime"
+                                placeholder="请选择时间"
+                                :clearable="false"
+                            />
+                            <el-button type="primary" class="l-btn" @click="setTime">设置时间</el-button
+                            >
+                        </el-form-item>
+                    </el-form>
                 </div>
-            </el-scrollbar>
+            </div>
+            <div class="form-item">
+                <div class="item-title">信息获取</div>
+                <div class="item-content">
+                    <el-form :model="systenInfo" inline>
+                        <el-form-item>
+                            <el-button type="primary" @click="click">查询站点信息</el-button>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="queryWeatherInfo">查询站点气象信息</el-button>
+                        </el-form-item>
+                    </el-form>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -516,7 +514,7 @@ const 取消预约 = () => {
     height: 100%;
     // overflow-y: auto;
     .module-bottom {
-        height: calc(100% - 0.35rem);
+        height: fit-content;
     }
     .form-item {
         .el-select {

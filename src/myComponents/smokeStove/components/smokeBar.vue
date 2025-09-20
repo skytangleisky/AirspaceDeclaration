@@ -5,88 +5,86 @@
       <div class="module-title-decoration"></div>
     </div>
     <div class="module-bottom">
-      <el-scrollbar height="100%" style="width:100%">
-        <div class="group">
-          <!-- 烟条状态数据 -->
-          <div class="left">
-            <template v-for="(item, index) in currentStove.barList" :key="index">
-              <div class="bars-box">
-                <div class="bars1">
-                  <template
-                      v-for="(bar, bari) in item"
-                      :key="bar.id"
+      <div class="group">
+        <!-- 烟条状态数据 -->
+        <div class="left">
+          <template v-for="(item, index) in currentStove.barList" :key="index">
+            <div class="bars-box">
+              <div class="bars1">
+                <template
+                    v-for="(bar, bari) in item"
+                    :key="bar.id"
+                >
+                  <div
+                      v-if="bari < 3"
+                      class="bar-item"
+                      :class="`status-${bar.status}`"
                   >
-                    <div
-                        v-if="bari < 3"
-                        class="bar-item"
-                        :class="`status-${bar.status}`"
-                    >
-                      {{ bar.id }}
-                    </div>
-                  </template>
-                </div>
-                <div class="bars2">
-                  <template
-                      v-for="(bar, bari) in item"
-                      :key="bar.id"
-                  >
-                    <div
-                        v-if="bari >= 3"
-                        class="bar-item"
-                        :class="`status-${bar.status}`"
-                    >
-                      {{ bar.id }}
-                    </div>
-                  </template>
-                </div>
+                    {{ bar.id }}
+                  </div>
+                </template>
               </div>
-            </template>
+              <div class="bars2">
+                <template
+                    v-for="(bar, bari) in item"
+                    :key="bar.id"
+                >
+                  <div
+                      v-if="bari >= 3"
+                      class="bar-item"
+                      :class="`status-${bar.status}`"
+                  >
+                    {{ bar.id }}
+                  </div>
+                </template>
+              </div>
+            </div>
+          </template>
+        </div>
+        <!-- 烟炉详细信息 -->
+        <div class="right">
+          <div class="info-item">
+            <div class="item-label">站点名称：</div>
+            <div class="item-value">{{ currentStove.strName }}</div>
           </div>
-          <!-- 烟炉详细信息 -->
-          <div class="right">
-            <div class="info-item">
-              <div class="item-label">站点名称：</div>
-              <div class="item-value">{{ currentStove.strName }}</div>
+          <div class="info-item">
+            <div class="item-label">联系电话：</div>
+            <div class="item-value">
+              {{ currentStove.strMacPhoneNum }}
             </div>
-            <div class="info-item">
-              <div class="item-label">联系电话：</div>
-              <div class="item-value">
-                {{ currentStove.strMacPhoneNum }}
-              </div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">状态时间：</div>
-              <div class="item-value">{{ currentStove.currentTime }}</div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">燃烧烟条：</div>
-              <div class="item-value">{{ currentStove.burningCount }}</div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">已用烟条：</div>
-              <div class="item-value">{{ currentStove.usedCount }}</div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">可用烟条：</div>
-              <div class="item-value">{{ currentStove.availableCount }}</div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">点火状态：</div>
-              <div
-                  class="item-value item-status"
-                  :class="`status-${currentStove.fireStatus}`"
-              ></div>
-            </div>
-            <div class="info-item">
-              <div class="item-label">在线状态：</div>
-              <div
-                  class="item-value item-status"
-                  :class="`status-${currentStove.status}`"
-              ></div>
-            </div>
+          </div>
+          <div class="info-item">
+            <div class="item-label">状态时间：</div>
+            <div class="item-value">{{ currentStove.currentTime }}</div>
+          </div>
+          <div class="info-item">
+            <div class="item-label">燃烧烟条：</div>
+            <div class="item-value">{{ currentStove.burningCount }}</div>
+          </div>
+          <div class="info-item">
+            <div class="item-label">已用烟条：</div>
+            <div class="item-value">{{ currentStove.usedCount }}</div>
+          </div>
+          <div class="info-item">
+            <div class="item-label">可用烟条：</div>
+            <div class="item-value">{{ currentStove.availableCount }}</div>
+          </div>
+          <div class="info-item">
+            <div class="item-label">点火状态：</div>
+            <div
+                class="item-value item-status"
+                :class="`status-${currentStove.fireStatus}`"
+            ></div>
+          </div>
+          <div class="info-item">
+            <div class="item-label">在线状态：</div>
+            <div
+                class="item-value item-status"
+                :class="`status-${currentStove.status}`"
+            ></div>
           </div>
         </div>
-      </el-scrollbar>
+      </div>
     </div>
   </div>
 </template>

@@ -3056,6 +3056,7 @@ onMounted(async() => {
           map.setFeatureState({source:'警戒圈source',id:item.properties.strID},{opacity})
         })
       }
+      /*规划航线*/
       await getPlanPath().then(async(data)=>{
         if(!map)return
 

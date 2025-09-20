@@ -132,57 +132,54 @@ function chooseStoveHandle(item) {
 </script>
 
 <style lang="scss" scoped>
-$layoutTop-height: 0px;
-$page-top-height: 3.4rem;
 .smokeStove {
     background-color: var(--el-bg-color-page);
     padding: $grid-2;
-    height: 100%;
-    width: 100%;
+    min-width: 100%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
     box-sizing: border-box;
     .page-top {
         background-color: var(--el-bg-color);
         border-radius: $border-radius-2;
-        margin-bottom: $grid-2;
         padding: $grid-2;
         height: 3.4rem;
         box-sizing: border-box;
+        margin-bottom: $grid-2;
     }
     .page-bottom {
-        height: calc(100% - $page-top-height - $grid-2);
+        box-sizing: border-box;
         display: flex;
+        position: relative;
+        height: 480px;
         .page-bottom-left {
-            width:fit-content;
-            // display: flex;
-            // flex-direction: column;
+            display: flex;
+            flex-direction: column;
             height: 100%;
             margin-right: $grid-2;
-            $bottom-left-bottom-height: 1.8rem;
             .bottom-left-top {
-                height: calc(100% - $bottom-left-bottom-height - $grid-2);
                 background-color: var(--el-bg-color);
                 border-radius: $border-radius-2;
-                margin-bottom: $grid-2;
                 padding: $grid-2;
                 box-sizing: border-box;
-                overflow: hidden;
             }
             .bottom-left-bottom {
-                height: $bottom-left-bottom-height;
+                height: 100%;
+                margin-top: $grid-2;
+                padding: $grid-2;
                 background-color: var(--el-bg-color);
                 border-radius: $border-radius-2;
-                padding: $grid-2;
-                box-sizing: border-box;
+                // padding: $grid-2;
+                // margin-top: $grid-2;
             }
         }
         .page-bottom-right {
-            flex: 1;
-            height: 100%;
             background-color: var(--el-bg-color);
-            border-radius: $border-radius-2;
+            flex:1;
             padding: $grid-2;
             box-sizing: border-box;
-            // overflow-y: auto;
+            border-radius: $border-radius-2;
         }
     }
 }
