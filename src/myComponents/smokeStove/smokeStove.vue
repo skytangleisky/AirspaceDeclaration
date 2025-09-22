@@ -135,6 +135,8 @@ function chooseStoveHandle(item) {
 .smokeStove {
     background-color: var(--el-bg-color-page);
     padding: $grid-2;
+    width:fit-content;
+    height:fit-content;
     min-width: 100%;
     min-height: 100%;
     display: flex;
