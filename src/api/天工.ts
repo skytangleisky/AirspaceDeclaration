@@ -25,8 +25,11 @@ let database2 = `${dbConfig}&database=BEPK_RYB_GSYTHPT&type=xugu`
 
 export function 机场(){
   return request({
-    url: '/backend/db/BEPK_RYB_GSYTHPT.airport?'+database2,
+    url: '/backend/db/default?'+database2,
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.airport',
+    },
     data:{
       select:['*'],
       distinct:false,
@@ -49,8 +52,11 @@ export function 机场(){
 }
 export function 华北飞行区域(){
   return request({
-    url: '/backend/db/BEPK_RYB_GSYTHPT.fly_area?'+database2,
+    url: '/backend/db/default?'+database2,
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.fly_area',
+    },
     data:{
       select:['*'],
       distinct:false,
@@ -76,6 +82,7 @@ export function 烟炉数据() {
     url: '/backend/db/BEPK_RYB_GSYTHPT.stoves?'+database2,
     method: 'post',
     data:{
+      from:'BEPK_RYB_GSYTHPT.stoves',
       select:['*'],
       where:[
         {
@@ -93,8 +100,11 @@ export function 烟炉数据() {
 }
 export function 协同作业点(){
     return request({
-    url: '/backend/db/BEPK_RYB_GSYTHPT.`zydpara` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strMgrUnit = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strRelayUnit = u2.strID?'+database2,
+    url: '/backend/db/default',
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.`zydpara` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strMgrUnit = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strRelayUnit = u2.strID',
+    },
     data:{
       select:["z.*","u1.strName as `strMgrUnitName`","u2.strName as `strRelayUnitName`"],
       where:[
@@ -154,8 +164,11 @@ export function 作业点(){
   //   }
   // })
   return request({
-    url: '/backend/db/BEPK_RYB_GSYTHPT.`zydpara` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strMgrUnit = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strRelayUnit = u2.strID?'+database2,
+    url: '/backend/db/default',
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.`zydpara` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strMgrUnit = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strRelayUnit = u2.strID',
+    },
     data:{
       select:["z.*","u1.strName as `strMgrUnitName`","u2.strName as `strRelayUnitName`"],
       where:[
@@ -271,7 +284,7 @@ export function 历史作业查询(){
 export function 作业状态数据(signal:AbortSignal){
   return request({
     signal,
-    url: '/backend/transaction?'+database2,
+    url: '/backend/transaction',
     method: 'post',
     data:{
       sqls: [
@@ -430,8 +443,11 @@ export function 空域申请批准(data){
 export function 空域申请移除(strWorkID:string){
   console.log(strWorkID,'移除')
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.zyddata?'+database2,
+    url:'/backend/db/default',
     method:'delete',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.zyddata',
+    },
     data: [{
       strWorkID
     }]
@@ -473,10 +489,7 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
     select:['o.*','z.strName as `strZydIDName`'],
     "where": new Array<any>(),
     "orderby": [
-      {
-        "field": "beginTm",
-        "order": "desc"
-      }
+      'beginTm DESC'
     ],
     distinct:false,
     offset:(page-1)*size,
@@ -532,7 +545,10 @@ export function 完成信息查询({page,size,range,zydID}:{page:number,size:num
   }
   return request({
     signal,
-    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo o left join  BEPK_RYB_GSYTHPT.`zydpara` z on o.strZydID=z.strID?'+database2,
+    headers:{
+      'table':'BEPK_RYB_GSYTHPT.overinfo o left join  BEPK_RYB_GSYTHPT.`zydpara` z on o.strZydID=z.strID'
+    },
+    url: 'backend/db/default',
     method: 'post',
     data,
   })
@@ -575,10 +591,7 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
     ],
     groupby:['o.strZydID','z.strName'],
     orderby:[
-      {
-        field:'maxBeginTm',
-        order:'desc',
-      }
+      'maxBeginTm DESC'
     ],
     distinct:false,
     offset:0,
@@ -600,7 +613,10 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
   }
   return request({
     signal,
-    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo o LEFT JOIN BEPK_RYB_GSYTHPT.zydpara z ON o.strZydID=z.strID?'+database2,
+    url: 'backend/db/default',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo o LEFT JOIN BEPK_RYB_GSYTHPT.zydpara z ON o.strZydID=z.strID'
+    },
     method: 'post',
     data,
   })
@@ -681,8 +697,11 @@ export function 获取作业点ID数据(){
 // }
 export function 判断是否有完成信息(workID){
   return request({
-    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
+    url: 'backend/db/default',
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo'
+    },
     data:{
       select:['workID'],
       where:[
@@ -701,8 +720,11 @@ export function 判断是否有完成信息(workID){
 }
 export function 判断是否有完成信息确认(workID){
   return request({
-    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo_confirmed?'+database2,
+    url: 'backend/db/default',
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo_confirmed'
+    },
     data:{
       select:['workID'],
       where:[
@@ -777,8 +799,11 @@ export function 判断是否有完成信息确认(workID){
 // }
 export function 增加完成信息(data){
   return request({
-    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
+    url: 'backend/db/default',
     method: 'put',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo'
+    },
     data:[wrapKeys(data,key=>key=='workID')]
   })
   // return request({
@@ -789,8 +814,11 @@ export function 增加完成信息(data){
 }
 export function 增加完成信息确认(data){
   return request({
-    url: 'backend/db/BEPK_RYB_GSYTHPT.overinfo_confirmed?'+database2,
+    url: 'backend/db/default',
     method: 'put',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo_confirmed'
+    },
     data:[wrapKeys(data,key=>key=='workID')]
   })
   // return request({
@@ -940,8 +968,11 @@ export function 通过workID获取完成信息(workID){
 // }
 export function 修改完成信息(data){
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
-    method:'put',
+    url: 'backend/db/default',
+    method: 'put',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo'
+    },
     data:[wrapKeys(data,(key)=>key=='workID')],
   })
   // return request({
@@ -953,8 +984,11 @@ export function 修改完成信息(data){
 export function 删除完成信息(workID){
   console.log(workID)
   return request({
-    url:'backend/db/BEPK_RYB_GSYTHPT.overinfo?'+database2,
-    method:'delete',
+    url: 'backend/db/default',
+    method: 'delete',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo'
+    },
     data: [{workID}]
   })
   // return request({
@@ -975,8 +1009,11 @@ export function 删除完成信息(workID){
 }
 export function 删除完成信息确认(workID){
   return request({
-    url:'backend/db/BEPK_RYB_GSYTHPT.overinfo_confirmed?'+database2,
-    method:'delete',
+    url: 'backend/db/default',
+    method: 'delete',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.overinfo_confirmed'
+    },
     data: [{workID}]
   })
   // return request({
@@ -1414,8 +1451,11 @@ export function 区域站(){
 
 export function 注册飞机查询({page,size}:{page:number,size:number}){
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    url:'/backend/db/default',
     method:'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.plane_addr',
+    },
     data:{
       // orderby: [
       //   {
@@ -1446,8 +1486,11 @@ export function 注册飞机查询({page,size}:{page:number,size:number}){
 }
 export function 判断飞机是否存在(iAddress:string){
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    url:'/backend/db/default',
     method:'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.plane_addr',
+    },
     data:{
       where:[
         {
@@ -1465,8 +1508,11 @@ export function 判断飞机是否存在(iAddress:string){
 }
 export function 删除飞机(iAddress:string){
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    url:'/backend/db/default',
     method:'delete',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.plane_addr',
+    },
     data: [{iAddress}]
   })
   // return request({
@@ -1486,8 +1532,11 @@ export function 删除飞机(iAddress:string){
 }
 export function 新增飞机(data:any){
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    url:'/backend/db/default',
     method:'put',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.plane_addr',
+    },
     data
   })
   // return request({
@@ -1498,8 +1547,11 @@ export function 新增飞机(data:any){
 }
 export function 修改飞机(data:any){
   return request({
-    url:'/backend/db/BEPK_RYB_GSYTHPT.plane_addr?'+database2,
+    url:'/backend/db/default',
     method:'put',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.plane_addr',
+    },
     data
   })
   // return request({

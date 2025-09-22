@@ -5,8 +5,8 @@ import glbUrl from './airplane.glb?url'
 import mapboxgl from 'mapbox-gl';
 // const modelOrigin = [148.9819, -35.39847];//澳大利亚天文台
 const modelOrigin = [103.94399181722866, 30.562962069460042];//成都
-const modelAltitude = 0;
-const modelRotate = [Math.PI / 2, Math.PI/180*70, 0];
+const modelAltitude = 492;
+const modelRotate = [Math.PI / 2, Math.PI/180*65, 0];
 
 const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(
 modelOrigin,
@@ -67,6 +67,8 @@ export default class CustomLayer{
         this.renderer.autoClear = false;
     }
     render(gl, matrix) {
+
+    // console.log('海拔高度',this.map.queryTerrainElevation([103.94399181722866, 30.562962069460042],{ exact: false }))
         const rotationX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0),modelTransform.rotateX);
         const rotationY = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0),modelTransform.rotateY);
         const rotationZ = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1),modelTransform.rotateZ);

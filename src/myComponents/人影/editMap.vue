@@ -179,7 +179,7 @@ import PlanPanel from "./planPanel.vue";
 import Dialog from "./dialog.vue";
 import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
 import { getImage } from '~/tools/project.js'
-// import CustomLayer from "./webglLayer/CustomLayer.js";
+import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
 import {getTodayRecords,airspaceApply} from "~/api/人影/index.js"
 import { loadImage2Map } from "~/tools/index.ts";
@@ -2447,6 +2447,7 @@ onMounted(async() => {
 
 
     // map.addLayer(CustomLayer);
+    map.addLayer(new Plane())
     map.addLayer({
       id: "maine",
       type: "fill",

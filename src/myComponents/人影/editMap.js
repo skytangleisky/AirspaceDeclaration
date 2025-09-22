@@ -243,38 +243,38 @@ export default function(){
 		"zoom": 12.711177223232953,
 		"bearing": 0,
 		"pitch": 0,
-		// "fog": {
-				// "range": [2, 20],
-				// "color": "hsl(0, 0%, 100%)",
-				// "high-color": "hsl(210, 100%, 80%)",
-				// "space-color": [
-				// 	"interpolate",
-				// 	["exponential", 1.2],
-				// 	["zoom"],
-				// 	5,
-				// 	"hsl(210, 40%, 30%)",
-				// 	7,
-				// 	"hsl(210, 100%, 80%)"
-				// ],
-				// "horizon-blend": [
-				// 	"interpolate",
-				// 	["exponential", 1.2],
-				// 	["zoom"],
-				// 	5,
-				// 	0.02,
-				// 	7,
-				// 	0.08
-				// ],
-				// "star-intensity": [
-				// 	"interpolate",
-				// 	["exponential", 1.2],
-				// 	["zoom"],
-				// 	5,
-				// 	0.1,
-				// 	7,
-				// 	0
-				// ]
-		// },
+		"fog": {
+				"range": [2, 20],
+				"color": "hsl(0, 0%, 100%)",
+				"high-color": "hsl(210, 100%, 80%)",
+				"space-color": [
+					"interpolate",
+					["exponential", 1.2],
+					["zoom"],
+					5,
+					"hsl(210, 40%, 30%)",
+					7,
+					"hsl(210, 100%, 80%)"
+				],
+				"horizon-blend": [
+					"interpolate",
+					["exponential", 1.2],
+					["zoom"],
+					5,
+					0.02,
+					7,
+					0.08
+				],
+				"star-intensity": [
+					"interpolate",
+					["exponential", 1.2],
+					["zoom"],
+					5,
+					0.1,
+					7,
+					0
+				]
+		},
 		"sources": {
 			// 'mapbox-terrain': {
 			// 	type: 'vector',
@@ -348,9 +348,9 @@ export default function(){
 				"data": huabeiUrl
 			},
 			// "composite": {
-			// 		"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
-			// 		"tiles":["https://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
-			// 		"type": "vector"
+			// 	"url_origin": "mapbox://mapbox.mapbox-streets-v8,mapbox.mapbox-terrain-v2,mapbox.mapbox-bathymetry-v2",
+			// 	"tiles":["http://vector.tanglei.site?lyrs=v&x={x}&y={y}&z={z}"],
+			// 	"type": "vector"
 			// },
 			"raster-tiles": {
 				"type": "raster",
@@ -400,17 +400,17 @@ export default function(){
 					transparent256x256,
 				],
 				tileSize: 256
-			}
-			// "mapbox-dem": {
-			// 	"type": "raster-dem",
-			// 	"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
-			// 	"tiles":["https://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
-			// 	// "tiles":[window.location.origin+"/backend/demImage?lyrs=terrain&x={x}&y={y}&z={z}"],
-			// 	"tileSize": 512,
-			// 	"maxzoom": 14,
-			// },
+			},
+			"mapbox-dem": {
+				"type": "raster-dem",
+				"url_origin": 'mapbox://mapbox.mapbox-terrain-dem-v1',
+				"tiles":["http://terrain.tanglei.site?lyrs=terrain&x={x}&y={y}&z={z}"],
+				// "tiles":[window.location.origin+"/backend/demImage?lyrs=terrain&x={x}&y={y}&z={z}"],
+				"tileSize": 512,
+				"maxzoom": 14,
+			},
 		},
-		// "terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
+		"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 		// "sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 		"sprite": window.location.origin+"/kysq/resources/sprite",
 		// "glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",

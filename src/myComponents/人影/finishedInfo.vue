@@ -261,7 +261,6 @@ const 恢复 = (row) => {
   revertTime = Date.now()
   row.isconfirmed = 0
   delete row.strZydIDName
-  console.log('恢复',row)
   修改完成信息(row).then(async(res)=>{
     await 删除完成信息确认(row.workID)
     触发完成信息查询.value = Date.now()
