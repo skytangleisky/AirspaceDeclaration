@@ -79,8 +79,11 @@ export function 华北飞行区域(){
 }
 export function 烟炉数据() {
   return request({
-    url: '/backend/db/BEPK_RYB_GSYTHPT.stoves?'+database2,
+    url: '/backend/db/default',
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.stoves',
+    },
     data:{
       from:'BEPK_RYB_GSYTHPT.stoves',
       select:['*'],
@@ -1054,8 +1057,11 @@ export function 通过workID恢复完成信息(workID){
 }
 export function 获取所有烟炉的预约点火信息(){
   return request({
-    url: 'backend/db/BEPK_RYB_GSYTHPT.appoint?'+database2,
+    url: 'backend/db/default',
     method: 'post',
+    headers:{
+      table:'BEPK_RYB_GSYTHPT.appoint'
+    },
     data:{
       select:['*'],
       where:[],
@@ -1067,7 +1073,7 @@ export function 获取所有烟炉的预约点火信息(){
 }
 export function 预约点火({beginTime,interval,flare,times,stoveID}){
   return request({
-    url: 'backend/transaction?'+database2,
+    url: 'backend/transaction',
     method: 'post',
     data:{
       sqls:[
@@ -1087,7 +1093,7 @@ export function 预约点火({beginTime,interval,flare,times,stoveID}){
 }
 export function 取消预约点火(stoveID){
   return request({
-    url: 'backend/transaction?'+database2,
+    url: 'backend/transaction',
     method: 'post',
     data:{
       sqls:[
