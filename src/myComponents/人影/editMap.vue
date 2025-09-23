@@ -75,7 +75,7 @@
     <!-- <div v-dragable class="meeting" v-if="metting">
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div> -->
-    <Frame v-model:render="metting" :once="true">
+    <Frame v-model:render="metting" once>
       <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
     </Frame>
   </div>

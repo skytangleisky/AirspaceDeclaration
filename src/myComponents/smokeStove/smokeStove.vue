@@ -1,26 +1,28 @@
 <template>
-    <div class="smokeStove">
-        <!-- 烟炉 -->
-        <div class="page-top">
-            <!-- <globalOperation
-                @chooseStoveHandle="chooseStoveHandle"
-            ></globalOperation> -->
-            <globalOperation></globalOperation>
-        </div>
-        <div class="page-bottom">
-            <div class="page-bottom-left">
-                <div class="bottom-left-top">
-                    <smokeBar></smokeBar>
+    <el-scrollbar class="smokeStove-scrollbar">
+        <div class="smokeStove">
+            <!-- 烟炉 -->
+            <div class="page-top">
+                <!-- <globalOperation
+                    @chooseStoveHandle="chooseStoveHandle"
+                ></globalOperation> -->
+                <globalOperation></globalOperation>
+            </div>
+            <div class="page-bottom">
+                <div class="page-bottom-left">
+                    <div class="bottom-left-top">
+                        <smokeBar></smokeBar>
+                    </div>
+                    <div class="bottom-left-bottom">
+                        <weatherInfo></weatherInfo>
+                    </div>
                 </div>
-                <div class="bottom-left-bottom">
-                    <weatherInfo></weatherInfo>
+                <div class="page-bottom-right">
+                    <stoveSetting></stoveSetting>
                 </div>
             </div>
-            <div class="page-bottom-right">
-                <stoveSetting></stoveSetting>
-            </div>
         </div>
-    </div>
+    </el-scrollbar>
     <StoveWebsocket/>
 </template>
 
@@ -124,7 +126,7 @@ provide("logInfoList",reactive([]))
  * @description  选择烟炉
  * @param  item-当前选中烟炉的数据
  */
-function chooseStoveHandle(item) {
+function chooseStoveHandle(item:any) {
     strStoveID.value = item.strStoveID;
     stoveObject.value = item;
     console.log("fu", item);
@@ -132,56 +134,60 @@ function chooseStoveHandle(item) {
 </script>
 
 <style lang="scss" scoped>
-.smokeStove {
+.smokeStove-scrollbar {
+    width: 100%;
+    height: 100%;
     background-color: var(--el-bg-color-page);
-    padding: $grid-2;
-    width:fit-content;
-    height:fit-content;
-    min-width: 100%;
-    min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box;
-    .page-top {
-        background-color: var(--el-bg-color);
-        border-radius: $border-radius-2;
+    .smokeStove {
         padding: $grid-2;
-        height: 3.4rem;
-        box-sizing: border-box;
-        margin-bottom: $grid-2;
-    }
-    .page-bottom {
-        box-sizing: border-box;
+        width:fit-content;
+        height:fit-content;
+        min-width: 100%;
+        min-height: 100%;
         display: flex;
-        position: relative;
-        height: 480px;
-        .page-bottom-left {
+        flex-direction: column;
+        box-sizing: border-box;
+        .page-top {
+            background-color: var(--el-bg-color);
+            border-radius: $border-radius-2;
+            padding: $grid-2;
+            height: 3.4rem;
+            box-sizing: border-box;
+            margin-bottom: $grid-2;
+        }
+        .page-bottom {
+            box-sizing: border-box;
             display: flex;
-            flex-direction: column;
-            height: 100%;
-            margin-right: $grid-2;
-            .bottom-left-top {
+            position: relative;
+            height: 480px;
+            .page-bottom-left {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+                margin-right: $grid-2;
+                .bottom-left-top {
+                    background-color: var(--el-bg-color);
+                    border-radius: $border-radius-2;
+                    padding: $grid-2;
+                    box-sizing: border-box;
+                }
+                .bottom-left-bottom {
+                    height: 100%;
+                    margin-top: $grid-2;
+                    padding: $grid-2;
+                    background-color: var(--el-bg-color);
+                    border-radius: $border-radius-2;
+                    // padding: $grid-2;
+                    // margin-top: $grid-2;
+                }
+            }
+            .page-bottom-right {
                 background-color: var(--el-bg-color);
-                border-radius: $border-radius-2;
+                flex:1;
                 padding: $grid-2;
                 box-sizing: border-box;
-            }
-            .bottom-left-bottom {
-                height: 100%;
-                margin-top: $grid-2;
-                padding: $grid-2;
-                background-color: var(--el-bg-color);
                 border-radius: $border-radius-2;
-                // padding: $grid-2;
-                // margin-top: $grid-2;
             }
-        }
-        .page-bottom-right {
-            background-color: var(--el-bg-color);
-            flex:1;
-            padding: $grid-2;
-            box-sizing: border-box;
-            border-radius: $border-radius-2;
         }
     }
 }

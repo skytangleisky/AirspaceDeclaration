@@ -85,7 +85,6 @@ export function 烟炉数据() {
       table:'BEPK_RYB_GSYTHPT.stoves',
     },
     data:{
-      from:'BEPK_RYB_GSYTHPT.stoves',
       select:['*'],
       where:[
         {
