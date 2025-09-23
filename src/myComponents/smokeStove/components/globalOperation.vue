@@ -330,10 +330,10 @@ onBeforeUnmount(() => {
 
     .smoke-stove-item-card {
       .smoke-stove-item {
-        padding: $grid-1;
+        padding: 4px;
         background:  var(--el-color-primary-light-8);
         border-radius: $border-radius-1;
-        border: 1px solid transparent;
+        border: 4px solid transparent;
         // margin-top: $grid-3;
         box-sizing: border-box;
         color: var(--el-text-color-regular);
@@ -384,8 +384,9 @@ onBeforeUnmount(() => {
 
       .smoke-stove-item.active {
         // transform: translate(0.04rem,0.04rem);
-        border-color: var(--el-color-primary);
-        background-color: var(--el-color-primary-light-7);
+        border-color: var(--el-color-primary-light-3);
+        border-width: 4px;
+        // background-color: var(--el-color-primary-light-7);
         box-shadow: var(--el-box-shadow-light);
       }
     }

@@ -290,8 +290,8 @@ export function 作业状态数据(signal:AbortSignal){
     method: 'post',
     data:{
       sqls: [
-        "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM BEPK_RYB_GSYTHPT.`zyddata` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strATCUnitID = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strUpApplyUnit = u2.strID ORDER BY z.tmBeginApply DESC",
-        "SELECT z.*,u1.strName AS `strATCUnitIDName`,u2.strName AS `strUpApplyUnitName` FROM BEPK_RYB_GSYTHPT.zydhisdata z LEFT JOIN BEPK_RYB_GSYTHPT.units u1 ON z.strATCUnitID = u1.strID LEFT JOIN BEPK_RYB_GSYTHPT.units u2 ON z.strUpApplyUnit = u2.strID WHERE z.tmBeginApply BETWEEN CURRENT_DATE() AND CURRENT_DATE() + 1 ORDER BY z.tmBeginApply DESC",//当天的数据
+        "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM BEPK_RYB_GSYTHPT.`zyddata` z left join BEPK_RYB_GSYTHPT.`units` u1 on z.strATCUnitID = u1.strID left join BEPK_RYB_GSYTHPT.`units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL ORDER BY z.tmBeginApply DESC",
+        "SELECT z.*,u1.strName AS `strATCUnitIDName`,u2.strName AS `strUpApplyUnitName` FROM BEPK_RYB_GSYTHPT.zydhisdata z LEFT JOIN BEPK_RYB_GSYTHPT.units u1 ON z.strATCUnitID = u1.strID LEFT JOIN BEPK_RYB_GSYTHPT.units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND z.tmBeginApply BETWEEN CURRENT_DATE() AND CURRENT_DATE() + 1 ORDER BY z.tmBeginApply DESC",//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
     }

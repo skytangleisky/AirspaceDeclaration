@@ -136,8 +136,8 @@ export default defineConfig({
       },
       '/adsb':{
         agent,
-        // target:'http://113.44.175.230:18301',
         target:'http://10.225.3.150:18185',
+        // target:'http://113.44.175.230:18301',
         // rewrite:path=>path.replace(/^\/adsb/,''),
         secure:false,
         changeOrigin:true,
