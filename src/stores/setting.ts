@@ -13,9 +13,7 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    标点:false,
-    标线:false,
-    标面:false,
+    获取经纬度:false,
     地图列表:[
       {
         value:0,
@@ -24,8 +22,8 @@ export const useSettingStore = defineStore('setting',{
       },
       {
         value:1,
-        label: "地形地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=ter_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        label: "矢量地图",
+        tileData: ["/tile/xbry/maps/DataServer?T=vec_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
       },
       {
         value:2,
@@ -35,10 +33,11 @@ export const useSettingStore = defineStore('setting',{
       },
       {
         value:3,
-        label: "矢量地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=vec_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        label: "地形地图",
+        tileData: ["/tile/xbry/maps/DataServer?T=ter_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
       },
     ],
+    绘制模式:'no_select',
     在线人数:'',
     网络状态:'',
     内存占用:'',
@@ -956,6 +955,18 @@ export const useSettingStore = defineStore('setting',{
     },
     清除(){
       console.log('清除')
+    },
+    绘制复原(){
+      console.log('绘制复原')
+    },
+    标点(){
+      console.log('标点')
+    },
+    标线(){
+      console.log('标线')
+    },
+    标面(){
+      console.log('标面')
     },
   },
   // persist: {

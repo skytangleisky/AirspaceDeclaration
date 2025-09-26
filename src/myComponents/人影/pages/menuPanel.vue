@@ -24,7 +24,7 @@
         <div v-if="setting.人影.监控.是否显示工具面板">
             <BaseLayer v-model="setting.人影.监控.tile"></BaseLayer>
             <MapTool style="margin-top:10px;"></MapTool>
-            <DrawTool style="margin-top:10px;"></DrawTool>
+            <!-- <DrawTool style="margin-top:10px;"></DrawTool> -->
         </div>
     </div>
 </template>
@@ -32,7 +32,7 @@
     import {computed} from 'vue'
     import BaseLayer from './工具/基础底图.vue'
     import MapTool from './工具/地图工具.vue'
-    import DrawTool from './工具/标绘工具.vue'
+    // import DrawTool from './工具/标绘工具.vue'
     import SatelliteProduct from './产品/卫星产品.vue'
     import ZydProduct from './产品/自动站产品.vue'
     import GroundCommand from './分布/地面指挥.vue'

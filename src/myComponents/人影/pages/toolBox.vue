@@ -365,27 +365,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     label: '缩小', type: 'button', click() {
       setting.zoomOut()
     }
-  },
-  {
-    label: '测距', type: 'button', click: () => {
-      setting.测距()
-    }
-  },
-  {
-    label: '获取经纬度', type: 'button', click() {
-      setting.经纬度()
-    }
-  },
-  {
-    label: '批量操作', type: 'button', click() {
-      setting.批量操作()
-    }
-  },
-  {
-    label: '注册飞机', type: 'button', click() {
-      setting.人影.监控.注册飞机列表显示 = true
-    }
-  },
+  }
 ]}])
 </script>
 <style lang="scss" scoped>

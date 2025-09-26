@@ -165,8 +165,8 @@ export default function(ctx, api) {
       modeOptions.featureId === ctx.store.getSelectedIds()[0]) {
       return api;
     }
-
-    ctx.events.changeMode(mode, modeOptions, { silent: true });
+    // tanglei 不应该静默切换绘制模式
+    ctx.events.changeMode(mode, modeOptions, { silent: false });
     return api;
   };
 

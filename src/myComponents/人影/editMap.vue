@@ -55,6 +55,7 @@
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
+          <li v-if="menuType=='批量操作'" @click="批量移除()">批量移除</li>
           <li v-if="menuType=='批量操作'" @click="显示射界()">显示射界</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
@@ -107,9 +108,9 @@ function 视频会议(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
 function 清除形状(){
-  setting.标点 = setting.标线 = setting.标面 = false
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   移除draw绘制的所有图形()
+  draw.changeMode('no_select')
 }
 const metting = ref(false)
 import { 绘制主力量规划轨迹 } from './主力量规划航迹.js'
@@ -393,6 +394,75 @@ let 批量批复 = () => {
   batch2DialogVisible.value = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
+let 批量移除 = () => {
+  let list = new Array()
+  for(let j=0;j<dialogOptions.menus.length;j++){
+    let station = dialogOptions.menus[j];
+    let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
+    let isInf = false
+    for(let i=0;i<draw.getAll().features.length;i++){
+      const feature = draw.getAll().features[i];
+      const poly = polygon((feature.geometry as any).coordinates)
+      if(booleanPointInPolygon(targetPos,poly)){
+        isInf = true
+        break
+      }
+    }
+    if(isInf){
+      list.push(station)
+    }
+  }
+  //过滤掉处于['作业申请待批复']以外状态的作业点
+  list = list.filter((item:any)=>{
+    for(let i=0;i<circleFeaturesData.features.length;i++){
+      if(item.strID==circleFeaturesData.features[i].properties.strID){
+        if(['作业申请待批复','作业批准','作业开始'].includes(circleFeaturesData.features[i].properties.ubyStatus)){
+          item.properties = circleFeaturesData.features[i].properties
+          return true
+        }
+      }
+    }
+    return false
+  })
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  let data = list.map(item=>{
+    return {strWorkID:item.properties.strWorkID}
+  })
+  if(data.length==0){
+    ElMessage({
+      message: '没有要移除的作业点',
+      type: 'warning',
+    })
+    return
+  }
+  空域申请移除(data).then(res=>{
+    ElMessage({
+      message: '移除成功',
+      type: 'success',
+    })
+    data.map(item=>{
+      map.setFeatureState({source:'最大射程source',id:item.strWorkID},{
+        ubyStatus:'空闲',
+        opacity:0
+      })
+      map.setFeatureState({source:'警戒圈source',id:item.strWorkID},{
+        ubyStatus:'空闲',
+        opacity:0
+      })
+      map.setFeatureState({source:'zydSource',id:item.strWorkID},{
+        ubyStatus:'空闲',
+        opacity:0
+      })
+    })
+    station.人影界面被选中的设备 = ''
+    清除形状()
+  }).catch(e=>{
+    ElMessage({
+      message: '移除失败',
+      type:'error',
+    })
+  })
+}
 const 人工批复 = () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
@@ -402,7 +472,7 @@ const 人工批复 = () => {
 const 手动移除=async () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
-  空域申请移除(properties.strWorkID).then(res=>{
+  空域申请移除([properties.strWorkID]).then(res=>{
     ElMessage({
       message: '移除成功',
       type: 'success',
@@ -926,16 +996,15 @@ const zoomOut = ()=>{
   map.getCanvas().style.cursor = "default";
 }
 const 批量操作 = ()=>{
-  draw?.changeMode('draw_polygon')
+  draw.changeMode('draw_polygon')
   map.getCanvas().style.cursor = "crosshair";
 }
-let 获取经纬度 = false
 const 经纬度 = ()=>{
-  获取经纬度 = true
+  setting.获取经纬度 = true
   map.getCanvas().style.cursor = "crosshair";
 }
 const 测距 = ()=>{
-  draw?.changeMode('custom_draw_line_with_distance');
+  draw.changeMode('custom_draw_line_with_distance')
 }
 const 清除 = ()=>{
   清除形状()
@@ -947,6 +1016,23 @@ setting.批量操作 = 批量操作
 setting.经纬度 = 经纬度
 setting.测距 = 测距
 setting.清除 = 清除
+setting.标点 = ()=>{
+  map.getCanvas().style.cursor = "crosshair";
+  draw.changeMode('draw_point')
+}
+setting.标线 = ()=>{
+  map.getCanvas().style.cursor = "crosshair";
+  draw.changeMode('draw_line_string')
+}
+setting.标面 = ()=>{
+  map.getCanvas().style.cursor = "crosshair";
+  draw.changeMode('draw_polygon')
+}
+
+setting.绘制复原 = ()=>{
+  map.getCanvas().style.cursor = "default";
+  draw.changeMode('simple_select')
+}
 let draw:MapboxDraw;
 defineExpose({
   zoomIn,
@@ -4236,19 +4322,16 @@ onMounted(async() => {
       draw.add(feature)
     })
     map.getCanvas().style.cursor = "default";
-    setting.标点 = setting.标线 = setting.标面 = false
   })
   map.on('draw.update',(e)=>{
     console.log(e)
   })
   map.on('draw.modechange', function(e) {
-    // if (e.mode === 'simple_select') {
-    //   draw.changeMode('no_select')
-    // }
+    setting.绘制模式 = e.mode
   });
   map.on("click",(e)=>{
-    if(获取经纬度){
-      获取经纬度 = false
+    if(setting.获取经纬度){
+      setting.获取经纬度 = false
       map.getCanvas().style.cursor = "default";
       const dms = toDMS(e.lngLat.lng,e.lngLat.lat)
       const customMarkerElement = document.createElement('div');
@@ -4283,12 +4366,14 @@ onMounted(async() => {
     map.getCanvas().style.cursor = 'default';
   });
 
+  let 原来的鼠标样式 = 'default'
   map.on('mouseenter', 'zydLayer', () => {
+    原来的鼠标样式 = map.getCanvas().style.cursor
     map.getCanvas().style.cursor = 'pointer';
   });
 
   map.on('mouseleave', 'zydLayer', () => {
-    map.getCanvas().style.cursor = 'default';
+    map.getCanvas().style.cursor = 原来的鼠标样式
   });
   map.on('click','飞机',function(e){
     const features = e.features;
@@ -4521,24 +4606,6 @@ watch(()=>setting.人影.监控.西南,(val)=>{
   }
   if(map.getLayer('text-layer3')){
     map.setLayoutProperty('text-layer3','visibility',setting.人影.监控.规划航线&&val?'visible':'none')
-  }
-})
-watch(()=>setting.标点,(val)=>{
-  if(val){
-    setting.标线 = setting.标面 = false
-    draw?.changeMode('draw_point')
-  }
-})
-watch(()=>setting.标线,(val)=>{
-  if(val){
-    setting.标点 = setting.标面 = false
-    draw?.changeMode('draw_line_string')
-  }
-})
-watch(()=>setting.标面,(val)=>{
-  if(val){
-    setting.标点 = setting.标线 = false
-    draw?.changeMode('draw_polygon')
   }
 })
 watch(()=>setting.人影.监控.规划航线,()=>{

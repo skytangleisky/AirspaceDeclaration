@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@mapbox/geojson-extent": "^1.0.1",
-    "@mapbox/mapbox-gl-draw": "^1.5.0",
+    "@mapbox/mapbox-gl-draw": "^0.16.0",
     "@rollup/plugin-inject": "^5.0.5",
     "@sakitam-gis/mapbox-wind": "^2.0.4",
     "@turf/helpers": "^6.5.0",
@@ -44,7 +44,7 @@
     "gsap": "^3.12.7",
     "https-proxy-agent": "^7.0.6",
     "jquery": "^3.7.1",
-    "mapbox-gl_wstd": "^3.8.0",
+    "mapbox-gl_wstd": "^3.9.2",
     "moment": "^2.30.1",
     "ol": "^10.0.0",
     "pinia": "^2.1.7",

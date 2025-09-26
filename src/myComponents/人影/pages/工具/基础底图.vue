@@ -39,13 +39,13 @@
             value: 0
         }, {
             label: '矢量地图',
-            value: 3
+            value: 1
         }, {
             label: '影像地图',
             value: 2
         }, {
             label: '地形地图',
-            value: 1
+            value: 3
         }])
     })
     let newRenderDict = ref<Dict[]>([])

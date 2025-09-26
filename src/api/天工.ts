@@ -442,17 +442,14 @@ export function 空域申请批准(data){
     }
   })
 }
-export function 空域申请移除(strWorkID:string){
-  console.log(strWorkID,'移除')
+export function 空域申请移除(data:Array<{strWorkID:string}>) {
   return request({
     url:'/backend/db/default',
     method:'delete',
     headers:{
       table:'BEPK_RYB_GSYTHPT.zyddata',
     },
-    data: [{
-      strWorkID
-    }]
+    data
   })
   // return request({
   //   url:'/qt/delete/zyddata',

@@ -71,6 +71,7 @@ export default defineConfig({
     },
   },
   define: {
+    global: 'globalThis',
     __DEV__: true,
     __TEST__: true,
     __BROWSER__: true,
@@ -86,8 +87,8 @@ export default defineConfig({
     alias: {
       "~": fileURLToPath(new URL("./src", import.meta.url)),
       // pinia: `${__dirname}/packages/pinia/src/index.ts`,
-      // '@mapbox/mapbox-gl-draw':`${__dirname}/packages/mapbox-gl-draw`,
-      marchingsquares:`${__dirname}/packages/marchingsquares.js/src/main.js`,
+      '@mapbox/mapbox-gl-draw':path.resolve(__dirname, 'packages/mapbox-gl-draw'),
+      marchingsquares:path.resolve(__dirname, 'packages/marchingsquares.js/src/main.js'),
     },
   },
   css:{
