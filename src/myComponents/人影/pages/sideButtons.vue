@@ -5,7 +5,7 @@
       <div v-if="item.children&&item.children.length>0" :class="`list-outer ${item.expend ? '' : 'hide'}`">
         <div class="list">
           <div v-for="(it,index) in item.children" :key="item.name" class="sideButton-outer">
-            <div :class="`sideButton ${item.active&&item.active.includes(index) ? 'selected' : ''}`" @click="(it as any).click?(it as any).click(item,index):item.active = [index]">{{it.name}}</div>
+            <div :class="`sideButton ${it.active ? 'selected' : ''}`" @click="it.click(item,index)">{{it.name}}</div>
           </div>
         </div>
       </div>
@@ -13,146 +13,34 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref,reactive,computed } from 'vue'
+import { reactive,computed } from 'vue'
 import arrowDownSvg from '~/assets/arrowDown.svg?raw'
-import { modelRef } from '~/tools'
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
-const active = computed({
-  get(){
-    return [setting.人影.监控.tile]
-  },
-  set(val){
-    setting.人影.监控.tile = val[0]
-  }
-})
 const groups = reactive([
-  {name:'地图',expend:false,active,children:[
-    {name:'白板地图'},
-    {name:'矢量地图'},
-    {name:'影像地图'},
-    {name:'地形地图'},
+  {name:'地图',expend:false,children:[
+    {name:'白板地图',active:computed(()=>setting.人影.监控.tile === 0),click:(parent:any,index:number)=>setting.人影.监控.tile = 0},
+    {name:'矢量地图',active:computed(()=>setting.人影.监控.tile === 1),click:(parent:any,index:number)=>setting.人影.监控.tile = 1},
+    {name:'影像地图',active:computed(()=>setting.人影.监控.tile === 2),click:(parent:any,index:number)=>setting.人影.监控.tile = 2},
+    {name:'地形地图',active:computed(()=>setting.人影.监控.tile === 3),click:(parent:any,index:number)=>setting.人影.监控.tile = 3},
   ]},
-  {name:'操作',expend:true,active:computed(()=>{
-    if(setting.绘制模式 === 'draw_polygon'){
-      return reactive([0])
-    }else{
-      return reactive([])
-    }
-  }),children:[
-    {name:'批量操作',click(parent:any,index:number){
-      if(parent.active.includes(index)){
-        for(let i=0;i<parent.active.length;i++){
-          if(parent.active[i--] === index){
-            parent.active.splice(i,1)
-          }
-        }
-        setting.绘制复原()
-      }else{
-        parent.active.push(index)
-        setting.批量操作()
-      }
-    }},
-    {name:'注册飞机',click(parent:any,index:number){
-      setting.人影.监控.注册飞机列表显示 = true
-    }},
+  {name:'操作',expend:true,children:[
+    {name:'批量操作',active:computed(()=>setting.绘制模式 === 'draw_polygon'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.批量操作()},
+    {name:'注册飞机',click:(parent:any,index:number)=>setting.人影.监控.注册飞机列表显示 = true},
   ]},
-  {name:'标绘',active:computed(()=>{
-    if(setting.绘制模式 === 'draw_point'){
-      return reactive([0])
-    }else if(setting.绘制模式 === 'draw_line_string'){
-      return reactive([1])
-    }else if(setting.绘制模式 === 'draw_polygon'){
-      return reactive([2])
-    }else{
-      return reactive([])
-    }
-  }),children:[
-    {name:'标点',click(parent:any,index:number){
-      if(parent.active.includes(index)){
-        for(let i=0;i<parent.active.length;i++){
-          if(parent.active[i--] === index){
-            parent.active.splice(i,1)
-          }
-        }
-        setting.绘制复原()
-      }else{
-        parent.active.push(index)
-        setting.标点()
-      }
-    }},
-    {name:'标线',click(parent:any, index:number) {
-      if(parent.active.includes(index)){
-        for(let i=0;i<parent.active.length;i++){
-          if(parent.active[i] === index){
-            parent.active.splice(i--,1)
-          }
-        }
-        setting.绘制复原()
-      }else{
-        parent.active.push(index)
-        setting.标线()
-      }
-    }},
-    {name:'标面',click(parent:any, index:number) {
-      if(parent.active.includes(index)){
-        for(let i=0;i<parent.active.length;i++){
-          if(parent.active[i] === index){
-            parent.active.splice(i--,1)
-          }
-        }
-        setting.绘制复原()
-      }else{
-        parent.active.push(index)
-        setting.标面()
-      }
-    }},
-    {name:'清除',click(parent:any, index:any) {
-      setting.清除()
-    }},
+  {name:'标绘',children:[
+    {name:'标点',active:computed(()=>setting.绘制模式 === 'draw_point'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标点()},
+    {name:'标线',active:computed(()=>setting.绘制模式 === 'draw_line_string'),click:(parent:any, index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标线()},
+    {name:'标面',active:computed(()=>setting.绘制模式 === 'draw_polygon'),click:(parent:any, index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标面()},
+    {name:'清除',click:(parent:any, index:any) => setting.清除()},
   ]},
-  {name:'工具',active:computed(()=>{
-    const selected = reactive<number[]>([])
-    if(setting.获取经纬度){
-      selected.push(0)
-    }
-    if(setting.绘制模式 === 'custom_draw_line_with_distance'){
-      selected.push(1)
-    }
-    return selected
-  }),children:[
-    {name:'获取经纬度',click(parent:any,index:number){
-      if(parent.active.includes(index)){
-        for(let i=0;i<parent.active.length;i++){
-          if(parent.active[i] === index){
-            parent.active.splice(i--,1)
-          }
-        }
-        setting.绘制复原()
-      }else{
-        parent.active.push(index)
-        setting.经纬度()
-      }
-    }},
-    {name:'测距',click(parent:any, index:number) {
-      if(parent.active.includes(index)){
-        for(let i=0;i<parent.active.length;i++){
-          if(parent.active[i] === index){
-            parent.active.splice(i--,1)
-          }
-        }
-        setting.绘制复原()
-      }else{
-        parent.active.push(index)
-        setting.测距()
-      }
-    }},
+  {name:'工具',children:[
+    {name:'获取经纬度',active:computed(()=>setting.获取经纬度),click:(parent:any,index:number)=>setting.获取经纬度 = !parent.children[index].active},
+    {name:'测距',active:computed(()=>setting.绘制模式==='custom_draw_line_with_distance'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.测距()},
     {name:'测面',click(parent:any, index:number) {
       // setting.测面()
     }},
-    {name:'清除',click(parent:any, index:number) {
-      setting.清除()
-    }},
+    {name:'清除',click:(parent:any, index:number)=>setting.清除()},
   ]},
 ])
 </script>

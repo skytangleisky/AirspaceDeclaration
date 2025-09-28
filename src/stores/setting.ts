@@ -947,9 +947,6 @@ export const useSettingStore = defineStore('setting',{
     批量操作(){
       console.log('批量操作')
     },
-    经纬度(){
-      console.log('经纬度')
-    },
     测距(){
       console.log('测距')
     },

@@ -1001,8 +1001,10 @@ const 批量操作 = ()=>{
 }
 const 经纬度 = ()=>{
   setting.获取经纬度 = true
-  map.getCanvas().style.cursor = "crosshair";
 }
+watch(()=>setting.获取经纬度,()=>{
+  setting.获取经纬度 ? map.getCanvas().style.cursor = "crosshair" : map.getCanvas().style.cursor = "default";
+})
 const 测距 = ()=>{
   draw.changeMode('custom_draw_line_with_distance')
 }
@@ -1013,7 +1015,6 @@ const 清除 = ()=>{
 setting.zoomIn = zoomIn
 setting.zoomOut = zoomOut
 setting.批量操作 = 批量操作
-setting.经纬度 = 经纬度
 setting.测距 = 测距
 setting.清除 = 清除
 setting.标点 = ()=>{
