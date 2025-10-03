@@ -201,7 +201,7 @@ export default{
     type: 'custom',
     renderingMode: '3d',
     imageLoaded:false,
-    images: {texture1:{url:'/01.png'},texture2:{url:'/02.png'},texture3:{url:'/03.png'},texture4:{url:'/04.png'}},
+    images: {texture1:{url:'/kysq/01.png'},texture2:{url:'/kysq/02.png'},texture3:{url:'/kysq/03.png'},texture4:{url:'/kysq/04.png'}},
     onAdd(map, gl){
         // console.log(gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE))
         mapInstance = map

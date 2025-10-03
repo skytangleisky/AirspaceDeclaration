@@ -128,6 +128,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
+import { useSettingStore } from '~/components'
+const setting = useSettingStore()
 import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息,getMask} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,toRaw,computed } from 'vue'
 const addShow = ref(false)
@@ -298,9 +300,11 @@ const tableData = reactive<any>([])
 let timer:any = 0
 onMounted(()=>{
   onVisibleChange(true)//主动获取一下数据
-  timer = setInterval(()=>{
-    触发完成信息查询.value = Date.now()
-  },1000)
+  if(setting.enableTimer){
+    timer = setInterval(()=>{
+      触发完成信息查询.value = Date.now()
+    },1000)
+  }
 })
 onBeforeUnmount(()=>{
   clearInterval(timer)

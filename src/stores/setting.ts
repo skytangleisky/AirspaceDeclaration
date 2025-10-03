@@ -13,6 +13,8 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    enableTimer:true,
+    显示全国行政区划配置:false,
     获取经纬度:false,
     地图列表:[
       {
@@ -394,6 +396,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        selectedRegion:new Array<string>('610000'),//需要在地图上显示的行政区
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,

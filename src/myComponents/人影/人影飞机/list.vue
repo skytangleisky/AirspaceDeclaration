@@ -96,9 +96,11 @@ const cancel = () => {
 };
 let timer:any;
 onMounted(() => {
-    timer = setInterval(()=>{
-        触发新增飞机信息查询.value = Date.now()
-    },10*1000)
+    if(setting.enableTimer){
+        timer = setInterval(()=>{
+            触发新增飞机信息查询.value = Date.now()
+        },1000)
+    }
 });
 onBeforeUnmount(() => {
     clearInterval(timer)

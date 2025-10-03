@@ -18,12 +18,9 @@ function close(){
 }
 const SHOW = ref(true)
 const IF = ref(true)
-const once = defineModel<boolean|''>('once',{
+const once = defineModel<boolean>('once',{
   default:false
 })
-if(once.value==''){
-  once.value = true
-}
 const render = defineModel('render',{
   required:false,
   default:true

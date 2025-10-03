@@ -21,7 +21,11 @@ service.interceptors.request.use(
     //   config.headers['X-Token'] = getToken()
     // }
     config.headers['Authorization'] = localStorage.getItem('access_token')
-    config.headers['database'] = JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"BEPK_RYB_GSYTHPT","type":"xugu"})
+
+    // config.headers['database'] = JSON.stringify({"host":"10.224.91.136","port":5138,"database":"BEPK_APP_STDB","schema":"BEPK_RYB_GSYTHPT","user":"BEPK_RYB_GSYTHPT","password":"Bjryzx_2023!","type":"xugu"})//北京
+    // config.headers['database'] = JSON.stringify({"host":"192.168.0.114","port":5138,"database":"BEPK_APP_STDB","schema":"BEPK_RYB_GSYTHPT","user":"BEPK_RYB_GSYTHPT","password":"Bjryzx_2023!","type":"xugu"})//北京
+    config.headers['database'] = JSON.stringify({"host":"192.168.0.135","port":5138,"database":"SYSTEM","schema":"BEPK_RYB_GSYTHPT","user":"SYSDBA","password":"SYSDBA","type":"xugu"})
+    // config.headers['database'] = JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_shanxi","type":"mysql"})//陕西
     return config
   },
   error => {

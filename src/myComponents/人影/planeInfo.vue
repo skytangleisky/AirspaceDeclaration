@@ -80,9 +80,11 @@ function handleRowClick(row,col,event){
 }
 let timer:any = 0
 onMounted(()=>{
-  timer = setInterval(()=>{
-    触发注册飞机查询.value = Date.now()
-  },1000)
+  if(setting.enableTimer){
+    timer = setInterval(()=>{
+      触发注册飞机查询.value = Date.now()
+    },1000)
+  }
 })
 onBeforeUnmount(()=>{
   clearInterval(timer)

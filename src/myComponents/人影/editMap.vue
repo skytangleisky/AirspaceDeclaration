@@ -79,10 +79,12 @@
     <Frame v-model:render="metting" once>
       <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
     </Frame>
+    <ConfigureRegion></ConfigureRegion>
   </div>
 </template>
 <script lang="ts" setup>
 import Frame from '~/frames/frame.vue'
+import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
@@ -472,7 +474,7 @@ const 人工批复 = () => {
 const 手动移除=async () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
-  空域申请移除([properties.strWorkID]).then(res=>{
+  空域申请移除([{strWorkID:properties.strWorkID}]).then(res=>{
     ElMessage({
       message: '移除成功',
       type: 'success',
@@ -1165,6 +1167,26 @@ onMounted(async() => {
   }
   map.on("load", async () => {
     if(!map)return;
+    // axios.get("/backend/region/610000.json").then(res=>{
+    //   map.addLayer({
+    //     'id': '610000.json',
+    //     'type': 'line',
+    //     'source': {
+    //       "type":"geojson",
+    //       "data": res.data
+    //     },
+    //     'layout': {
+    //       'visibility':'visible',
+    //       'line-join':'round',
+    //       'line-cap':'round',
+    //     },
+    //     'paint': {
+    //       'line-color': '#fff',
+    //       'line-width': 5,
+    //       'line-opacity':1,
+    //     }
+    //   })
+    // })
 /*
       map.addSource('pointSource', {
         type: 'geojson',
@@ -2533,8 +2555,8 @@ onMounted(async() => {
 
 
 
-    // map.addLayer(CustomLayer);
-    map.addLayer(new Plane())
+    map.addLayer(CustomLayer);
+    // map.addLayer(new Plane())
     map.addLayer({
       id: "maine",
       type: "fill",
@@ -3849,9 +3871,11 @@ onMounted(async() => {
       });
       */
     }
-    taskTimer = setInterval(() => {
-      work();
-    }, 1000);
+    if(setting.enableTimer){
+      taskTimer = setInterval(() => {
+        work();
+      }, 1000);
+    }
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];

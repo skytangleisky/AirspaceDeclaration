@@ -357,6 +357,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }
   },
   {
+    label: '全国行政区划', type: 'button', click() {
+      setting.显示全国行政区划配置 = true
+    }
+  },
+  {
     label: '放大', type: 'button', click() {
       setting.zoomIn()
     }
