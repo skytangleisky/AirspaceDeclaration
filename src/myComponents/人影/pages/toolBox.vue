@@ -82,6 +82,14 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     type: 'select',
     options: setting.地图列表
   },
+  {
+    label: '地图透明度',
+    value: modelRef(setting, '人影.监控.tileOpacity'),
+    type: 'range',
+    min: 0,
+    max: 1,
+    arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  },
   {label: '准心', value: modelRef(setting, '人影.监控.准心'), type: 'checkbox'},
   {label: '菜单', value: modelRef(setting, 'menus'), type: 'checkbox'},
   // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
@@ -343,6 +351,18 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
       {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
       {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
+      {label: '中心经度', value: computed(()=>setting.人影.监控.center[0]), type: 'text'},
+      {label: '中心纬度', value: computed(()=>setting.人影.监控.center[1]), type: 'text'},
+      {label: '缩放等级', value: computed(()=>setting.人影.监控.zoom), type: 'text'},
+      {label: '帧率', value: computed(()=>setting.人影.监控.fps), type: 'text'},
+      {label: '帧率曲线',value:{
+        fps: {
+          value: computed(()=>setting.人影.监控.fps),
+          min: 0,
+          max: 200,
+          strokeStyle: "white",
+        },
+      },type:'curve'},
     ]
   },
   // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
@@ -375,6 +395,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
 </script>
 <style lang="scss" scoped>
 .side-box{
+  pointer-events: none;
   position:absolute;
   right:0;
   top:calc(31px + 40px + 10px);bottom:16px;right:18px;height:fit-content;width:fit-content;

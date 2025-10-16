@@ -434,7 +434,8 @@ export default function(){
 							`rgba(${setting.人影.监控.landColor.r},${setting.人影.监控.landColor.g},${setting.人影.监控.landColor.b},${setting.人影.监控.landColor.a})`,
 							11,
 							`rgba(${setting.人影.监控.landColor.r},${setting.人影.监控.landColor.g},${setting.人影.监控.landColor.b},${setting.人影.监控.landColor.a})`,
-						]
+						],
+						// "background-opacity": 0.3
 					}
 				},
 				{
@@ -445,6 +446,9 @@ export default function(){
 					"maxzoom": 22,
 					layout:{
 						visibility:setting.人影.监控.loadmap?'visible':'none'
+					},
+					paint: {
+						'raster-opacity': setting.人影.监控.tileOpacity
 					}
 				},
 				{
@@ -602,7 +606,7 @@ export default function(){
 					'type': 'line',
 					'source': 'huabeiBorder',
 					'layout': {
-						'visibility':'visible',
+						'visibility':'none',
 						'line-join':'round',
 						'line-cap':'round',
 					},

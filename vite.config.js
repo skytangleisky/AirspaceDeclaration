@@ -20,6 +20,7 @@ const option = {
 const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
+const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -115,6 +116,7 @@ export default defineConfig({
         // agent,
         // target:'http://172.18.7.38:3000',
         // target:'http://192.168.0.114:3000',
+        agent:shanxi_agent,
         target:'http://127.0.0.1:3000',
         secure:false,
         changeOrigin:true,
@@ -131,6 +133,7 @@ export default defineConfig({
         // agent,
         // target:'http://172.18.7.38:8080',
         // target:'http://192.168.0.135:8080',
+        agent:shanxi_agent,
         target:'http://127.0.0.1:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,

@@ -124,6 +124,7 @@ let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
 let adsbTimer:any;
+let fpsTimer:any;
 const decoder = new TextDecoder('gbk')
 import Video from './pages/video.vue'
 import ToolBox from './pages/toolBox.vue'
@@ -141,6 +142,7 @@ import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import adsbSvg from '~/assets/adsb.svg?url'
 import banSvg from '~/assets/ban.svg?url'
+import stoveUrl from '~/assets/stove.svg?url'
 import planeUrl from "~/assets/飞机.svg?url";
 import projectileUrl from "~/assets/projectile.svg?url";
 import triangleUrl from "~/assets/triangle.svg?url"
@@ -253,6 +255,10 @@ let testFeaturesData: any = {
     },
   }],
 };
+let stoveFeaturesData: any = {
+  type: "FeatureCollection",
+  features: [],
+};
 let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
@@ -261,7 +267,7 @@ let synergyFeaturesData:any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图} from '~/api/天工'
+import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -638,7 +644,8 @@ const bearingFunc = () => {
   emits("update:bearing", map.getBearing());
 };
 const moveFunc = () => {
-  emits("update:center", map.getCenter());
+  const center = map.getCenter()
+  emits("update:center", [center.lng,center.lat]);
 };
 function 网络上报(data:prevRequestDataType){
   airspaceApply(data).then((res:any)=>{
@@ -1004,6 +1011,9 @@ const 批量操作 = ()=>{
 const 经纬度 = ()=>{
   setting.获取经纬度 = true
 }
+watch(()=>setting.人影.监控.tileOpacity,(opacity)=>{
+  map.setPaintProperty('simple-tiles','raster-opacity',opacity)
+})
 watch(()=>setting.获取经纬度,()=>{
   setting.获取经纬度 ? map.getCanvas().style.cursor = "crosshair" : map.getCanvas().style.cursor = "default";
 })
@@ -1089,7 +1099,7 @@ function convertMultiPointToLineString(multiPointFeature) {
     throw new Error("Invalid MultiPoint feature");
   }
 }
-import Plane from './三维物体/CustomLayer.js'
+import Plane,{PointLayer} from './三维物体/CustomLayer.js'
 import { ElMessage } from 'element-plus';
 function load(){
   for(let i=0;i<mettingList.length;i++){
@@ -1165,28 +1175,13 @@ onMounted(async() => {
     GIS_DATA_LINE: 32,//新的面图元数据
     GIS_DATA_REGION: 33,//新的面图元数据
   }
+  let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
-    // axios.get("/backend/region/610000.json").then(res=>{
-    //   map.addLayer({
-    //     'id': '610000.json',
-    //     'type': 'line',
-    //     'source': {
-    //       "type":"geojson",
-    //       "data": res.data
-    //     },
-    //     'layout': {
-    //       'visibility':'visible',
-    //       'line-join':'round',
-    //       'line-cap':'round',
-    //     },
-    //     'paint': {
-    //       'line-color': '#fff',
-    //       'line-width': 5,
-    //       'line-opacity':1,
-    //     }
-    //   })
-    // })
+    fpsTimer = setInterval(()=>{
+      setting.人影.监控.fps = map.painter.frameCounter - lastFrameCounter
+      lastFrameCounter = map.painter.frameCounter
+    },1000)
 /*
       map.addSource('pointSource', {
         type: 'geojson',
@@ -1307,7 +1302,7 @@ onMounted(async() => {
       'type': 'line',
       'source': 'beijingBorder',
       'layout': {
-        'visibility':'visible',
+        'visibility':'none',
         'line-join':'round',
         'line-cap':'round',
       },
@@ -1801,6 +1796,11 @@ onMounted(async() => {
 
 
     map.removeImage('airport');
+    await loadImage2Map(map,stoveUrl,32,32,{
+      stove:{
+        style: 'fill:#fa0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
     await loadImage2Map(map,banSvg,16,16,{
       airport:{
         style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
@@ -2553,10 +2553,6 @@ onMounted(async() => {
     //   });
     // }
 
-
-
-    map.addLayer(CustomLayer);
-    // map.addLayer(new Plane())
     map.addLayer({
       id: "maine",
       type: "fill",
@@ -2982,6 +2978,50 @@ onMounted(async() => {
             "icon-opacity": 1,
           },
           filter: ['in', ['get', 'tag'], ['get', 'tags']]
+        });
+      }
+      if(!map.getSource("stoveSource")){
+        map.addSource("stoveSource", {
+          type: "geojson",
+          data: stoveFeaturesData,
+          promoteId:'strID'
+        });
+      }
+      if(!map.getLayer("stoveLayer")){
+        map.addLayer({
+          id: "stoveLayer",
+          type: "symbol",
+          source: "stoveSource",
+          layout: {
+            visibility: "visible",
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+            "icon-anchor": "center",
+            "icon-image": ["get", "icon-image"],
+            'icon-size': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              4, 0.25,
+              5, 0.25,
+              8, 0.6,
+              15, 1.0
+            ],
+            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+            "icon-rotate": 0,
+            // "icon-offset": [10, 0],
+            "icon-rotation-alignment": "map",
+            "text-pitch-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+          },
+          paint: {
+            "icon-opacity": 1,
+          },
+          // filter: ['in', ['get', 'tag'], ['get', 'tags']]
         });
       }
       if(!map.getLayer("zydLabelLayer")){
@@ -4339,8 +4379,43 @@ onMounted(async() => {
         visibility:setting.人影.监控.roadMap ? 'visible' : 'none'
       }
     })
-
+    // map.addLayer(CustomLayer)
     // map.addLayer(new Plane())
+    // map.addLayer(new PointLayer())
+    // 烟炉数据().then((res:any)=>{
+    //   for(let item of res.data.results){
+    //     const pos = fromDMS(item.tagPos)
+    //     stoveFeaturesData.features.push({
+    //       type: "Feature",
+    //       properties: {
+    //         strID: 'id',
+    //         type: "站点",
+    //         strCode: '',
+    //         strName: '',
+    //         strPos: '',
+    //         iWorkType: 1,
+    //         beginTime: moment().format("HH:mm:ss"),
+    //         duration: 1,
+    //         "icon-image": "stove",
+    //         // "icon-image": "火箭弹图标",
+    //         发报单位:'110000000',
+    //         delayTimeLen:10,
+    //         beginDirection:270,
+    //         endDirection:80,
+    //         workTimeLen:1,
+    //         workBeginTime:moment().format('HH:mm:ss'),
+    //         denyCode:0,
+    //         tag:setting.人影.监控.zydTag
+    //       },
+    //       geometry: {
+    //         type: "Point",
+    //         coordinates: pos,
+    //       },
+    //     });
+    //   }
+    //   map.getSource('stoveSource').setData(stoveFeaturesData)
+    //   console.log(res.data)
+    // })
   });
   map.on('draw.create',(e)=>{
     e.features.map((feature:any)=>{
@@ -4487,6 +4562,7 @@ onBeforeUnmount(() => {
     clearInterval(sixMinutesTimer);
     clearInterval(fifteenMinutesTimer);
     clearInterval(threeMinutesTimer);
+    clearInterval(fpsTimer);
     eventbus.off("人影-将站点移动到屏幕中心", flyTo);
     eventbus.off("人影-地面作业申请-网络上报", 网络上报);
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
@@ -4530,6 +4606,41 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
+watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
+  if(oldVal==undefined){
+    oldVal = []
+  }
+  oldVal.forEach((item:string)=>{
+    if(!newVal.includes(item)){
+      map.removeLayer(`${item}.json`)
+      map.removeSource(`${item}.json`)
+    }
+  })
+  newVal.forEach((item:string)=>{
+    if(!oldVal.includes(item)){
+      axios.get(`/backend/region/${item}.json`).then(res=>{
+        map.addLayer({
+          'id': `${item}.json`,
+          'type': 'line',
+          'source': {
+            "type":"geojson",
+            "data": res.data
+          },
+          'layout': {
+            'visibility':'visible',
+            'line-join':'round',
+            'line-cap':'round',
+          },
+          'paint': {
+            'line-color': '#fff',
+            'line-width': 5,
+            'line-opacity':1,
+          }
+        })
+      })
+    }
+  })
+},{deep:true,immediate:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){

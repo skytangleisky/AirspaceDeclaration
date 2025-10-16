@@ -59,6 +59,7 @@
         border: 1px solid #bdd4ff;
         background-color: #f4f8ff;
         padding: $grid-1;
+        pointer-events: auto;
     }
     .dark .toolKitBgClass {
         border: 1px solid #c1d3fb;

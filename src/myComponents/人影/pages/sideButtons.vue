@@ -52,7 +52,9 @@ const groups = reactive([
   height: 100%;
   font-size:16px;
   user-select: none;
+  pointer-events: none;
   .sideButtonGroup{
+    pointer-events: auto;
     margin-bottom:5px;
     display: flex;
     flex-direction: column;

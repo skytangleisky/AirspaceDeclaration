@@ -18,6 +18,7 @@
       @check="handleCheck"
       node-key="id"
       :default-expanded-keys="expendedKeys"
+      :check-strictly="true"
     >
       <template #default="{ node, data }">
         <span>
@@ -33,7 +34,7 @@
 <script lang="ts" setup>
   import { useSettingStore } from '~/stores/setting'
   const setting = useSettingStore()
-  import { watch, ref, reactive, onMounted } from 'vue'
+  import { watch, ref, reactive, onMounted, nextTick } from 'vue'
   import type { FilterNodeMethodFunction, TreeInstance, LoadFunction } from 'element-plus'
   interface Tree {
     [key: string]: any
@@ -67,6 +68,7 @@ function buildTree(list: Array<any>, parentId: string | null = null): Array<any>
   return list.filter(item => item.parent_adcode === parentId).map(item => ({
     ...item,
     leaf: item.childrenNum === 0,
+    id: item.adcode,
     children: buildTree(list, item.adcode)
   }))
 }
@@ -78,13 +80,15 @@ function buildTree(list: Array<any>, parentId: string | null = null): Array<any>
   const data = reactive<Array<any>>([])
 
   onMounted(()=>{
-    // treeRef.value!.setCheckedKeys(setting.人影.监控.selectedRegion)
     // getAllShouldExpendRegion().then(res=>{
     //   expendedKeys.value = res.data.results.map((item:any)=>item.adcode)
     // })
     getRegion().then(res=>{
       const arr = buildTree(res.data.results)
       data.splice(0,data.length,...arr)
+      nextTick(()=>{
+        treeRef.value!.setCheckedKeys(setting.人影.监控.selectedRegion)
+      })
     })
   })
 

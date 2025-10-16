@@ -30,8 +30,8 @@ export const useSettingStore = defineStore('setting',{
       {
         value:2,
         label: "影像地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
-        // tileData: ["http://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
+        // tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        tileData: ["http://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
       },
       {
         value:3,
@@ -419,10 +419,10 @@ export const useSettingStore = defineStore('setting',{
           b:36,
           a:1
         },
-        zoom: 9,
+        zoom: 6,
         center: [
-          116.418757,
-          40.197544
+          108.64875619493603,
+          35.67056520823472
         ],
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,
@@ -448,7 +448,7 @@ export const useSettingStore = defineStore('setting',{
         routeLine:true,
         zyd:true,
         synergyZyd:false,
-        北京保障圈:true,
+        北京保障圈:false,
         airport:false,
         navigationStation:false,
         systemInfoOpened:false,
@@ -476,12 +476,12 @@ export const useSettingStore = defineStore('setting',{
           districtFillColor:{r:88,g:158,b:248,a:1},
           districtFillOpacity:0.5,
           districtBaseOpened:true,
-          districtBase:true,
+          districtBase:false,
           districtBaseWidth:0,
           districtBaseColor:{r:0,g:0,b:0,a:1},
           districtBaseOpacity:0.5,
           districtLineOpened:true,
-          districtLine:true,
+          districtLine:false,
           districtLineWidth:1,
           districtLineColor:{r:67,g:149,b:205,a:1},
           districtLineOpacity:1,
@@ -544,7 +544,9 @@ export const useSettingStore = defineStore('setting',{
           duration: 1,
         },
         bottom_disappear:true,
-        tile: 0
+        tile: 0,
+        tileOpacity:0.4,
+        fps:0,
       },
       回放:{
         "zoom": 8.882777980661407,
