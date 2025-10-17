@@ -80,11 +80,13 @@
       <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
     </Frame>
     <ConfigureRegion></ConfigureRegion>
+    <ConfigureSmokeStove></ConfigureSmokeStove>
   </div>
 </template>
 <script lang="ts" setup>
 import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
+import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
@@ -1790,13 +1792,8 @@ onMounted(async() => {
     }
     img2.src = JYJCurl
 
-
-
-
-
-
     map.removeImage('airport');
-    await loadImage2Map(map,stoveUrl,32,32,{
+    await loadImage2Map(map,stoveUrl,36,36,{
       stove:{
         style: 'fill:#fa0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
@@ -4382,40 +4379,40 @@ onMounted(async() => {
     // map.addLayer(CustomLayer)
     // map.addLayer(new Plane())
     // map.addLayer(new PointLayer())
-    // 烟炉数据().then((res:any)=>{
-    //   for(let item of res.data.results){
-    //     const pos = fromDMS(item.tagPos)
-    //     stoveFeaturesData.features.push({
-    //       type: "Feature",
-    //       properties: {
-    //         strID: 'id',
-    //         type: "站点",
-    //         strCode: '',
-    //         strName: '',
-    //         strPos: '',
-    //         iWorkType: 1,
-    //         beginTime: moment().format("HH:mm:ss"),
-    //         duration: 1,
-    //         "icon-image": "stove",
-    //         // "icon-image": "火箭弹图标",
-    //         发报单位:'110000000',
-    //         delayTimeLen:10,
-    //         beginDirection:270,
-    //         endDirection:80,
-    //         workTimeLen:1,
-    //         workBeginTime:moment().format('HH:mm:ss'),
-    //         denyCode:0,
-    //         tag:setting.人影.监控.zydTag
-    //       },
-    //       geometry: {
-    //         type: "Point",
-    //         coordinates: pos,
-    //       },
-    //     });
-    //   }
-    //   map.getSource('stoveSource').setData(stoveFeaturesData)
-    //   console.log(res.data)
-    // })
+    烟炉数据().then((res:any)=>{
+      for(let item of res.data.results){
+        const pos = fromDMS(item.tagPos)
+        stoveFeaturesData.features.push({
+          type: "Feature",
+          properties: {
+            strID: 'id',
+            type: "站点",
+            strCode: '',
+            strName: '',
+            strPos: '',
+            iWorkType: 1,
+            beginTime: moment().format("HH:mm:ss"),
+            duration: 1,
+            "icon-image": "stove",
+            // "icon-image": "火箭弹图标",
+            发报单位:'110000000',
+            delayTimeLen:10,
+            beginDirection:270,
+            endDirection:80,
+            workTimeLen:1,
+            workBeginTime:moment().format('HH:mm:ss'),
+            denyCode:0,
+            tag:setting.人影.监控.zydTag
+          },
+          geometry: {
+            type: "Point",
+            coordinates: pos,
+          },
+        });
+      }
+      map.getSource('stoveSource').setData(stoveFeaturesData)
+      console.log(res.data)
+    })
   });
   map.on('draw.create',(e)=>{
     e.features.map((feature:any)=>{

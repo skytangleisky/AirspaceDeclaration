@@ -1,5 +1,5 @@
 <template>
-    <el-scrollbar class="smokeStove-scrollbar">
+    <el-scrollbar class="smokeStove-scrollbar" @mousedown.stop>
         <div class="smokeStove">
             <!-- 烟炉 -->
             <div class="page-top">
@@ -135,6 +135,7 @@ function chooseStoveHandle(item:any) {
 
 <style lang="scss" scoped>
 .smokeStove-scrollbar {
+    cursor:auto;
     width: 100%;
     height: 100%;
     background-color: var(--el-bg-color-page);

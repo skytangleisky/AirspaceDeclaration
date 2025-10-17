@@ -382,6 +382,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }
   },
   {
+    label: '烟炉控制', type: 'button', click() {
+      setting.显示烟炉 = true
+    }
+  },
+  {
     label: '放大', type: 'button', click() {
       setting.zoomIn()
     }

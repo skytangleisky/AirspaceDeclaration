@@ -14,14 +14,17 @@
                   @click="chooseSmokeStove(item)"
               >
                 <div class="stove-item-top">
-                  {{ item.strName }}
+                  <div class="stove-name burning">
+                    {{ item.strName }}
+                  </div>
+                  <el-checkbox v-model="item.checked"></el-checkbox>
                 </div>
                 <div class="stove-item-bottom">
                   <div class="stove-status">
                     <div class="stove-status-value">
                       {{ item.burningCount }}
                     </div>
-                    <div class="stove-status-label">
+                    <div class="stove-status-label burning">
                       燃烧
                     </div>
                   </div>
@@ -49,10 +52,8 @@
       </el-tab-pane>
       <el-tab-pane label="消息" name="second">
         <div ref="logContainer" style="height: 100%;overflow: auto;white-space: pre;">
-          <div v-for="item in logInfoList" v-html="item"
-               style="display:flex;"></div>
-          <el-icon class="trash" @click="clearAll" v-html="trashSvg"
-                   style="position: absolute;right:20px;bottom:0;font-size:20px;"></el-icon>
+          <div v-for="item in logInfoList" v-html="item" style="display:flex;"></div>
+          <el-icon class="trash" @click="clearAll" v-html="trashSvg" style="position: absolute;right:20px;bottom:0;font-size:20px;"></el-icon>
         </div>
       </el-tab-pane>
       <el-tab-pane label="作业历史" name="third">作业历史</el-tab-pane>
@@ -342,6 +343,23 @@ onBeforeUnmount(() => {
           text-overflow: ellipsis;
           overflow: hidden;
           white-space: nowrap;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          .stove-name.burning{
+            color:red;
+            animation: burning 2s ease-in-out infinite;
+            opacity: 0.5;
+            will-change: opacity;
+          }
+          @keyframes burning {
+            0%, 100% { opacity: 1 }
+            50%      { opacity: 0.5 }
+          }
+          .el-checkbox{
+            height: fit-content;
+          }
         }
 
         .stove-item-bottom {
@@ -360,11 +378,9 @@ onBeforeUnmount(() => {
             &:last-child {
               color: var(--el-color-success);
             }
-
             .stove-status-label {
               // color: var(--el-text-color-regular);
             }
-
             .stove-status-value {
               font-size: 0.16rem;
               font-weight: 600;

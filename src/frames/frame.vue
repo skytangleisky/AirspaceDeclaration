@@ -1,13 +1,13 @@
 <template>
   <teleport to="#wstd-container">
-    <div v-dragable class="meeting" v-show="SHOW" v-if="IF">
+    <div ref="meeting" v-dragable class="meeting" v-show="SHOW" v-if="IF">
       <slot></slot>
       <div class="close-btn" @click="close" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div>
   </teleport>
 </template>
 <script setup lang="ts">
-import {ref, watch} from 'vue'
+import {onMounted, ref, watch} from 'vue'
 function close(){
   if(once.value){
     IF.value=false
@@ -25,6 +25,23 @@ const render = defineModel('render',{
   required:false,
   default:true
 })
+const width = defineModel('width',{
+  default:800
+})
+const height = defineModel('height',{
+  default:400
+})
+const meeting = ref()
+onMounted(()=>{
+  if(meeting.value){
+    if(width.value>0){
+      meeting.value!.style.setProperty('--width', width.value+'px');
+    }
+    if(height.value>0){
+      meeting.value!.style.setProperty('--height', height.value+'px');
+    }
+  }
+})
 watch(render,(newVal,oldVal)=>{
   if(once.value){
     IF.value=newVal
@@ -39,13 +56,15 @@ import closeUrl from '~/assets/close.svg?raw'
 .meeting{
   border-radius:4px;
   box-sizing:border-box;
-  width:800px;
-  height:400px;
+  --width:800px;
+  --height:400px;
+  width:var(--width);
+  height:var(--height);
   background:var(--el-bg-color-opacity-8);
   border:1px solid var(--el-border-color);
   position:absolute;
-  left:calc(50% - 400px);
-  top:calc(50% - 200px);
+  left:calc(50% - var(--width)/2);
+  top:calc(50% - var(--height)/2);
   padding:4px;
   z-index:9999;
   cursor:move;
@@ -57,11 +76,9 @@ import closeUrl from '~/assets/close.svg?raw'
   }
 
   .close-btn {
-    right:4px;
-    top:4px;
+    right:0px;
+    top:0px;
     position: absolute;
-    width:20px;
-    height:20px;
     justify-content: center;
     align-items:center;
     font-size: 0.16rem;

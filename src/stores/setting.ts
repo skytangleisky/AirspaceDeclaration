@@ -15,6 +15,7 @@ export const useSettingStore = defineStore('setting',{
   state:()=>({
     enableTimer:true,
     显示全国行政区划配置:false,
+    显示烟炉:true,
     获取经纬度:false,
     地图列表:[
       {
@@ -396,7 +397,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        selectedRegion:new Array<string>('610000'),//需要在地图上显示的行政区
+        selectedRegion:new Array<string>(),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
@@ -476,12 +477,12 @@ export const useSettingStore = defineStore('setting',{
           districtFillColor:{r:88,g:158,b:248,a:1},
           districtFillOpacity:0.5,
           districtBaseOpened:true,
-          districtBase:false,
+          districtBase:true,
           districtBaseWidth:0,
           districtBaseColor:{r:0,g:0,b:0,a:1},
           districtBaseOpacity:0.5,
           districtLineOpened:true,
-          districtLine:false,
+          districtLine:true,
           districtLineWidth:1,
           districtLineColor:{r:67,g:149,b:205,a:1},
           districtLineOpacity:1,
