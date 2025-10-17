@@ -291,7 +291,7 @@ export function 作业状态数据(signal:AbortSignal){
     data:{
       sqls: [
         "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL ORDER BY z.tmBeginApply DESC",
-        "SELECT z.*,u1.strName AS `strATCUnitIDName`,u2.strName AS `strUpApplyUnitName` FROM zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND z.tmBeginApply BETWEEN CURRENT_DATE() AND CURRENT_DATE() + 1 ORDER BY z.tmBeginApply DESC",//当天的数据
+        `SELECT z.*,u1.strName AS strATCUnitIDName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' ORDER BY z.tmBeginApply DESC`,//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
     }
