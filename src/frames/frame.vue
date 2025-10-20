@@ -76,8 +76,8 @@ import closeUrl from '~/assets/close.svg?raw'
   }
 
   .close-btn {
-    right:0px;
-    top:0px;
+    right:-1px;
+    top:-1px;
     position: absolute;
     justify-content: center;
     align-items:center;

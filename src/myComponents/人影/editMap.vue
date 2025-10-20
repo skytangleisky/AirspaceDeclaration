@@ -81,12 +81,14 @@
     </Frame>
     <ConfigureRegion></ConfigureRegion>
     <ConfigureSmokeStove></ConfigureSmokeStove>
+    <ConfigureRocket></ConfigureRocket>
   </div>
 </template>
 <script lang="ts" setup>
 import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
+import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
