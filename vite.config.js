@@ -113,7 +113,7 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        // agent,
+        agent,
         target:'http://172.18.7.38:3000',
         // target:'http://192.168.0.114:3000',
         // agent:shanxi_agent,
@@ -130,7 +130,7 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        // agent,
+        agent,
         target:'http://172.18.7.38:8080',
         // target:'http://192.168.0.135:8080',
         // agent:shanxi_agent,

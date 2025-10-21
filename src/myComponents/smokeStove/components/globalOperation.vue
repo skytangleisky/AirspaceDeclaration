@@ -14,7 +14,7 @@
                   @click="chooseSmokeStove(item)"
               >
                 <div class="stove-item-top">
-                  <div class="stove-name burning">
+                  <div class="stove-name">
                     {{ item.strName }}
                   </div>
                   <el-checkbox v-model="item.checked"></el-checkbox>
@@ -24,7 +24,7 @@
                     <div class="stove-status-value">
                       {{ item.burningCount }}
                     </div>
-                    <div class="stove-status-label burning">
+                    <div class="stove-status-label">
                       燃烧
                     </div>
                   </div>

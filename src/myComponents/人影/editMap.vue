@@ -2629,7 +2629,7 @@ onMounted(async() => {
       for(let i=0;i<dialogOptions.menus.length;i++){
         const item = dialogOptions.menus[i] as stationData
         if(!item.tags){
-          item.tags = ['all']
+          item.tags = []
         }
         if(item.iType){
           if(!item.tags.includes('移动作业点')){
@@ -2708,7 +2708,7 @@ onMounted(async() => {
             const sectorPolygon = turf.polygon([sectorPoints], {
               strID: item.strID,
               tags:item.tags,
-              tag:'all',
+              tag:setting.人影.监控.zydTag,
             });
             map.setFeatureState({source:'最大射程source',id:item.strID},{
               ubyStatus:'空闲',
@@ -2739,7 +2739,7 @@ onMounted(async() => {
             const sectorPolygon = turf.polygon([sectorPoints], {
               strID: item.strID,
               tags:item.tags,
-              tag:'all',
+              tag:setting.人影.监控.zydTag,
             });
             map.setFeatureState({source:'最大射程source',id:item.strID},{
               ubyStatus:'空闲',
@@ -2766,7 +2766,7 @@ onMounted(async() => {
             strID: item.strID,
             ubyStatus:'空闲',
             tags:item.tags,
-            tag:'all',
+            tag:setting.人影.监控.zydTag,
           });
           map.setFeatureState({source:'警戒圈source',id:item.strID},{
             ubyStatus:'空闲',
@@ -2925,7 +2925,7 @@ onMounted(async() => {
                   denyCode:0,
                   strMgrUnitName:item.strMgrUnitName,
                   tags:item.tags,
-                  tag:'all'
+                  tag:setting.人影.监控.zydTag,
                 },
                 geometry: {
                   type: "Point",
@@ -2971,14 +2971,37 @@ onMounted(async() => {
             "icon-rotate": 0,
             // "icon-offset": [10, 0],
             "icon-rotation-alignment": "map",
-            "text-pitch-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
+            "text-field": ["get", "strName"],
+            "text-font": ["simkai"],
+            "text-size": 12,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,】,
+            "text-line-height": 1,
+            'text-anchor': 'bottom', // 水平垂直居中
+            'text-offset': [0, -1], // 调整文本偏移量
+            'text-justify': 'center', // 水平居中对齐
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-pitch-alignment": "map",
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
           },
           paint: {
             "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+            'text-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              9, 0,   // zoom <= 9 不显示文字
+              10, 1   // zoom >= 10 显示文字
+            ]
           },
-          filter: ['in', ['get', 'tag'], ['get', 'tags']]
+          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
         });
       }
       if(!map.getSource("stoveSource")){
@@ -3030,7 +3053,7 @@ onMounted(async() => {
             "text-allow-overlap": true,
             "text-pitch-alignment": "map",
             "text-rotation-alignment": "map",
-            // "text-max-width": 400,
+            "text-max-width": 400,
           },
           paint: {
             "icon-opacity": 1,
@@ -3045,43 +3068,7 @@ onMounted(async() => {
               10, 1   // zoom >= 10 显示文字
             ]
           },
-          filter: ['in', ['get', 'tag'], ['get', 'tags']]
-        });
-      }
-      if(!map.getLayer("zydLabelLayer")){
-        map.addLayer({
-          id: "zydLabelLayer",
-          type: "symbol",
-          source: "zydSource",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "text-pitch-alignment": "map",
-            "text-field": ["get", "strName"],
-            "text-font": ["simkai"],
-            "text-size": 16,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,
-            "text-anchor": "bottom",
-            "text-line-height": 1,
-            "text-justify": "center",
-            "text-offset": [0, -1],
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-rotation-alignment": "map",
-            "text-max-width": 400,
-          },
-          paint: {
-            "text-color": "white",
-            "text-halo-color": "black",
-            "text-halo-width": 1,
-          },
-          filter: ['in', ['get', 'tag'], ['get', 'tags']],
-          "minzoom":9,
+          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
         });
       }
 
@@ -4429,7 +4416,7 @@ onMounted(async() => {
             workTimeLen:1,
             workBeginTime:moment().format('HH:mm:ss'),
             denyCode:0,
-            tags:['all','烟炉'],
+            tags:['烟炉'],
             tag:setting.人影.监控.zydTag
           },
           geometry: {
@@ -4712,16 +4699,10 @@ watch(()=>setting.人影.监控.ryPlane,(val)=>{
   map.setFilter('飞机',val?['==', ['get', 'icon'], 'airplaneMock']:['all'])
   map.setFilter('飞机气泡图层',val?['==', ['get', 'icon'], 'airplaneMock']:['all'])
 })
-watch(()=>setting.人影.监控.zydTag,(tag)=>{
-  zydFeaturesData.features.forEach(item=>{
-    item.properties.tag = tag
-  })
-  map?.getSource('zydSource')?.setData(zydFeaturesData)
-  stoveFeaturesData.features.forEach(item=>{
-    item.properties.tag = tag
-  })
-  map?.getSource('stoveSource')?.setData(stoveFeaturesData)
-})
+watch(()=>setting.人影.监控.zydTag,(zydTag)=>{
+  map.setFilter('zydLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  map.setFilter('stoveLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+},{deep:true})
 watch(()=>setting.人影.监控.正西,(val)=>{
   const layers = map.getStyle().layers
   layers.forEach((layer:any)=>{
@@ -5179,7 +5160,6 @@ watch(
     const visibility = setting.人影.监控.zyd?'visible':'none'
     map.getLayer('stoveLayer')&&map.setLayoutProperty("stoveLayer", "visibility", visibility)
     map.getLayer("zydLayer")&&map.setLayoutProperty("zydLayer", "visibility", visibility)
-    map.getLayer("zydLabelLayer")&&map.setLayoutProperty("zydLabelLayer", "visibility", visibility)
     map.getLayer("最大射程-line")&&map.setLayoutProperty("最大射程-line", "visibility", visibility)
     map.getLayer("最大射程-fill")&&map.setLayoutProperty("最大射程-fill", "visibility", visibility)
     map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)

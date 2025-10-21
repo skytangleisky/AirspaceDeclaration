@@ -13,7 +13,7 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    enableTimer:false,
+    enableTimer:true,
     弹药概况:false,
     火箭架配置:false,
     显示全国行政区划配置:false,
@@ -442,7 +442,7 @@ export const useSettingStore = defineStore('setting',{
         isolines:false,
         zdz:false,
         test:false,//消云试验点
-        zydTag:'all',//用于过滤作业点显示
+        zydTag:['移动作业点','固定作业点','烟炉'],//用于过滤作业点显示
         正西:false,
         西北:false,
         西南:false,

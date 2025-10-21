@@ -60,37 +60,49 @@
     })
     const moveStation = computed({
         get(){
-            return setting.人影.监控.zydTag == '移动作业点'
+            return setting.人影.监控.zydTag.includes('移动作业点')
         },
         set(val){
             if(val){
-                setting.人影.监控.zydTag = '移动作业点'
+                setting.人影.监控.zydTag.push('移动作业点')
             }else{
-                setting.人影.监控.zydTag = 'all'
+                for(let i=0;i<setting.人影.监控.zydTag.length;i++){
+                    if(setting.人影.监控.zydTag[i] == '移动作业点'){
+                        setting.人影.监控.zydTag.splice(i--,1)
+                    }
+                }
             }
         }
     })
     const fixedStation = computed({
         get(){
-            return setting.人影.监控.zydTag == '固定作业点'
+            return setting.人影.监控.zydTag.includes('固定作业点')
         },
         set(val){
             if(val){
-                setting.人影.监控.zydTag = '固定作业点'
+                setting.人影.监控.zydTag.push('固定作业点')
             }else{
-                setting.人影.监控.zydTag = 'all'
+                for(let i=0;i<setting.人影.监控.zydTag.length;i++){
+                    if(setting.人影.监控.zydTag[i] == '固定作业点'){
+                        setting.人影.监控.zydTag.splice(i--,1)
+                    }
+                }
             }
         }
     })
     const stoveStation = computed({
         get(){
-            return setting.人影.监控.zydTag == '烟炉'
+            return setting.人影.监控.zydTag.includes('烟炉')
         },
         set(val){
             if(val){
-                setting.人影.监控.zydTag = '烟炉'
+                setting.人影.监控.zydTag.push('烟炉')
             }else{
-                setting.人影.监控.zydTag = 'all'
+                for(let i=0;i<setting.人影.监控.zydTag.length;i++){
+                    if(setting.人影.监控.zydTag[i] == '烟炉'){
+                        setting.人影.监控.zydTag.splice(i--,1)
+                    }
+                }
             }
         }
     })
