@@ -82,6 +82,7 @@
     <ConfigureRegion></ConfigureRegion>
     <ConfigureSmokeStove></ConfigureSmokeStove>
     <ConfigureRocket></ConfigureRocket>
+    <Overview></Overview>
   </div>
 </template>
 <script lang="ts" setup>
@@ -89,6 +90,7 @@ import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
+import Overview from '~/myComponents/人影/弹药概况/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
@@ -2992,7 +2994,7 @@ onMounted(async() => {
           type: "symbol",
           source: "stoveSource",
           layout: {
-            visibility: "visible",
+            visibility: setting.人影.监控.zyd?'visible':'none',
             // This icon is a part of the Mapbox Streets style.
             // To view all images available in a Mapbox style, open
             // the style in Mapbox Studio and click the "Images" tab.
@@ -3013,14 +3015,37 @@ onMounted(async() => {
             "icon-rotate": 0,
             // "icon-offset": [10, 0],
             "icon-rotation-alignment": "map",
-            "text-pitch-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
+            "text-field": ["get", "name"],
+            "text-font": ["simkai"],
+            "text-size": 12,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,】,
+            "text-line-height": 1,
+            'text-anchor': 'bottom', // 水平垂直居中
+            'text-offset': [0, -1], // 调整文本偏移量
+            'text-justify': 'center', // 水平居中对齐
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-pitch-alignment": "map",
+            "text-rotation-alignment": "map",
+            // "text-max-width": 400,
           },
           paint: {
             "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+            'text-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              9, 0,   // zoom <= 9 不显示文字
+              10, 1   // zoom >= 10 显示文字
+            ]
           },
-          // filter: ['in', ['get', 'tag'], ['get', 'tags']]
+          filter: ['in', ['get', 'tag'], ['get', 'tags']]
         });
       }
       if(!map.getLayer("zydLabelLayer")){
@@ -4390,7 +4415,7 @@ onMounted(async() => {
             strID: 'id',
             type: "站点",
             strCode: '',
-            strName: '',
+            name: item.strName,
             strPos: '',
             iWorkType: 1,
             beginTime: moment().format("HH:mm:ss"),
@@ -4404,6 +4429,7 @@ onMounted(async() => {
             workTimeLen:1,
             workBeginTime:moment().format('HH:mm:ss'),
             denyCode:0,
+            tags:['all','烟炉'],
             tag:setting.人影.监控.zydTag
           },
           geometry: {
@@ -4691,6 +4717,10 @@ watch(()=>setting.人影.监控.zydTag,(tag)=>{
     item.properties.tag = tag
   })
   map?.getSource('zydSource')?.setData(zydFeaturesData)
+  stoveFeaturesData.features.forEach(item=>{
+    item.properties.tag = tag
+  })
+  map?.getSource('stoveSource')?.setData(stoveFeaturesData)
 })
 watch(()=>setting.人影.监控.正西,(val)=>{
   const layers = map.getStyle().layers
@@ -5145,32 +5175,14 @@ watch(()=>setting.人影.监控.synergyZyd,(newVal)=>{
 })
 watch(
   () => props.zyd,
-  (newVal) => {
-    if (map.getLayer("zydLayer")) {
-      newVal
-        ? map.setLayoutProperty("zydLayer", "visibility", "visible")
-        : map.setLayoutProperty("zydLayer", "visibility", "none");
-    }
-    if (map.getLayer("zydLabelLayer")) {
-      newVal
-        ? map.setLayoutProperty("zydLabelLayer", "visibility", "visible")
-        : map.setLayoutProperty("zydLabelLayer", "visibility", "none");
-    }
-    if (map.getLayer("最大射程-line")) {
-      newVal
-        ? map.setLayoutProperty("最大射程-line", "visibility", "visible")
-        : map.setLayoutProperty("最大射程-line", "visibility", "none");
-    }
-    if (map.getLayer("最大射程-fill")) {
-      newVal
-        ? map.setLayoutProperty("最大射程-fill", "visibility", "visible")
-        : map.setLayoutProperty("最大射程-fill", "visibility", "none");
-    }
-    if (map.getLayer("预警圈-line")) {
-      newVal
-        ? map.setLayoutProperty("预警圈-line", "visibility", "visible")
-        : map.setLayoutProperty("预警圈-line", "visibility", "none");
-    }
+  () => {
+    const visibility = setting.人影.监控.zyd?'visible':'none'
+    map.getLayer('stoveLayer')&&map.setLayoutProperty("stoveLayer", "visibility", visibility)
+    map.getLayer("zydLayer")&&map.setLayoutProperty("zydLayer", "visibility", visibility)
+    map.getLayer("zydLabelLayer")&&map.setLayoutProperty("zydLabelLayer", "visibility", visibility)
+    map.getLayer("最大射程-line")&&map.setLayoutProperty("最大射程-line", "visibility", visibility)
+    map.getLayer("最大射程-fill")&&map.setLayoutProperty("最大射程-fill", "visibility", visibility)
+    map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)
   }
 );
 watch(

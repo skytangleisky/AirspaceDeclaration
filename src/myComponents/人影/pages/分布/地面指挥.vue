@@ -20,6 +20,9 @@
             <el-checkbox v-model="fixedStation">
                 <div style="display: flex;align-items: center;"><div class="固定点"></div>固定点</div>
             </el-checkbox>
+            <el-checkbox v-model="stoveStation">
+                <div style="display: flex;align-items: center;"><div class="烟炉"></div>烟炉</div>
+            </el-checkbox>
 
 
             <el-checkbox v-model="setting.人影.监控.正西">
@@ -74,6 +77,18 @@
         set(val){
             if(val){
                 setting.人影.监控.zydTag = '固定作业点'
+            }else{
+                setting.人影.监控.zydTag = 'all'
+            }
+        }
+    })
+    const stoveStation = computed({
+        get(){
+            return setting.人影.监控.zydTag == '烟炉'
+        },
+        set(val){
+            if(val){
+                setting.人影.监控.zydTag = '烟炉'
             }else{
                 setting.人影.监控.zydTag = 'all'
             }

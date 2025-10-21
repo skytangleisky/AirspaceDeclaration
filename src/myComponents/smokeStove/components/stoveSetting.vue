@@ -191,10 +191,14 @@ function click(){
 }
 import { 查询烟条状态,即时点火,烟条装载,烟条卸载,烟炉的时间查询,给烟炉设置时间,查询天气情况,获取所有烟炉的预约点火信息,预约点火,取消预约点火,判断是否可以点火 } from "~/api/天工";
 import { reactive, inject, watch, ref,onMounted,onBeforeUnmount } from "vue";
+import { useSettingStore } from '~/stores/setting'
+const setting = useSettingStore()
 onMounted(()=>{
-    timer = setInterval(()=>{
-        currentTime.value = Date.now();
-    },1000)
+    if(setting.enableTimer){
+        timer = setInterval(()=>{
+            currentTime.value = Date.now();
+        },1000)
+    }
 })
 onBeforeUnmount(()=>{
     clearInterval(timer)

@@ -13,7 +13,8 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    enableTimer:true,
+    enableTimer:false,
+    弹药概况:false,
     火箭架配置:false,
     显示全国行政区划配置:false,
     显示烟炉:false,
@@ -32,8 +33,8 @@ export const useSettingStore = defineStore('setting',{
       {
         value:2,
         label: "影像地图",
-        // tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
-        tileData: ["http://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
+        tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        // tileData: ["http://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
       },
       {
         value:3,
@@ -299,8 +300,8 @@ export const useSettingStore = defineStore('setting',{
       模拟:{
         "zoom": 8.882777980661407,
         "center": [
-            117.04212403858509,
-            28.1994655756006
+          117.04212403858509,
+          28.1994655756006
         ],
         district:true,
         loadmap:true,
@@ -421,10 +422,10 @@ export const useSettingStore = defineStore('setting',{
           b:36,
           a:1
         },
-        zoom: 6,
-        center: [
-          108.64875619493603,
-          35.67056520823472
+        "zoom": 5,
+        "center": [
+            115.3683244,
+            40.915085
         ],
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,

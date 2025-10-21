@@ -717,6 +717,7 @@ export default{
         })
     },
     render(gl, projectionMatrix, projection, globeToMercMatrix, transition, centerInMercator, pixelsPerMeterRatio) {
+        console.log(centerInMercator)
         if(this.map.getZoom()<6){
             this.globeToMercMatrix = globeToMercMatrix;
         }
