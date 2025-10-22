@@ -11,7 +11,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import {defineModel} from 'vue'
 const postureInfo = defineModel('postureSetting',{
   default:{
     方位: '',

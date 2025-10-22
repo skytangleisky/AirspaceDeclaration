@@ -9,7 +9,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import {defineModel} from 'vue'
 const positionInfo = defineModel('positionInfo',{
   default:{
     经度: '',

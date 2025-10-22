@@ -8,7 +8,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import {defineModel} from 'vue'
 const postureInfo = defineModel('attitudeInfo',{
   default:{
     方位角: '',
