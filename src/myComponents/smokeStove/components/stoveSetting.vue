@@ -23,7 +23,8 @@
                         <el-form-item label="每次点燃">
                             <el-input-number
                                 :disabled="appointed"
-                                :min="0"
+                                :min="1"
+                                :max="1"
                                 v-model="appointForm.flare"
                                 ><template #suffix>
                                     <span>支</span>
@@ -69,6 +70,7 @@
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="fire()">开始点火</el-button>
+                            <el-button type="primary" @click="allfire()">使用此烟炉配置进行批量点火</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -145,14 +147,11 @@
             <div class="form-item">
                 <div class="item-title">信息获取</div>
                 <div class="item-content">
-                    <el-form :model="systenInfo" inline>
-                        <el-form-item>
-                            <el-button type="primary" @click="click">查询站点信息</el-button>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="queryWeatherInfo">查询站点气象信息</el-button>
-                        </el-form-item>
-                    </el-form>
+                    <el-button type="primary" @click="click">查询站点信息</el-button>
+                    <el-button type="primary" @click="queryWeatherInfo">查询站点气象信息</el-button>
+                    <el-button class="elButton" @click="queryAllStoves" type="primary">一键获取烟炉状态</el-button>
+                    <el-button class="elButton" @click="queryWeather" type="primary">一键获取气象信息</el-button>
+                    <el-button class="elButton" @click="setAllTime" type="primary">一键设置烟炉时间</el-button>
                 </div>
             </div>
         </div>
@@ -164,6 +163,44 @@ import moment from 'moment'
 import { ElMessageBox, ElMessage } from "element-plus";
 let timer:any;
 const stoveList = inject('smokeStoveList',new Array<any>())
+function queryAllStoves() {
+  let promiseList: any[] = []
+  stoveList.forEach((item) => {
+    promiseList.push(查询烟条状态(item.strStoveID))
+  })
+  Promise.all(promiseList).then((res) => {
+    ElMessage({
+      type: "success",
+      message: "一键查询烟条状态成功",
+    });
+  })
+}
+
+function queryWeather() {
+  let promiseList: any[] = []
+  stoveList.forEach((item) => {
+    promiseList.push(查询天气情况(item.strStoveID))
+  })
+  Promise.all(promiseList).then((res) => {
+    ElMessage({
+      type: "success",
+      message: "一键查询天情况成功",
+    });
+  })
+}
+
+function setAllTime() {
+  let promiseList: any[] = []
+  stoveList.forEach((item) => {
+    promiseList.push(给烟炉设置时间(item.strStoveID, moment().format('YYYY-MM-DD HH:mm:ss')))
+  })
+  Promise.all(promiseList).then((res) => {
+    ElMessage({
+      type: "success",
+      message: "一键设置时间成功",
+    });
+  })
+}
 function click(){
     ElMessageBox.alert('是否确定发送状态查询命令', '提示', {
         // if you want to disable its autofocus
@@ -297,6 +334,27 @@ function fire(){
                 message: `立即点火命令发送失败`,
             })
         })
+    })
+}
+function allfire(){
+    ElMessageBox.alert('是否确定发送批量烟炉立即点火命令', '提示', {
+    // if you want to disable its autofocus
+    // autofocus: false,
+    confirmButtonText: '确定',
+    type: 'info'
+    }).then(() => {
+        // 即时点火(currentStove.value.strStoveID,immedForm.num).then(res=>{
+        //     ElMessage({
+        //         type: 'success',
+        //         message: `立即点火命令发送成功`,
+        //     })
+        // }).catch(err=>{
+        //     console.log(err);
+        //     ElMessage({
+        //         type:'error',
+        //         message: `立即点火命令发送失败`,
+        //     })
+        // })
     })
 }
 function unloadStove(){

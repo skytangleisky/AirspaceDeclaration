@@ -66,7 +66,7 @@ import closeUrl from '~/assets/close.svg?raw'
   left:calc(50% - var(--width)/2);
   top:calc(50% - var(--height)/2);
   padding:4px;
-  z-index:9999;
+  z-index:2000;
   cursor:move;
   // background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);
   &:hover {

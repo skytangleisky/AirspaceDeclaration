@@ -1671,7 +1671,119 @@ export function getAllShouldExpendRegion(){
   })
 }
 
+export function 烟炉历史(paginationOption:any){
+  return request({
+    url:'/backend/db/default',
+    method:'post',
+    headers:{
+      table:'STOVEFIREHIS',
+    },
+    data:{
+      select:['*'],
+      where:[
+      ],
+      orderby:[
+        'writeTm desc'
+      ],
+      "distinct": false,
+      "offset": (paginationOption.currentPage - 1) * paginationOption.pageSize,
+      "limit": paginationOption.pageSize,
+    }
+  })
+}
 
+export function 弹药概况(status:number){
+  return request({
+    url:'/backend/transaction',
+    method:'post',
+    data:{
+      sqls:[
+        `
+select COALESCE(tmp_hjd.district_code,tmp_pd.district_code) as \`district_code\`,COALESCE(tmp_hjd.district_name,tmp_pd.district_name) as \`district_name\`,COALESCE(tmp_pd.pd_count,0) as \`pd_count\`,COALESCE(tmp_hjd.hjd_count,0) as \`hjd_count\` from (
+SELECT
+  concat(SUBSTR(s.id, 1, 6),'000') AS district_code,
+  s2.name as district_name,
+  COUNT(hjd.storage) AS hjd_count
+FROM
+  BEPK_RYB_GSYTHPT.dygl_storage s
+LEFT JOIN
+  BEPK_RYB_GSYTHPT.dygl_ammohjd hjd
+  ON hjd.storage = s.id
+LEFT JOIN
+  BEPK_RYB_GSYTHPT.dygl_storage s2
+  ON s2.id = concat(SUBSTR(s.id, 1, 6),'000')
+WHERE
+  hjd.status = ${status}
+GROUP BY
+  SUBSTR(s.id, 1, 6),s2.name
+ORDER BY
+  SUBSTR(s.id, 1, 6) asc
+)tmp_hjd left join (
+SELECT
+  concat(SUBSTR(s.id, 1, 6),'000') AS district_code,
+  s2.name as district_name,
+  COUNT(pd.storage) AS pd_count
+FROM
+  BEPK_RYB_GSYTHPT.dygl_storage s
+LEFT JOIN
+  BEPK_RYB_GSYTHPT.dygl_storage s2
+  ON s2.id = concat(SUBSTR(s.id, 1, 6),'000')
+LEFT JOIN
+  BEPK_RYB_GSYTHPT.dygl_ammopd pd
+  ON pd.storage = s.id
+WHERE
+  pd.status = ${status}
+GROUP BY
+  SUBSTR(s.id, 1, 6),s2.name
+ORDER BY
+  SUBSTR(s.id, 1, 6) asc
+) tmp_pd on tmp_hjd.district_code = tmp_pd.district_code order by district_code asc
+`
+      ]
+      ,vals:[[]]
+    }
+  })
+}
 
-
-
+export function 弹药概况2(status:number){
+  return request({
+    url:'/backend/transaction',
+    method:'post',
+    data:{
+      sqls:[
+        `
+select COALESCE(tmp_hjd.district_code,tmp_pd.district_code) as \`district_code\`,COALESCE(tmp_hjd.district_name,tmp_pd.district_name) as \`district_name\`,COALESCE(tmp_pd.pd_count,0) as \`pd_count\`,COALESCE(tmp_hjd.hjd_count,0) as \`hjd_count\` from (
+SELECT
+  s.id AS district_code,
+  s.name AS district_name,
+  COUNT(hjd.storage) AS hjd_count
+FROM
+  BEPK_RYB_GSYTHPT.dygl_storage s
+LEFT JOIN
+  BEPK_RYB_GSYTHPT.dygl_ammohjd hjd
+  ON hjd.storage = s.id
+WHERE
+  s.id LIKE '110109%' AND hjd.status = ${status}
+GROUP BY
+  s.id, s.name
+) tmp_hjd full join (
+SELECT
+  s.id AS district_code,
+  s.name AS district_name,
+  COUNT(pd.storage) AS pd_count
+FROM
+  BEPK_RYB_GSYTHPT.dygl_storage s
+LEFT JOIN
+  BEPK_RYB_GSYTHPT.dygl_ammopd pd
+  ON pd.storage = s.id
+WHERE
+  s.id LIKE '110109%' AND pd.status = ${status}
+GROUP BY
+  s.id, s.name
+) tmp_pd on tmp_hjd.district_code = tmp_pd.district_code order by district_code asc
+`
+      ]
+      ,vals:[[]]
+    }
+  })
+}

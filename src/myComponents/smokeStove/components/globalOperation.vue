@@ -14,7 +14,7 @@
                   @click="chooseSmokeStove(item)"
               >
                 <div class="stove-item-top">
-                  <div class="stove-name">
+                  <div :class="`stove-name ${item.burningCount>0 ? 'burning' : ''}`">
                     {{ item.strName }}
                   </div>
                   <el-checkbox v-model="item.checked"></el-checkbox>
@@ -56,12 +56,7 @@
           <el-icon class="trash" @click="clearAll" v-html="trashSvg" style="position: absolute;right:20px;bottom:0;font-size:20px;"></el-icon>
         </div>
       </el-tab-pane>
-      <el-tab-pane label="作业历史" name="third">作业历史</el-tab-pane>
-      <el-tab-pane label="功能扩展" name="fourth">
-        <el-button class="elButton" @click="queryAllStoves" type="primary">一键获取烟炉状态</el-button>
-        <el-button class="elButton" @click="queryWeather" type="primary">一键获取气象信息</el-button>
-        <el-button class="elButton" @click="setTime" type="primary">一键设置烟炉时间</el-button>
-      </el-tab-pane>
+      <el-tab-pane label="作业历史" name="third"><smoke-history></smoke-history></el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -74,6 +69,7 @@ import type {TabsPaneContext} from "element-plus";
 import {烟炉数据, 查询烟条状态, 查询天气情况, 给烟炉设置时间} from "~/api/天工.js";
 import moment from "moment";
 import {eventbus} from '~/eventbus/index'
+import smokeHistory from './smokeHistory.vue'
 
 const logContainer = ref()
 const logInfoList = inject('logInfoList', reactive(new Array<string>()))
@@ -87,45 +83,6 @@ function chooseSmokeStove(item) {
 
 function clearAll() {
   logInfoList.splice(0, logInfoList.length)
-}
-
-function queryAllStoves() {
-  let promiseList: any[] = []
-  smokeStoveList.forEach((item) => {
-    promiseList.push(查询烟条状态(item.strStoveID))
-  })
-  Promise.all(promiseList).then((res) => {
-    ElMessage({
-      type: "success",
-      message: "一键查询烟条状态成功",
-    });
-  })
-}
-
-function queryWeather() {
-  let promiseList: any[] = []
-  smokeStoveList.forEach((item) => {
-    promiseList.push(查询天气情况(item.strStoveID))
-  })
-  Promise.all(promiseList).then((res) => {
-    ElMessage({
-      type: "success",
-      message: "一键查询天情况成功",
-    });
-  })
-}
-
-function setTime() {
-  let promiseList: any[] = []
-  smokeStoveList.forEach((item) => {
-    promiseList.push(给烟炉设置时间(item.strStoveID, moment().format('YYYY-MM-DD HH:mm:ss')))
-  })
-  Promise.all(promiseList).then((res) => {
-    ElMessage({
-      type: "success",
-      message: "一键设置时间成功",
-    });
-  })
 }
 
 // 获取所有烟炉数据
