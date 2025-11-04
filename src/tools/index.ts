@@ -25,9 +25,15 @@ export function hasPermission(permissions:Array<String>){
   return has
 }
 export function fromDMS(v:string):[number,number]{
-  let lng = v.substring(0, v.indexOf("E"));
-  let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
-  return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
+  if(v.indexOf('E')<v.indexOf('N')){
+    let lng = v.substring(0, v.indexOf("E")).padStart(7,'0');
+    let lat = v.substring(v.indexOf("E") + 1, v.indexOf("N"));
+    return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
+  }else{
+    let lat = v.substring(0, v.indexOf("N")).padStart(6,'0');
+    let lng = v.substring(v.indexOf("N") + 1, v.indexOf("E")).padStart(7,'0');
+    return [Number(lng.substring(0, 3)) + Number(lng.substring(3, 5)) / 60 + Number(lng.substring(5, 9)) / 100 / 3600, Number(lat.substring(0, 2)) + Number(lat.substring(2, 4)) / 60 + Number(lat.substring(4, 8)) / 100 / 3600]
+  }
 }
 export function toDMS(lng: number, lat: number): string {
   // 经度

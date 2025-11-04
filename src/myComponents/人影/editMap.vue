@@ -86,12 +86,13 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { 铁路,机场管制区,障碍物,地标,飞行管制区,飞行管制分区 } from '~/api/layer'
 import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
 import Overview from '~/myComponents/人影/弹药概况/index.vue'
-import { csv2list } from '~/tools'
+import { csv2list, sixty2Float } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
 let 作业点原始数据 = new Array()//存放作业点最原始的数据
@@ -126,6 +127,8 @@ import { 辅助力量规划航迹 } from './辅助力量规划航迹.js'
 import { 紧急力量规划航迹 } from './紧急力量规划航迹.js'
 import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
+import upUrl from '~/assets/up.svg?url'
+import 地标Url from '~/assets/地标.svg?url'
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
@@ -1241,7 +1244,7 @@ onMounted(async() => {
         visibility:setting.人影.监控.routeLine?'visible':'none'
       },
       paint:{
-        'raster-opacity':0.4
+        'raster-opacity':1
       }
     })
     map.addLayer({
@@ -1802,7 +1805,17 @@ onMounted(async() => {
         style: 'fill:#fa0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
     })
-    await loadImage2Map(map,banSvg,16,16,{
+    await loadImage2Map(map,upUrl,16,16,{
+      up:{
+        style: 'fill:yellow;stroke:black;stroke-width:0px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
+    await loadImage2Map(map,地标Url,4,4,{
+      地标:{
+        style: 'fill:#f40;stroke:black;stroke-width:20px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
+    await loadImage2Map(map,banSvg,12,12,{
       airport:{
         style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
@@ -2997,7 +3010,7 @@ onMounted(async() => {
               'interpolate',
               ['linear'],
               ['zoom'],
-              9, 0,   // zoom <= 9 不显示文字
+              7, 0,   // zoom <= 9 不显示文字
               10, 1   // zoom >= 10 显示文字
             ]
           },
@@ -3064,7 +3077,7 @@ onMounted(async() => {
               'interpolate',
               ['linear'],
               ['zoom'],
-              9, 0,   // zoom <= 9 不显示文字
+              7, 0,   // zoom <= 9 不显示文字
               10, 1   // zoom >= 10 显示文字
             ]
           },
@@ -3642,7 +3655,7 @@ onMounted(async() => {
               "text-pitch-alignment": "map",
               "text-field": ["get", "name"],
               "text-font": ["simkai"],
-              "text-size": 16,
+              "text-size": 12,
               "text-transform": "uppercase",
               // "text-letter-spacing": 0.05,
               "text-anchor": "left",
@@ -4389,6 +4402,307 @@ onMounted(async() => {
       layout:{
         visibility:setting.人影.监控.roadMap ? 'visible' : 'none'
       }
+    })
+    铁路().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: { type: 'solid' },
+              geometry: {
+                type: 'MultiLineString',
+                coordinates: new Array()
+              }
+            },
+            {
+              type: 'Feature',
+              properties: { type: 'dashed' },
+              geometry: {
+                type: 'MultiLineString',
+                coordinates: new Array()
+              }
+            }
+          ]
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        item.points = item.points.split(' ').map((item:string)=>fromDMS(item))
+        lineFeaturesData.data.features[0].geometry.coordinates.push(item.points)
+        lineFeaturesData.data.features[1].geometry.coordinates.push(item.points)
+      })
+      map.addSource('lines', lineFeaturesData);
+
+      map.addLayer({
+        id: 'rail-base',
+        type: 'line',
+        source: 'lines',
+        filter: ['==', ['get', 'type'], 'solid'],
+        paint: {
+          'line-color': '#444',
+          'line-width': 2
+        }
+      });
+
+      map.addLayer({
+        id: 'rail-inner',
+        type: 'line',
+        source: 'lines',
+        paint: {
+          'line-color': '#fff',
+          'line-width': 1,
+          'line-dasharray': [4, 4]
+        }
+      });
+    })
+    机场管制区().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('polygons', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: 'polygons-fill',
+        type: 'fill',
+        source: 'polygons',
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.2
+        }
+      });
+      map.addLayer({
+        id: 'polygons-outline',
+        type: 'line',
+        source: 'polygons',
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    障碍物().then((res:any)=>{
+      const features = res.data.results.map((item:any)=>{
+        return {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Point',
+            coordinates: fromDMS(item.pos)
+          }
+        }
+      })
+      map.addSource("障碍物", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features,
+        },
+      });
+      map.addLayer({
+        id: "障碍物图层",
+        type: "symbol",
+        source: "障碍物",
+        layout: {
+          "icon-image": "up",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: "visible",
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          'icon-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            4, 0.25,
+            5, 0.25,
+            8, 0.6,
+            15, 1.0
+          ],
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "icon-opacity": 1,
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
+      });
+    })
+    地标('四级地标').then(res=>{
+      const features = res.data.results.map((item:any)=>{
+        return {
+          type: 'Feature',
+          properties: { color: '#888',name:item.name },
+          geometry: {
+            type: 'Point',
+            coordinates: fromDMS(item.pos)
+          }
+        }
+      })
+      map.addSource("四级地标", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features,
+        },
+      });
+      map.addLayer({
+        id: "四级地标图层",
+        type: "symbol",
+        source: "四级地标",
+        layout: {
+          "icon-image": "地标",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: "visible",
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-size":10,
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "text-color": "gray",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+          'text-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7, 0,   // zoom <= 9 不显示文字
+            10, 1   // zoom >= 10 显示文字
+          ],
+          'icon-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7, 0,   // zoom <= 9 不显示文字
+            10, 1   // zoom >= 10 显示文字
+          ],
+        },
+      });
+    })
+    飞行管制分区().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+
+      })
+      for(let i=0;i<res.data.results.length;i++){
+        const item = res.data.results[i]
+        const feature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.trim().split(/\s+/).map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      }
+      map.addSource('飞行管制分区', lineFeaturesData);
+      map.addLayer({
+        id: '飞行管制分区图层',
+        type: 'line',
+        source: '飞行管制分区',
+        paint: {
+          'line-color': '#fff',
+          'line-width': 2
+        }
+      });
+    })
+    飞行管制区().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature =             {
+          type: 'Feature',
+          properties: { type: 'solid' },
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.split(' ').map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      })
+      map.addSource('飞行管制区', lineFeaturesData);
+      map.addLayer({
+        id: '飞行管制区图层',
+        type: 'line',
+        source: '飞行管制区',
+        paint: {
+          'line-color': '#fff',
+          'line-width': 2
+        }
+      });
     })
     // map.addLayer(CustomLayer)
     // map.addLayer(new Plane())

@@ -364,7 +364,7 @@ export default function(){
 				"type": "raster",
 				// url:url2,
 				"tiles": [
-					window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
+					window.location.origin+`/backend/image?x={x}&y={y}&z={z}&color=${encodeURIComponent('#00ffff80')}`
 				],
 				"tileSize": 256
 			},
