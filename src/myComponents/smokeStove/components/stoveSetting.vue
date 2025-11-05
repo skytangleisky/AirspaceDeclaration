@@ -6,11 +6,12 @@
         </div>
         <div class="module-bottom">
             <div class="form-item">
-                <div class="item-title">预约点火</div>
+                <div class="item-title">预约点火（请勿关闭空域申请界面以及起始时间必须大于当前时间，否则会导致预约功能失效）</div>
                 <div class="item-content">
                     <el-form :model="appointForm" inline>
                         <el-form-item label="间隔">
                             <el-input-number
+                                size="small"
                                 :disabled="appointed"
                                 :min="0"
                                 v-model="appointForm.interval"
@@ -22,6 +23,7 @@
                         </el-form-item>
                         <el-form-item label="每次点燃">
                             <el-input-number
+                                size="small"
                                 :disabled="appointed"
                                 :min="1"
                                 :max="1"
@@ -33,6 +35,7 @@
                         </el-form-item>
                         <el-form-item label="点火次数">
                             <el-input-number
+                                size="small"
                                 :disabled="appointed"
                                 :min="0"
                                 v-model="appointForm.times"
@@ -41,6 +44,7 @@
 
                         <el-form-item label="起始时间">
                             <el-date-picker
+                                size="small"
                                 :disabled="appointed"
                                 v-model="appointForm.beginTime"
                                 value-format="YYYY-MM-DD HH:mm:ss"
@@ -48,11 +52,13 @@
                                 type="datetime"
                                 placeholder="请选择起始时间"
                                 :clearable="false"
+                                style="width:150px"
                             />
                         </el-form-item>
                         <el-form-item>
                             <el-button v-if="appointed" type="warning" @click="取消预约">取消预约</el-button>
                             <el-button v-else type="primary" @click="预约">开始预约</el-button>
+                            <el-button type="primary" @click="批量预约">批量预约{{ selectedStove.length }}</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -62,7 +68,7 @@
                 <div class="item-content">
                     <el-form :model="immedForm" inline>
                         <el-form-item label="烟条个数">
-                            <el-input-number :min="1" :max="1" v-model="immedForm.num">
+                            <el-input-number size="small" :min="1" :max="1" v-model="immedForm.num">
                                 <template #suffix>
                                     <span>支</span>
                                 </template>
@@ -70,7 +76,7 @@
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="fire()">开始点火</el-button>
-                            <el-button type="primary" @click="allfire()">使用此烟炉配置进行批量点火</el-button>
+                            <el-button type="primary" @click="allfire()">批量点火{{ selectedStove.length }}</el-button>
                         </el-form-item>
                     </el-form>
                 </div>
@@ -161,8 +167,18 @@
 <script setup lang="ts">
 import moment from 'moment'
 import { ElMessageBox, ElMessage } from "element-plus";
+import { computed } from 'vue'
 let timer:any;
-const stoveList = inject('smokeStoveList',new Array<any>())
+const stoveList = inject('smokeStoveList',new Array())
+const selectedStove = computed(()=>{
+    let arr = new Array()
+    stoveList.forEach((item) => {
+        if(item.checked){
+            arr.push(item)
+        }
+    })
+    return arr
+})
 function queryAllStoves() {
   let promiseList: any[] = []
   stoveList.forEach((item) => {
@@ -234,6 +250,12 @@ onMounted(()=>{
     if(setting.enableTimer){
         timer = setInterval(()=>{
             currentTime.value = Date.now();
+            if(moment(systenInfo.time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+                systenInfo.time = moment().format('YYYY-MM-DD HH:mm:ss')
+            }
+            if(moment(appointForm.beginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())&&!appointed.value){
+                appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
+            }
         },1000)
     }
 })
@@ -243,6 +265,9 @@ onBeforeUnmount(()=>{
 const appointed = ref(false)
 const currentStove = inject<any>("currentStove");
 const currentTime = ref(Date.now());
+判断是否可以点火('110114ZS').then(res=>{
+    console.log(res.data)
+})
 watch([currentStove,currentTime],()=>{
     if(currentStove.value.strStoveID){
         获取所有烟炉的预约点火信息().then(res=>{
@@ -267,42 +292,42 @@ watch([currentStove,currentTime],()=>{
                                 stove.canFire = false
                                 console.log('开始点火')
                                 判断是否可以点火(stove.strStoveID).then(res=>{
-                                    if(res.data[0]&&res.data[0].changedRows === 1){
-                                        for(let i=0;i<item.times;i++){
-                                            setTimeout(()=>{
-                                                if(i === 0){
+                                    console.log('>>>>>>>>>>>',res.data)
+                                    debugger
+                                    for(let i=0;i<item.times;i++){
+                                        setTimeout(()=>{
+                                            if(i === 0){
+                                                ElMessage({
+                                                    type:'success',
+                                                    message: `预约点火开始`,
+                                                })
+                                            }
+                                            即时点火(stove.strStoveID,item.flare).then(res=>{
+                                                console.log(`第${i+1}次预约点火成功`)
+                                                ElMessage({
+                                                    type:'success',
+                                                    message: `第${i+1}次预约点火成功`,
+                                                })
+                                            }).catch(err=>{
+                                                ElMessage({
+                                                    type:'error',
+                                                    message: `第${i+1}次预约点火失败`,
+                                                })
+                                            })
+                                            if(i === item.times - 1){
+                                                取消预约点火(item.stoveID).then(res=>{
+                                                    currentTime.value = Date.now()
+                                                    appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
+                                                    appointForm.interval = 10
+                                                    appointForm.flare = 1
+                                                    appointForm.times = 2
                                                     ElMessage({
                                                         type:'success',
-                                                        message: `预约点火开始`,
-                                                    })
-                                                }
-                                                即时点火(stove.strStoveID,item.flare).then(res=>{
-                                                    console.log(`第${i+1}次预约点火成功`)
-                                                    ElMessage({
-                                                        type:'success',
-                                                        message: `第${i+1}次预约点火成功`,
-                                                    })
-                                                }).catch(err=>{
-                                                    ElMessage({
-                                                        type:'error',
-                                                        message: `第${i+1}次预约点火失败`,
+                                                        message: `预约点火结束`,
                                                     })
                                                 })
-                                                if(i === item.times - 1){
-                                                    取消预约点火(item.stoveID).then(res=>{
-                                                        currentTime.value = Date.now()
-                                                        appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
-                                                        appointForm.interval = 10
-                                                        appointForm.flare = 1
-                                                        appointForm.times = 2
-                                                        ElMessage({
-                                                            type:'success',
-                                                            message: `预约点火结束`,
-                                                        })
-                                                    })
-                                                }
-                                            },i*item.interval*60*1e3)
-                                        }
+                                            }
+                                        },i*item.interval*60*1e3)
                                     }
                                 })
                             }
@@ -343,18 +368,22 @@ function allfire(){
     confirmButtonText: '确定',
     type: 'info'
     }).then(() => {
-        // 即时点火(currentStove.value.strStoveID,immedForm.num).then(res=>{
-        //     ElMessage({
-        //         type: 'success',
-        //         message: `立即点火命令发送成功`,
-        //     })
-        // }).catch(err=>{
-        //     console.log(err);
-        //     ElMessage({
-        //         type:'error',
-        //         message: `立即点火命令发送失败`,
-        //     })
-        // })
+        let funcs = new Array()
+        selectedStove.value.forEach(stove=>{
+            funcs.push(Promise.resolve(即时点火(stove.strStoveID,immedForm.num)))
+        })
+        Promise.all(funcs).then(res=>{
+            ElMessage({
+                type: 'success',
+                message: `批量立即点火命令发送成功`,
+            })
+        }).catch(err=>{
+            console.log(err);
+            ElMessage({
+                type:'error',
+                message: `批量立即点火命令发送失败`,
+            })
+        })
     })
 }
 function unloadStove(){
@@ -540,6 +569,31 @@ const 预约 = () => {
             ElMessage({
                 type:'error',
                 message: `预约点火命令发送失败`,
+            })
+        })
+    })
+}
+const 批量预约 = () => {
+    ElMessageBox.alert('是否确定发送批量预约点火命令', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        const funcs = new Array()
+        selectedStove.value.forEach((stove:any)=>{
+            funcs.push(Promise.resolve(预约点火({beginTime:appointForm.beginTime,interval:appointForm.interval,flare:appointForm.flare,times:appointForm.times,stoveID:stove.strStoveID})))
+        })
+        Promise.all(funcs).then(res=>{
+            currentTime.value = Date.now()
+            ElMessage({
+                type:'success',
+                message: `批量预约点火命令发送成功`,
+            })
+        }).catch(err=>{
+            ElMessage({
+                type:'error',
+                message: `批量预约点火命令发送失败`,
             })
         })
     })

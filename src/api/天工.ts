@@ -2,6 +2,7 @@ import moment from 'moment'
 import request from '../utils/request'
 import { useSettingStore } from '~/stores/setting'
 import { wrapKeys } from '~/tools'
+import { v4 as uuidv4 } from 'uuid';
 
 //公司
 let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
@@ -1068,15 +1069,17 @@ export function 获取所有烟炉的预约点火信息(){
   })
 }
 export function 预约点火({beginTime,interval,flare,times,stoveID}){
+  console.log('>>>>>',beginTime,interval,flare,times,stoveID)
   return request({
     url: 'backend/transaction',
     method: 'post',
     data:{
       sqls:[
-        "INSERT INTO appoint (`beginTime`, `interval`, `flare`, `times`, `stoveID`) VALUES (?,?,?,?,?);",
+        "INSERT INTO appoint (`uuid`,`beginTime`, `interval`, `flare`, `times`, `stoveID`) VALUES (?,?,?,?,?,?);",
       ],
       vals:[
         [
+          uuidv4(),
           beginTime,
           interval,
           flare,
@@ -1110,7 +1113,7 @@ export function 判断是否可以点火(stoveID){
     method: 'post',
     data:{
       sqls:[
-        "UPDATE `appoint` SET `begun` = b'1' WHERE `stoveID` = ? AND `begun` = b'0';",
+        "UPDATE `appoint` SET `begun` = 1 WHERE `stoveID` = ? AND `begun` = 0;",
       ],
       vals:[
         [

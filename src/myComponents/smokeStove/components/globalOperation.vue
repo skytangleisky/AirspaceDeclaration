@@ -4,8 +4,8 @@
       <el-tab-pane label="烟炉状态" name="first">
         <div class="smoke-stove-box">
           <template
-              v-for="(item, index) in smokeStoveList"
-              :key="index"
+              v-for="(item, index) in sortSmokeStoveList"
+              :key="item.strStoveID"
           >
             <div class="smoke-stove-item-card">
               <div
@@ -20,7 +20,7 @@
                   <el-checkbox v-model="item.checked"></el-checkbox>
                 </div>
                 <div class="stove-item-bottom">
-                  <div class="stove-status">
+                  <div :class="`stove-status ${item.burningCount>0 ? 'burning' : ''}`">
                     <div class="stove-status-value">
                       {{ item.burningCount }}
                     </div>
@@ -28,7 +28,7 @@
                       燃烧
                     </div>
                   </div>
-                  <div class="stove-status">
+                  <div :class="`stove-status ${item.usedCount>0 ? 'warning' : ''}`">
                     <div class="stove-status-value">
                       {{ item.usedCount }}
                     </div>
@@ -36,7 +36,7 @@
                       已用
                     </div>
                   </div>
-                  <div class="stove-status">
+                  <div :class="`stove-status ${item.availableCount>0 ? 'available' : ''}`">
                     <div class="stove-status-value">
                       {{ item.availableCount }}
                     </div>
@@ -70,6 +70,18 @@ import {烟炉数据, 查询烟条状态, 查询天气情况, 给烟炉设置时
 import moment from "moment";
 import {eventbus} from '~/eventbus/index'
 import smokeHistory from './smokeHistory.vue'
+const sortSmokeStoveList = computed(() => {
+  const selected = new Array()
+  const unSelected = new Array()
+  for(let i=0;i<smokeStoveList.length;i++){
+    if(smokeStoveList[i].checked){
+      selected.push(smokeStoveList[i])
+    }else{
+      unSelected.push(smokeStoveList[i])
+    }
+  }
+  return selected.concat(unSelected)
+})
 
 const logContainer = ref()
 const logInfoList = inject('logInfoList', reactive(new Array<string>()))
@@ -306,13 +318,13 @@ onBeforeUnmount(() => {
           justify-content: space-between;
           .stove-name.burning{
             color:red;
-            animation: burning 2s ease-in-out infinite;
-            opacity: 0.5;
+            animation: burning 1s ease-in-out infinite;
+            opacity: 0.25;
             will-change: opacity;
           }
           @keyframes burning {
             0%, 100% { opacity: 1 }
-            50%      { opacity: 0.5 }
+            50%      { opacity: 0.25 }
           }
           .el-checkbox{
             height: fit-content;
@@ -326,14 +338,15 @@ onBeforeUnmount(() => {
           .stove-status {
             display: flex;
             align-items: center;
-            color: var(--el-color-warning);
-
-            &:first-child {
-              color: var(--el-color-danger);
+            color:gray;
+            &.warning{
+              color:var(--el-color-warning);
             }
-
-            &:last-child {
-              color: var(--el-color-success);
+            &.burning{
+              color:var(--el-color-danger);
+            }
+            &.available{
+              color:var(--el-color-success);
             }
             .stove-status-label {
               // color: var(--el-text-color-regular);
