@@ -11,7 +11,7 @@
         </div>
         <div class="tool-mode-content">
             <slot name="content"></slot>
-            <el-checkbox v-model="setting.人影.监控.airport">
+            <el-checkbox v-model="setting.机场">
                 <div style="display: flex;align-items: center;"><div class="飞机"></div>机场</div>
             </el-checkbox>
             <el-checkbox v-model="flyArea">
@@ -41,6 +41,7 @@
             return setting.人影.监控.ryAirspaces.base
         },
         set(val){
+            setting.人影.监控.ryAirspaces.fill = val
             setting.人影.监控.ryAirspaces.base = val
             setting.人影.监控.ryAirspaces.line = val
             setting.人影.监控.ryAirspaces.label = val

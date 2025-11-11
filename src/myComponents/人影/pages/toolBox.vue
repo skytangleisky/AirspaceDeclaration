@@ -319,7 +319,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {label: '真彩图', value: modelRef(setting, '人影.监控.真彩图'), type: 'checkbox'},
   {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
   {label: '规划航线', value: modelRef(setting, '人影.监控.规划航线'), type: 'checkbox'},
-  {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
+  {label: '机场', value: modelRef(setting, '机场'), type: 'checkbox'},
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
   {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
   {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
@@ -345,7 +345,41 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }),
     type: 'text'
   },
-
+  {
+    label: '固定图层', type: 'folder', opened: modelRef(setting, '人影.监控.fixedLayerOpened'), children: [
+      {label: '铁路', value: modelRef(setting, '铁路'), type: 'checkbox'},
+      {label: '九段线', value: modelRef(setting, '九段线'), type: 'checkbox'},
+      {label: '国境线', value: modelRef(setting, '国境线'), type: 'checkbox'},
+      {label: '岛屿', value: modelRef(setting, '岛屿'), type: 'checkbox'},
+      {label: '河流', value: modelRef(setting, '河流'), type: 'checkbox'},
+      {label: '海岸线', value: modelRef(setting, '海岸线'), type: 'checkbox'},
+      {label: '省界', value: modelRef(setting, '省界'), type: 'checkbox'},
+      {label: '县界', value: modelRef(setting, '县界'), type: 'checkbox'},
+      {label: '地标点', value: modelRef(setting, '地标点'), type: 'checkbox'},
+      {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
+      {label: '机场', value: modelRef(setting, '机场'), type: 'checkbox'},
+      {label: '机场管制区', value: modelRef(setting, '机场管制区'), type: 'checkbox'},
+      {label: '省名', value: modelRef(setting, '省名'), type: 'checkbox'},
+      {label: '人影飞行区域', value: computed({
+        get(){
+            return setting.人影.监控.ryAirspaces.base
+        },
+        set(val){
+            setting.人影.监控.ryAirspaces.fill = val
+            setting.人影.监控.ryAirspaces.base = val
+            setting.人影.监控.ryAirspaces.line = val
+            setting.人影.监控.ryAirspaces.label = val
+        }
+      }), type: 'checkbox'},
+      {label: '危险区', value: modelRef(setting, '危险区'), type: 'checkbox'},
+      {label: '禁区', value: modelRef(setting, '禁区'), type: 'checkbox'},
+      {label: '限制区', value: modelRef(setting, '限制区'), type: 'checkbox'},
+      {label: '飞行管制分区', value: modelRef(setting, '飞行管制分区'), type: 'checkbox'},
+      {label: '飞行管制区', value: modelRef(setting, '飞行管制区'), type: 'checkbox'},
+      {label: '航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
+      {label: '障碍物', value: modelRef(setting, '障碍物'), type: 'checkbox'},
+    ]
+  },
   {
     label: '系统信息', type: 'folder', opened: modelRef(setting, '人影.监控.systemInfoOpened'), children: [
       {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},

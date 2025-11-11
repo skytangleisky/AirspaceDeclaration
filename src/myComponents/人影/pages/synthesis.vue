@@ -16,7 +16,7 @@
         v-model:bearing="setting.人影.监控.bearing"
         v-model:zdz="setting.人影.监控.zdz"
         v-model:plane="setting.人影.监控.plane"
-        v-model:airport="setting.人影.监控.airport"
+        v-model:airport="setting.机场"
         v-model:gridPoint="setting.人影.监控.gridPoint"
         v-model:gridValue="setting.人影.监控.gridValue"
         v-model:isolines="setting.人影.监控.isolines"
@@ -199,7 +199,7 @@ watch([
   () => setting.人影.监控.districtOptions.district,
   () => setting.人影.监控.ryAirspaces.fill,
   () => setting.人影.监控.routeLine,
-  () => setting.人影.监控.airport,
+  () => setting.机场,
   () => setting.人影.监控.plane,
   () => setting.人影.监控.zyd,
   () => setting.人影.监控.navigationStation,
