@@ -265,9 +265,6 @@ onBeforeUnmount(()=>{
 const appointed = ref(false)
 const currentStove = inject<any>("currentStove");
 const currentTime = ref(Date.now());
-判断是否可以点火('110114ZS').then(res=>{
-    console.log(res.data)
-})
 watch([currentStove,currentTime],()=>{
     if(currentStove.value.strStoveID){
         获取所有烟炉的预约点火信息().then(res=>{
@@ -291,45 +288,53 @@ watch([currentStove,currentTime],()=>{
                             if(stove.canFire){//多个浏览器或者多个账号同时打开该组件，会出现重复点火的可能，需要通过数据库防止重复点火。（该组件未渲染会导致无法点火）
                                 stove.canFire = false
                                 console.log('开始点火')
-                                判断是否可以点火(stove.strStoveID).then(res=>{
-                                    console.log('>>>>>>>>>>>',res.data)
-                                    debugger
-                                    for(let i=0;i<item.times;i++){
-                                        setTimeout(()=>{
-                                            if(i === 0){
-                                                ElMessage({
-                                                    type:'success',
-                                                    message: `预约点火开始`,
-                                                })
-                                            }
-                                            即时点火(stove.strStoveID,item.flare).then(res=>{
-                                                console.log(`第${i+1}次预约点火成功`)
-                                                ElMessage({
-                                                    type:'success',
-                                                    message: `第${i+1}次预约点火成功`,
-                                                })
-                                            }).catch(err=>{
-                                                ElMessage({
-                                                    type:'error',
-                                                    message: `第${i+1}次预约点火失败`,
-                                                })
-                                            })
-                                            if(i === item.times - 1){
-                                                取消预约点火(item.stoveID).then(res=>{
-                                                    currentTime.value = Date.now()
-                                                    appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
-                                                    appointForm.interval = 10
-                                                    appointForm.flare = 1
-                                                    appointForm.times = 2
-                                                    ElMessage({
-                                                        type:'success',
-                                                        message: `预约点火结束`,
+                                if(stove.status==1){
+                                    判断是否可以点火(stove.strStoveID).then(res=>{
+                                        if(res.data[0]&&(res.data[0].changedRows === 1||res.data[0]['UPDATE EFFECTNUM'] === 1)){
+                                            console.log('>>>>>>>>>>>',res.data)
+                                            for(let i=0;i<item.times;i++){
+                                                setTimeout(()=>{
+                                                    if(i === 0){
+                                                        ElMessage({
+                                                            type:'success',
+                                                            message: `预约点火开始`,
+                                                        })
+                                                    }
+                                                    即时点火(stove.strStoveID,item.flare).then(res=>{
+                                                        console.log(`第${i+1}次预约点火成功`)
+                                                        ElMessage({
+                                                            type:'success',
+                                                            message: `第${i+1}次预约点火成功`,
+                                                        })
+                                                    }).catch(err=>{
+                                                        ElMessage({
+                                                            type:'error',
+                                                            message: `第${i+1}次预约点火失败`,
+                                                        })
                                                     })
-                                                })
+                                                    if(i === item.times - 1){
+                                                        取消预约点火(item.stoveID).then(res=>{
+                                                            currentTime.value = Date.now()
+                                                            appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
+                                                            appointForm.interval = 10
+                                                            appointForm.flare = 1
+                                                            appointForm.times = 2
+                                                            ElMessage({
+                                                                type:'success',
+                                                                message: `预约点火结束`,
+                                                            })
+                                                        })
+                                                    }
+                                                },i*item.interval*60*1e3)
                                             }
-                                        },i*item.interval*60*1e3)
-                                    }
-                                })
+                                        }
+                                    })
+                                }else{
+                                    ElMessage({
+                                        type: 'warning',
+                                        message: '烟炉状态异常，点火失败！',
+                                    })
+                                }
                             }
                         }
                     }

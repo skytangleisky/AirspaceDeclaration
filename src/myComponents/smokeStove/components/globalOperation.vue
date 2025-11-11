@@ -231,7 +231,7 @@ const process = (obj) => {
       for (let i = 0; i < smokeStoveList.length; i++) {
         if (smokeStoveList[i].strStoveID == obj.data.stove_id) {
           smokeStoveList[i].availableCount = obj.data.res_content.split('').filter(item => item == '1').length;
-          smokeStoveList[i].usedCount = obj.data.res_content.split('').filter(item => item == '0').length;
+          smokeStoveList[i].usedCount = obj.data.res_content.split('').filter(item => item == '0' || item == '2').length;
           smokeStoveList[i].burningCount = obj.data.res_content.split('').filter(item => item == '3').length;
           smokeStoveList[i].currentTime = moment().format('YYYY-MM-DD HH:mm:ss')
           smokeStoveList[i].barList.forEach((item, j) => {

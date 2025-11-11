@@ -4426,7 +4426,6 @@ onMounted(async() => {
         });
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
-      console.log(res.data)
     })
   });
   map.on('draw.create',(e)=>{
