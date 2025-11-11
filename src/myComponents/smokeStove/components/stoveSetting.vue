@@ -290,8 +290,7 @@ watch([currentStove,currentTime],()=>{
                                 console.log('开始点火')
                                 if(stove.status==1){
                                     判断是否可以点火(stove.strStoveID).then(res=>{
-                                        if(res.data[0]&&(res.data[0].changedRows === 1||res.data[0]['UPDATE EFFECTNUM'] === 1)){
-                                            console.log('>>>>>>>>>>>',res.data)
+                                        if((res.data[0]&&res.data[0].changedRows === 1)||(res.data[0]&&res.data[0][0]&&res.data[0][0]['UPDATE EFFECTNUM'] === 1)){
                                             for(let i=0;i<item.times;i++){
                                                 setTimeout(()=>{
                                                     if(i === 0){

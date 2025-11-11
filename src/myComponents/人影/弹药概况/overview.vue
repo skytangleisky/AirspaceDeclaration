@@ -137,7 +137,6 @@ watch(radio,()=>{
     myChart1.setOption(option1)
     myChart2.setOption(option2)
   })*/
-  console.log(radio.value)
 },{immediate:true})
 const chartDomRef1 = ref<HTMLDivElement>()
 var myChart1: echarts.ECharts

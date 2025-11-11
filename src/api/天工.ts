@@ -1069,7 +1069,6 @@ export function 获取所有烟炉的预约点火信息(){
   })
 }
 export function 预约点火({beginTime,interval,flare,times,stoveID}){
-  console.log('>>>>>',beginTime,interval,flare,times,stoveID)
   return request({
     url: 'backend/transaction',
     method: 'post',
@@ -1109,11 +1108,11 @@ export function 取消预约点火(stoveID){
 
 export function 判断是否可以点火(stoveID){
   return request({
-    url: 'backend/transaction',
+    url: 'backend/transaction?abcdef',
     method: 'post',
     data:{
       sqls:[
-        "UPDATE `appoint` SET `begun` = 1 WHERE `stoveID` = ? AND `begun` = 0;",
+        "UPDATE BEPK_RYB_GSYTHPT.`appoint` SET `begun` = 1 WHERE `stoveID` = ? AND `begun` = 0;",
       ],
       vals:[
         [
