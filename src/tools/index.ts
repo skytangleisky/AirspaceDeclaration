@@ -36,32 +36,57 @@ export function fromDMS(v:string):[number,number]{
   }
 }
 export function toDMS(lng: number, lat: number): string {
-  // 经度
-  const lngDeg = Math.floor(lng);
-  const lngMinFull = (lng - lngDeg) * 60;
-  const lngMin = Math.floor(lngMinFull);
-  const lngSec = (lngMinFull - lngMin) * 60;
-  const lngSec100 = Math.round(lngSec * 100); // 秒保留两位小数（乘100）
+  // 判断方向并取绝对值
+  const lngDir = lng >= 0 ? "E" : "W";
+  const latDir = lat >= 0 ? "N" : "S";
+  const absLng = Math.abs(lng);
+  const absLat = Math.abs(lat);
 
-  // 纬度
-  const latDeg = Math.floor(lat);
-  const latMinFull = (lat - latDeg) * 60;
-  const latMin = Math.floor(latMinFull);
-  const latSec = (latMinFull - latMin) * 60;
-  const latSec100 = Math.round(latSec * 100);
+  // ===== 经度 =====
+  let lngDeg = Math.floor(absLng);
+  let lngMinFull = (absLng - lngDeg) * 60;
+  let lngMin = Math.floor(lngMinFull);
+  let lngSec = (lngMinFull - lngMin) * 60;
+  let lngSec100 = Math.round(lngSec * 100); // 秒保留两位小数（乘100）
 
-  // 按原格式补零
-  const lngStr = 
+  // 修正可能的进位问题
+  if (lngSec100 === 6000) {
+    lngSec100 = 0;
+    lngMin += 1;
+  }
+  if (lngMin === 60) {
+    lngMin = 0;
+    lngDeg += 1;
+  }
+
+  // ===== 纬度 =====
+  let latDeg = Math.floor(absLat);
+  let latMinFull = (absLat - latDeg) * 60;
+  let latMin = Math.floor(latMinFull);
+  let latSec = (latMinFull - latMin) * 60;
+  let latSec100 = Math.round(latSec * 100);
+
+  if (latSec100 === 6000) {
+    latSec100 = 0;
+    latMin += 1;
+  }
+  if (latMin === 60) {
+    latMin = 0;
+    latDeg += 1;
+  }
+
+  // 补零并组合字符串
+  const lngStr =
     String(lngDeg).padStart(3, "0") +
     String(lngMin).padStart(2, "0") +
     String(lngSec100).padStart(4, "0");
 
-  const latStr = 
+  const latStr =
     String(latDeg).padStart(2, "0") +
     String(latMin).padStart(2, "0") +
     String(latSec100).padStart(4, "0");
 
-  return `${lngStr}E${latStr}N`;
+  return `${lngStr}${lngDir}${latStr}${latDir}`;
 }
 
 export const area = (vertices: Array<[number, number]>) => {
@@ -273,7 +298,7 @@ function safeParseSVG(svgString) {
   document.body.removeChild(iframe);
   return xmlDoc;
 }
-export function loadImage(url:string,width:number,height:number,options:any){
+export function loadImage(url:string,width:number,height:number,options:any,bUrl:boolean=false){
   let opts = JSON.parse(JSON.stringify(options))
   return new Promise((resolve,reject)=>{
     axios.get(url).then(res=>{
@@ -318,8 +343,12 @@ export function loadImage(url:string,width:number,height:number,options:any){
           let y = Math.round(v.y1*cvs.height)
           let w = Math.round((v.x2-v.x1)*cvs.width)
           let h = Math.round((v.y2-v.y1)*cvs.height)
-          let imageData = ctx.getImageData(x,y,w,h)
-          options[key] = imageData
+          if(bUrl){
+            options[key] = cvs.toDataURL('image/png')
+          }else{
+            let imageData = ctx.getImageData(x,y,w,h)
+            options[key] = imageData
+          }
         })
         resolve(options)
       })

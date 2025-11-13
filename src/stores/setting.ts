@@ -441,6 +441,8 @@ export const useSettingStore = defineStore('setting',{
           b:0,
           a:1
         },
+        经度:0,
+        纬度:0,
         "zoom": 5,
         "center": [
             115.3683244,
@@ -993,27 +995,27 @@ export const useSettingStore = defineStore('setting',{
       console.log('标面')
     },
   },
-  // persist: {
-  //   serializer: {
-  //     // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
-  //     serialize: (state) =>
-  //       JSON.stringify(state, (key, value) => {
-  //         if (value === Infinity) return '__INFINITY__'
-  //         if (value === -Infinity) return '__NEGATIVE_INFINITY__'
-  //         if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
-  //         return value
-  //       }),
+  persist: {
+    serializer: {
+      // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
+      serialize: (state) =>
+        JSON.stringify(state, (key, value) => {
+          if (value === Infinity) return '__INFINITY__'
+          if (value === -Infinity) return '__NEGATIVE_INFINITY__'
+          if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
+          return value
+        }),
 
-  //           // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
-  //           deserialize: (str) =>
-  //               JSON.parse(str, (key, value) => {
-  //                   if (value === '__INFINITY__') return Infinity
-  //                   if (value === '__NEGATIVE_INFINITY__') return -Infinity
-  //                   if (value === '__NaN__') return NaN
-  //                   return value
-  //               })
-  //       }
-  //   }
+            // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
+            deserialize: (str) =>
+                JSON.parse(str, (key, value) => {
+                    if (value === '__INFINITY__') return Infinity
+                    if (value === '__NEGATIVE_INFINITY__') return -Infinity
+                    if (value === '__NaN__') return NaN
+                    return value
+                })
+        }
+    }
 })
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))

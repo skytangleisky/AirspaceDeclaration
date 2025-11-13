@@ -27,11 +27,14 @@ import sideButtons from './sideButtons.vue'
 import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
+import {useMapStatusStore} from '~/stores/mapStatus'
 import toolkitSvg from '~/assets/toolkit.svg?raw'
 import {getMask} from '~/api/天工'
 import {resetTheme} from '~/theme'
+import { toDMS } from '~/tools'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
+const mapStatus = useMapStatusStore()
 const distributionButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
@@ -334,11 +337,13 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     max: 3000,
     arr: Array.from({length: 3001}, (_, i: number) => i)
   }]:[]),
+  { label: '经度',value: computed(()=>setting.人影.监控.经度.toFixed(6)),type: 'text' },
+  { label: '维度',value: computed(()=>setting.人影.监控.纬度.toFixed(6)),type: 'text' },
   {
     label: '位置',
     value: computed(() => {
       if(setting.人影.监控.经纬度){
-        return setting.人影.监控.经纬度.substring(0, 10) + '\r\n0' + setting.人影.监控.经纬度.substring(10, 20)
+        return setting.人影.监控.经纬度.substring(0,10)+'\n0'+setting.人影.监控.经纬度.substring(10)
       }else{
         return '000000000E\r\n000000000N'
       }
@@ -385,9 +390,9 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
       {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
       {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
-      {label: '中心经度', value: computed(()=>setting.人影.监控.center[0]), type: 'text'},
-      {label: '中心纬度', value: computed(()=>setting.人影.监控.center[1]), type: 'text'},
-      {label: '缩放等级', value: computed(()=>setting.人影.监控.zoom), type: 'text'},
+      {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
+      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
+      {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},
       {label: '帧率', value: computed(()=>setting.人影.监控.fps), type: 'text'},
       {label: '帧率曲线',value:{
         fps: {
