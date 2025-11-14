@@ -56,7 +56,14 @@ const toolkitButtonClick = (e: any) => {
 const showPanel = computed(()=>{
   return setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板
 })
-import {useTheme} from '~/theme';
+import {useTheme,isDark} from '~/theme';
+watch(isDark,()=>{
+  if(isDark.value){
+    setting.人影.监控.landColor = {r:0,g:0,b:0,a:255}
+  }else{
+    setting.人影.监控.landColor = {r:128,g:128,b:128,a:255}
+  }
+})
 import {modelRef} from '~/tools'
 watch(()=>setting.devtoolsOpen,(val)=>{
   if(val){

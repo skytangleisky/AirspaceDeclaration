@@ -88,6 +88,7 @@
 <script lang="ts" setup>
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TextLayer, PathLayer, IconLayer } from '@deck.gl/layers';
+import {ScreenLineLayer} from './ScreenLineLayer.js'
 import { 铁路,机场管制区,障碍物,地标,飞行管制区,飞行管制分区, 九段线, 国境线, 岛屿, 河流, 海岸线, 省界, 县界, 机场, 省名, 危险区, 禁区, 限制区 } from '~/api/layer'
 import {destination} from '~/myComponents/map/js/core.js'
 import Frame from '~/frames/frame.vue'
@@ -132,6 +133,7 @@ import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
 import upUrl from '~/assets/up.svg?url'
 import 地标Url from '~/assets/地标.svg?url'
+import rocketUrl from '~/assets/rocket.svg?url'
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
@@ -642,7 +644,18 @@ const theme = useTheme()
 //   }
 // });
 let active = () => {};
+
+let mouseDownEvt :any;
+let hoverObjectOffset = [0,0]
 const mousemoveFunc = (e:any)=>{
+  if(hoverObject&&mouseDownEvt){
+    let pt1 = mouseDownEvt.point
+    let pt2 = e.point
+    let offsetX = hoverObjectOffset[0]+pt2.x-pt1.x
+    let offsetY = hoverObjectOffset[1]+pt2.y-pt1.y
+    hoverObject.offset = [offsetX,offsetY]
+    updateTextLayer(textData.slice())
+  }
   setting.人影.监控.经度 = e.lngLat.lng
   setting.人影.监控.纬度 = e.lngLat.lat
   setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
@@ -708,13 +721,19 @@ function 处理飞机实时位置(d:Array<{
       item.iAltitudeADS.toString().padStart(5,'0')+' '+(item.fSpeed * 3.6).toFixed(0).padStart(4,'0'),
       toDMS(item.fLongitude,item.fLatitude)
     ]
+    let data = null
     for(let i=0;i<textData.length;i++){
       const it = textData[i]
       if(it.unSsrCode == item.unSsrCode && it.uiTrackNo == item.uiTrackNo){
-        textData.splice(i--,1)
+        data = textData.splice(i--,1)[0]
       }
     }
-    textData.push({...item,trajectory:[destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)],lastTime:Date.now(),label:str.join('\n')})
+    const targetData = {...item,trajectory:[destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)],lastTime:Date.now(),label:str.join('\n')}
+    if(data){
+      textData.push(Object.assign(data,targetData))
+    }else{
+      textData.push(Object.assign({offset:[20,0]},targetData))
+    }
   })
   for(let i=0;i<textData.length;i++){
     if(Date.now() - textData[i].lastTime > 10e3){
@@ -1154,7 +1173,44 @@ function load(){
     }
   }
 }
-const textData:any[] = []
+const textData:any[] = [
+  {
+    "offset": [
+      10,
+      0
+    ],
+    "uiTrackNo": 593,
+    "uiAdsAddress": 0,
+    "ubyTrackState": 1,
+    "ubyTrackQuality": 0,
+    "fLongitude": 120.92053985595703,
+    "fLatitude": 41.165409088134766,
+    "ubyAltitudeMCValid": 0,
+    "iAltitudeMC": 0,
+    "ubyAltitudeADSValid": 1,
+    "iAltitudeADS": 2000,
+    "unSsrCode": 202,
+    "ubyRadarDataType": 2,
+    "ubySim": 0,
+    "ubyFixTarget": 0,
+    "ubySpiFlag": 0,
+    "ubyEmergencyType": 0,
+    "fSpeedZ": -11.520557403564453,
+    "fSpeed": 157.47030639648438,
+    "fHeading": 110.392822265625,
+    "ubyFlyingState": 0,
+    "ubyEmitterCat": 5,
+    "strCallCode": "",
+    "trajectory": [
+      [
+        121.02628774438051,
+        41.1357526157087
+      ]
+    ],
+    "lastTime": 1763036518493,
+    "label": "0312\n02000 0567\n120551394E41095547N"
+  }
+]
 const deckOverlay = new MapboxOverlay({
   interleaved: true, // 性能优化
   layers: [],
@@ -1163,13 +1219,21 @@ let hoverObject:any;
 function updateTextLayer(textData:any) {
   deckOverlay.setProps({
     layers: [
+      new ScreenLineLayer({
+        id: 'screen-line',
+        data: textData,
+        getPosition: d => [116.4, 39.9, 0],
+        getAngle: d => 0,
+        getLength: d => 100,
+        getColor: d => [255,0,0,255]
+      }),
       new TextLayer({
         id: 'text-layer',
         data:textData,
         pickable: true,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d=> [0, 255, 0],
+        getColor: d => [0, 255, 0],
         getSize: 12,
         getAngle: 0,
         getTextAnchor: 'start',
@@ -1188,21 +1252,26 @@ function updateTextLayer(textData:any) {
         background: true,
         getBackgroundColor: [255, 255, 255, 0],
         border: true,
-        getBorderColor: d=>d==hoverObject?[0, 255, 0]:[0,0,0,0],
-        getBorderWidth: 2,
+        getBorderColor: d => d==hoverObject?[0, 255, 0]:[0,0,0,0],
+        getBorderWidth: 1,
         backgroundPadding:[4,4],
-        backgroundBorderRadius:4,
-        getPixelOffset:[10,0],
+        backgroundBorderRadius:0,
+        getPixelOffset:d => d.offset,
         onHover(info,evt){
           hoverObject = info.object
-        }
+          updateTextLayer(textData.slice())
+        },
+        updateTriggers:{
+          getPixelOffset: textData.map(d => d.offset),
+          getBorderColor: hoverObject,
+        },
       }),
       new PathLayer({
         id: 'path-layer',
         data:textData,
         getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
         getColor: [0, 255, 0],
-        getWidth: 1,
+        getWidth: 2,
         widthUnits: 'pixels',
       }),
       new IconLayer({
@@ -1221,6 +1290,16 @@ function updateTextLayer(textData:any) {
     ]
   })
 }
+updateTextLayer(textData)
+// setInterval(()=>{
+//   textData.forEach(item=>{
+//     item.fLongitude += 0.1
+//     item.fLatitude += 0.1
+//     const dest = destination(item.fLongitude,item.fLatitude,item.fHeading,item.fSpeed*60)
+//     item.trajectory = [dest]
+//   })
+//   updateTextLayer(textData.slice())
+// },1000)
 onMounted(async() => {
   squareImageData = await loadImage(squareUrl,8,8,{
     airplane:{
@@ -1935,6 +2014,11 @@ onMounted(async() => {
     }
     // await drawImage()
     map.removeImage('airport');
+    await loadImage2Map(map,rocketUrl,56,56,{
+      火箭:{
+        style: 'fill:#888;stroke:black;stroke-width:0px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
     await loadImage2Map(map,stoveUrl,36,36,{
       stove:{
         style: 'fill:#fa0;stroke:black;stroke-width:60px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
@@ -2824,7 +2908,8 @@ onMounted(async() => {
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              "icon-image": item.iType == 1 ? "triangle-blue" : "projectile-blue",
+              // "icon-image": item.iType == 1 ? "triangle-blue" : "projectile-blue",
+              "icon-image": "火箭",
               // "icon-image": "火箭弹图标",
               发报单位:'110000000',
               delayTimeLen:10,
@@ -3349,7 +3434,13 @@ onMounted(async() => {
         const feature = fs[0];
         station.人影界面被选中的设备 = feature.properties.strID;
       });
-      map.on("mousedown", (e) => {
+      map.on("mousedown", (e:Event) => {
+        mouseDownEvt = e
+        if(hoverObject){
+          hoverObjectOffset = JSON.parse(JSON.stringify(hoverObject.offset))
+          e.preventDefault()
+        }
+
         // console.log([e.lngLat.lng,e.lngLat.lat])
         $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
         const fs = map.queryRenderedFeatures(e.point, {
@@ -3366,6 +3457,9 @@ onMounted(async() => {
           }
         }
       });
+      map.on("mouseup",()=>{
+        mouseDownEvt = null
+      })
       active = () => {
         circleFeaturesData.features.forEach((item:any)=>{
           const state = map.getFeatureState({source:'最大射程source',id:item.properties.strID})
@@ -5386,7 +5480,6 @@ onMounted(async() => {
         });
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
-      console.log(res.data)
     })
   });
   map.on('draw.create',(e)=>{
