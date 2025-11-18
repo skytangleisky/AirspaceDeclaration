@@ -73,8 +73,10 @@ export const useStationStore = defineStore('station',{
     active:"",
     风雷达组网地图相关被选中的设备:'',
     人影界面被选中的设备:'',
+    人影界面被选中的烟炉:'',
     珠海界面被选中的设备:'',
     组网界面被选中的设备:'',
+    currentStoveID:'', //当前选中烟炉ID
   }),
   actions: {
     查询雷达列表接口(query:any){

@@ -35,7 +35,6 @@ import smokeBar from "./components/smokeBar.vue";
 import stoveSetting from "./components/stoveSetting.vue";
 let strStoveID = ref(null); //当前选中烟炉ID
 let stoveObject = ref({}); //当前选中烟炉数据
-
 provide("currentStove", ref({
     burningCount:0,
     usedCount:0,

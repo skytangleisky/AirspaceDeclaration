@@ -57,9 +57,11 @@
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
           <li v-if="menuType=='批量操作'" @click="批量移除()">批量移除</li>
           <li v-if="menuType=='批量操作'" @click="显示射界()">显示射界</li>
+          <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
+          <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
           <!-- <li>查看作业点信息</li> -->
           <!-- <li>人工批复</li>
           <li>人工移除</li>
@@ -96,6 +98,45 @@ import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
 let 作业点原始数据 = new Array()//存放作业点最原始的数据
 import closeUrl from '~/assets/close.svg?raw'
+async function 批量烟炉操作(){
+  // setting.显示烟炉 = true
+  // $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+
+
+
+let list = []
+for(let j=0;j<stoveFeaturesData.features.length;j++){
+  const targetPos = point(stoveFeaturesData.features[j].geometry.coordinates)
+  let isInf = false
+  for(let i=0;i<draw.getAll().features.length;i++){
+    const feature = draw.getAll().features[i];
+    const poly = polygon((feature.geometry as any).coordinates)
+    if(booleanPointInPolygon(targetPos,poly)){
+      isInf = true
+      break
+    }
+  }
+  if(isInf){
+    list.push(stoveFeaturesData.features[j])
+  }
+}
+station.currentStoveID = ''
+await nextTick()
+for(let i=0;i<list.length;i++){
+  const feature = list[i];
+  station.currentStoveID = feature.properties.strStoveID
+  await nextTick()
+}
+setting.显示烟炉 = true
+}
+async function 烟炉操作(){
+  station.currentStoveID = ''
+  await nextTick()
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+  const data = $(stationMenuRef.value as HTMLDivElement).data();
+  setting.显示烟炉 = true
+  station.currentStoveID = data.strStoveID
+}
 function 视频会议(){
   let has = false
   for(let i=0;i<mettingList.length;i++){
@@ -161,7 +202,7 @@ import popSvg from '~/assets/pop.svg?url'
 import trackSvg from '~/assets/track.svg?url'
 import axios from 'axios'
 import { eventbus } from "~/eventbus";
-import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed } from "vue";
+import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed, nextTick } from "vue";
 const cache = new Array()
 const 视频列表 = computed(()=>{
   const arr = new Array()
@@ -1800,6 +1841,9 @@ onMounted(async() => {
     await loadImage2Map(map,stoveUrl,36,36,{
       stove:{
         style: 'fill:#fa0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      },
+      stoveBurning:{
+        style: 'fill:#f00;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
     })
     await loadImage2Map(map,banSvg,16,16,{
@@ -3008,7 +3052,7 @@ onMounted(async() => {
         map.addSource("stoveSource", {
           type: "geojson",
           data: stoveFeaturesData,
-          promoteId:'strID'
+          promoteId:'strStoveID'
         });
       }
       if(!map.getLayer("stoveLayer")){
@@ -3151,6 +3195,26 @@ onMounted(async() => {
       }
 
 
+      map.on("contextmenu", "stoveLayer", (e: any) => {
+        e.handled = true;
+        e.originalEvent.stopPropagation()
+        e.originalEvent.preventDefault();
+        const fs = map.queryRenderedFeatures(e.point, {
+          layers: ["stoveLayer"],
+        });
+
+        if (!fs.length) {
+          return;
+        }
+        const feature = fs[0];
+        station.人影界面被选中的烟炉 = feature.properties.strStoveID;
+        marker.setLngLat(feature.geometry.coordinates);
+        const state = map.getFeatureState({source:'stoveSource',id:feature.properties.strStoveID})
+        menuType.value = '烟炉操作'
+        $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+        $(stationMenuRef.value as HTMLDivElement).removeData();
+        $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
+      });
       map.on("contextmenu", "zydLayer", (e: any) => {
         e.handled = true;
         e.originalEvent.stopPropagation()
@@ -4399,23 +4463,9 @@ onMounted(async() => {
         stoveFeaturesData.features.push({
           type: "Feature",
           properties: {
-            strID: 'id',
-            type: "站点",
-            strCode: '',
+            strStoveID: item.strStoveID,
             name: item.strName,
-            strPos: '',
-            iWorkType: 1,
-            beginTime: moment().format("HH:mm:ss"),
-            duration: 1,
             "icon-image": "stove",
-            // "icon-image": "火箭弹图标",
-            发报单位:'110000000',
-            delayTimeLen:10,
-            beginDirection:270,
-            endDirection:80,
-            workTimeLen:1,
-            workBeginTime:moment().format('HH:mm:ss'),
-            denyCode:0,
             tags:['烟炉'],
             tag:setting.人影.监控.zydTag
           },
@@ -4424,6 +4474,7 @@ onMounted(async() => {
             coordinates: pos,
           },
         });
+        map.setFeatureState({source:'stoveSource',id:item.strStoveID},item)
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
     })
