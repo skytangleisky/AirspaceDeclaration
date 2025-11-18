@@ -14,12 +14,12 @@
         <MenuPanel></MenuPanel>
       </el-scrollbar>
     </div>
-    <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具面板" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
+    <el-scrollbar style="position: absolute;top:10px;left:10px;bottom:10px;height:auto;pointer-events: none;">
+      <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+    </el-scrollbar>
+    <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
       <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </el-scrollbar> -->
-    <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
-      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts" setup>
@@ -74,7 +74,7 @@ watch(()=>setting.devtoolsOpen,(val)=>{
 })
 const theme = useTheme()
 const mask = getMask()
-const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
+const list = reactive([{label: '开发工具', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
   {
     label: '主题',
     value: theme,
@@ -427,11 +427,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       setting.显示全国行政区划配置 = true
     }
   },
-  {
-    label: '烟炉控制', type: 'button', click() {
-      setting.显示烟炉 = true
-    }
-  },
+  // {
+  //   label: '烟炉控制', type: 'button', click() {
+  //     setting.显示烟炉 = true
+  //   }
+  // },
   {
     label: '火箭架配置', type: 'button', click() {
       setting.火箭架配置 = true

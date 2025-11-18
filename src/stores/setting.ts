@@ -13,6 +13,7 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    showBusinessLayer:false,
     铁路:false,
     危险区:false,
     禁区:false,
@@ -434,7 +435,7 @@ export const useSettingStore = defineStore('setting',{
         roadMap:false,
         是否显示分布面板:false,
         是否显示产品面板:false,
-        是否显示工具面板:false,
+        是否显示工具面板:true,
         landColor:{
           r:0,
           g:0,

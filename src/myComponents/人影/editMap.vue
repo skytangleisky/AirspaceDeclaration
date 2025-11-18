@@ -66,7 +66,7 @@
           <li>手动发结束报</li> -->
         </ul>
       </div>
-      <Tool-Box />
+      <left-buttons />
     </div>
     <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
       <template v-for="item in 视频列表" :key="item.strWorkID">
@@ -83,6 +83,8 @@
     <!-- <ConfigureSmokeStove></ConfigureSmokeStove> -->
     <ConfigureRocket></ConfigureRocket>
     <!-- <Overview></Overview> -->
+    <Tool-Box style="z-index:1" />
+    <BusinessLayer></BusinessLayer>
   </div>
 </template>
 <script lang="ts" setup>
@@ -96,8 +98,10 @@ import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
 import Overview from '~/myComponents/人影/弹药概况/index.vue'
+import LeftButtons from '~/myComponents/人影/LeftButtons/index.vue'
 import { csv2list, sixty2Float } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
+import BusinessLayer from '~/myComponents/人影/业务图层/index.vue'
 const mettingList = csv2list(mettingData)
 let 作业点原始数据 = new Array()//存放作业点最原始的数据
 import closeUrl from '~/assets/close.svg?raw'
@@ -1233,7 +1237,7 @@ function updateTextLayer(textData:any) {
         pickable: true,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d => [0, 255, 0],
+        getColor: d => [255, 255, 255],
         getSize: 12,
         getAngle: 0,
         getTextAnchor: 'start',
@@ -1252,7 +1256,7 @@ function updateTextLayer(textData:any) {
         background: true,
         getBackgroundColor: [255, 255, 255, 0],
         border: true,
-        getBorderColor: d => d==hoverObject?[0, 255, 0]:[0,0,0,0],
+        getBorderColor: d => d==hoverObject?[255, 255, 255]:[0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
@@ -1270,7 +1274,7 @@ function updateTextLayer(textData:any) {
         id: 'path-layer',
         data:textData,
         getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
-        getColor: [0, 255, 0],
+        getColor: [255, 255, 255],
         getWidth: 2,
         widthUnits: 'pixels',
       }),
@@ -1303,10 +1307,10 @@ updateTextLayer(textData)
 onMounted(async() => {
   squareImageData = await loadImage(squareUrl,8,8,{
     airplane:{
-      style: 'opacity:1.0;fill:#0f0',
+      style: 'opacity:1.0;fill:#fff',
     },
     airplaneMock:{
-      style: 'opacity:1.0;fill:#0f0',
+      style: 'opacity:1.0;fill:#fff',
     },
   },true)
   // ElMessage({
@@ -1985,38 +1989,10 @@ onMounted(async() => {
       map.addImage('JYJC',img2)
     }
     img2.src = JYJCurl
-    async function drawImage(){
-      // 创建 Canvas 元素
-      const canvas = document.createElement('canvas');
-      canvas.width = 200;
-      canvas.height = 200;
-      const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
-
-      // 背景矩形
-      ctx.fillStyle = '#2b2b2b';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // 画一个边框
-      ctx.strokeStyle = '#333';
-      ctx.lineWidth = 2;
-      ctx.strokeRect(0, 0, canvas.width, canvas.height);
-
-      // 写点文字
-      ctx.fillStyle = '#0078ff';
-      ctx.font = '20px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('Hello Canvas', canvas.width / 2, canvas.height / 2);
-
-      const imageBitmap = await createImageBitmap(canvas);
-      map.hasImage('测试图片') && map.removeImage('测试图片')
-      map.addImage('测试图片', imageBitmap);
-    }
-    // await drawImage()
     map.removeImage('airport');
     await loadImage2Map(map,rocketUrl,56,56,{
       火箭:{
-        style: 'fill:#888;stroke:black;stroke-width:0px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+        style: 'fill:#888;stroke:black;stroke-width:0.2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       }
     })
     await loadImage2Map(map,stoveUrl,36,36,{
@@ -2049,14 +2025,14 @@ onMounted(async() => {
     //     style: 'fill:#0f0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
     //   }
     // })
-    await loadImage2Map(map,squareUrl,8,8,{
-      airplane:{
-        style: 'opacity:1.0;fill:#fff',
-      },
-      airplaneMock:{
-        style: 'opacity:1.0;fill:#0f0',
-      },
-    })
+    // await loadImage2Map(map,squareUrl,8,8,{
+    //   airplane:{
+    //     style: 'opacity:1.0;fill:#fff',
+    //   },
+    //   airplaneMock:{
+    //     style: 'opacity:1.0;fill:#0f0',
+    //   },
+    // })
     // await loadImage2Map(map,planeUrl,24,24,{
     //   airplane:{
     //     style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
@@ -3204,15 +3180,15 @@ onMounted(async() => {
             // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
             "icon-anchor": "center",
             "icon-image": ["get", "icon-image"],
-            'icon-size': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              4, 0.25,
-              5, 0.25,
-              8, 0.6,
-              15, 1.0
-            ],
+            // 'icon-size': [
+            //   'interpolate',
+            //   ['linear'],
+            //   ['zoom'],
+            //   4, 0.25,
+            //   5, 0.25,
+            //   8, 0.6,
+            //   15, 1.0
+            // ],
             // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
             "icon-rotate": 0,
             // "icon-offset": [10, 0],
@@ -3226,7 +3202,7 @@ onMounted(async() => {
             // "text-letter-spacing": 0.05,】,
             "text-line-height": 1,
             'text-anchor': 'bottom', // 水平垂直居中
-            'text-offset': [0, -1], // 调整文本偏移量
+            'text-offset': [0, -2], // 调整文本偏移量
             'text-justify': 'center', // 水平居中对齐
             "text-ignore-placement": true,
             "text-allow-overlap": true,
@@ -6620,8 +6596,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 }
 .stationDialog{
   position: absolute;
-  top:$page-padding;
-  left:$page-padding;
+  top:50px;
+  left:100px;
 }
 ::v-deep(.mapboxgl-canvas:focus) {
   outline: none;

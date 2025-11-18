@@ -38,7 +38,8 @@ export function airspaceApply(data){
   let targetData = {
     "zydID": data.strID,
     // "workRevID": "990201000",//北京分区对应的ID
-    "workRevID": "990302000",//陕西分区对应的ID
+    // "workRevID": "990302000",//陕西分区对应的ID
+    "workRevID": "990703000",//甘肃分区对应的ID
     "longitude": pos[0].toString(),
     "latitude": pos[1].toString(),
     "shootRange": data.iMaxShotRange,

@@ -1,5 +1,23 @@
 <template>
     <div class="planPanel wstd-container" style="z-index: 1;height:fit-content;width: fit-content;">
+        <div class="top" style="margin-bottom:10px;justify-content: right;">
+            <div
+                v-for="(item, index) in tabList"
+                :key="index"
+                class="top-item"
+                @click="tabActive == item.label ? tabActive = '' : tabActive = item.label"
+            >
+                <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
+                    <div
+                        :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
+                        style="user-select: none;cursor:pointer"
+                    >
+                        <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
+                        <span class="label" style="white-space:nowrap;">{{ item.label }}</span>
+                    </div>
+                </el-badge>
+            </div>
+        </div>
         <div class="bottom wstd-content" style="position: relative;margin-bottom:10px;" v-show="tabActive !== ''">
             <div class="close-btn" @click="tabActive = ''">
                 <el-icon v-html="closeSvg"></el-icon>
@@ -233,24 +251,6 @@
                         <PlaneInfo></PlaneInfo>
                     </div>
                 </el-scrollbar>
-            </div>
-        </div>
-        <div class="top" style="margin-top:10px;margin-bottom:0;">
-            <div
-                v-for="(item, index) in tabList"
-                :key="index"
-                class="top-item"
-                @click="tabActive == item.label ? tabActive = '' : tabActive = item.label"
-            >
-                <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
-                    <div
-                        :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
-                        style="user-select: none;cursor:pointer"
-                    >
-                        <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
-                        <span class="label" style="white-space:nowrap;">{{ item.label }}</span>
-                    </div>
-                </el-badge>
             </div>
         </div>
     </div>
@@ -498,9 +498,11 @@ const 完成 = (item: planDataType) => {
 <style scoped lang="scss">
 .planPanel {
     position: absolute;
-    left: $page-padding;
-    bottom: $page-padding;
-    // top: 300px;
+    right: $page-padding;
+    top: $page-padding;
+    display: flex;
+    flex-direction: column;
+    vertical-align: bottom;
     .wstd-content {
         width: 840px;
     }
