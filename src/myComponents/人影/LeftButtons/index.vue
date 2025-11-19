@@ -13,7 +13,6 @@
           </div>
           <el-tooltip
             class="box-item"
-            :effect="isDark ? 'light' : 'dark'"
             :content="item.content"
             placement="right"
           >
@@ -26,7 +25,6 @@
 </template>
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { isDark } from '~/theme'
 import wechatRaw from './wechat.svg?raw'
 import alarmRaw from './alarm.svg?raw'
 import regulationRaw from './regulation.svg?raw'

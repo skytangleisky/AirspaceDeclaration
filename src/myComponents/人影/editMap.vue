@@ -92,7 +92,7 @@ import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TextLayer, PathLayer, IconLayer } from '@deck.gl/layers';
 import {ScreenLineLayer} from './ScreenLineLayer.js'
 import { 铁路,机场管制区,障碍物,地标,飞行管制区,飞行管制分区, 九段线, 国境线, 岛屿, 河流, 海岸线, 省界, 县界, 机场, 省名, 危险区, 禁区, 限制区 } from '~/api/layer'
-import {destination} from '~/myComponents/map/js/core.js'
+import {destination, getDistance} from '~/myComponents/map/js/core.js'
 import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
@@ -732,11 +732,25 @@ function 处理飞机实时位置(d:Array<{
         data = textData.splice(i--,1)[0]
       }
     }
-    const targetData = {...item,trajectory:[destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)],lastTime:Date.now(),label:str.join('\n')}
+    let color = [255,255,255,255]
+    zydFeaturesData.features.forEach((feature:any)=>{
+      const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
+      if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
+        const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
+        if(distance<10e3){
+          str[0] += ' |PAS0'
+          color = [255,255,0,255]
+        }else if(distance<20e3){
+          str[0] += ' |AS'
+          color = [255,255,0,255]
+        }
+      }
+    })
+    const targetData = {...item,trajectory:[destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)],lastTime:Date.now(),label:str.join('\n'),color}
     if(data){
       textData.push(Object.assign(data,targetData))
     }else{
-      textData.push(Object.assign({offset:[20,0]},targetData))
+      textData.push(Object.assign({offset:[20,0],color},targetData))
     }
   })
   for(let i=0;i<textData.length;i++){
@@ -1164,6 +1178,7 @@ function convertMultiPointToLineString(multiPointFeature) {
 }
 import Plane,{PointLayer} from './三维物体/CustomLayer.js'
 import { ElMessage } from 'element-plus';
+import { calculateDistance } from '~/tools/idw.js';
 function load(){
   for(let i=0;i<mettingList.length;i++){
     const item = mettingList[i]
@@ -1177,12 +1192,13 @@ function load(){
     }
   }
 }
-const textData:any[] = [
+const textData = [
   {
     "offset": [
       10,
       0
     ],
+    "color":[255,255,0,255],
     "uiTrackNo": 593,
     "uiAdsAddress": 0,
     "ubyTrackState": 1,
@@ -1237,7 +1253,7 @@ function updateTextLayer(textData:any) {
         pickable: true,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d => [255, 255, 255],
+        getColor: d => d.color,
         getSize: 12,
         getAngle: 0,
         getTextAnchor: 'start',
@@ -1256,12 +1272,13 @@ function updateTextLayer(textData:any) {
         background: true,
         getBackgroundColor: [255, 255, 255, 0],
         border: true,
-        getBorderColor: d => d==hoverObject?[255, 255, 255]:[0,0,0,0],
+        getBorderColor: d => d==hoverObject?d.color:[0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
         getPixelOffset:d => d.offset,
         onHover(info,evt){
+          mouseDownEvt = null
           hoverObject = info.object
           updateTextLayer(textData.slice())
         },
@@ -2569,6 +2586,7 @@ onMounted(async() => {
         }
       });
     })
+    /*
     await axios({
       method:'get',
       url:'/kysq/resources/导航台.map',
@@ -2578,49 +2596,49 @@ onMounted(async() => {
       let view = new View(res.data,true);
       let result = {
         filehead:{
-          iLayerNum: view.getInt32(), //文件中包含的图层数。（建议一个图层一个文件，iLayerNum=1）/*int*/
-          szReserved: view.getBytes(512), //保留字段。/*char[]*/
+          iLayerNum: view.getInt32(), //文件中包含的图层数。（建议一个图层一个文件，iLayerNum=1）//int
+          szReserved: view.getBytes(512), //保留字段。//char[]
         },
         tagLayerPara:{
-          iLayerID: view.getInt32(), //图层ID。/*int*/
-          szLayerName: view.getBytes(128), //图层名称。/*char[]*/
-          sLayerType: view.getInt16(),  //图层类型。（1-点、2-线、3-面、其他）/*short*/
-          iLayerNotesLen: view.getInt32(),		//图层附加属性长度。/*int*/
-          iUnitCount: view.getInt32(),  //图元个数。/*int*/
-          iUnitNotesLen: view.getInt32(),	//图元附加属性长度。/*int*/
-          iMapLevel: view.getInt32(),  //本图层所属层数。/*int*/
-          dMaximumScale: view.getFloat64(),  // /*double*/
-          dMinimumScale: view.getFloat64(),  //当Map Scale介于dMinimumScale和dMaximumScale之间时，才显示本图层。/*double*/
-          bScaleSymbols: view.getUint8(),  //图层中的Symbol是否随图层放大而放大、随图层缩小而缩小。/*bool*/
-          bVisible: view.getInt16(),  //图层是否显示。（1-全显示、2-部分显示、3-不显示）/*bool*/
-          bShowLable: view.getInt16(),  //图元标注显示与否。（1-全显示、2-部分显示、3-不显示）/*bool*/
+          iLayerID: view.getInt32(), //图层ID。//int
+          szLayerName: view.getBytes(128), //图层名称。//char[]
+          sLayerType: view.getInt16(),  //图层类型。（1-点、2-线、3-面、其他）//short
+          iLayerNotesLen: view.getInt32(),		//图层附加属性长度。//int
+          iUnitCount: view.getInt32(),  //图元个数。//int
+          iUnitNotesLen: view.getInt32(),	//图元附加属性长度。//int
+          iMapLevel: view.getInt32(),  //本图层所属层数。//int
+          dMaximumScale: view.getFloat64(),  //double
+          dMinimumScale: view.getFloat64(),  //当Map Scale介于dMinimumScale和dMaximumScale之间时，才显示本图层。//double
+          bScaleSymbols: view.getUint8(),  //图层中的Symbol是否随图层放大而放大、随图层缩小而缩小。//bool
+          bVisible: view.getInt16(),  //图层是否显示。（1-全显示、2-部分显示、3-不显示）//bool
+          bShowLable: view.getInt16(),  //图元标注显示与否。（1-全显示、2-部分显示、3-不显示）//bool
           layerTips:{ //图层标注（预留）。
-            x:view.getFloat64(),/*double*/
-            y:view.getFloat64(), //(x,y)指定标注位置。/*double*/
-            szTips:view.getBytes(128), //标注文本 /*char[]*/
-            bShowTips: view.getUint8() //是否显示图层标注 /*bool*/
+            x:view.getFloat64(),//double
+            y:view.getFloat64(), //(x,y)指定标注位置。//double
+            szTips:view.getBytes(128), //标注文本 //char[]
+            bShowTips: view.getUint8() //是否显示图层标注 //bool
           },
           spatialReference:{ //投影方式（预留）。
-            iProjectMethod: view.getInt32(), //投影方式（1－正圆锥投影、）/*int*/
-            dOrgLong: view.getFloat64(),		//投影坐标系坐标原点经度。/度 /*double*/
-            dOrgLat: view.getFloat64(),			//投影坐标系坐标原点纬度。/度 /*double*/
-            iOrgHeight: view.getInt32(),		//投影坐标系坐标原点高度。/米 /*int*/
-            szReserved:view.getBytes(512),	//预留。 /*char[]*/
+            iProjectMethod: view.getInt32(), //投影方式（1－正圆锥投影、）//int
+            dOrgLong: view.getFloat64(),		//投影坐标系坐标原点经度。/度 //double
+            dOrgLat: view.getFloat64(),			//投影坐标系坐标原点纬度。/度 //double
+            iOrgHeight: view.getInt32(),		//投影坐标系坐标原点高度。/米 //int
+            szReserved:view.getBytes(512),	//预留。 //char[]
           },
           layerSource:{ //图层数据源，（预留）。
-            sDataType:view.getInt16(),  //数据源类型（0―无源(可能是动态创建的)，1―文件，2―数据库）/*short*/
-            DataSource:view.getBytes(128), //数据源。（*.gis）/*char[]*/
-            szReserved:view.getBytes(128), //保留 /*char[]*/
-            iReserved:view.getInt32()  //保留 /*int*/
+            sDataType:view.getInt16(),  //数据源类型（0―无源(可能是动态创建的)，1―文件，2―数据库）//short
+            DataSource:view.getBytes(128), //数据源。（*.gis）//char[]
+            szReserved:view.getBytes(128), //保留 //char[]
+            iReserved:view.getInt32()  //保留 //int
           },
           layerEffects:{ //图层显示效果，（预留）。
-            Brightness: view.getUint8(),  //明亮度（0～100）/*unsigned char*/
-            Constrast: view.getUint8(),  //对比度（0～100）/*unsigned char*/
-            Tranceparency: view.getUint8(),  //透明度（0～100）/*unsigned char*/
-            bSupportsBrightnessChange: view.getUint8(),  //是否支持明亮度变化 /*bool*/
-            bSupportsConstrastChange: view.getUint8(),  //是否支持对比度变化 /*bool*/
-            bSupportsTranceparency: view.getUint8(),  //是否支持透明度 /*bool*/
-            bSupportsInteractive: view.getUint8(),    //Indicates if the layer supports interactive effects changes /*bool*/
+            Brightness: view.getUint8(),  //明亮度（0～100）//unsigned char
+            Constrast: view.getUint8(),  //对比度（0～100）//unsigned char
+            Tranceparency: view.getUint8(),  //透明度（0～100）//unsigned char
+            bSupportsBrightnessChange: view.getUint8(),  //是否支持明亮度变化 //bool
+            bSupportsConstrastChange: view.getUint8(),  //是否支持对比度变化 //bool
+            bSupportsTranceparency: view.getUint8(),  //是否支持透明度 //bool
+            bSupportsInteractive: view.getUint8(),    //Indicates if the layer supports interactive effects changes //bool
           }
         },
       }
@@ -2757,6 +2775,7 @@ onMounted(async() => {
           throw new Error('Unknow GISTYPE: '+result.tagLayerPara.sLayerType)
       }
     })
+    */
     if(!map)return;
     // 模拟飞机
     // for (let i = 0; i < 60; i++) {
@@ -3012,7 +3031,7 @@ onMounted(async() => {
             "fill-color": [
               "match",
               ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#fa0',
+              '作业申请待批复','#0f0',
               '作业批准','#00f',
               '作业开始','#f00',
               '作业结束','#888',
@@ -3036,7 +3055,7 @@ onMounted(async() => {
             "line-color": [
               "match",
               ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#fa0',
+              '作业申请待批复','#0f0',
               '作业批准','#00f',
               '作业开始','#f00',
               '作业结束','#82a9f5',
@@ -3062,7 +3081,7 @@ onMounted(async() => {
             "line-color": [
               "match",
               ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#fa0',
+              '作业申请待批复','#0f0',
               '作业批准','#00f',
               '作业开始','#f00',
               '作业结束','#82a9f5',
@@ -3223,7 +3242,7 @@ onMounted(async() => {
               10, 1   // zoom >= 10 显示文字
             ]
           },
-          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
+          // filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
         });
       }
       if(!map.getSource("stoveSource")){
