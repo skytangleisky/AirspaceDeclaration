@@ -130,13 +130,18 @@ import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
 import { useSettingStore } from '~/components'
 const setting = useSettingStore()
+import moment from 'moment'
 import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息,getMask} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,toRaw,computed } from 'vue'
 const addShow = ref(false)
 const confirmShow = ref(false)
 const viewShow = ref(false)
 const rowData = ref<any>({})
-const range = ref(null)
+const Tomorrow = moment().add(1, 'day')
+const range = ref<[Date, Date]>([
+  new Date(moment().year(), moment().month(), moment().date(), 0, 0),
+  new Date(Tomorrow.year(), Tomorrow.month(), Tomorrow.date(), 0, 0),
+])
 const now = new Date()
 const defaultDates = [
   new Date(now.getFullYear(), now.getMonth() - 1, 1), // 上个月

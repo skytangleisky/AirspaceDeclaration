@@ -1673,7 +1673,7 @@ export function getAllShouldExpendRegion(){
   })
 }
 
-export function 烟炉历史(paginationOption:any){
+export function 烟炉历史(paginationOption:any,range:[Date, Date]){
   return request({
     url:'/backend/db/default',
     method:'post',
@@ -1682,8 +1682,20 @@ export function 烟炉历史(paginationOption:any){
     },
     data:{
       select:['*'],
-      where:[
-      ],
+      where:range?[
+        {
+          "relation": "AND",
+          "field": "writeTm",
+          "relationship": ">=",
+          "condition": moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
+        },
+        {
+          "relation": "AND",
+          "field": "writeTm",
+          "relationship": "<=",
+          "condition": moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
+        }
+      ]:[],
       orderby:[
         'writeTm desc'
       ],

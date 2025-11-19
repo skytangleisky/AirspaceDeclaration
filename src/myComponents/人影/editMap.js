@@ -612,8 +612,8 @@ export default function(){
 					},
 					'paint': {
 						'line-color': '#CD9E46',
-						'line-width': 2,
-						'line-opacity': 0.4,
+						'line-width': 4,
+						'line-opacity': 1,
 						// 'line-dasharray': [1,1],
 					}
 				},
