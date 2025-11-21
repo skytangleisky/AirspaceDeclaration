@@ -142,7 +142,9 @@ const data = reactive<Item[]>([
 </script>
 <style lang="scss" scoped>
 .business-layer{
+  z-index: 1;
   border-radius: 4px;
+  width: 320px;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -182,7 +184,6 @@ const data = reactive<Item[]>([
   }
   .top{
     display: flex;
-    width: 300px;
     margin-bottom: 0;
     justify-content: center;
     align-items: center;
@@ -201,6 +202,9 @@ const data = reactive<Item[]>([
     .icon{
       font-size: large;
     }
+  }
+  ::v-deep(.el-tree){
+    background-color:transparent;
   }
 }
 </style>

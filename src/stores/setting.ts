@@ -419,6 +419,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        tmpZydData:shallowReactive(new Array()),//用于存储临时作业点数据
         selectedRegion:new Array<string>(),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
@@ -433,6 +434,7 @@ export const useSettingStore = defineStore('setting',{
         需要重点关注的飞机:shallowReactive([]),
         注册飞机列表显示:false,
         roadMap:false,
+        是否显示作业面板:false,
         是否显示分布面板:false,
         是否显示产品面板:false,
         是否显示工具面板:true,

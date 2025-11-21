@@ -1,20 +1,21 @@
 <template>
   <div>
     <div class="tool-btns">
-      <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
+      <div :class="`btn-box ${setting.人影.监控.是否显示作业面板?'active':''}`" @click="workButtonClick"><el-icon v-html="workSvg" style="font-size: 32px;"></el-icon><div class="triangleClass"></div></div>
+      <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><el-icon v-html="positionSvg" style="font-size: 32px;"></el-icon><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
-      <div class="btn-box disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
+      <div class="btn-box"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
     </div>
     <div class="side-box">
       <div class="side-box-left">
         <side-buttons></side-buttons>
       </div>
-      <el-scrollbar v-if="showPanel">
+      <template v-if="showPanel">
         <MenuPanel></MenuPanel>
-      </el-scrollbar>
+      </template>
     </div>
-    <el-scrollbar style="position: absolute;top:10px;left:10px;bottom:10px;height:auto;pointer-events: none;">
+    <el-scrollbar style="position: absolute;top:10px;left:10px;bottom:10px;height:auto;pointer-events: none;width:320px;">
       <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
     </el-scrollbar>
     <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
@@ -23,38 +24,44 @@
   </div>
 </template>
 <script lang="ts" setup>
+import workSvg from '~/assets/icons/work.svg?raw'
+import positionSvg from '~/assets/position.svg?raw'
 import sideButtons from './sideButtons.vue'
 import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import {useMapStatusStore} from '~/stores/mapStatus'
-import toolkitSvg from '~/assets/toolkit.svg?raw'
 import {getMask} from '~/api/天工'
 import {resetTheme} from '~/theme'
-import { toDMS } from '~/tools'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
 const mapStatus = useMapStatusStore()
+const workButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = !setting.人影.监控.是否显示作业面板
+  setting.人影.监控.是否显示分布面板 = false
+  setting.人影.监控.是否显示产品面板 = false
+  setting.人影.监控.是否显示工具面板 = false
+}
 const distributionButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = false
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
-  setting.devtoolsOpen = false
 }
 const productsButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = false
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = !setting.人影.监控.是否显示产品面板
   setting.人影.监控.是否显示工具面板 = false
-  setting.devtoolsOpen = false
 }
 const toolkitButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = false
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = !setting.人影.监控.是否显示工具面板
-  setting.devtoolsOpen = false
 }
 const showPanel = computed(()=>{
-  return setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板
+  return setting.人影.监控.是否显示作业面板 || setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板
 })
 import {useTheme,isDark} from '~/theme';
 watch(isDark,()=>{
@@ -65,13 +72,6 @@ watch(isDark,()=>{
   }
 })
 import {modelRef} from '~/tools'
-watch(()=>setting.devtoolsOpen,(val)=>{
-  if(val){
-    setting.人影.监控.是否显示分布面板 = false
-    setting.人影.监控.是否显示产品面板 = false
-    setting.人影.监控.是否显示工具面板 = false
-  }
-})
 const theme = useTheme()
 const mask = getMask()
 const list = reactive([{label: '开发工具', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [

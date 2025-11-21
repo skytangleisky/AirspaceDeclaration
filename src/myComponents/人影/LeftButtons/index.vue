@@ -16,7 +16,7 @@
             :content="item.content"
             placement="right"
           >
-            <el-icon class="icon" v-html="item.icon" style="font-size: 32px;"></el-icon>
+            <el-icon class="icon" v-html="item.icon" style="font-size: 24px;"></el-icon>
           </el-tooltip>
         </div>
       </div>

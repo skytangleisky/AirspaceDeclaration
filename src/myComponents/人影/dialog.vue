@@ -1,23 +1,14 @@
 <template>
-    <div class="dragDialog absolute wstd-container" style="width:fit-content;height: fit-content;pointer-events: none;">
-        <div class="top" style="display: flex;align-items: center;">
-            <div
-                class="box map-btn"
-                style="user-select: none;cursor: pointer;pointer-events: auto;"
-                :class="{ active: tabActive == 1 }"
-                @click="tabActive == 1 ? tabActive = 0 : tabActive = 1"
-            >
-                <svg-icon name="table"></svg-icon>
-                <span class="label">作业点列表</span>
-            </div>
-            <div style="font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;display: flex;align-items: center;"><Colormap></Colormap><div style="margin-left:10px;">{{ 数据时间 }}</div></div>
-        </div>
-        <div class="bottom wstd-content" style="position: relative;pointer-events: auto;" v-if="tabActive">
-            <div class="close-btn" @click="tabActive = 0">
-                <el-icon v-html="closeSvg"></el-icon>
-            </div>
-            <div class="bottom-content">
-                <div style="display: flex;flex-direction: row;align-items: center;">
+    <div style="flex:1;width:100%;height: 100%;background-color: var(--el-bg-color-opacity-8);display: flex;flex-direction: column;">
+        <el-tabs type="border-card" class="demo-tabs" style="height: 100%;">
+            <el-tab-pane style="position: relative;">
+                <template #label>
+                    <span class="custom-tabs-label">
+                    <el-icon><calendar /></el-icon>
+                    <span>作业点</span>
+                    </span>
+                </template>
+                <div style="position: relative;display: flex;flex-direction: row;align-items: center;padding:0 0 10px 0;">
                     <el-input
                         @mousedown.stop
                         name="过滤条件"
@@ -28,94 +19,84 @@
                     />
                     <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="()=>show=true"/>
                 </div>
-                <div class="contain" @mousedown.stop>
-                    <div
-                        @scroll="scrolling"
-                        class=""
-                        style="
-                            overflow: auto;
-                            box-sizing: border-box;
-                            position: relative;
-                            margin-top: 12px;
-                            scroll-padding-top: 14px;
-                        "
-                    >
-                        <table>
-                            <thead>
-                                <tr class="z-1">
-                                    <th>序号</th>
-                                    <th>ID</th>
-                                    <th>简码</th>
-                                    <th>名称</th>
-                                    <th>设备类型</th>
-                                    <!-- <th>经纬度</th> -->
-                                    <!-- <th>海拔</th> -->
-                                </tr>
-                            </thead>
-                            <tbody style="position: relative">
-                                <tr
-                                    :id="'人影-' + v.strID"
-                                    :class="`${
-                                        station.人影界面被选中的设备 == v.strID
-                                            ? 'selected'
-                                            : ''
-                                    }`"
-                                    v-for="(v, k) in options.list"
-                                    :key="v.strID"
-                                    @contextmenu.prevent="
-                                        contextmenu($event, v)
-                                    "
-                                    @click="flyTo($event, v)"
-                                >
-                                    <td>{{ k + 1 }}</td>
-                                    <td>{{ v.strID }}</td>
-                                    <td>{{ v.strCode }}</td>
-                                    <td>{{ v.strName }}</td>
-                                    <td>{{ formatWeapon(v.strWeapon) }}</td>
-                                    <!-- <td>{{ v.strPos }}</td> -->
-                                    <!-- <td>{{ v.iAltitude }}</td> -->
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <ul class="menuUl" tabindex="-1">
-                        <li @click="click">
-                            <img
-                                src="/src/assets/新增.svg"
-                                @click.native.stop
-                            />作业申请
-                        </li>
-                        <li @click="click">
-                            <img
-                                src="/src/assets/修改.svg"
-                                @click.native.stop
-                            />作业预报
-                        </li>
-                        <li @click="click">
-                            <img
-                                src="/src/assets/删除.svg"
-                                @click.native.stop
-                            />完成报请求
-                        </li>
-                        <li @click="click">
-                            <img
-                                src="/src/assets/详情.svg"
-                                @click.native.stop
-                            />查看详细数据
-                        </li>
-                    </ul>
+                <div
+                    @scroll="scrolling"
+                    style="overflow: auto;box-sizing: border-box;position: relative"
+                >
+                    <table>
+                        <thead>
+                            <tr class="z-1">
+                                <th style="width:40px;">序号</th>
+                                <th>ID</th>
+                                <th>简码</th>
+                                <th>名称</th>
+                                <th>设备类型</th>
+                            </tr>
+                        </thead>
+                        <tbody style="position: relative">
+                            <tr
+                                :id="'人影-' + v.strID"
+                                :class="`${
+                                    station.人影界面被选中的设备 == v.strID
+                                        ? 'selected'
+                                        : ''
+                                }`"
+                                v-for="(v, k) in options.list"
+                                :key="v.strID"
+                                @contextmenu.prevent="
+                                    contextmenu($event, v)
+                                "
+                                @click="flyTo($event, v)"
+                            >
+                                <td>{{ k + 1 }}</td>
+                                <td>{{ v.strID }}</td>
+                                <td>{{ v.strCode }}</td>
+                                <td>{{ v.strName }}</td>
+                                <td>{{ formatWeapon(v.strWeapon) }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-        </div>
-        <Frame v-model:render="show">
-            <ZydFilter></ZydFilter>
-        </Frame>
+                <ul class="menuUl" tabindex="-1">
+                    <li @click="click">
+                        <img
+                            src="/src/assets/新增.svg"
+                            @click.native.stop
+                        />作业申请
+                    </li>
+                    <li @click="click">
+                        <img
+                            src="/src/assets/修改.svg"
+                            @click.native.stop
+                        />作业预报
+                    </li>
+                    <li @click="click">
+                        <img
+                            src="/src/assets/删除.svg"
+                            @click.native.stop
+                        />完成报请求
+                    </li>
+                    <li @click="click">
+                        <img
+                            src="/src/assets/详情.svg"
+                            @click.native.stop
+                        />查看详细数据
+                    </li>
+                </ul>
+                <Frame v-model:render="show">
+                    <ZydFilter></ZydFilter>
+                </Frame>
+            </el-tab-pane>
+            <el-tab-pane label="今日炮射" style="width: 100%;height: 100%;">
+                <div style="width: 100%;height: 100%;position: relative;"></div>
+            </el-tab-pane>
+            <el-tab-pane label="飞行计划"></el-tab-pane>
+        </el-tabs>
     </div>
 </template>
 <script lang="ts" setup>
 import ZydFilter from './zydFilter.vue'
 import Frame from '~/frames/frame.vue'
-import Colormap from './色标.vue'
 import closeSvg from '~/assets/close.svg?raw'
 import { reactive, onMounted, watch, computed ,ref} from "vue";
 const show = ref(false)
@@ -123,20 +104,6 @@ import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
-const 数据时间 = computed(()=>{
-    if(setting.人影.监控.红外云图){
-        return setting.人影.监控.红外云图时间
-    }else if(setting.人影.监控.CMPAS降水融合3km){
-        return setting.人影.监控.CMPAS降水融合3km时间
-    }else if(setting.人影.监控.组合反射率){
-        return setting.人影.监控.组合反射率时间
-    }else if(setting.人影.监控.睿图雷达){
-        return setting.人影.监控.睿图雷达时间
-    }else if(setting.人影.监控.真彩图){
-        return setting.人影.监控.真彩图时间
-    }
-    return ''
-})
 import {getMask} from '~/api/天工.ts'
 const mask = getMask()
 const 计算权限 = computed(()=>{
@@ -147,8 +114,6 @@ const 计算权限 = computed(()=>{
 })
 
 import moment from 'moment'
-let tabActive = ref(0);
-
 const formatWeapon = (weapon: number) =>
     [
         "火箭",
@@ -232,99 +197,106 @@ const flyTo = (event: any, v: any) => {
 };
 </script>
 <style scoped lang="scss">
-.dragDialog {
-    min-width:500px;
-    width: fit-content;
-}
-.contain {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    height: 208px;
-    .menuUl {
-        outline: none;
-        position: absolute;
-        display: none;
-        flex-direction: column;
-        margin: 0;
-        height: auto;
-        font-size: 14px;
-        text-align: left;
-        border-radius: 8px;
-        border: none;
-        background-color: #252948;
-        border: 1px solid grey;
-        color: #fff;
-        list-style: none;
-        padding: 2px;
-        li {
-            img {
-                vertical-align: middle;
-                width: 20px;
-                height: 20px;
-                pointer-events: none;
-                filter: drop-shadow(var(--el-text-color-primary) 0 60px);
-                transform: translateY(-60px);
+table {
+    border-collapse: collapse;
+    overflow: auto;
+    min-width: 100%;
+    tr {
+        height: 24px;
+        font-weight: 400;
+        border-bottom: 1px solid var(--el-border-color);
+        font-size: 12px;
+        // line-height: 28px;
+    }
+    thead {
+        tr {
+            // height: 24px;
+            th {
+                border-top: none;
+                background-color: var(--el-color-primary);
+                color: #fff;
             }
-            vertical-align: middle;
-            width: 140px;
-            cursor: pointer;
-            overflow: hidden;
-            padding: 2px;
-            margin: 2px;
-            color: grey;
-            &:hover {
-                background-color: rgb(26, 117, 158);
-                color: white;
+            th:first-child {
+                border-left: none;
             }
-        }
-        li:first-child {
-            border-bottom: 1px solid grey;
-        }
-        li:last-child {
-            border-top: 1px solid grey;
+            th:last-child {
+                border-right: none;
+            }
         }
     }
+    tbody {
+        background-color: var(--el-bg-color);
+        tr {
+            &:hover {
+                background: var(--el-bg-color-overlay);
+            }
+            cursor: pointer;
+        }
+        tr.selected {
+            background: var(--el-color-primary-light-8);
+        }
+        td:first-child {
+            border-left: none;
+        }
+        td:last-child {
+            border-right: none;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+    }
+    th,
+    td {
+        text-align: left;
+        padding: 0 4px;
+        // border: 1px solid var(--el-border-color);
+    }
 }
-
-// .dark .operation_filter {
-//   &::-webkit-input-placeholder {
-//     color: #999;
-//   }
-// background-color: #2b2b2b;
-// border: 0 solid #c1ccd3;
-// &:focus {
-//   color: #fff;
-//   background-color: #4b4b4b;
-//   border-color: #4d90fe;
-// }
-// }
-.dragDialog {
-    display: flex;
+.menuUl {
+    outline: none;
+    position: absolute;
+    display: none;
     flex-direction: column;
-    // background: linear-gradient(172.98deg,hsla(0,0%,100%,0.08) 1.49%,hsla(0,0%,100%,0.0208) 99.64%);
-    // box-shadow: 0 23px 20px -20px rgb(9 10 18 / 10%), 0 0 15px rgb(9 10 18 / 6%);
+    margin: 0;
+    height: auto;
+    font-size: 14px;
+    text-align: left;
+    border-radius: 8px;
+    border: none;
+    background-color: #252948;
+    border: 1px solid grey;
+    color: #fff;
+    list-style: none;
+    padding: 2px;
+    li {
+        img {
+            vertical-align: middle;
+            width: 20px;
+            height: 20px;
+            pointer-events: none;
+            filter: drop-shadow(var(--el-text-color-primary) 0 60px);
+            transform: translateY(-60px);
+        }
+        vertical-align: middle;
+        width: 140px;
+        cursor: pointer;
+        overflow: hidden;
+        padding: 2px;
+        margin: 2px;
+        color: grey;
+        &:hover {
+            background-color: rgb(26, 117, 158);
+            color: white;
+        }
+    }
+    li:first-child {
+        border-bottom: 1px solid grey;
+    }
+    li:last-child {
+        border-top: 1px solid grey;
+    }
 }
-// .dark .dragDialog {
-//   background: var(--el-bg-color-overlay);
-//   table {
-//     tbody{
-//       tr {
-//         &:hover {
-//           background: #ffffff22;
-//         }
-//         cursor: pointer;
-//       }
-//       tr.selected {
-//         background: #ffffff66;
-//       }
-//     }
-//     th,td {
-//       border: 1px solid #2b2b2b;
-//     }
-//     td {
-//       border-top: 0;
-//     }
-//   }
-// }
+::v-deep(.el-tabs__content){
+    overflow: auto;
+}
 </style>

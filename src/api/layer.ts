@@ -1,10 +1,12 @@
 import request from '../utils/request'
+// const host = '192.168.0.240'
+const host = '127.0.0.1'
 export function 九段线(){
   return request({
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('九段线'),
     },
     data:{
@@ -18,7 +20,7 @@ export function 铁路(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('铁路'),
     },
     data:{
@@ -32,7 +34,7 @@ export function 机场管制区(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('机场管制区'),
     },
     data:{
@@ -46,7 +48,7 @@ export function 障碍物(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('障碍物'),
     },
     data:{
@@ -60,7 +62,7 @@ export function 地标(table:string){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent(table),
     },
     data:{
@@ -74,7 +76,7 @@ export function 飞行管制区(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('飞行管制区'),
     },
     data:{
@@ -88,7 +90,7 @@ export function 飞行管制分区(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('飞行管制分区'),
     },
     data:{
@@ -102,7 +104,7 @@ export function 国境线(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('国境线'),
     },
     data:{
@@ -116,7 +118,7 @@ export function 岛屿(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('岛屿'),
     },
     data:{
@@ -130,7 +132,7 @@ export function 河流(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('河流'),
     },
     data:{
@@ -144,7 +146,7 @@ export function 海岸线(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('海岸线'),
     },
     data:{
@@ -158,7 +160,7 @@ export function 省界(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('省界_region'),
     },
     data:{
@@ -172,7 +174,7 @@ export function 县界(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('县'),
     },
     data:{
@@ -186,7 +188,7 @@ export function 机场(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('airport'),
     },
     data:{
@@ -200,7 +202,7 @@ export function 省名(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('省名'),
     },
     data:{
@@ -214,7 +216,7 @@ export function 危险区(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('危险区'),
     },
     data:{
@@ -228,7 +230,7 @@ export function 禁区(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('禁区'),
     },
     data:{
@@ -242,7 +244,7 @@ export function 限制区(){
     url: '/backend/db/default',
     method: 'post',
     headers:{
-      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
+      database:JSON.stringify({"host":host,"port":3306,"user":"root","password":"mysql","database":"wsmap","type":"mysql"}),
       table:encodeURIComponent('限制区'),
     },
     data:{

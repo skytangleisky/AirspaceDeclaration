@@ -21,11 +21,6 @@
           stroke-width="1"
         />
       </svg>
-      <Dialog
-        v-show="setting.menus"
-        class="stationDialog"
-        v-model:menus="dialogOptions.menus"
-      ></Dialog>
       <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
       <Batch2Dialog v-model:batchList="batchList2" v-model:pointDialogVisible="batch2DialogVisible"></Batch2Dialog>
       <plan-panel
@@ -83,13 +78,14 @@
     <!-- <ConfigureSmokeStove></ConfigureSmokeStove> -->
     <ConfigureRocket></ConfigureRocket>
     <!-- <Overview></Overview> -->
-    <Tool-Box style="z-index:1" />
     <BusinessLayer></BusinessLayer>
+    <Tool-Box style="z-index:1" />
+    <div style="position:absolute;bottom:10px;right:10px;font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;display: flex;align-items: center;"><div style="margin-right:10px;">{{ 数据时间 }}</div><Colormap></Colormap></div>
   </div>
 </template>
 <script lang="ts" setup>
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { TextLayer, PathLayer, IconLayer } from '@deck.gl/layers';
+import { TextLayer, PathLayer, IconLayer, ScatterplotLayer } from '@deck.gl/layers'
 import {ScreenLineLayer} from './ScreenLineLayer.js'
 import { 铁路,机场管制区,障碍物,地标,飞行管制区,飞行管制分区, 九段线, 国境线, 岛屿, 河流, 海岸线, 省界, 县界, 机场, 省名, 危险区, 禁区, 限制区 } from '~/api/layer'
 import {destination, getDistance} from '~/myComponents/map/js/core.js'
@@ -201,7 +197,6 @@ const 视频列表 = computed(()=>{
 })
 import { planDataType,zyddataType } from "./planPanel.vue";
 import PlanPanel from "./planPanel.vue";
-import Dialog from "./dialog.vue";
 import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
 import { getImage } from '~/tools/project.js'
 import CustomLayer from "./webglLayer/CustomLayer.js";
@@ -212,6 +207,7 @@ import { loadImage2Map,loadImage } from "~/tools/index.ts";
 import contour from './testContour'
 import contour2 from './discreteContour'
 import moment from "moment";
+import Colormap from './色标.vue'
 // import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 function wgs84togcj02(lng,lat){//不做纠偏
   return [lng,lat]
@@ -222,8 +218,21 @@ import { useSettingStore,formatUrl } from "~/stores/setting.js"
 import { useMapStatusStore } from "~/stores/mapStatus"
 const mapStatus = useMapStatusStore()
 const setting = useSettingStore()
+const 数据时间 = computed(()=>{
+    if(setting.人影.监控.红外云图){
+        return setting.人影.监控.红外云图时间
+    }else if(setting.人影.监控.CMPAS降水融合3km){
+        return setting.人影.监控.CMPAS降水融合3km时间
+    }else if(setting.人影.监控.组合反射率){
+        return setting.人影.监控.组合反射率时间
+    }else if(setting.人影.监控.睿图雷达){
+        return setting.人影.监控.睿图雷达时间
+    }else if(setting.人影.监控.真彩图){
+        return setting.人影.监控.真彩图时间
+    }
+    return ''
+})
 import * as turf from "@turf/turf"
-const dialogOptions = reactive({ menus: new Array() })
 const stationMenuRef = ref<HTMLDivElement>()
 const iframeRef = ref<HTMLIFrameElement>()
 const menuType=ref('地面作业申请')
@@ -320,8 +329,8 @@ let 批量申请 = () => {
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
   let list = []
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<setting.人影.监控.tmpZydData.length;j++){
+    let station = setting.人影.监控.tmpZydData[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -367,8 +376,8 @@ function 显示射界(){
   */
 
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<setting.人影.监控.tmpZydData.length;j++){
+    let station = setting.人影.监控.tmpZydData[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -388,8 +397,8 @@ function 显示射界(){
 }
 let 批量批复 = () => {
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<setting.人影.监控.tmpZydData.length;j++){
+    let station = setting.人影.监控.tmpZydData[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -422,8 +431,8 @@ let 批量批复 = () => {
 }
 let 批量移除 = () => {
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<setting.人影.监控.tmpZydData.length;j++){
+    let station = setting.人影.监控.tmpZydData[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -737,12 +746,19 @@ function 处理飞机实时位置(d:Array<{
       const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
       if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
         const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
+        if(distance<20e3){
+          str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |PAS0'
+          color = [255,255,0,255]
+        }
+      }
+    })
+    zydFeaturesData.features.forEach((feature:any)=>{
+      const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
+      if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
+        const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
         if(distance<10e3){
-          str[0] += ' |PAS0'
-          color = [255,255,0,255]
-        }else if(distance<20e3){
-          str[0] += ' |AS'
-          color = [255,255,0,255]
+          str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |AS'
+          color = [255,0,0,255]
         }
       }
     })
@@ -1235,6 +1251,7 @@ const deckOverlay = new MapboxOverlay({
   interleaved: true, // 性能优化
   layers: [],
 });
+import { GL } from '@luma.gl/constants';
 let hoverObject:any;
 function updateTextLayer(textData:any) {
   deckOverlay.setProps({
@@ -1278,9 +1295,10 @@ function updateTextLayer(textData:any) {
         backgroundBorderRadius:0,
         getPixelOffset:d => d.offset,
         onHover(info,evt){
-          mouseDownEvt = null
-          hoverObject = info.object
-          updateTextLayer(textData.slice())
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateTextLayer(textData.slice())
+          }
         },
         updateTriggers:{
           getPixelOffset: textData.map(d => d.offset),
@@ -1292,7 +1310,7 @@ function updateTextLayer(textData:any) {
         data:textData,
         getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
         getColor: [255, 255, 255],
-        getWidth: 2,
+        getWidth: 1,
         widthUnits: 'pixels',
       }),
       new IconLayer({
@@ -1307,6 +1325,20 @@ function updateTextLayer(textData:any) {
         getSize: d => 8,
         sizeScale: 1,
         billboard: true
+      }),
+      new ScatterplotLayer({
+        id: 'circles',
+        data: textData,
+        pickable: false,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getRadius: d => 10e3, // 单位由 radiusUnits 决定
+        radiusUnits: 'meters',          // 可省略（默认 meters）
+        getFillColor: [0, 0, 0, 0],
+        stroked: true,
+        getLineColor: [255, 255, 255, 255],
+        lineWidthUnits: 'pixels',
+        getLineWidth: 1,
+        radiusMinPixels: 2,
       })
     ]
   })
@@ -2862,12 +2894,12 @@ onMounted(async() => {
       if(!map)
         return
       作业点原始数据 = res.data.results;
-      dialogOptions.menus = JSON.parse(JSON.stringify(作业点原始数据))
+      setting.人影.监控.tmpZydData = JSON.parse(JSON.stringify(作业点原始数据))
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
       circleFeaturesData.features.length = 0;
-      for(let i=0;i<dialogOptions.menus.length;i++){
-        const item = dialogOptions.menus[i] as stationData
+      for(let i=0;i<setting.人影.监控.tmpZydData.length;i++){
+        const item = setting.人影.监控.tmpZydData[i] as stationData
         if(!item.tags){
           item.tags = []
         }
@@ -3031,9 +3063,9 @@ onMounted(async() => {
             "fill-color": [
               "match",
               ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#0f0',
+              '作业申请待批复','#888',
               '作业批准','#00f',
-              '作业开始','#f00',
+              '作业开始','rgba(255,0,0,0.5)',
               '作业结束','#888',
               '作业不批准','#888',
               '空闲','#888',
@@ -4119,9 +4151,9 @@ onMounted(async() => {
       }, 1000);
     }
     // getDevice().then((res) => {
-    //   dialogOptions.menus = res.data;
+    //   setting.人影.监控.tmpZydData = res.data;
     //   let features: any = [];
-    //   dialogOptions.menus.map((item: any) => {
+    //   setting.人影.监控.tmpZydData.map((item: any) => {
     //     let position: [number, number] = (wgs84togcj02(...fromDMS(item.lngLat)) as unknown) as [
     //       number,
     //       number
@@ -5398,7 +5430,7 @@ onMounted(async() => {
         type: 'line',
         source: '九段线',
         layout: {
-          visibility: setting.九段线?'visibility':'none',
+          visibility: setting.九段线?'visible':'none',
         },
         paint: {
           'line-color': 'white',
@@ -5702,7 +5734,7 @@ watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
   })
 },{deep:true,immediate:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
-  dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
+  setting.人影.监控.tmpZydData = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){
       if(item.strID.startsWith(val[i])){
         return true
@@ -6612,11 +6644,6 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
       background: url("/src/assets/projectile.svg") no-repeat center center;
     }
   }
-}
-.stationDialog{
-  position: absolute;
-  top:50px;
-  left:100px;
 }
 ::v-deep(.mapboxgl-canvas:focus) {
   outline: none;

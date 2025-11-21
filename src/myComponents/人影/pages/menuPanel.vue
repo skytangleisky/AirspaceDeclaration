@@ -1,5 +1,9 @@
 <template>
     <div class="toolKitBgClass">
+        <Dialog
+            v-if="setting.人影.监控.是否显示作业面板"
+            v-model:menus="setting.人影.监控.tmpZydData"
+        ></Dialog>
         <div v-if="setting.人影.监控.是否显示分布面板">
             <GroundCommand>
                 <!-- <template v-slot:select>
@@ -30,6 +34,7 @@
 </template>
 <script lang="ts" setup>
     import {computed} from 'vue'
+    import Dialog from '../dialog.vue'
     import BaseLayer from './工具/基础底图.vue'
     import MapTool from './工具/地图工具.vue'
     // import DrawTool from './工具/标绘工具.vue'
@@ -49,13 +54,15 @@
 </script>
 <style lang="scss" scoped>
     .toolKitBgClass {
+        position: relative;
+        display: flex;
+        flex-direction: column;
         box-sizing: border-box;
-        border-radius: 5px;
+        border-radius: 4px;
         top: 0;
         left: 0;
-        width: 391px;
-        min-height: 559px;
-        max-height: 100%;
+        width: 500px;
+        height: 559px;
         border: 1px solid #bdd4ff;
         background-color: #f4f8ff;
         padding: $grid-1;

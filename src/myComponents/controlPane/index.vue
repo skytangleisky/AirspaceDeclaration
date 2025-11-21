@@ -164,15 +164,15 @@ const theme = defineModel<'default'|'jetblack'|'iceberg'|'retro'|'translucent'|'
   font-family: Menlo,Ubuntu Mono,Consolas,Monaco;
   --border-width:4px;
   --padding-left:4px;
-  font-size: 18px;
+  font-size: 16px;
   @media (max-width: 1200px) {
-    font-size: 16px;
-  }
-  @media (max-width: 768px) {
     font-size: 14px;
   }
+  @media (max-width: 768px) {
+    font-size: 12px;
+  }
   @media (max-width: 480px) {
-    font-size: 11px;
+    font-size: 10px;
   }
   ul,li{
     list-style: none;
