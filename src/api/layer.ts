@@ -1,6 +1,6 @@
 import request from '../utils/request'
-// const host = '192.168.0.240'
-const host = '127.0.0.1'
+const host = '192.168.0.240'
+// const host = '127.0.0.1'
 export function 九段线(){
   return request({
     url: '/backend/db/default',
