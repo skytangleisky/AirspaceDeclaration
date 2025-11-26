@@ -82,9 +82,9 @@
       <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
     </Frame>
     <ConfigureRegion></ConfigureRegion>
-    <ConfigureSmokeStove></ConfigureSmokeStove>
+    <!-- <ConfigureSmokeStove></ConfigureSmokeStove> -->
     <ConfigureRocket></ConfigureRocket>
-    <Overview></Overview>
+    <!-- <Overview></Overview> -->
   </div>
 </template>
 <script lang="ts" setup>

@@ -187,12 +187,6 @@ export function 作业点(){
           "relationship": "!=",
           "condition": "3"
         },
-        {
-          "relation": "AND",
-          "field": "z.strIP",
-          "relationship": "!=",
-          "condition": '1'
-        },
       ],
       distinct:false,
       offset:0,
