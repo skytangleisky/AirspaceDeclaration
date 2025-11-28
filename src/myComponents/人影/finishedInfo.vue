@@ -305,11 +305,11 @@ const tableData = reactive<any>([])
 let timer:any = 0
 onMounted(()=>{
   onVisibleChange(true)//主动获取一下数据
-  if(setting.enableTimer){
-    timer = setInterval(()=>{
+  timer = setInterval(()=>{
+    if(setting.polling){
       触发完成信息查询.value = Date.now()
-    },1000)
-  }
+    }
+  },1000)
 })
 onBeforeUnmount(()=>{
   clearInterval(timer)

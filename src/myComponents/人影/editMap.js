@@ -606,7 +606,7 @@ export default function(){
 					'type': 'line',
 					'source': 'huabeiBorder',
 					'layout': {
-						'visibility':'visible',
+						'visibility':'none',
 						'line-join':'round',
 						'line-cap':'round',
 					},

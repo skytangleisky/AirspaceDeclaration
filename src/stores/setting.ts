@@ -13,7 +13,7 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    enableTimer:true,
+    polling:false,
     弹药概况:false,
     火箭架配置:false,
     显示全国行政区划配置:false,
@@ -399,7 +399,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        selectedRegion:new Array<string>(),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>('510000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
@@ -424,8 +424,8 @@ export const useSettingStore = defineStore('setting',{
         },
         "zoom": 5,
         "center": [
-            115.3683244,
-            40.915085
+          115.3683244,
+          40.915085
         ],
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,
@@ -476,12 +476,29 @@ export const useSettingStore = defineStore('setting',{
         beijingOptions:{
           districtOpened:true,
           district:false,
-          districtFillColor:{r:88,g:158,b:248,a:1},
+          districtFillColor:{r:0,g:0,b:0,a:1},
+          districtFillOpacity:0.5,
+          districtBaseOpened:true,
+          districtBase:false,
+          districtBaseWidth:0,
+          districtBaseColor:{r:0,g:0,b:0,a:1},
+          districtBaseOpacity:0.5,
+          districtLineOpened:true,
+          districtLine:false,
+          districtLineWidth:1,
+          districtLineColor:{r:67,g:149,b:205,a:1},
+          districtLineOpacity:1,
+        },
+        sichuanOptionsOpened:false,
+        sichuanOptions:{
+          districtOpened:true,
+          district:true,
+          districtFillColor:{r:0,g:0,b:0,a:1},
           districtFillOpacity:0.5,
           districtBaseOpened:true,
           districtBase:true,
-          districtBaseWidth:0,
-          districtBaseColor:{r:0,g:0,b:0,a:1},
+          districtBaseWidth:2,
+          districtBaseColor:{r:255,g:255,b:255,a:1},
           districtBaseOpacity:0.5,
           districtLineOpened:true,
           districtLine:true,
@@ -974,27 +991,26 @@ export const useSettingStore = defineStore('setting',{
       console.log('标面')
     },
   },
-  // persist: {
-  //   serializer: {
-  //     // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
-  //     serialize: (state) =>
-  //       JSON.stringify(state, (key, value) => {
-  //         if (value === Infinity) return '__INFINITY__'
-  //         if (value === -Infinity) return '__NEGATIVE_INFINITY__'
-  //         if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
-  //         return value
-  //       }),
-
-  //           // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
-  //           deserialize: (str) =>
-  //               JSON.parse(str, (key, value) => {
-  //                   if (value === '__INFINITY__') return Infinity
-  //                   if (value === '__NEGATIVE_INFINITY__') return -Infinity
-  //                   if (value === '__NaN__') return NaN
-  //                   return value
-  //               })
-  //       }
-  //   }
+  persist: {
+    serializer: {
+      // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
+      serialize: (state) =>
+        JSON.stringify(state, (key, value) => {
+          if (value === Infinity) return '__INFINITY__'
+          if (value === -Infinity) return '__NEGATIVE_INFINITY__'
+          if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
+          return value
+        }),
+      // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
+      deserialize: (str) =>
+        JSON.parse(str, (key, value) => {
+          if (value === '__INFINITY__') return Infinity
+          if (value === '__NEGATIVE_INFINITY__') return -Infinity
+          if (value === '__NaN__') return NaN
+          return value
+        })
+    }
+  }
 })
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))

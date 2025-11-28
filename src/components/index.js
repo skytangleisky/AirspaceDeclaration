@@ -7,7 +7,6 @@ import SvgIcon from "~/myComponents/SvgIcon.vue";
 import RgyxWorkPoint from "~/airspaceApply.vue"
 import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue"
 import {useSettingStore} from "~/stores/setting";
-// import {resize,dragable,pinia} from "../main.js";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";
 import '~/theme'

@@ -78,7 +78,6 @@ function buildTree(list: Array<any>, parentId: string | null = null): Array<any>
 
 
   const data = reactive<Array<any>>([])
-
   onMounted(()=>{
     // getAllShouldExpendRegion().then(res=>{
     //   expendedKeys.value = res.data.results.map((item:any)=>item.adcode)

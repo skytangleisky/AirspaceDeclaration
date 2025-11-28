@@ -28,12 +28,14 @@ import 天津raw from '/省市县/天津.csv?url&raw'
 import 河北raw from '/省市县/河北.csv?url&raw'
 import 山西raw from '/省市县/山西.csv?url&raw'
 import 内蒙古raw from '/省市县/内蒙古.csv?url&raw'
+import 四川省raw from '/省市县/四川省.csv?url&raw'
 import { csv2list } from '~/tools'
 const 北京 = csv2list(北京raw)
 const 河北 = csv2list(河北raw)
 const 山西 = csv2list(山西raw)
 const 内蒙古 = csv2list(内蒙古raw)
 const 天津 = csv2list(天津raw)
+const 四川 = csv2list(四川省raw)
 import type { FilterNodeMethodFunction, TreeInstance } from 'element-plus'
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
@@ -68,8 +70,8 @@ type Item = {
 import {getMask} from '~/api/天工.ts'
 const mask = getMask()
 
-const data: Tree[] = reactive<Tree[]>([])
-mask=='%%'&&data.push({
+const data: Tree[] = reactive<Tree[]>([]);
+/*mask=='%%'&&data.push({
   id: "11",
   label: '北京',
   children: (北京 as Item[]).map((item:Item)=>{
@@ -123,7 +125,19 @@ mask=='%%'&&data.push({
       label:item.district,
     }
   })
+});*/
+(mask=='%%'||mask=='51%')&&data.push({
+  id: "51",
+  label: '四川省',
+  children: (四川 as Item[]).map((item:Item)=>{
+    setting.人影.监控.checkedKeys.push(item.code)
+    return {
+      id:item.code,
+      label:item.district,
+    }
+  })
 })
+
 
 
 const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfCheckedNodes }) => {

@@ -14,12 +14,12 @@
         <MenuPanel></MenuPanel>
       </el-scrollbar>
     </div>
-    <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具面板" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
+    <el-scrollbar class="control-scrollbar">
+      <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+    </el-scrollbar>
+    <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">
       <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </el-scrollbar> -->
-    <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
-      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts" setup>
@@ -27,11 +27,12 @@ import sideButtons from './sideButtons.vue'
 import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
-import toolkitSvg from '~/assets/toolkit.svg?raw'
+import {useMapStatusStore} from '~/stores/mapStatus'
 import {getMask} from '~/api/天工'
 import {resetTheme} from '~/theme'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
+const mapStatus = useMapStatusStore()
 const distributionButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
@@ -237,6 +238,77 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     ]
   },
   {
+    label: '四川行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.sichuanOptionsOpened'), children: [
+      {
+        label: '填充',
+        type: 'folder',
+        opened: modelRef(setting, '人影.监控.sichuanOptions.districtOpened'),
+        children: [
+          {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.district'), type: 'checkbox'},
+          {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtFillColor'), type: 'color'},
+          {
+            label: '透明度',
+            value: modelRef(setting, '人影.监控.sichuanOptions.districtFillOpacity'),
+            type: 'range',
+            min: 0,
+            max: 1,
+            arr: Array.from({length: 101}, (_, i: number) => i / 100)
+          },
+        ]
+      },
+      {
+        label: '底线',
+        type: 'folder',
+        opened: modelRef(setting, '人影.监控.sichuanOptions.districtBaseOpened'),
+        children: [
+          {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.districtBase'), type: 'checkbox'},
+          {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseColor'), type: 'color'},
+          {
+            label: '透明度',
+            value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseOpacity'),
+            type: 'range',
+            min: 0,
+            max: 1,
+            arr: Array.from({length: 101}, (_, i: number) => i / 100)
+          },
+          {
+            label: '宽度',
+            value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseWidth'),
+            type: 'range',
+            min: 0,
+            max: 5,
+            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+          },
+        ]
+      },
+      {
+        label: '界线',
+        type: 'folder',
+        opened: modelRef(setting, '人影.监控.sichuanOptions.districtLineOpened'),
+        children: [
+          {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.districtLine'), type: 'checkbox'},
+          {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtLineColor'), type: 'color'},
+          {
+            label: '透明度',
+            value: modelRef(setting, '人影.监控.sichuanOptions.districtLineOpacity'),
+            type: 'range',
+            min: 0,
+            max: 1,
+            arr: Array.from({length: 101}, (_, i: number) => i / 100)
+          },
+          {
+            label: '宽度',
+            value: modelRef(setting, '人影.监控.sichuanOptions.districtLineWidth'),
+            type: 'range',
+            min: 0,
+            max: 5,
+            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+          },
+        ]
+      },
+    ]
+  },
+  {
     label: '华北飞行区域', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspacesOpened'), children: [
       {
         label: '填充', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspaces.fillOpened'), children: [
@@ -351,9 +423,9 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
       {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
       {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
-      {label: '中心经度', value: computed(()=>setting.人影.监控.center[0]), type: 'text'},
-      {label: '中心纬度', value: computed(()=>setting.人影.监控.center[1]), type: 'text'},
-      {label: '缩放等级', value: computed(()=>setting.人影.监控.zoom), type: 'text'},
+      {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
+      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
+      {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},
       {label: '帧率', value: computed(()=>setting.人影.监控.fps), type: 'text'},
       {label: '帧率曲线',value:{
         fps: {
@@ -363,6 +435,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
           strokeStyle: "white",
         },
       },type:'curve'},
+      {label:'轮询',value:modelRef(setting, 'polling'), type: 'checkbox'},
     ]
   },
   // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
@@ -373,7 +446,9 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {
     label: '重置系统', type: 'button', click() {
       setting.$reset()
+      mapStatus.$reset()
       resetTheme()
+      window.location.reload()
     }
   },
   {
@@ -381,21 +456,21 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       setting.显示全国行政区划配置 = true
     }
   },
-  {
-    label: '烟炉控制', type: 'button', click() {
-      setting.显示烟炉 = true
-    }
-  },
+  // {
+  //   label: '烟炉控制', type: 'button', click() {
+  //     setting.显示烟炉 = true
+  //   }
+  // },
   {
     label: '火箭架配置', type: 'button', click() {
       setting.火箭架配置 = true
     }
   },
-  {
-    label: '弹药概况', type: 'button', click() {
-      setting.弹药概况 = true
-    }
-  },
+  // {
+  //   label: '弹药概况', type: 'button', click() {
+  //     setting.弹药概况 = true
+  //   }
+  // },
   {
     label: '放大', type: 'button', click() {
       setting.zoomIn()
@@ -525,5 +600,24 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }
   }
 }
-
+.control-scrollbar{
+  position: absolute;
+  top:10px;
+  right:10px;
+  bottom:10px;
+  height:auto;
+  pointer-events: none;
+  &::v-deep(.el-scrollbar__wrap){
+    display: flex;
+    flex-direction: column;
+    // border:1px solid red;
+    box-sizing: border-box;
+    .el-scrollbar__view{
+      // border:1px solid #0f0;
+      flex:1;
+      display: flex;
+      flex-flow: column-reverse;
+    }
+  }
+}
 </style>

@@ -246,6 +246,8 @@ function wgs84togcj02(lng,lat){//不做纠偏
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
 import { useSettingStore,formatUrl } from "~/stores/setting.js";
+import { useMapStatusStore } from "~/stores/mapStatus"
+const mapStatus = useMapStatusStore()
 const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const dialogOptions = reactive({ menus: new Array() });
@@ -651,10 +653,6 @@ const props = withDefaults(
       url: formatUrl("https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"),
       tileData: ["https://wprd01.is.autonavi.com/appmaptile?style=6&x={x}&y={y}&z={z}"],
     }),
-    center: () => [0, 0],
-    zoom: 4,
-    pitch: 0,
-    bearing: 0,
     zdz: false,
     plane: true,
     airport: false,
@@ -681,18 +679,18 @@ const mousemoveFunc = (e:any)=>{
   setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
 const zoomFunc = () => {
-  emits("update:zoom", map.getZoom());
+  mapStatus.zoom = map.getZoom()
 };
 const pitchFunc = () => {
-  emits("update:pitch", map.getPitch());
+  mapStatus.pitch = map.getPitch()
 };
 const bearingFunc = () => {
   console.log(map.getBearing());
-  emits("update:bearing", map.getBearing());
+  mapStatus.bearing = map.getBearing()
 };
 const moveFunc = () => {
   const center = map.getCenter()
-  emits("update:center", [center.lng,center.lat]);
+  mapStatus.center = [center.lng,center.lat]
 };
 function 网络上报(data:prevRequestDataType){
   airspaceApply(data).then((res:any)=>{
@@ -1201,9 +1199,10 @@ onMounted(async() => {
     // ],
     // zoom: 18,
     // center: [148.9819, -35.3981],
-    zoom: props.zoom,
-    center: props.center as mapboxgl.LngLatLike,
-    pitch: props.pitch,
+    zoom: mapStatus.zoom,
+    center: mapStatus.center as mapboxgl.LngLatLike,
+    pitch: mapStatus.pitch,
+    bearing: mapStatus.bearing,
   });
   map.getCanvas().style.cursor = 'default';
   const GISTYPE={
@@ -1225,6 +1224,63 @@ onMounted(async() => {
   let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
+    await axios.get(`/backend/region/510000_full.json`).then(res=>{
+
+      map.addLayer({
+        'id': '510000_full.json_fill',
+        'type': 'fill',
+        'source': {
+          "type":"geojson",
+          "data": res.data
+        },
+        'layout': {
+          visibility:setting.人影.监控.sichuanOptions.district?'visible':'none'
+        },
+        'paint': {
+          'fill-color': `rgba(${setting.人影.监控.sichuanOptions.districtFillColor.r},${setting.人影.监控.sichuanOptions.districtFillColor.g},${setting.人影.监控.sichuanOptions.districtFillColor.b},${setting.人影.监控.sichuanOptions.districtFillColor.a})`,
+          'fill-outline-color':'transparent',
+          'fill-opacity':setting.人影.监控.sichuanOptions.districtFillOpacity,
+        }
+      })
+      map.addLayer({
+        'id': '510000_full.json_line',
+        'type': 'line',
+        'source': {
+          "type":"geojson",
+          "data": res.data
+        },
+        'layout': {
+          'visibility':setting.人影.监控.sichuanOptions.districtBase?'visible':'none',
+          'line-join':'round',
+          'line-cap':'round',
+        },
+        'paint': {
+          'line-color': `rgba(${setting.人影.监控.sichuanOptions.districtBaseColor.r},${setting.人影.监控.sichuanOptions.districtBaseColor.g},${setting.人影.监控.sichuanOptions.districtBaseColor.b},${setting.人影.监控.sichuanOptions.districtBaseColor.a})`,
+          'line-width': setting.人影.监控.sichuanOptions.districtBaseWidth,
+          'line-opacity':setting.人影.监控.sichuanOptions.districtBaseOpacity,
+        }
+      })
+      map.addLayer({
+        'id': '510000_full.json_over',
+        'type': 'line',
+        'source': {
+          "type":"geojson",
+          "data": res.data
+        },
+        'layout': {
+          'visibility':setting.人影.监控.sichuanOptions.districtLine?'visible':'none',
+          'line-join':'round',
+          'line-cap':'round',
+        },
+        'paint': {
+          'line-color': `rgba(${setting.人影.监控.sichuanOptions.districtLineColor.r},${setting.人影.监控.sichuanOptions.districtLineColor.g},${setting.人影.监控.sichuanOptions.districtLineColor.b},${setting.人影.监控.sichuanOptions.districtLineColor.a})`,
+          'line-width': setting.人影.监控.sichuanOptions.districtLineWidth,
+          'line-opacity':setting.人影.监控.sichuanOptions.districtLineOpacity,
+          // 'line-dasharray': [1,1],
+        }
+      })
+
+    })
     fpsTimer = setInterval(()=>{
       setting.人影.监控.fps = map.painter.frameCounter - lastFrameCounter
       lastFrameCounter = map.painter.frameCounter
@@ -1329,37 +1385,37 @@ onMounted(async() => {
         // 'line-dasharray': [1,1],
       }
     })
-    map.addLayer({
-      'id': 'beijingBorderLineBase',
-      'type': 'line',
-      'source': 'beijingBorder',
-      'layout': {
-        'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
-        'line-join':'round',
-        'line-cap':'round',
-      },
-      'paint': {
-        'line-color': '#99B2D6',
-        'line-width': 5,
-        'line-opacity':1,
-      }
-    })
-    map.addLayer({
-      'id': 'beijingBorderLineOver',
-      'type': 'line',
-      'source': 'beijingBorder',
-      'layout': {
-        'visibility':'none',
-        'line-join':'round',
-        'line-cap':'round',
-      },
-      'paint': {
-        'line-color': '#99B2D6',
-        'line-width':4,
-        'line-opacity':1,
-        // 'line-dasharray': [1,1],
-      }
-    })
+    // map.addLayer({
+    //   'id': 'beijingBorderLineBase',
+    //   'type': 'line',
+    //   'source': 'beijingBorder',
+    //   'layout': {
+    //     'visibility':setting.人影.监控.beijingOptions.districtBase?'visible':'none',
+    //     'line-join':'round',
+    //     'line-cap':'round',
+    //   },
+    //   'paint': {
+    //     'line-color': '#99B2D6',
+    //     'line-width': 5,
+    //     'line-opacity':1,
+    //   }
+    // })
+    // map.addLayer({
+    //   'id': 'beijingBorderLineOver',
+    //   'type': 'line',
+    //   'source': 'beijingBorder',
+    //   'layout': {
+    //     'visibility':'visible',
+    //     'line-join':'round',
+    //     'line-cap':'round',
+    //   },
+    //   'paint': {
+    //     'line-color': '#f00',
+    //     'line-width':2,
+    //     'line-opacity':1,
+    //     // 'line-dasharray': [1,1],
+    //   }
+    // })
     setting.人影.监控.基本站 && 基本站().then(({data}:any)=>{
       map.getSource('wms-source1').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
     }).catch(e=>{
@@ -3986,11 +4042,12 @@ onMounted(async() => {
       });
       */
     }
-    if(setting.enableTimer){
-      taskTimer = setInterval(() => {
+    work()
+    taskTimer = setInterval(() => {
+      if(setting.polling){
         work();
-      }, 1000);
-    }
+      }
+    }, 1000)
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -5304,22 +5361,156 @@ watch(
     }
   }
 );
-watch(
-  () => setting.人影.监控.beijingOptions.district,
-  (newVal) => {
-    if (newVal) {
-      map.setLayoutProperty("beijingLayer", "visibility", "visible");
-    } else {
-      map.setLayoutProperty("beijingLayer", "visibility", "none");
+{//北京行政区划
+  watch(
+    () => setting.人影.监控.beijingOptions.district,
+    (newVal) => {
+      if (newVal) {
+        map.setLayoutProperty("beijingLayer", "visibility", "visible");
+      } else {
+        map.setLayoutProperty("beijingLayer", "visibility", "none");
+      }
     }
-  }
-);
-watch(
-  () => setting.人影.监控.beijingOptions.districtFillOpacity,
-  (newVal) => {
-    map.setPaintProperty("beijingLayer",'fill-opacity', newVal);
-  }
-);
+  );
+  watch(
+    () => setting.人影.监控.beijingOptions.districtFillOpacity,
+    (newVal) => {
+      map.setPaintProperty("beijingLayer",'fill-opacity', newVal);
+    }
+  );
+  watch(()=>setting.人影.监控.beijingOptions.districtBase,(newVal)=>{
+    if(newVal){
+      map.setLayoutProperty("beijingLineBase", "visibility", "visible");
+    }else{
+      map.setLayoutProperty("beijingLineBase", "visibility", "none");
+    }
+  })
+  watch(()=>setting.人影.监控.beijingOptions.districtBaseOpacity,(newVal)=>{
+    map.setPaintProperty("beijingLineBase", "line-opacity", newVal);
+  })
+  watch(()=>setting.人影.监控.beijingOptions.districtLine,(newVal)=>{
+    if(map.getLayer("beijingLineOver")){
+      if(newVal){
+        map.setLayoutProperty("beijingLineOver", "visibility", "visible");
+      }else{
+        map.setLayoutProperty("beijingLineOver", "visibility", "none");
+      }
+    }
+  })
+  watch(()=>setting.人影.监控.beijingOptions.districtLineOpacity,(newVal)=>{
+    map.setPaintProperty("beijingLineOver", "line-opacity", newVal);
+  })
+  watch(
+    () => setting.人影.监控.beijingOptions.districtBaseWidth,
+    (newVal) => {
+      map.setPaintProperty("beijingLineBase","line-width",newVal)
+    }
+  );
+  watch(
+    () => setting.人影.监控.beijingOptions.districtLineWidth,
+    (newVal) => {
+      map.setPaintProperty("beijingLineOver","line-width",newVal)
+    }
+  );
+  watch(
+    () => setting.人影.监控.beijingOptions.districtLineColor,
+    (newVal) => {
+      if(map.getLayer('beijingLineOver')){
+        map.setPaintProperty("beijingLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      }
+    }
+  );
+  watch(
+    () => setting.人影.监控.beijingOptions.districtBaseColor,
+    (newVal) => {
+      if(map.getLayer('beijingLineBase')){
+        map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      }
+    }
+  );
+  watch(
+    () => setting.人影.监控.beijingOptions.districtFillColor,
+    (newVal) => {
+      if(map.getLayer('beijingLayer')){
+        map.setPaintProperty("beijingLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      }
+    }
+  );
+}
+{//四川行政区划
+  watch(
+    () => setting.人影.监控.sichuanOptions.district,
+    (newVal) => {
+      if (newVal) {
+        map.setLayoutProperty("510000_full.json_fill", "visibility", "visible");
+      } else {
+        map.setLayoutProperty("510000_full.json_fill", "visibility", "none");
+      }
+    }
+  );
+  watch(
+    () => setting.人影.监控.sichuanOptions.districtFillColor,
+    (newVal) => {
+      if(map.getLayer('510000_full.json_fill')){
+        map.setPaintProperty("510000_full.json_fill","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      }
+    }
+  );
+  watch(
+    () => setting.人影.监控.sichuanOptions.districtFillOpacity,
+    (newVal) => {
+      map.setPaintProperty("510000_full.json_fill",'fill-opacity', newVal);
+    }
+  );
+  watch(()=>setting.人影.监控.sichuanOptions.districtBase,(newVal)=>{
+    if(newVal){
+      map.setLayoutProperty("510000_full.json_line", "visibility", "visible");
+    }else{
+      map.setLayoutProperty("510000_full.json_line", "visibility", "none");
+    }
+  })
+  watch(
+    () => setting.人影.监控.sichuanOptions.districtBaseColor,
+    (newVal) => {
+      if(map.getLayer('510000_full.json_line')){
+        map.setPaintProperty("510000_full.json_line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      }
+    }
+  )
+  watch(()=>setting.人影.监控.sichuanOptions.districtBaseOpacity,(newVal)=>{
+    map.setPaintProperty("510000_full.json_line", "line-opacity", newVal);
+  })
+  watch(
+    () => setting.人影.监控.sichuanOptions.districtBaseWidth,
+    (newVal) => {
+      map.setPaintProperty("510000_full.json_line","line-width",newVal)
+    }
+  )
+  watch(()=>setting.人影.监控.sichuanOptions.districtLine,(newVal)=>{
+    if(map.getLayer("510000_full.json_over")){
+      if(newVal){
+        map.setLayoutProperty("510000_full.json_over", "visibility", "visible");
+      }else{
+        map.setLayoutProperty("510000_full.json_over", "visibility", "none");
+      }
+    }
+  })
+  watch(
+    () => setting.人影.监控.sichuanOptions.districtLineColor,
+    (newVal) => {
+      map.setPaintProperty("510000_full.json_over","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+    }
+  )
+  watch(()=>setting.人影.监控.sichuanOptions.districtLineOpacity,(newVal)=>{
+    map.setPaintProperty("510000_full.json_over", "line-opacity", newVal);
+  })
+  watch(
+    () => setting.人影.监控.sichuanOptions.districtLineWidth,
+    (newVal) => {
+      map.setPaintProperty("510000_full.json_over","line-width",newVal)
+    }
+  );
+}
 watch(()=>setting.人影.监控.districtOptions.districtBase,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("districtLineBase", "visibility", "visible");
@@ -5333,16 +5524,6 @@ watch(()=>setting.人影.监控.districtOptions.districtBaseOpacity,(newVal)=>{
 watch(()=>setting.人影.监控.districtOptions.districtLineOpacity,(newVal)=>{
   map.setPaintProperty("districtLineOver", "line-opacity", newVal);
 })
-watch(()=>setting.人影.监控.beijingOptions.districtBase,(newVal)=>{
-  if(newVal){
-    map.setLayoutProperty("beijingLineBase", "visibility", "visible");
-  }else{
-    map.setLayoutProperty("beijingLineBase", "visibility", "none");
-  }
-})
-watch(()=>setting.人影.监控.beijingOptions.districtBaseOpacity,(newVal)=>{
-  map.setPaintProperty("beijingLineBase", "line-opacity", newVal);
-})
 watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
   if(newVal){
     map.setLayoutProperty("districtLineOver", "visibility", "visible");
@@ -5350,28 +5531,10 @@ watch(()=>setting.人影.监控.districtOptions.districtLine,(newVal)=>{
     map.setLayoutProperty("districtLineOver", "visibility", "none");
   }
 })
-watch(()=>setting.人影.监控.beijingOptions.districtLine,(newVal)=>{
-  if(map.getLayer("beijingLineOver")){
-    if(newVal){
-      map.setLayoutProperty("beijingLineOver", "visibility", "visible");
-    }else{
-      map.setLayoutProperty("beijingLineOver", "visibility", "none");
-    }
-  }
-})
-watch(()=>setting.人影.监控.beijingOptions.districtLineOpacity,(newVal)=>{
-  map.setPaintProperty("beijingLineOver", "line-opacity", newVal);
-})
 watch(
   () => setting.人影.监控.districtOptions.districtBaseWidth,
   (newVal) => {
     map.setPaintProperty("districtLineBase","line-width",newVal)
-  }
-);
-watch(
-  () => setting.人影.监控.beijingOptions.districtBaseWidth,
-  (newVal) => {
-    map.setPaintProperty("beijingLineBase","line-width",newVal)
   }
 );
 watch(
@@ -5387,32 +5550,10 @@ watch(
   }
 );
 watch(
-  () => setting.人影.监控.beijingOptions.districtLineWidth,
-  (newVal) => {
-    map.setPaintProperty("beijingLineOver","line-width",newVal)
-  }
-);
-watch(
   () => setting.人影.监控.districtOptions.districtLineColor,
   (newVal) => {
     if(map.getLayer("districtLineOver")){
       map.setPaintProperty("districtLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
-    }
-  }
-);
-watch(
-  () => setting.人影.监控.beijingOptions.districtLineColor,
-  (newVal) => {
-    if(map.getLayer('beijingLineOver')){
-      map.setPaintProperty("beijingLineOver","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
-    }
-  }
-);
-watch(
-  () => setting.人影.监控.beijingOptions.districtBaseColor,
-  (newVal) => {
-    if(map.getLayer('beijingLineBase')){
-      map.setPaintProperty("beijingLineBase","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
     }
   }
 );
@@ -5426,14 +5567,6 @@ watch(
   () => setting.人影.监控.districtOptions.districtFillOpacity,
   (newVal) => {
     map.setPaintProperty("districtLayer","fill-opacity",newVal)
-  }
-);
-watch(
-  () => setting.人影.监控.beijingOptions.districtFillColor,
-  (newVal) => {
-    if(map.getLayer('beijingLayer')){
-      map.setPaintProperty("beijingLayer","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
-    }
   }
 );
 watch(()=>setting.人影.监控.ryAirspaces.fill,(newVal)=>{

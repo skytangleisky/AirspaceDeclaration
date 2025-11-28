@@ -247,17 +247,15 @@ import { reactive, inject, watch, ref,onMounted,onBeforeUnmount } from "vue";
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
 onMounted(()=>{
-    if(setting.enableTimer){
-        timer = setInterval(()=>{
-            currentTime.value = Date.now();
-            if(moment(systenInfo.time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
-                systenInfo.time = moment().format('YYYY-MM-DD HH:mm:ss')
-            }
-            if(moment(appointForm.beginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())&&!appointed.value){
-                appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
-            }
-        },1000)
-    }
+    timer = setInterval(()=>{
+        currentTime.value = Date.now();
+        if(moment(systenInfo.time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            systenInfo.time = moment().format('YYYY-MM-DD HH:mm:ss')
+        }
+        if(moment(appointForm.beginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())&&!appointed.value){
+            appointForm.beginTime = moment().format('YYYY-MM-DD HH:mm:ss')
+        }
+    },1000)
 })
 onBeforeUnmount(()=>{
     clearInterval(timer)

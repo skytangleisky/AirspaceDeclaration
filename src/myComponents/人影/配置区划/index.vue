@@ -8,5 +8,4 @@
   import { useSettingStore } from '~/stores/setting'
   const setting = useSettingStore()
   import Configure from './configure.vue'
-
 </script>
