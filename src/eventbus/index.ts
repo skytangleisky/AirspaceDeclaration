@@ -1,34 +1,32 @@
-export default class Eventbus{
-  map:{
-    [key:string]:Array<Function>
-  }
-  constructor() {
-    this.map = {}
-  }
-  on(key:string, callback:Function){
-    const fn = this.map[key] || []
-    fn.push(callback)
-    this.map[key] = fn
-  }
-  emit(key:string, ...args: Array<any>){
-    this.map[key]?.forEach(fn=>{
-      fn.apply(this,args)
-    })
-  }
-  off(key:string, callback:Function|undefined=undefined){
-    let item = this.map[key]
-    if(callback){
-      item?.splice(item.findIndex(fn=>fn===callback),1)
-    }else{
-      delete this.map[key]
-    }
-  }
-  once(key:string, callback:Function){
-    let fn = (...args:Array<any>) => {
-      callback.apply(this,args)
-      this.off(key,fn)
-    }
-    this.on(key,fn)
-  }
-}
-export const eventbus = new Eventbus()
+import EventEmitter from 'events';
+
+// type Listener = (...args: any[]) => void;
+
+// class EventEmitter {
+//   private events: Record<string, Listener[]> = {};
+
+//   on(event: string, fn: Listener) {
+//     (this.events[event] = this.events[event] || []).push(fn);
+//   }
+
+//   off(event: string, fn?: Listener) {
+//     if (!fn) {
+//       this.events[event] = [];
+//       return;
+//     }
+//     this.events[event] = (this.events[event] || []).filter(l => l !== fn);
+//   }
+
+//   once(event: string, fn: Listener) {
+//     const wrapper = (...args: any[]) => {
+//       fn(...args);
+//       this.off(event, wrapper);
+//     };
+//     this.on(event, wrapper);
+//   }
+
+//   emit(event: string, ...args: any[]) {
+//     (this.events[event] || []).forEach(fn => fn(...args));
+//   }
+// }
+export const eventbus = new EventEmitter()
