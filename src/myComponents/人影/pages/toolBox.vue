@@ -466,6 +466,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       setting.火箭架配置 = true
     }
   },
+  {
+    label: '语音管理', type: 'button', click() {
+      setting.语音管理 = true
+    }
+  },
   // {
   //   label: '弹药概况', type: 'button', click() {
   //     setting.弹药概况 = true

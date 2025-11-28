@@ -16,6 +16,7 @@ export const useSettingStore = defineStore('setting',{
     polling:false,
     弹药概况:false,
     火箭架配置:false,
+    语音管理:false,
     显示全国行政区划配置:false,
     显示烟炉:false,
     获取经纬度:false,
