@@ -3017,6 +3017,20 @@ onMounted(async() => {
             "icon-rotation-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
+          },
+          paint: {
+            "icon-opacity": 1,
+          },
+          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
+        });
+      }
+      if(!map.getLayer("textLayer")){
+        map.addLayer({
+          id: "textLayer",
+          type: "symbol",
+          source: "zydSource",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
             "text-field": ["get", "strName"],
             "text-font": ["simkai"],
             "text-size": 12,
@@ -3033,7 +3047,6 @@ onMounted(async() => {
             "text-max-width": 400,
           },
           paint: {
-            "icon-opacity": 1,
             "text-color": "white",
             "text-halo-color": "black",
             "text-halo-width": 1,
@@ -4751,6 +4764,7 @@ watch(()=>setting.人影.监控.ryPlane,(val)=>{
 })
 watch(()=>setting.人影.监控.zydTag,(zydTag)=>{
   map.setFilter('zydLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  map.setFilter('textLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
   map.setFilter('stoveLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
 },{deep:true})
 watch(()=>setting.人影.监控.正西,(val)=>{
@@ -5210,6 +5224,7 @@ watch(
     const visibility = setting.人影.监控.zyd?'visible':'none'
     map.getLayer('stoveLayer')&&map.setLayoutProperty("stoveLayer", "visibility", visibility)
     map.getLayer("zydLayer")&&map.setLayoutProperty("zydLayer", "visibility", visibility)
+    map.getLayer("textLayer")&&map.setLayoutProperty("textLayer", "visibility", visibility)
     map.getLayer("最大射程-line")&&map.setLayoutProperty("最大射程-line", "visibility", visibility)
     map.getLayer("最大射程-fill")&&map.setLayoutProperty("最大射程-fill", "visibility", visibility)
     map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)
