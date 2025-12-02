@@ -23,11 +23,6 @@
       </svg>
       <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
       <Batch2Dialog v-model:batchList="batchList2" v-model:pointDialogVisible="batch2DialogVisible"></Batch2Dialog>
-      <plan-panel
-        v-show="setting.menus"
-        :当前作业进度="planProps.当前作业进度"
-        :今日作业记录="planProps.今日作业记录"
-      ></plan-panel>
       <!-- <el-select
         class="select"
         style="position: absolute; width: 100px; left: 588px; top: 10px"
@@ -175,7 +170,7 @@ import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed }
 const cache = new Array()
 const 视频列表 = computed(()=>{
   const arr = new Array()
-  planProps.当前作业进度.forEach((item:any)=>{
+  setting.planProps.当前作业进度.forEach((item:any)=>{
     if(item.strZydID.startsWith('110')){
       if(cache.filter(it=>it.strZydID == item.strZydID).length>0){//复用缓冲中的记录，避免窗口被隐藏后，依然会被再次刷新列表展示出来
         arr.push(Object.assign(cache.filter(it=>it.strZydID == item.strZydID)[0],item))
@@ -195,7 +190,7 @@ const 视频列表 = computed(()=>{
   }
   return arr
 })
-import { planDataType,zyddataType } from "./planPanel.vue";
+import { zyddataType } from "./planPanel.vue";
 import PlanPanel from "./planPanel.vue";
 import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
 import { getImage } from '~/tools/project.js'
@@ -595,10 +590,6 @@ let map: any;
 const resize = () => {
   map && map.resize();
 };
-const planProps = reactive({
-  当前作业进度: new Array<planDataType>(),
-  今日作业记录: new Array<planDataType>(),
-});
 const props = withDefaults(
   defineProps<{
     prevReplyShow?: boolean;
@@ -2873,7 +2864,7 @@ onMounted(async() => {
       }
     }
     // getTodayRecords().then((res:any)=>{
-    //   planProps.今日作业记录 = res.data.data;
+    //   setting.planProps.今日作业记录 = res.data.data;
     // })
     if(!map.getSource("最大射程source")){
       map.addSource("最大射程source", {
@@ -3246,6 +3237,20 @@ onMounted(async() => {
             "icon-rotation-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
+          },
+          paint: {
+            "icon-opacity": 1,
+          },
+          // filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
+        });
+      }
+      if(!map.getLayer("textLayer")){
+        map.addLayer({
+          id: "textLayer",
+          type: "symbol",
+          source: "zydSource",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
             "text-field": ["get", "strName"],
             "text-font": ["simkai"],
             "text-size": 12,
@@ -3262,7 +3267,6 @@ onMounted(async() => {
             "text-max-width": 400,
           },
           paint: {
-            "icon-opacity": 1,
             "text-color": "white",
             "text-halo-color": "black",
             "text-halo-width": 1,
@@ -3914,9 +3918,9 @@ onMounted(async() => {
             }
           }
         }
-        planProps.当前作业进度.splice(0,planProps.当前作业进度.length,...res.data[0]);
-        for(let i=planProps.当前作业进度.length-1;i>=0;i--){
-          let row = planProps.当前作业进度[i]
+        setting.planProps.当前作业进度.splice(0,setting.planProps.当前作业进度.length,...res.data[0]);
+        for(let i=setting.planProps.当前作业进度.length-1;i>=0;i--){
+          let row = setting.planProps.当前作业进度[i]
           row.ubySendStatus = 3//发送成功
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
@@ -4003,9 +4007,9 @@ onMounted(async() => {
           }
         }
         // map?.getSource('zydSource').setData(zydFeaturesData)
-        planProps.今日作业记录.splice(0,planProps.今日作业记录.length,...res.data[1]);
-        for(let i=planProps.今日作业记录.length-1;i>=0;i--){
-          let row = planProps.今日作业记录[i]
+        setting.planProps.今日作业记录.splice(0,setting.planProps.今日作业记录.length,...res.data[1]);
+        for(let i=setting.planProps.今日作业记录.length-1;i>=0;i--){
+          let row = setting.planProps.今日作业记录[i]
           row.ubySendStatus = 3//发送成功
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
@@ -4042,9 +4046,9 @@ onMounted(async() => {
             }
           }
         }
-        planProps.当前作业进度.splice(0,planProps.当前作业进度.length,...res.data.results);
-        for(let i=planProps.当前作业进度.length-1;i>=0;i--){
-          let row = planProps.当前作业进度[i]
+        setting.planProps.当前作业进度.splice(0,setting.planProps.当前作业进度.length,...res.data.results);
+        for(let i=setting.planProps.当前作业进度.length-1;i>=0;i--){
+          let row = setting.planProps.当前作业进度[i]
           row.ubySendStatus = 3//发送成功
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
@@ -4126,9 +4130,9 @@ onMounted(async() => {
         }
         // map?.getSource('zydSource').setData(zydFeaturesData)
         const tmp = await 历史作业查询()
-        planProps.今日作业记录.splice(0,planProps.今日作业记录.length,...tmp.data.results);
-        for(let i=planProps.今日作业记录.length-1;i>=0;i--){
-          let row = planProps.今日作业记录[i]
+        setting.planProps.今日作业记录.splice(0,setting.planProps.今日作业记录.length,...tmp.data.results);
+        for(let i=setting.planProps.今日作业记录.length-1;i>=0;i--){
+          let row = setting.planProps.今日作业记录[i]
           row.ubySendStatus = 3//发送成功
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
@@ -5780,6 +5784,7 @@ watch(()=>setting.人影.监控.ryPlane,(val)=>{
 })
 watch(()=>setting.人影.监控.zydTag,(zydTag)=>{
   map.setFilter('zydLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  map.setFilter('textLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
   map.setFilter('stoveLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
 },{deep:true})
 watch(()=>setting.人影.监控.正西,(val)=>{
@@ -6226,6 +6231,7 @@ watch(
     const visibility = setting.人影.监控.zyd?'visible':'none'
     map.getLayer('stoveLayer')&&map.setLayoutProperty("stoveLayer", "visibility", visibility)
     map.getLayer("zydLayer")&&map.setLayoutProperty("zydLayer", "visibility", visibility)
+    map.getLayer("textLayer")&&map.setLayoutProperty("textLayer", "visibility", visibility)
     map.getLayer("最大射程-line")&&map.setLayoutProperty("最大射程-line", "visibility", visibility)
     map.getLayer("最大射程-fill")&&map.setLayoutProperty("最大射程-fill", "visibility", visibility)
     map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)

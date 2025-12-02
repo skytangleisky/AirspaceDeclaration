@@ -13,6 +13,10 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    planProps:{
+      当前作业进度:new Array(),
+      今日作业记录:new Array(),
+    },
     showBusinessLayer:false,
     铁路:false,
     危险区:false,

@@ -4,7 +4,6 @@
             <el-tab-pane style="position: relative;">
                 <template #label>
                     <span class="custom-tabs-label">
-                    <el-icon><calendar /></el-icon>
                     <span>作业点</span>
                     </span>
                 </template>
@@ -87,14 +86,18 @@
                     <ZydFilter></ZydFilter>
                 </Frame>
             </el-tab-pane>
-            <el-tab-pane label="今日炮射" style="width: 100%;height: 100%;">
-                <div style="width: 100%;height: 100%;position: relative;"></div>
+            <el-tab-pane label="当前作业进度" style="width: 100%;height: 100%;">
+                <Work :v="setting.planProps.当前作业进度"></Work>
+            </el-tab-pane>
+            <el-tab-pane label="今日作业记录" style="width: 100%;height: 100%;">
+                <Work :v="setting.planProps.今日作业记录"></Work>
             </el-tab-pane>
             <el-tab-pane label="飞行计划"></el-tab-pane>
         </el-tabs>
     </div>
 </template>
 <script lang="ts" setup>
+import Work from './work.vue'
 import ZydFilter from './zydFilter.vue'
 import Frame from '~/frames/frame.vue'
 import closeSvg from '~/assets/close.svg?raw'
@@ -259,7 +262,7 @@ table {
     flex-direction: column;
     margin: 0;
     height: auto;
-    font-size: 14px;
+    font-size: 10px;
     text-align: left;
     border-radius: 8px;
     border: none;
@@ -297,6 +300,8 @@ table {
     }
 }
 ::v-deep(.el-tabs__content){
+    font-size: 12px;
+    padding:10px;
     overflow: auto;
 }
 </style>

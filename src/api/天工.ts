@@ -1594,6 +1594,8 @@ export function getMask(){
       return '14%'
     }else if(strID.endsWith('150000000')){//内蒙人影办
       return '15%'
+    }else if(strID.endsWith('620000000')){//甘肃人影办
+      return '62%'
     }else if(strID.endsWith('000')){//区县人影办
       return strID.substring(0, strID.length - 3)+'%'
     }
@@ -1794,6 +1796,31 @@ GROUP BY
 `
       ]
       ,vals:[[]]
+    }
+  })
+}
+
+export function getSubRegion(adcode = '620000'){
+  return request({
+    url:'/backend/db/default',
+    method:'post',
+    headers:{
+      table:'map_border_info',
+    },
+    data:{
+      select:['name','adcode','parent_adcode'],
+      where:[
+        {
+          "relation": "AND",
+          "field": "parent_adcode",
+          "relationship": '=',
+          "condition": adcode
+        }
+      ],
+      orderby:['adcode asc'],
+      "distinct": false,
+      "offset": 0,
+      "limit": 0
     }
   })
 }

@@ -61,7 +61,7 @@
         border-radius: 4px;
         top: 0;
         left: 0;
-        width: 500px;
+        width: 600px;
         height: 559px;
         border: 1px solid #bdd4ff;
         background-color: #f4f8ff;

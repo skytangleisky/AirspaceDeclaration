@@ -437,11 +437,11 @@ const list = reactive([{label: '开发工具', type: 'folder', opened: modelRef(
       setting.火箭架配置 = true
     }
   },
-  {
-    label: '弹药概况', type: 'button', click() {
-      setting.弹药概况 = true
-    }
-  },
+  // {
+  //   label: '弹药概况', type: 'button', click() {
+  //     setting.弹药概况 = true
+  //   }
+  // },
   {
     label: '放大', type: 'button', click() {
       setting.zoomIn()

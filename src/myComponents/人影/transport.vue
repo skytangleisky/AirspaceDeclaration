@@ -27,14 +27,14 @@
 
 <script lang="ts" setup>
 import moment from "moment";
-function beginText(item: planDataType) {
+function beginText(item: any) {
   if (工作状态格式化(item.ubyStatus)=='作业批准') {
     let seconds = moment(item.tmBeginAnswer).diff(moment(), 'seconds')
     return '('+Math.floor(seconds/60)+':'+seconds%60+')开始';
   }
   return "开始"+(item.tmBeginAnswer?'('+moment(item.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')+')':'')
 }
-function endSeconds(item:planDataType){
+function endSeconds(item:any){
   return moment(item.tmBeginAnswer).add(item.iAnswerTimeLen,'s').diff(moment(),'seconds')
 }
 export type zyddataType = {
@@ -85,14 +85,11 @@ export type zyddataType = {
   bRevOver: null;
   ubyWorkCat: 0;
 };
-export type planDataType = {
-  unitName: string;
-} & zyddataType;
-const data = defineModel<Array<planDataType>>('data',{
+const data = defineModel<Array<any>>('data',{
   default:()=>[]
 })
 
-function 获取空域状态(item: planDataType) {
+function 获取空域状态(item: any) {
   if(item.ubyStatus==91) {
     return '地面作业使用中'
   }else if(item.ubyStatus==75) {
@@ -130,7 +127,7 @@ const 发送状态格式化 = (key: number) => {
   ];
   return status.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
 };
-const 申请 = (item: planDataType) => {
+const 申请 = (item: any) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
@@ -146,7 +143,7 @@ const 申请 = (item: planDataType) => {
       return "";
   }
 };
-const 批复 = (item: planDataType) => {
+const 批复 = (item: any) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
@@ -160,7 +157,7 @@ const 批复 = (item: planDataType) => {
       return "";
   }
 };
-const 开始 = (item: planDataType) => {
+const 开始 = (item: any) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
@@ -172,7 +169,7 @@ const 开始 = (item: planDataType) => {
       return "";
   }
 };
-const 结束 = (item: planDataType) => {
+const 结束 = (item: any) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
@@ -182,7 +179,7 @@ const 结束 = (item: planDataType) => {
       return "";
   }
 };
-const 完成 = (item: planDataType) => {
+const 完成 = (item: any) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
       return "bg-gray-4";
