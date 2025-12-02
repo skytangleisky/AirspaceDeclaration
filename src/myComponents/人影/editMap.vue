@@ -4,15 +4,7 @@
       <div
         v-resize="resize"
         ref="mapRef"
-        class="dark:bg-#666 bg-white"
-        style="
-          position: relative;
-          left: 0;
-          top: 0;
-          width: 100%;
-          height: 100%;
-          line-height: 1;
-        "
+        class="mapboxContainer"
       ></div>
       <svg class="center" v-if="setting.人影.监控.准心" width="20" height="20" viewBox="0 0 20 20">
         <path
@@ -3075,6 +3067,20 @@ onMounted(async() => {
             "icon-rotation-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
+          },
+          paint: {
+            "icon-opacity": 1,
+          },
+          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
+        });
+      }
+      if(!map.getLayer("textLayer")){
+        map.addLayer({
+          id: "textLayer",
+          type: "symbol",
+          source: "zydSource",
+          layout: {
+            visibility: props.zyd ? "visible" : "none",
             "text-field": ["get", "strName"],
             "text-font": ["simkai"],
             "text-size": 12,
@@ -3091,7 +3097,6 @@ onMounted(async() => {
             "text-max-width": 400,
           },
           paint: {
-            "icon-opacity": 1,
             "text-color": "white",
             "text-halo-color": "black",
             "text-halo-width": 1,
@@ -4810,6 +4815,7 @@ watch(()=>setting.人影.监控.ryPlane,(val)=>{
 })
 watch(()=>setting.人影.监控.zydTag,(zydTag)=>{
   map.setFilter('zydLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  map.setFilter('textLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
   map.setFilter('stoveLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
 },{deep:true})
 watch(()=>setting.人影.监控.正西,(val)=>{
@@ -5269,6 +5275,7 @@ watch(
     const visibility = setting.人影.监控.zyd?'visible':'none'
     map.getLayer('stoveLayer')&&map.setLayoutProperty("stoveLayer", "visibility", visibility)
     map.getLayer("zydLayer")&&map.setLayoutProperty("zydLayer", "visibility", visibility)
+    map.getLayer("textLayer")&&map.setLayoutProperty("textLayer", "visibility", visibility)
     map.getLayer("最大射程-line")&&map.setLayoutProperty("最大射程-line", "visibility", visibility)
     map.getLayer("最大射程-fill")&&map.setLayoutProperty("最大射程-fill", "visibility", visibility)
     map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)
@@ -5849,5 +5856,17 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
       fill: #000;
     }
   }
+}
+.mapboxContainer{
+  background:linear-gradient(136.36deg, #3390C4 4.86%, #1D1252 94.85%);
+  position: relative;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  line-height: 1;
+}
+.dark .mapboxContainer{
+  background:radial-gradient(farthest-side ellipse at 10% 0, #0A0417 20%, #0D1635);
 }
 </style>

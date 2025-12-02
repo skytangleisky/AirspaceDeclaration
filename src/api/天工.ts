@@ -1795,3 +1795,28 @@ GROUP BY
     }
   })
 }
+
+export function getSubRegion(adcode = '620000'){
+  return request({
+    url:'/backend/db/default',
+    method:'post',
+    headers:{
+      table:'map_border_info',
+    },
+    data:{
+      select:['name','adcode','parent_adcode'],
+      where:[
+        {
+          "relation": "AND",
+          "field": "parent_adcode",
+          "relationship": '=',
+          "condition": adcode
+        }
+      ],
+      orderby:['adcode asc'],
+      "distinct": false,
+      "offset": 0,
+      "limit": 0
+    }
+  })
+}

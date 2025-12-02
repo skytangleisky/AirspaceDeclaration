@@ -421,7 +421,7 @@ export const useSettingStore = defineStore('setting',{
           r:0,
           g:14,
           b:36,
-          a:1
+          a:0
         },
         "zoom": 5,
         "center": [
