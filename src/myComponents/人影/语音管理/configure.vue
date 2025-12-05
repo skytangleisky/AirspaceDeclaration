@@ -6,7 +6,7 @@
         <!-- <el-table-column label="uuid" prop="uuid" sortable /> -->
         <el-table-column label="创建时间" prop="datetime_create" sortable />
         <el-table-column label="更新时间" prop="datetime_update" sortable />
-        <el-table-column label="路径" prop="path" sortable />
+        <el-table-column label="路径" prop="path" sortable width="500"/>
         <el-table-column label="呼出方" prop="caller" sortable />
         <el-table-column label="呼入方" prop="callee" sortable />
         <el-table-column :align="'right'">
@@ -26,7 +26,7 @@
       <el-pagination
         v-model:current-page="currentPage4"
         v-model:page-size="pageSize4"
-        :page-sizes="[100, 200, 300, 400]"
+        :page-sizes="[10, 20]"
         :size="size"
         :background="background"
         layout="total, sizes, prev, pager, next, jumper"
@@ -41,11 +41,23 @@
 
 <script lang="ts" setup>
 import Add from './新增/index.vue'
-import { computed, ref, reactive, onMounted } from 'vue'
+const form = reactive({
+  title:'添加记录',
+  id: null,
+  uuid: null,
+  createTime: null,
+  updateTime: null,
+  path: null,
+  caller: '内江',
+  callee: '成都',
+  uploadProgress:0,
+})
+provide('form',form)
+import { computed, ref, reactive, watch, provide } from 'vue'
 import type { ComponentSize } from 'element-plus'
 import { fetchList } from './api'
 const currentPage4 = ref(1)
-const pageSize4 = ref(100)
+const pageSize4 = ref(10)
 const total = ref(0)
 const size = ref<ComponentSize>('default')
 const background = ref(false)
@@ -59,10 +71,14 @@ const handleCurrentChange = (val: number) => {
   console.log(`current page: ${val}`)
 }
 
-interface User {
-  date: string
-  name: string
-  address: string
+interface Item {
+  id: string
+  uuid: string
+  datetime_create: string
+  datetime_update: string
+  path: string
+  caller: string
+  callee: string
 }
 
 const search = ref('')
@@ -73,28 +89,56 @@ const filterTableData = computed(() =>
       data.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-const handleEdit = (index: number, row: User) => {
-  console.log(index, row)
+const handleEdit = (index: number, row: Item) => {
+  form.title = '修改记录'
+  form.id = row.id
+  form.uuid = row.uuid
+  form.createTime = row.datetime_create
+  form.updateTime = row.datetime_update
+  form.path = row.path
+  form.caller = row.caller
+  form.callee = row.callee
+  showAdd.value = true
 }
-const handleDelete = (index: number, row: User) => {
-  tableData.splice(index, 1)
+import axios from 'axios'
+import {删除语音记录} from './api'
+const handleDelete = (index: number, row: Item) => {
+  axios.delete("/backend/upload", {
+    data: [row.path]
+  }).then(response => {
+    console.log('删除成功',response.data)
+    删除语音记录([{'uuid':row.uuid}]).then(()=>{
+      console.log('删除语音记录成功')
+      触发语音记录查询.value = Date.now()
+    }).catch((err)=>{
+      console.error('删除语音记录失败',err)
+    })
+  }).catch(error => {
+    console.error('删除失败',error)
+  });
 }
 
-const tableData: User[] = reactive([
-  {
-    date: '2016-05-03',
-    name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
-  }
+const tableData: Item[] = reactive([
 ])
-onMounted(()=>{
+const 触发语音记录查询 = ref(Date.now())
+provide('触发语音记录查询',触发语音记录查询)
+watch(触发语音记录查询,()=>{
   fetchList({page:currentPage4.value,size:pageSize4.value}).then(res=>{
     total.value = res.data.total
     tableData.splice(0,tableData.length,...res.data.results)
   })
-})
+}, { immediate: true })
 function handleAdd(){
   showAdd.value = true
+  form.title = '添加记录'
+  form.id = null
+  form.uuid = null
+  form.createTime = null
+  form.updateTime = null
+  form.path = null
+  form.caller = '内江'
+  form.callee = '成都'
+  form.uploadProgress = 0
 }
 </script>
 <style lang="scss" scoped>

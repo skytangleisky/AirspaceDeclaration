@@ -6,6 +6,16 @@
       <el-icon v-html="removeSvg" style="position: absolute;top:50%;transform:translateY(-50%);left:100%;margin:2px;padding:2px;background:#2b2b2b;border-radius: 50%;" @click="removeImage"></el-icon>
     </div>
   </div>
+  <div v-if="type=='file'" class="audio">
+    <template v-if="modelValue==null">
+      <el-icon v-html="folderSvg" class="folder" @click="append()"></el-icon>
+      <el-progress :percentage="percentage" :color="colors" :stroke-width="10" style="width: 200px;"/>
+    </template>
+    <div v-else style="position: relative;display: flex;vertical-align: middle;">
+      {{ modelValue }}
+      <el-icon v-html="removeSvg" style="position: absolute;top:50%;transform:translateY(-50%);left:100%;margin:2px;padding:2px;background:#2b2b2b;border-radius: 50%;" @click="removeImage"></el-icon>
+    </div>
+  </div>
   <div v-else style="width: 100%;">
     <el-button v-if="modelValue==null" @click="blank" type="default">NULL</el-button>
     <div v-else class="container">
@@ -16,10 +26,21 @@
 </template>
 <script lang="ts" setup>
 import axios from 'axios'
+import folderSvg from './folder.svg?raw'
 import removeSvg from './remove.svg?raw'
 import noneSvg from './none.svg?raw'
 import pasteSvg from './paste.svg?raw'
 import {nextTick, ref, computed, inject} from 'vue'
+const percentage = defineModel('uploadProgress', {
+  default: 0,
+})
+const colors = [
+  { color: '#f56c6c', percentage: 20 },
+  { color: '#e6a23c', percentage: 40 },
+  { color: '#5cb87a', percentage: 60 },
+  { color: '#1989fa', percentage: 80 },
+  { color: '#6f7ad3', percentage: 100 },
+]
 import { wrapKeys } from '~/tools'
 const getSrc = computed(()=>(src:any)=>{
   if(src==null)return ''
@@ -109,6 +130,8 @@ const removeImage = () => {
       data: [modelValue.value]
     }).then(response => {
       console.log('删除成功',response.data)
+      modelValue.value = null
+      percentage.value = 0
       const product:{[key:string]:any} = {}
       // Object.assign(product,form.data,{poster:null})
       // saveProducts([wrapKeys(product,(key)=>key=='uuid') as Product]).then(()=>{
@@ -123,6 +146,59 @@ const removeImage = () => {
     });
   }
 }
+
+
+
+import moment from 'moment'
+import { 增加语音记录,删除语音记录 } from '../人影/语音管理/api'
+import { v4 as uuidv4 } from 'uuid'
+const mimeMap = {
+  "audio/mpeg": "mp3",
+  "image/jpeg": "jpg",
+  "image/png": "png",
+  "image/gif": "gif",
+  "image/webp": "webp",
+  "application/pdf": "pdf",
+  "application/zip": "zip",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx"
+}
+const append = async()=>{
+  (window as any).showOpenFilePicker({
+    types: [{ description: "Image", accept: { "image/*": [".png", ".jpg", ".jpeg", ".gif", ".mp3"] } }],
+    multiple: false
+  }).then(async(fileHandles:Array<any>)=>{
+    const formData = new FormData();
+    for(let i=0;i<fileHandles.length;i++){
+      const fileHandle = fileHandles[i];
+      const file = await fileHandle.getFile();
+      const ext = mimeMap[file.type as keyof typeof mimeMap];
+      const renamedFile = new File([file], uuidv4()+'.'+ext, { type: file.type });
+      formData.append('image', renamedFile);
+    }
+    axios.post(`/backend/upload?destination=${moment().format('YYYY/MM/DD')}`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: progressEvent => {
+        if(progressEvent.total !==undefined){
+          const percent = (Math.floor(progressEvent.loaded * 10000 / progressEvent.total)/100.0).toFixed(2);
+          percentage.value = parseFloat(percent)
+          console.log('上传进度:', percent);
+        }
+      }
+    }).then(response => {
+      let list = new Array<string>()
+      response.data.forEach((it:any)=>{
+        list.push(it.path)
+      })
+      modelValue.value = list[0]
+    }).catch(error => {
+      console.error('上传失败:', error)
+    });
+  }).catch ((err:Error)=>{
+    console.log('文件选择取消', err);
+  })
+}
+
 </script>
 <style>
 .container input.el-input__inner{
@@ -134,6 +210,13 @@ const removeImage = () => {
   display: flex;
   align-items: center;
   .paste{
+    font-size: 20px;
+  }
+}
+.audio{
+  display: flex;
+  align-items: center;
+  .folder{
     font-size: 20px;
   }
 }

@@ -1,15 +1,18 @@
+import {defineAsyncComponent} from 'vue'
 // import rgyxWorkPoint from "./rgyx-work-point.vue"; // 引入封装好的组
 import dragable from '~/directive/dragable'
 import resize from '~/directive/resize'
 // import rgyxWorkPoint from "../App.vue";
 import 'virtual:svg-icons-register'
 import SvgIcon from "~/myComponents/SvgIcon.vue";
-import RgyxWorkPoint from "~/airspaceApply.vue"
+// import RgyxWorkPoint from "~/airspaceApply.vue"
+const RgyxWorkPoint = defineAsyncComponent(() => import("~/airspaceApply.vue"))
 import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue"
 import {useSettingStore} from "~/stores/setting";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";
 import '~/theme'
+import { isDark, useTheme } from '~/theme';
 import "~/style.css"
 import "~/styles/index.scss"
 import "~/styles/element/index.scss"

@@ -13,7 +13,7 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    polling:false,
+    polling:true,
     弹药概况:false,
     火箭架配置:false,
     语音管理:false,

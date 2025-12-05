@@ -128,7 +128,7 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
-import { useSettingStore } from '~/components'
+import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
 import moment from 'moment'
 import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息,getMask} from '~/api/天工.ts'
