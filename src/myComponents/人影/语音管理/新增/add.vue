@@ -71,11 +71,10 @@ const form = inject('form',reactive({
   createTime: null,
   updateTime: null,
   path: null,
-  caller: '内江',
-  callee: '成都',
+  caller: '511011003',//内江-团结水库
+  callee: '510100000',//四川省-成都市
   uploadProgress:0,
 }))
-const 触发语音记录查询 = inject('触发语音记录查询',ref(Date.now()))
 const onSubmit = () => {
 
     if(form.title=='添加记录'){
@@ -95,7 +94,6 @@ const onSubmit = () => {
       增加语音记录([data]).then(()=>{
         console.log('保存成功')
         emit('close')
-        触发语音记录查询.value = Date.now()
       }).catch((err)=>{
         console.error('保存失败',err)
         axios.delete("/backend/upload", {
@@ -111,7 +109,6 @@ const onSubmit = () => {
       增加语音记录([wrapKeys(data,(key)=>['id','uuid'].includes(key))]).then(()=>{
         console.log('保存成功')
         emit('close')
-        触发语音记录查询.value = Date.now()
       }).catch((err)=>{
         console.error('保存失败',err)
         axios.delete("/backend/upload", {

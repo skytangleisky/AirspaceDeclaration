@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid'
 
 
 
-export function fetchList({page,size}:{page:number,size:number}){
+export function fetchList({page,size,caller_filter}:{page:number,size:number,caller_filter?:string}){
   return request({
     url:'/backend/db/default',
     method:'post',
@@ -17,6 +17,14 @@ export function fetchList({page,size}:{page:number,size:number}){
     },
     data:{
       select:['*'],
+      where: caller_filter?[
+        {
+          relation:'and',
+          field:'caller',
+          relationship:'like',
+          condition:`%${caller_filter}%`,
+        }
+      ]:[],
       "distinct": false,
       "offset": (page-1)*size,
       "limit": size

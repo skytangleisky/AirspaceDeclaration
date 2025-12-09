@@ -75,7 +75,6 @@ const save = async(data:any) => {
             message: '保存成功',
             type: 'success',
         })
-        触发新增飞机信息查询.value = Date.now()
         show.value = false;
     }).catch(err=>{
         ElMessage({
@@ -102,16 +101,6 @@ const data = defineModel('data',{
 const cancel = () => {
     show.value = false;
 };
-const 触发新增飞机信息查询 = inject('触发新增飞机信息查询',ref(Date.now()))
-// let timer:number;
-onMounted(() => {
-    // timer = setInterval(()=>{
-    //   props.data.beginTime = moment().format('HH:mm:ss')
-    // },1000)
-});
-onBeforeUnmount(() => {
-    // clearInterval(timer)
-});
 </script>
 <style scoped lang="scss">
 .modal {

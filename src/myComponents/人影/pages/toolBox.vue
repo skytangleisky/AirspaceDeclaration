@@ -1,12 +1,12 @@
 <template>
   <div>
-    <div class="tool-btns">
+    <div class="tool-btns" v-if="setting.menus">
       <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
       <div class="btn-box disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
     </div>
-    <div class="side-box">
+    <div class="side-box" v-if="setting.menus">
       <div class="side-box-left">
         <side-buttons></side-buttons>
       </div>
@@ -435,7 +435,6 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
           strokeStyle: "white",
         },
       },type:'curve'},
-      {label:'轮询',value:modelRef(setting, 'polling'), type: 'checkbox'},
     ]
   },
   // {label:'自动站',value:toRefs(setting.人影.监控).zdz,type:'checkbox'},
@@ -467,8 +466,8 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }
   },
   {
-    label: '语音管理', type: 'button', click() {
-      setting.语音管理 = true
+    label: '批复率统计', type: 'button', click() {
+      setting.批复率统计 = true
     }
   },
   // {

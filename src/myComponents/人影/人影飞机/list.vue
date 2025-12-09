@@ -48,7 +48,7 @@ const setting = useSettingStore()
 import {注册飞机查询,删除飞机} from "~/api/天工.ts";
 import Add from './add.vue'
 import Edit from './edit.vue'
-import { reactive, onMounted, onBeforeUnmount,watch,ref,provide } from "vue";
+import { reactive,watch,ref } from "vue";
 const addShow = ref(false)
 const editShow = ref(false)
 const editData = reactive<any>({})
@@ -59,15 +59,13 @@ function 弹出修改窗口(row){
     Object.assign(editData,JSON.parse(JSON.stringify(row)))
     editShow.value = true
 }
-const 触发新增飞机信息查询 = ref(Date.now())
-provide('触发新增飞机信息查询',触发新增飞机信息查询)
 const tableData = reactive<Array<any>>([])
 const pageOption = reactive({
     page:1,
     size:10,
     total:0,
 })
-watch([()=>pageOption.page,()=>pageOption.size,触发新增飞机信息查询],([page,size])=>{
+watch([()=>pageOption.page,()=>pageOption.size,()=>setting.触发注册飞机查询],([page,size])=>{
     注册飞机查询({page,size}).then(({data})=>{
         pageOption.total = data.total
         tableData.splice(0,tableData.length,...data.results)
@@ -82,7 +80,6 @@ function 删除(row:any){
             message: '删除成功',
             type:'success',
         })
-        触发新增飞机信息查询.value = Date.now()
     }).catch((e)=>{
         ElMessage({
             message: '删除失败',
@@ -94,17 +91,6 @@ const strPos = ref("")
 const cancel = () => {
     setting.人影.监控.注册飞机列表显示 = false
 };
-let timer:any;
-onMounted(() => {
-    timer = setInterval(()=>{
-        if(setting.polling){
-            触发新增飞机信息查询.value = Date.now()
-        }
-    },1000)
-});
-onBeforeUnmount(() => {
-    clearInterval(timer)
-});
 </script>
 <style scoped lang="scss">
 .modal {

@@ -267,12 +267,7 @@ const data = defineModel('data',{
 })
 const cancel = () => {
     show.value = false;
-};
-const 触发完成信息查询 = inject('触发完成信息查询',ref(Date.now()))
-// let timer:number;
-onBeforeUnmount(() => {
-    // clearInterval(timer)
-});
+}
 </script>
 <style scoped lang="scss">
 .modal {

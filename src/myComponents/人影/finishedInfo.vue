@@ -197,9 +197,7 @@ const zydID = ref(null)
 const globalOptions:any[] = []
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
-const 触发完成信息查询 = ref(Date.now())
-provide('触发完成信息查询',触发完成信息查询)
-watch([()=>pageOption.page,()=>pageOption.size,zydID,range,触发完成信息查询],()=>{
+watch([()=>pageOption.page,()=>pageOption.size,zydID,range,()=>setting.触发完成信息查询],()=>{
   if(currentController!=null){
     currentController.abort()
   }
@@ -255,7 +253,6 @@ const 删除 = (row) => {
   }).then(() => {
     删除完成信息(row.workID).then(async()=>{
       await 删除完成信息确认(row.workID)
-      触发完成信息查询.value = Date.now()
       ElMessageBox.alert('删除成功', '提示', {
         confirmButtonText: '确定',
         type:'success',
@@ -270,7 +267,6 @@ const 恢复 = (row) => {
   delete row.strZydIDName
   修改完成信息(row).then(async(res)=>{
     await 删除完成信息确认(row.workID)
-    触发完成信息查询.value = Date.now()
     ElMessage({
       type: 'success',
       message: `恢复成功`,
@@ -302,17 +298,8 @@ function filterMethod(val:string){
   options.splice(0,options.length,...tmpOptions)
 }
 const tableData = reactive<any>([])
-let timer:any = 0
 onMounted(()=>{
   onVisibleChange(true)//主动获取一下数据
-  timer = setInterval(()=>{
-    if(setting.polling){
-      触发完成信息查询.value = Date.now()
-    }
-  },1000)
-})
-onBeforeUnmount(()=>{
-  clearInterval(timer)
 })
 </script>
 <style scoped lang="scss">

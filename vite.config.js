@@ -136,6 +136,7 @@ export default defineConfig({
         // target:'http://172.18.7.38:8080',
         // target:'http://192.168.0.135:8080',
         // agent:shanxi_agent,
+        // target:'http://10.194.57.247:8007',
         target:'http://127.0.0.1:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,

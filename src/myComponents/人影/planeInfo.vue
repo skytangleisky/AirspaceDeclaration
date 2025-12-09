@@ -38,11 +38,9 @@ const defaultDates = [
 const globalOptions:any[] = []
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
-const 触发注册飞机查询 = ref(Date.now())
 import {eventbus} from '~/eventbus'
 import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
-provide('触发注册飞机查询',触发注册飞机查询)
-watch(触发注册飞机查询,()=>{
+watch(()=>setting.触发注册飞机查询,()=>{
   if(currentController!=null){
     currentController.abort()
   }
@@ -78,17 +76,6 @@ setting.人影.监控.需要重点关注的飞机 = computed(()=>{
 function handleRowClick(row,col,event){
   eventbus.emit('人影-将站点移动到屏幕中心',toRaw(row).position)
 }
-let timer:any = 0
-onMounted(()=>{
-    timer = setInterval(()=>{
-      if(setting.polling){
-        触发注册飞机查询.value = Date.now()
-      }
-    },1000)
-})
-onBeforeUnmount(()=>{
-  clearInterval(timer)
-})
 </script>
 <style scoped lang="scss">
 .el-table.is-scrolling-left::v-deep(th.el-table-fixed-column--left) {

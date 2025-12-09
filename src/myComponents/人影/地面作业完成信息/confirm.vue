@@ -259,7 +259,6 @@ const confirm = async(data) => {
             message: '确认成功',
             type: 'success',
         })
-        触发完成信息查询.value = Date.now()
         show.value = false;
     }).catch(err=>{
         ElMessage({
@@ -298,12 +297,7 @@ const data = defineModel('data',{
 })
 const cancel = () => {
     show.value = false;
-};
-const 触发完成信息查询 = inject('触发完成信息查询',ref(Date.now()))
-// let timer:number;
-onBeforeUnmount(() => {
-    // clearInterval(timer)
-});
+}
 </script>
 <style scoped lang="scss">
 .modal {

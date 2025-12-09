@@ -310,7 +310,6 @@ const save = async(data) => {
             message: '保存成功',
             type: 'success',
         })
-        触发完成信息查询.value = Date.now()
         show.value = false;
     }).catch(err=>{
         ElMessage({
@@ -365,7 +364,6 @@ watch(()=>data.value.strID,()=>{
 const cancel = () => {
     show.value = false;
 };
-const 触发完成信息查询 = inject('触发完成信息查询',ref(Date.now()))
 // let timer:number;
 onMounted(() => {
     data.value.beginTm = moment().format('YYYY-MM-DD HH:mm:ss')

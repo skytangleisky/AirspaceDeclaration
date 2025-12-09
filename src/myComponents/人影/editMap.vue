@@ -43,8 +43,10 @@
         <ul>
           <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
+          <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
+          <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
           <li v-if="menuType=='批量操作'" @click="批量移除()">批量移除</li>
@@ -77,11 +79,13 @@
     <!-- <ConfigureSmokeStove></ConfigureSmokeStove> -->
     <ConfigureRocket></ConfigureRocket>
     <ConfigureAudioData></ConfigureAudioData>
+    <ConfigureReplyRate></ConfigureReplyRate>
     <!-- <Overview></Overview> -->
   </div>
 </template>
 <script lang="ts" setup>
 import Frame from '~/frames/frame.vue'
+import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
@@ -97,7 +101,7 @@ async function 批量烟炉操作(){
   // $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
 
 
-
+console.log('aaaa')
 let list = []
 for(let j=0;j<stoveFeaturesData.features.length;j++){
   const targetPos = point(stoveFeaturesData.features[j].geometry.coordinates)
@@ -148,6 +152,10 @@ function 视频会议(){
   }else{
     metting.value=true
   }
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+}
+function 语音管理(){
+  setting.语音管理 = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
 function 清除形状(){
@@ -569,7 +577,6 @@ const Popup = mapboxgl.Popup;
 const NavigationControl = mapboxgl.NavigationControl;
 const FullscreenControl = mapboxgl.FullscreenControl;
 let timer = 0;
-let taskTimer:any = 0;
 let frameCounter = 0;
 const mapRef = ref<HTMLCanvasElement>();
 // const color = ref("red");
@@ -1332,7 +1339,7 @@ onMounted(async() => {
         visibility:setting.人影.监控.routeLine?'visible':'none'
       },
       paint:{
-        'raster-opacity':0.4
+        'raster-opacity':1.0
       }
     })
     map.addLayer({
@@ -4049,12 +4056,10 @@ onMounted(async() => {
       });
       */
     }
+    watch(()=>setting.触发作业状态数据查询,()=>{
+      work()
+    })
     work()
-    taskTimer = setInterval(() => {
-      if(setting.polling){
-        work();
-      }
-    }, 1000)
     // getDevice().then((res) => {
     //   dialogOptions.menus = res.data;
     //   let features: any = [];
@@ -4683,7 +4688,6 @@ onBeforeUnmount(() => {
     cancelAnimationFrame(aid)
     console.log("onBeforeUnmount");
     clearInterval(timer);
-    clearInterval(taskTimer);
     clearInterval(adsbTimer);
     clearInterval(sixMinutesTimer);
     clearInterval(fifteenMinutesTimer);

@@ -9,14 +9,20 @@ import cq from "./subs/cq.js";
 import cq_permission from "./permission/cq.js"
 
 export const formatUrl = (url: string) => {
-    return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
-};
+  return url.replace("{x}", "105").replace("{y}", "48").replace("{z}", "7");
+}
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    触发作业状态数据查询:Date.now(),
+    触发完成信息查询:Date.now(),
+    触发注册飞机查询:Date.now(),
+    触发语音记录查询:Date.now(),
+    数字时钟:moment().format('YYYY-MM-DD')+'&emsp;'+moment().format('HH:mm:ss'),
     polling:true,
     弹药概况:false,
     火箭架配置:false,
     语音管理:false,
+    批复率统计:false,
     显示全国行政区划配置:false,
     显示烟炉:false,
     获取经纬度:false,

@@ -34,12 +34,17 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       />
+      <el-input style="width: 200px;" v-model="station.人影界面被选中的设备" placeholder="请输入呼出方" clearable></el-input>
     </div>
   </div>
   <Add v-model:render="showAdd"></Add>
 </template>
 
 <script lang="ts" setup>
+import { useSettingStore } from '~/stores/setting'
+const setting = useSettingStore()
+import { useStationStore } from '~/stores/station'
+const station = useStationStore()
 import Add from './新增/index.vue'
 const form = reactive({
   title:'添加记录',
@@ -48,12 +53,12 @@ const form = reactive({
   createTime: null,
   updateTime: null,
   path: null,
-  caller: '内江',
-  callee: '成都',
+  caller: '511011003',//内江-团结水库
+  callee: '510100000',//四川省-成都市
   uploadProgress:0,
 })
 provide('form',form)
-import { computed, ref, reactive, watch, provide } from 'vue'
+import { computed, ref, reactive, watch, provide, onMounted } from 'vue'
 import type { ComponentSize } from 'element-plus'
 import { fetchList } from './api'
 const currentPage4 = ref(1)
@@ -68,7 +73,7 @@ const handleSizeChange = (val: number) => {
   console.log(`${val} items per page`)
 }
 const handleCurrentChange = (val: number) => {
-  console.log(`current page: ${val}`)
+  // console.log(`current page: ${val}`)
 }
 
 interface Item {
@@ -95,7 +100,14 @@ const handleEdit = (index: number, row: Item) => {
   form.uuid = row.uuid
   form.createTime = row.datetime_create
   form.updateTime = row.datetime_update
-  form.path = row.path
+  form.path = computed({
+    get(){
+      return row.path
+    },
+    set(val){
+      row.path = val
+    }
+  })
   form.caller = row.caller
   form.callee = row.callee
   showAdd.value = true
@@ -120,10 +132,23 @@ const handleDelete = (index: number, row: Item) => {
 
 const tableData: Item[] = reactive([
 ])
-const 触发语音记录查询 = ref(Date.now())
+const 触发语音记录查询 = computed({
+  get(){
+    return setting.触发语音记录查询
+  },
+  set(val){
+    setting.触发语音记录查询 = val
+  }
+})
 provide('触发语音记录查询',触发语音记录查询)
+watch(()=>station.人影界面被选中的设备,()=>{
+  触发语音记录查询.value = Date.now()
+})
+watch([currentPage4,pageSize4],()=>{
+  触发语音记录查询.value = Date.now()
+})
 watch(触发语音记录查询,()=>{
-  fetchList({page:currentPage4.value,size:pageSize4.value}).then(res=>{
+  fetchList({page:currentPage4.value,size:pageSize4.value,caller_filter:station.人影界面被选中的设备}).then(res=>{
     total.value = res.data.total
     tableData.splice(0,tableData.length,...res.data.results)
   })
@@ -136,8 +161,8 @@ function handleAdd(){
   form.createTime = null
   form.updateTime = null
   form.path = null
-  form.caller = '内江'
-  form.callee = '成都'
+  form.caller = station.人影界面被选中的设备||'511011003'//内江-团结水库
+  form.callee = '510100000'//四川省-成都市
   form.uploadProgress = 0
 }
 </script>
@@ -158,7 +183,8 @@ function handleAdd(){
     padding-top:10px;
     width: 100%;
     display: flex;
-    justify-content: left;
+    justify-content: space-between;
+    align-items: center;
   }
 }
 </style>

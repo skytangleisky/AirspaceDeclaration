@@ -28,6 +28,7 @@ service.interceptors.request.use(
     // config.headers['database'] = JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_shanxi","type":"mysql"})//陕西测试
     // config.headers['database'] = JSON.stringify({"host":"10.172.20.43","port":33060,"user":"root","password":"SxryMysql#1234","database":"ryplat_shanxi","type":"mysql"})//陕西现场
     config.headers['database'] = JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_scry","type":"mysql"})//四川测试
+    // config.headers['database'] = JSON.stringify({"host":"10.194.22.240","port":33060,"user":"root","password":"SCRY@ryb1234","database":"ryplat_scry","type":"mysql"})//初验
     return config
   },
   error => {

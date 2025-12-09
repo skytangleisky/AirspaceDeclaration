@@ -80,6 +80,18 @@ function connect() {
       case "人影航迹数据":
         eventbus.emit('人影-飞机位置',obj.data.aircrafts)
         break;
+      case "notify":
+        if(obj.data.tableName=='zyddata'||obj.data.tableName=='zyddatahisdata'){
+          setting.触发作业状态数据查询 = Date.now()
+        }else if(obj.data.tableName=='audio'){
+          setting.触发语音记录查询 = Date.now()
+        }else if(obj.data.tableName=='plane_addr'){
+          setting.触发注册飞机查询 = Date.now()
+        }else if(obj.data.tableName=='overinfo'){
+          setting.触发完成信息查询 = Date.now()
+        }
+        console.log(obj.data)
+        break;
       default:
         console.log(obj)
     }

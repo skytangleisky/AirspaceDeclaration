@@ -5,9 +5,9 @@ import { wrapKeys } from '~/tools'
 import { v4 as uuidv4 } from 'uuid';
 
 //公司
-let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
-let database1 = `${dbConfig}&database=union`
-let database2 = `${dbConfig}&database=BEPK_RYB_GSYTHPT&type=xugu`
+// let dbConfig = 'host=192.168.0.240&port=3306&user=root&password=mysql'
+// let database1 = `${dbConfig}&database=union`
+// let database2 = `${dbConfig}&database=BEPK_RYB_GSYTHPT&type=xugu`
 
 //北京市
 // dbConfig = "host=10.224.153.90&port=3306&user=bjryb&password=ryb115"
