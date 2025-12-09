@@ -151,7 +151,7 @@ function chooseStoveHandle(item:any) {
             background-color: var(--el-bg-color);
             border-radius: $border-radius-2;
             padding: $grid-2;
-            height: 3.4rem;
+            height: 3.5rem;
             box-sizing: border-box;
             margin-bottom: $grid-2;
         }

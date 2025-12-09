@@ -1,5 +1,4 @@
 <template>
-  <div>
     <div class="tool-btns">
       <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
@@ -14,20 +13,19 @@
         <MenuPanel></MenuPanel>
       </el-scrollbar>
     </div>
-    <!-- <el-scrollbar v-if="setting.人影.监控.是否显示工具面板" style="position: absolute;top:80px;right:10px;bottom:10px;height:auto">
+
+    <el-scrollbar class="control-scrollbar">
+      <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+    </el-scrollbar>
+    <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
       <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </el-scrollbar> -->
-    <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
-      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </div>
-  </div>
+    </div> -->
 </template>
 <script lang="ts" setup>
 import sideButtons from './sideButtons.vue'
 import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
-import toolkitSvg from '~/assets/toolkit.svg?raw'
 import {getMask} from '~/api/天工'
 import {resetTheme} from '~/theme'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
@@ -525,5 +523,25 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }
   }
 }
-
+.control-scrollbar{
+  position: absolute;
+  top:10px;
+  right:10px;
+  bottom:10px;
+  height:auto;
+  pointer-events: none;
+  width: fit-content;
+  &::v-deep(.el-scrollbar__wrap){
+    display: flex;
+    flex-direction: column;
+    // border:1px solid red;
+    box-sizing: border-box;
+    .el-scrollbar__view{
+      // border:1px solid #0f0;
+      flex:1;
+      display: flex;
+      flex-flow: column-reverse;
+    }
+  }
+}
 </style>

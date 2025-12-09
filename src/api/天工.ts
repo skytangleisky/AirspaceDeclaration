@@ -1685,13 +1685,13 @@ export function 烟炉历史(paginationOption:any,range:[Date, Date]){
       where:range?[
         {
           "relation": "AND",
-          "field": "writeTm",
+          "field": "beginTm",
           "relationship": ">=",
           "condition": moment(range[0]).format('YYYY-MM-DD HH:mm:ss')
         },
         {
           "relation": "AND",
-          "field": "writeTm",
+          "field": "beginTm",
           "relationship": "<=",
           "condition": moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
         }
@@ -1705,7 +1705,26 @@ export function 烟炉历史(paginationOption:any,range:[Date, Date]){
     }
   })
 }
-
+export function 修改烟炉历史(data:any){
+  return request({
+    url:'/backend/db/default',
+    method:'put',
+    headers:{
+      table:'STOVEFIREHIS',
+    },
+    data:[data]
+  })
+}
+export function 删除烟炉历史(data:any){
+  return request({
+    url:'/backend/db/default',
+    method:'delete',
+    headers:{
+      table:'STOVEFIREHIS',
+    },
+    data:[data]
+  })
+}
 export function 弹药概况(status:number){
   return request({
     url:'/backend/transaction',
