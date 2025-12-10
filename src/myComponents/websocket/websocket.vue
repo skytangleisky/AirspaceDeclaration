@@ -89,6 +89,8 @@ function connect() {
           setting.触发注册飞机查询 = Date.now()
         }else if(obj.data.tableName=='overinfo'){
           setting.触发完成信息查询 = Date.now()
+        }else if(obj.data.tableName=='connection'){
+          setting.触发网络信息查询 = Date.now()
         }
         console.log(obj.data)
         break;

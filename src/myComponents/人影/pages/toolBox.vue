@@ -470,6 +470,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       setting.批复率统计 = true
     }
   },
+  {
+    label: '网络信息', type: 'button', click() {
+      setting.网络信息 = true
+    }
+  },
   // {
   //   label: '弹药概况', type: 'button', click() {
   //     setting.弹药概况 = true

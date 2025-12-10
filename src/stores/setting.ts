@@ -23,6 +23,8 @@ export const useSettingStore = defineStore('setting',{
     火箭架配置:false,
     语音管理:false,
     批复率统计:false,
+    网络信息:false,
+    触发网络信息查询:Date.now(),
     显示全国行政区划配置:false,
     显示烟炉:false,
     获取经纬度:false,
