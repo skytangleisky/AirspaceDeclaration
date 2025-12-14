@@ -292,6 +292,18 @@ export function 作业状态数据(signal:AbortSignal){
     }
   })
 }
+export function 修改作业状态数据(ubyStatus:number,strWorkID:string){
+  return request({
+    url: '/backend/transaction',
+    method: 'post',
+    data:{
+      sqls: [
+        `UPDATE zyddata SET ubyStatus = ${ubyStatus} WHERE strWorkID = '${strWorkID}'`,
+        `UPDATE zydhisdata SET ubyStatus = ${ubyStatus} where strWorkID = '${strWorkID}'`
+      ],
+    }
+  })
+}
 export function ADSB(){
   return request({
     url: '/adsb/getPlaneInfo',

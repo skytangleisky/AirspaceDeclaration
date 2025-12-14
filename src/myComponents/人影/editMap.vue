@@ -3304,10 +3304,13 @@ onMounted(async() => {
         const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
         if(state.ubyStatus=='作业申请待批复'){
           menuType.value = '人工批复'
-        }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'){
+        }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'||state.ubyStatus=='作业结束'){
           menuType.value = '默认'
-        }else{
+        }else if(state.ubyStatus=='空闲'||state.ubyStatus==undefined){
           menuType.value = '地面作业申请'
+        }else{
+          console.log('未处理状态',state.ubyStatus)
+          return
         }
         $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
         $(stationMenuRef.value as HTMLDivElement).removeData();
@@ -3344,12 +3347,12 @@ onMounted(async() => {
       active = () => {
         circleFeaturesData.features.forEach((item:any)=>{
           const state = map.getFeatureState({source:'最大射程source',id:item.properties.strID})
-          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'?0.5:0
+          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'?0.5:0
           map.setFeatureState({source:'最大射程source',id:item.properties.strID},{opacity})
         })
         forewarningFeaturesData.features.forEach((item:any)=>{
           const state = map.getFeatureState({source:'警戒圈source',id:item.properties.strID})
-          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'?0.5:0
+          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'?0.5:0
           map.setFeatureState({source:'警戒圈source',id:item.properties.strID},{opacity})
         })
       }
@@ -3807,9 +3810,9 @@ onMounted(async() => {
       abortController?.abort()
       abortController = new AbortController()
       作业状态数据(abortController.signal).then(res=>{
-        zydFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
-        circleFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
-        forewarningFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
+        // zydFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
+        // circleFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
+        // forewarningFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
         //实现空域闪烁效果
         function star(feature:any,row:any){
           if(row.ubyStatus == 75){
@@ -3853,7 +3856,7 @@ onMounted(async() => {
               Object.assign(circleFeaturesData.features[i].properties,row)
               circleFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
               const state = map.getFeatureState({source:'最大射程source',id:row.strZydID})
-              if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
+              if(status2value(row.ubyStatus)!='作业空闲'){
                 state.opacity = 0.5;
               }
               // star(circleFeaturesData.features[i],row)
@@ -3907,7 +3910,7 @@ onMounted(async() => {
             if(forewarningFeaturesData.features[i].properties.strID == row.strZydID){
               forewarningFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
               const state = map.getFeatureState({source:'警戒圈source',id:row.strZydID})
-              if(status2value(row.ubyStatus)!='作业结束'&&status2value(row.ubyStatus)!='作业不批准'){
+              if(status2value(row.ubyStatus)!='作业空闲'){
                 state.opacity = 0.5;
               }
               // star(forewarningFeaturesData.features[i],row)

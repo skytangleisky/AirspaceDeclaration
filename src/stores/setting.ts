@@ -28,6 +28,7 @@ export const useSettingStore = defineStore('setting',{
     显示全国行政区划配置:false,
     显示烟炉:false,
     获取经纬度:false,
+    渲染:true,
     地图列表:[
       {
         value:0,

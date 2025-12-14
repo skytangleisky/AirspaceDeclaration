@@ -100,13 +100,13 @@ const filterTableData = computed(() =>
       data.name.toLowerCase().includes(search.value.toLowerCase())
   )
 )
-
+import { useSettingStore } from '~/stores/setting'
+const setting = useSettingStore()
 const tableData: Item[] = reactive([])
-const 触发批复率查询 = ref(Date.now())
 watch([currentPage4,pageSize4,range],()=>{
-  触发批复率查询.value = Date.now()
+  setting.触发作业状态数据查询 = Date.now()
 })
-watch(触发批复率查询,()=>{
+watch(()=>setting.触发作业状态数据查询,()=>{
   fetchList({page:currentPage4.value,size:pageSize4.value,range:range.value}).then(res=>{
     total.value = res.data.total
     tableData.splice(0,tableData.length,...res.data.results)
