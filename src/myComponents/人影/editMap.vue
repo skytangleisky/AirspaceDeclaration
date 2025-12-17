@@ -1936,13 +1936,13 @@ onMounted(async() => {
     })
     await loadImage2Map(map,circleUrl,24,24,{
       'projectile-white':{
-        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#fff;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       // 'projectile-red':{
       //   style:"fill:#E14D27;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       // },
       'projectile-blue':{
-        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#fff;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-orange':{
         style:"fill:#fff;stroke:#000;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
@@ -1953,7 +1953,7 @@ onMounted(async() => {
     })
     await loadImage2Map(map,triangleUrl,24,24,{
       'triangle-blue':{
-        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#fff;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
     })
     await loadImage2Map(map,导航台图标,14,14,{
@@ -2768,7 +2768,7 @@ onMounted(async() => {
               duration: 1,
               "icon-image": item.iType == 1 ? "triangle-blue" : "projectile-blue",
               // "icon-image": "火箭弹图标",
-              发报单位:'110000000',
+              发报单位:'510000000',
               delayTimeLen:10,
               beginDirection:270,
               endDirection:80,
@@ -3019,7 +3019,7 @@ onMounted(async() => {
                   duration: 1,
                   "icon-image": item.iType == 1 ? "projectile-red" : "projectile-blue",
                   // "icon-image": "火箭弹图标",
-                  发报单位:'110000000',
+                  发报单位:'510000000',
                   delayTimeLen:10,
                   beginDirection:270,
                   endDirection:80,
@@ -3306,7 +3306,7 @@ onMounted(async() => {
           menuType.value = '人工批复'
         }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'||state.ubyStatus=='作业结束'){
           menuType.value = '默认'
-        }else if(state.ubyStatus=='空闲'||state.ubyStatus==undefined){
+        }else if(state.ubyStatus=='空闲'||state.ubyStatus=='作业不批准'||state.ubyStatus=='作业完成'||state.ubyStatus==undefined){
           menuType.value = '地面作业申请'
         }else{
           console.log('未处理状态',state.ubyStatus)
@@ -3357,80 +3357,80 @@ onMounted(async() => {
         })
       }
       /*规划航线*/
-      await getPlanPath().then(async(data)=>{
-        if(!map)return
+      // await getPlanPath().then(async(data)=>{
+      //   if(!map)return
 
-        // 辅助力量站点
-        if(data.standby_station){
-          await axios({
-            url:data.standby_station.replace('http://10.225.3.150:8091','/planPath'),
-            method:'get',
-          }).then(res=>{
-            res.data.forEach(item=>{
-              zydFeaturesData.features.forEach(feature=>{
-                if(feature.properties.strID == item.stationid){
-                  if(!feature.properties.tags.includes('正西辅助力量')){
-                    feature.properties.tags.push('正西辅助力量')
-                  }
-                }
-              })
-            })
-            map.getSource('zydSource').setData(zydFeaturesData)
-          })
-        }
+      //   // 辅助力量站点
+      //   if(data.standby_station){
+      //     await axios({
+      //       url:data.standby_station.replace('http://10.225.3.150:8091','/planPath'),
+      //       method:'get',
+      //     }).then(res=>{
+      //       res.data.forEach(item=>{
+      //         zydFeaturesData.features.forEach(feature=>{
+      //           if(feature.properties.strID == item.stationid){
+      //             if(!feature.properties.tags.includes('正西辅助力量')){
+      //               feature.properties.tags.push('正西辅助力量')
+      //             }
+      //           }
+      //         })
+      //       })
+      //       map.getSource('zydSource').setData(zydFeaturesData)
+      //     })
+      //   }
 
-        // 主力量站点
-        if(data.main_station){
-          await axios({
-            url:data.main_station.replace('http://10.225.3.150:8091','/planPath'),
-            method:'get',
-          }).then(res=>{
-            res.data.forEach(item=>{
-              zydFeaturesData.features.forEach(feature=>{
-                if(feature.properties.strID == item.stationid){
-                  if(!feature.properties.tags.includes('西南主力量')){
-                    feature.properties.tags.push('西南主力量')
-                  }
-                }
-              })
-            })
-            map.getSource('zydSource').setData(zydFeaturesData)
-          })
-        }
-        // 主力量轨迹
-        if(data.main_plan){
-          await axios({
-            url:data.main_plan.replace('http://10.225.3.150:8091','/planPath'),
-            method:'get',
-          }).then(res=>{
-            绘制主力量规划轨迹(map,res.data,setting,wgs84togcj02)
-          })
-        }
+      //   // 主力量站点
+      //   if(data.main_station){
+      //     await axios({
+      //       url:data.main_station.replace('http://10.225.3.150:8091','/planPath'),
+      //       method:'get',
+      //     }).then(res=>{
+      //       res.data.forEach(item=>{
+      //         zydFeaturesData.features.forEach(feature=>{
+      //           if(feature.properties.strID == item.stationid){
+      //             if(!feature.properties.tags.includes('西南主力量')){
+      //               feature.properties.tags.push('西南主力量')
+      //             }
+      //           }
+      //         })
+      //       })
+      //       map.getSource('zydSource').setData(zydFeaturesData)
+      //     })
+      //   }
+      //   // 主力量轨迹
+      //   if(data.main_plan){
+      //     await axios({
+      //       url:data.main_plan.replace('http://10.225.3.150:8091','/planPath'),
+      //       method:'get',
+      //     }).then(res=>{
+      //       绘制主力量规划轨迹(map,res.data,setting,wgs84togcj02)
+      //     })
+      //   }
 
-        // 辅助力量轨迹
-        if(data.standby_plan){
-          const url = data.standby_plan.replace('http://10.225.3.150:8091','/planPath')
-          axios({
-            url,
-            method:'get',
-          }).then(res=>{
-            辅助力量规划航迹(map,res.data,setting,wgs84togcj02)
-          })
-        }
+      //   // 辅助力量轨迹
+      //   if(data.standby_plan){
+      //     const url = data.standby_plan.replace('http://10.225.3.150:8091','/planPath')
+      //     axios({
+      //       url,
+      //       method:'get',
+      //     }).then(res=>{
+      //       辅助力量规划航迹(map,res.data,setting,wgs84togcj02)
+      //     })
+      //   }
 
-        // 消云
-        if(data.three_plan){
-          const url = data.three_plan.replace('http://10.225.3.150:8091','/planPath')
-          axios({
-            url,
-            method:'get',
-          }).then(res=>{
-            紧急力量规划航迹(map,res.data,setting,wgs84togcj02)
-          })
-        }
-      }).catch(err=>{
-        console.log(err)
-      })
+      //   // 消云
+      //   if(data.three_plan){
+      //     const url = data.three_plan.replace('http://10.225.3.150:8091','/planPath')
+      //     axios({
+      //       url,
+      //       method:'get',
+      //     }).then(res=>{
+      //       紧急力量规划航迹(map,res.data,setting,wgs84togcj02)
+      //     })
+      //   }
+      // }).catch(err=>{
+      //   console.log(err)
+      // })
       {
         if(map&&!map.getSource("trackSource")){
           map.addSource("trackSource", {
@@ -5867,7 +5867,8 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   }
 }
 .mapboxContainer{
-  background:linear-gradient(136.36deg, #3390C4 4.86%, #1D1252 94.85%);
+  // background:linear-gradient(136.36deg, #3390C4 4.86%, #1D1252 94.85%);
+  background:#d5e9fe;
   position: relative;
   left: 0;
   top: 0;

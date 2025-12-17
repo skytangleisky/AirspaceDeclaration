@@ -269,7 +269,8 @@ function accept() {
       const data = {
         "strWorkID": item.properties.strWorkID,
         "strID": item.strID,
-        "replyUnitID": "110000000",//北京气象局
+        // "replyUnitID": "110000000",//北京气象局
+        "replyUnitID": "510000000",//北京气象局
         "workReceiveUnit": item.strID,
         "workReceiveUser": "",
         "workBeginTime": applyPointForm.time,
@@ -297,7 +298,8 @@ console.log(applyPointForm.date+' '+applyPointForm.time)
       const data = {
         "strWorkID": item.properties.strWorkID,
         "strID": item.strID,
-        "replyUnitID": "110000000",//北京气象局
+        // "replyUnitID": "110000000",//北京气象局
+        "replyUnitID": "510000000",//北京气象局
         "workReceiveUnit": item.strID,
         "workReceiveUser": "",
         "delayTimeLen": applyPointForm.workTimeLen,

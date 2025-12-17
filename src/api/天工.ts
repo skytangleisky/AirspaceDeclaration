@@ -439,7 +439,7 @@ export function 空域申请批准(data){
     data:{
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": "110000000",//北京气象局
+      "replyUnitID": "510000000",//北京气象局
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.workBeginTime),
@@ -481,7 +481,7 @@ export function 空域申请拒绝(data){
     data:{
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": "110000000",
+      "replyUnitID": "510000000",
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "delayTimeLen": data.delayTimeLen,
