@@ -28,6 +28,8 @@ import 'mapbox-gl_wstd/dist/mapbox-gl.css'
 //   ...coms, // 展开数组应该也是可以的
 // };
 export {
+  isDark,
+  useTheme,
   resize,
   dragable,
   RgyxWorkPoint,

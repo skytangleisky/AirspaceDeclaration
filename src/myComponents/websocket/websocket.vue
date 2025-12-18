@@ -19,6 +19,11 @@ function connect() {
     `${window.location.protocol == "https:" ? "wss:" : "ws:"}//` + window.location.host + "/backend"
   );
   ws.onopen = function () {
+    setting.触发作业状态数据查询 = Date.now()
+    setting.触发语音记录查询 = Date.now()
+    setting.触发注册飞机查询 = Date.now()
+    setting.触发完成信息查询 = Date.now()
+    setting.触发网络信息查询 = Date.now()
     setting.网络状态 = "已连接"
     ws.send(JSON.stringify({ type: "login", content: Date.now()}));
     const loop = async () => {
@@ -81,6 +86,7 @@ function connect() {
         eventbus.emit('人影-飞机位置',obj.data.aircrafts)
         break;
       case "notify":
+        console.log("notify:", obj);
         if(obj.data.tableName=='zyddata'||obj.data.tableName=='zydhisdata'){
           setting.触发作业状态数据查询 = Date.now()
         }else if(obj.data.tableName=='audio'){
@@ -136,8 +142,29 @@ function process(){
     })
   );
 }
+function handler(){
+  if(document.visibilityState=='visible'){
+    //页面可见
+    if(ws.readyState!==WebSocket.OPEN){
+      sleeper = new Sleeper();
+      setting.网络状态 = "重连中..."
+      connect();
+    }
+  }else{
+    //页面不可见
+    dispose();
+  }
+}
+let inited = false
 onMounted(() => {
+  if(!window.websocketInited){
+    window.websocketInited = true
+  }else{
+    return;
+  }
+  inited = true
   eventbus.on('获取nps数据',process)
+  document.addEventListener('visibilitychange', handler)
   connect();
   window.addEventListener("beforeunload", dispose);
 });
@@ -150,6 +177,10 @@ function dispose() {
   }
 }
 onBeforeUnmount(() => {
+  if(!inited){
+    return;
+  }
+  document.removeEventListener('visibilitychange', handler)
   clearInterval(timer)
   setting.在线人数 = "";
   setting.网络状态 = "";
