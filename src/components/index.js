@@ -14,7 +14,7 @@ import '~/theme'
 import "~/style.css"
 import "~/styles/index.scss"
 import "~/styles/element/index.scss"
-import 'mapbox-gl/dist/mapbox-gl.css'
+import 'mapbox-gl_wstd/dist/mapbox-gl.css'
 // const coms = [rgyxWorkPoint]; // 将来如果有其它组件,都可以写到这个数组里
 // export default {
 //   install(Vue) {

@@ -11,7 +11,7 @@ import VueDOMPurifyHTML from 'vue-dompurify-html'
 import ElementPlus from 'element-plus'
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import "~/styles/index.scss"
-import 'mapbox-gl/dist/mapbox-gl.css';
+import 'mapbox-gl_wstd/dist/mapbox-gl.css';
 import "~/styles/element/index.scss";
 import '~/theme'
 const pinia = createPinia()
