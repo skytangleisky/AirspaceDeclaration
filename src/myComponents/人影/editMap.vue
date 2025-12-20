@@ -1227,10 +1227,10 @@ onMounted(async() => {
   let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
-    await axios.get(`/backend/region/510000_full.json`).then(res=>{
+    await axios.get(`/backend/region/360000_full.json`).then(res=>{
 
       map.addLayer({
-        'id': '510000_full.json_fill',
+        'id': '360000_full.json_fill',
         'type': 'fill',
         'source': {
           "type":"geojson",
@@ -1246,7 +1246,7 @@ onMounted(async() => {
         }
       })
       map.addLayer({
-        'id': '510000_full.json_line',
+        'id': '360000_full.json_line',
         'type': 'line',
         'source': {
           "type":"geojson",
@@ -1264,7 +1264,7 @@ onMounted(async() => {
         }
       })
       map.addLayer({
-        'id': '510000_full.json_over',
+        'id': '360000_full.json_over',
         'type': 'line',
         'source': {
           "type":"geojson",
@@ -2768,7 +2768,7 @@ onMounted(async() => {
               duration: 1,
               "icon-image": item.iType == 1 ? "triangle-blue" : "projectile-blue",
               // "icon-image": "火箭弹图标",
-              发报单位:'510000000',
+              发报单位:'360000000',
               delayTimeLen:10,
               beginDirection:270,
               endDirection:80,
@@ -3019,7 +3019,7 @@ onMounted(async() => {
                   duration: 1,
                   "icon-image": item.iType == 1 ? "projectile-red" : "projectile-blue",
                   // "icon-image": "火箭弹图标",
-                  发报单位:'510000000',
+                  发报单位:'360000000',
                   delayTimeLen:10,
                   beginDirection:270,
                   endDirection:80,
@@ -5455,77 +5455,77 @@ watch(
     }
   );
 }
-{//四川行政区划
+{//江西行政区划
   watch(
     () => setting.人影.监控.sichuanOptions.district,
     (newVal) => {
       if (newVal) {
-        map.setLayoutProperty("510000_full.json_fill", "visibility", "visible");
+        map.setLayoutProperty("360000_full.json_fill", "visibility", "visible");
       } else {
-        map.setLayoutProperty("510000_full.json_fill", "visibility", "none");
+        map.setLayoutProperty("360000_full.json_fill", "visibility", "none");
       }
     }
   );
   watch(
     () => setting.人影.监控.sichuanOptions.districtFillColor,
     (newVal) => {
-      if(map.getLayer('510000_full.json_fill')){
-        map.setPaintProperty("510000_full.json_fill","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      if(map.getLayer('360000_full.json_fill')){
+        map.setPaintProperty("360000_full.json_fill","fill-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
       }
     }
   );
   watch(
     () => setting.人影.监控.sichuanOptions.districtFillOpacity,
     (newVal) => {
-      map.setPaintProperty("510000_full.json_fill",'fill-opacity', newVal);
+      map.setPaintProperty("360000_full.json_fill",'fill-opacity', newVal);
     }
   );
   watch(()=>setting.人影.监控.sichuanOptions.districtBase,(newVal)=>{
     if(newVal){
-      map.setLayoutProperty("510000_full.json_line", "visibility", "visible");
+      map.setLayoutProperty("360000_full.json_line", "visibility", "visible");
     }else{
-      map.setLayoutProperty("510000_full.json_line", "visibility", "none");
+      map.setLayoutProperty("360000_full.json_line", "visibility", "none");
     }
   })
   watch(
     () => setting.人影.监控.sichuanOptions.districtBaseColor,
     (newVal) => {
-      if(map.getLayer('510000_full.json_line')){
-        map.setPaintProperty("510000_full.json_line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      if(map.getLayer('360000_full.json_line')){
+        map.setPaintProperty("360000_full.json_line","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
       }
     }
   )
   watch(()=>setting.人影.监控.sichuanOptions.districtBaseOpacity,(newVal)=>{
-    map.setPaintProperty("510000_full.json_line", "line-opacity", newVal);
+    map.setPaintProperty("360000_full.json_line", "line-opacity", newVal);
   })
   watch(
     () => setting.人影.监控.sichuanOptions.districtBaseWidth,
     (newVal) => {
-      map.setPaintProperty("510000_full.json_line","line-width",newVal)
+      map.setPaintProperty("360000_full.json_line","line-width",newVal)
     }
   )
   watch(()=>setting.人影.监控.sichuanOptions.districtLine,(newVal)=>{
-    if(map.getLayer("510000_full.json_over")){
+    if(map.getLayer("360000_full.json_over")){
       if(newVal){
-        map.setLayoutProperty("510000_full.json_over", "visibility", "visible");
+        map.setLayoutProperty("360000_full.json_over", "visibility", "visible");
       }else{
-        map.setLayoutProperty("510000_full.json_over", "visibility", "none");
+        map.setLayoutProperty("360000_full.json_over", "visibility", "none");
       }
     }
   })
   watch(
     () => setting.人影.监控.sichuanOptions.districtLineColor,
     (newVal) => {
-      map.setPaintProperty("510000_full.json_over","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
+      map.setPaintProperty("360000_full.json_over","line-color",`rgba(${newVal.r},${newVal.g},${newVal.b},${newVal.a})`)
     }
   )
   watch(()=>setting.人影.监控.sichuanOptions.districtLineOpacity,(newVal)=>{
-    map.setPaintProperty("510000_full.json_over", "line-opacity", newVal);
+    map.setPaintProperty("360000_full.json_over", "line-opacity", newVal);
   })
   watch(
     () => setting.人影.监控.sichuanOptions.districtLineWidth,
     (newVal) => {
-      map.setPaintProperty("510000_full.json_over","line-width",newVal)
+      map.setPaintProperty("360000_full.json_over","line-width",newVal)
     }
   );
 }

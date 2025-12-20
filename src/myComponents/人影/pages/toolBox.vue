@@ -238,7 +238,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   //   ]
   // },
   {
-    label: '四川行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.sichuanOptionsOpened'), children: [
+    label: '江西行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.sichuanOptionsOpened'), children: [
       {
         label: '填充',
         type: 'folder',

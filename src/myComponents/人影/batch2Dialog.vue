@@ -270,7 +270,8 @@ function accept() {
         "strWorkID": item.properties.strWorkID,
         "strID": item.strID,
         // "replyUnitID": "110000000",//北京气象局
-        "replyUnitID": "510000000",//北京气象局
+        // "replyUnitID": "510000000",//四川气象局
+        "replyUnitID": "360000000",//江西气象局
         "workReceiveUnit": item.strID,
         "workReceiveUser": "",
         "workBeginTime": applyPointForm.time,
@@ -299,7 +300,8 @@ console.log(applyPointForm.date+' '+applyPointForm.time)
         "strWorkID": item.properties.strWorkID,
         "strID": item.strID,
         // "replyUnitID": "110000000",//北京气象局
-        "replyUnitID": "510000000",//北京气象局
+        // "replyUnitID": "510000000",//四川气象局
+        "replyUnitID": "360000000",//江西气象局
         "workReceiveUnit": item.strID,
         "workReceiveUser": "",
         "delayTimeLen": applyPointForm.workTimeLen,

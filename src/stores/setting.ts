@@ -410,7 +410,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        selectedRegion:new Array<string>('510000'),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>('360000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
@@ -433,11 +433,6 @@ export const useSettingStore = defineStore('setting',{
           b:36,
           a:0
         },
-        "zoom": 5,
-        "center": [
-          115.3683244,
-          40.915085
-        ],
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,
         二次码下限:-Infinity,
