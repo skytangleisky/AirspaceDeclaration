@@ -40,7 +40,7 @@
                     <el-input
                         disabled
                         name="空管单位"
-                        value="北空"
+                        value="西南空管"
                         @mousedown.stop
                     />
                 </div>

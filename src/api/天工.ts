@@ -1577,7 +1577,7 @@ import unitsStr from '/units.csv?url&raw'
 export function getMask(){
   const units = csv2list(unitsStr)
   const config = localStorage.getItem('config')!
-  const name = JSON.parse(config).userInfo.name
+  const name = JSON.parse(config)?.userInfo.name
   const results = units.filter(item=>item.strName == name)
   if(results.length===1){
     const result = results[0]
@@ -1597,9 +1597,9 @@ export function getMask(){
     }
     // return '110116%'
   }else if(results.length===0){
-    throw('未找到权限信息')
+    console.log('未找到权限信息')
   }else{
-    throw('权限配置错误')
+    console.log('权限配置错误')
   }
 }
 

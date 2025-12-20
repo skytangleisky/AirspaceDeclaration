@@ -13,6 +13,7 @@ export const formatUrl = (url: string) => {
 }
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    触发系统菜单数据查询:Date.now(),
     触发作业状态数据查询:Date.now(),
     触发完成信息查询:Date.now(),
     触发注册飞机查询:Date.now(),

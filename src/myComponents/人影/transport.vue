@@ -16,8 +16,8 @@
         <tr v-for="(item, key) in data" :key="key">
           <td style="white-space: nowrap;">{{item.strName}}</td>
           <td style="white-space: nowrap;">{{ item.strZydID }}</td>
-          <td style="white-space: nowrap;">北京气象局</td>
-          <td style="white-space: nowrap;">北空</td>
+          <td style="white-space: nowrap;">四川气象局</td>
+          <td style="white-space: nowrap;">西南空管</td>
           <td style="white-space: nowrap;">{{ item.vecProcess }}</td>
         </tr>
       </tbody>

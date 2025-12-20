@@ -126,7 +126,7 @@
                                     批复
                                 </template>
                                 <template v-else>
-                                    北空批复{{
+                                    西南空管批复{{
                                         "(" +
                                         moment(
                                             item.tmAnswerRev,
