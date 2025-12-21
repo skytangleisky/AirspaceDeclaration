@@ -38,22 +38,22 @@ var transformlng = function(lng, lat) {
 * @param lat
 * @returns {*[]}
 */
-export function wgs84togcj02(lng, lat) {
-   var PI = 3.1415926535897932384626;
-   var ee = 0.00669342162296594323;
-   var a = 6378245.0;
-   var dlat = transformlat(lng - 105.0, lat - 35.0);
-   var dlng = transformlng(lng - 105.0, lat - 35.0);
-   var radlat = lat / 180.0 * PI;
-   var magic = Math.sin(radlat);
-   magic = 1 - ee * magic * magic;
-   var sqrtmagic = Math.sqrt(magic);
-   dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
-   dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
-   var mglat = parseFloat(lat) + parseFloat(dlat);
-   var mglng = parseFloat(lng) + parseFloat(dlng);
-   return [mglng, mglat]
-}
+// export function wgs84togcj02(lng, lat) {
+//    var PI = 3.1415926535897932384626;
+//    var ee = 0.00669342162296594323;
+//    var a = 6378245.0;
+//    var dlat = transformlat(lng - 105.0, lat - 35.0);
+//    var dlng = transformlng(lng - 105.0, lat - 35.0);
+//    var radlat = lat / 180.0 * PI;
+//    var magic = Math.sin(radlat);
+//    magic = 1 - ee * magic * magic;
+//    var sqrtmagic = Math.sqrt(magic);
+//    dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * PI);
+//    dlng = (dlng * 180.0) / (a / sqrtmagic * Math.cos(radlat) * PI);
+//    var mglat = parseFloat(lat) + parseFloat(dlat);
+//    var mglng = parseFloat(lng) + parseFloat(dlng);
+//    return [mglng, mglat]
+// }
 
 /**
 * 度分秒转经纬度

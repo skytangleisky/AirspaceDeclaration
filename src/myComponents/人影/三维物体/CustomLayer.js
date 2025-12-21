@@ -10,8 +10,9 @@ export default class CustomLayer{
         this.id = Math.random().toString(36)
         this.type = 'custom'
         this.renderingMode = '3d'
-        this.modelOrigin = [103.94399181722866, 30.562962069460042]
-        this.scale = 1
+        // this.modelOrigin = [103.94399181722866, 30.562962069460042]
+        this.modelOrigin = [115.910703, 28.859667]
+        this.scale = 0.3
         if(lng!=undefined&&lat!=undefined){
             this.modelOrigin = [lng,lat]
         }

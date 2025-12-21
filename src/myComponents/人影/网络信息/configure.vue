@@ -6,7 +6,7 @@
         <el-table-column label="uuid" prop="uuid" sortable />
         <el-table-column label="创建时间" prop="datetime_create" sortable />
         <el-table-column label="更新时间" prop="datetime_update" sortable />
-        <el-table-column label="身份" prop="identity" sortable />
+        <el-table-column label="链路" prop="identity" sortable />
       </el-table>
     </div>
     <div class="pagination">

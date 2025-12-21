@@ -679,6 +679,7 @@ const theme = useTheme()
 // });
 let active = () => {};
 const mousemoveFunc = (e:any)=>{
+  mapStatus.currentPos = [e.lngLat.lng,e.lngLat.lat]
   setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
 const zoomFunc = () => {
@@ -1228,7 +1229,6 @@ onMounted(async() => {
   map.on("load", async () => {
     if(!map)return;
     await axios.get(`/backend/region/360000_full.json`).then(res=>{
-
       map.addLayer({
         'id': '360000_full.json_fill',
         'type': 'fill',
@@ -1282,7 +1282,53 @@ onMounted(async() => {
           // 'line-dasharray': [1,1],
         }
       })
-
+      if(!map.getLayer("360000_full.json_label")){
+        const tmp = res.data.features.map((feature:any)=>{
+          feature.geometry.type = 'Point'
+          feature.geometry.coordinates = feature.properties.center
+          return feature
+        })
+        map.addLayer({
+          id: "360000_full.json_label",
+          type: "symbol",
+          source: {
+            "type":"geojson",
+            "data": {
+              type: 'FeatureCollection',
+              features: tmp
+            }
+          },
+          layout: {
+            visibility: "visible",
+            "text-field": ["get", "name"],
+            "text-font": ["simkai"],
+            "text-size": 12,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,】,
+            "text-line-height": 1,
+            'text-anchor': 'center', // 水平垂直居中
+            'text-offset': [0, 0], // 调整文本偏移量
+            'text-justify': 'center', // 水平居中对齐
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-pitch-alignment": "map",
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "text-color": "#fa0",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+            'text-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              5, 0,   // zoom <= 6 不显示文字
+              8, 1   // zoom >= 10 显示文字
+            ]
+          }
+        });
+      }
     })
     fpsTimer = setInterval(()=>{
       setting.人影.监控.fps = map.painter.frameCounter - lastFrameCounter
@@ -4528,8 +4574,8 @@ onMounted(async() => {
         visibility:setting.人影.监控.roadMap ? 'visible' : 'none'
       }
     })
-    // map.addLayer(CustomLayer)
-    // map.addLayer(new Plane())
+    map.addLayer(CustomLayer)
+    map.addLayer(new Plane())
     // map.addLayer(new PointLayer())
     烟炉数据().then((res:any)=>{
       for(let item of res.data.results){

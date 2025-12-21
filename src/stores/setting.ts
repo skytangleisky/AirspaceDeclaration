@@ -44,8 +44,8 @@ export const useSettingStore = defineStore('setting',{
       {
         value:2,
         label: "影像地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
-        // tileData: ["http://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
+        // tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        tileData: ["http://tile.tanglei.site/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
       },
       {
         value:3,

@@ -39,7 +39,7 @@ const globalOptions:any[] = []
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
 import {eventbus} from '~/eventbus'
-import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
+// import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 watch(()=>setting.触发注册飞机查询,()=>{
   if(currentController!=null){
     currentController.abort()
@@ -66,7 +66,7 @@ setting.人影.监控.需要重点关注的飞机 = computed(()=>{
           update_time:properties.time,
           speed:properties.fSpeed,
           orientation:properties.fHeading,
-          position:wgs84togcj02(properties.fLongitude,properties.fLatitude),
+          position:[properties.fLongitude,properties.fLatitude],
         })
       }
     })

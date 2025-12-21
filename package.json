@@ -39,6 +39,7 @@
     "controlpane": "^4.0.5",
     "cross-env": "^7.0.3",
     "d3": "^7.9.0",
+    "deck.gl": "^9.2.5",
     "echarts": "^5.1.2",
     "element-plus": "^2.9.0",
     "events": "^3.3.0",

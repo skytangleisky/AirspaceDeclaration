@@ -532,10 +532,14 @@ export default{
         `;
         this.program = createProgram(gl, vertexSource, fragmentSource);
         let delta = 0.03;
-        let minLng = 102.0322-delta;
-        let maxLng = 102.0322+delta;
-        let minLat = 36.52845-delta;
-        let maxLat = 36.52845+delta;
+        // let minLng = 102.0322-delta;
+        // let maxLng = 102.0322+delta;
+        // let minLat = 36.52845-delta;
+        // let maxLat = 36.52845+delta;
+        let minLng = 115.910703-delta;
+        let maxLng = 115.910703+delta;
+        let minLat = 28.859667-delta;
+        let maxLat = 28.859667+delta;
 
         let cenLng = (minLng+maxLng)/2;
         let cenLat = (minLat+maxLat)/2;
@@ -717,7 +721,7 @@ export default{
         })
     },
     render(gl, projectionMatrix, projection, globeToMercMatrix, transition, centerInMercator, pixelsPerMeterRatio) {
-        console.log(centerInMercator)
+        // console.log(centerInMercator)
         if(this.map.getZoom()<6){
             this.globeToMercMatrix = globeToMercMatrix;
         }
@@ -774,7 +778,7 @@ export default{
             gl.drawArrays(gl.TRIANGLE_STRIP,12,4);
             gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), 1);
 
-            gl.clear(gl.DEPTH_BUFFER_BIT);
+            // gl.clear(gl.DEPTH_BUFFER_BIT);
             gl.drawArrays(gl.LINE_LOOP,16,4);
             gl.drawArrays(gl.LINE_LOOP,20,4);
 

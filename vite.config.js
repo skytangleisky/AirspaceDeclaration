@@ -117,10 +117,9 @@ export default defineConfig({
       '/backend':{
         // agent,
         // target:'http://172.18.7.38:3000',
-        // target:'http://192.168.0.114:3000',
+        target:'http://192.168.0.114:3000',
         // agent:shanxi_agent,
         // target:'http://10.194.22.240:3000',
-        target:'http://127.0.0.1:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
@@ -135,17 +134,15 @@ export default defineConfig({
       '/ry_api':{//人影接口
         // agent,
         // target:'http://172.18.7.38:8080',
-        // target:'http://192.168.0.135:8080',
+        target:'http://192.168.0.135:8080',
         // agent:shanxi_agent,
         // target:'http://10.194.57.247:8007',
         // target:'http://10.194.22.240:21000',
-        target:'http://127.0.0.1:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
         ws:true,
       },
-      /*
       '/adsb':{
         agent,
         target:'http://10.225.3.150:18185',
@@ -219,7 +216,6 @@ export default defineConfig({
         changeOrigin:true,
         secure:false,
       }
-      */
     }
   }
 });

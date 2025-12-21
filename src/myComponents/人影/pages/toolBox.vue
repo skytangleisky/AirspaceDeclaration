@@ -407,6 +407,16 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     arr: Array.from({length: 3001}, (_, i: number) => i)
   }]:[]),
   {
+    label: '当前经度',
+    value:computed(()=>mapStatus.currentPos[0].toFixed(6)),
+    type:'text'
+  },
+  {
+    label: '当前纬度',
+    value:computed(()=>mapStatus.currentPos[1].toFixed(6).padStart(10,'0')),
+    type:'text'
+  },
+  {
     label: '位置',
     value: computed(() => {
       if(setting.人影.监控.经纬度){
@@ -424,7 +434,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
       {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
       {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
-      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
+      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6).padStart(10,'0')), type: 'text'},
       {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},
       {label: '帧率', value: computed(()=>setting.人影.监控.fps), type: 'text'},
       {label: '帧率曲线',value:{
