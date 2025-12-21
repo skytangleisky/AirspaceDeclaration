@@ -13,6 +13,9 @@
         </tr>
       </thead>
       <tbody style="position: relative">
+        <td v-if="data.length==0" colspan="5">
+          <el-empty/>
+        </td>
         <tr v-for="(item, key) in data" :key="key">
           <td style="white-space: nowrap;">{{item.strName}}</td>
           <td style="white-space: nowrap;">{{ item.strZydID }}</td>

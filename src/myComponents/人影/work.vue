@@ -1,4 +1,5 @@
 <template>
+  <el-empty v-if="v.length==0"/>
   <div
     class="item-box"
     @click="click(item)"

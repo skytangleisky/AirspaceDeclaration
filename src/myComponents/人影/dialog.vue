@@ -31,8 +31,8 @@
                 <div class="contain" @mousedown.stop>
                     <div
                         @scroll="scrolling"
-                        class=""
                         style="
+                            height: 100%;
                             overflow: auto;
                             box-sizing: border-box;
                             position: relative;
@@ -40,7 +40,7 @@
                             scroll-padding-top: 14px;
                         "
                     >
-                        <table>
+                        <table style="height: 100%;">
                             <thead>
                                 <tr class="z-1">
                                     <th>序号</th>
@@ -53,6 +53,9 @@
                                 </tr>
                             </thead>
                             <tbody style="position: relative">
+                                <td v-if="options.list.length==0" colspan="5">
+                                    <div style="position: relative;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">{{ t('el.table.emptyText') }}</div>
+                                </td>
                                 <tr
                                     :id="'人影-' + v.strID"
                                     :class="`${
@@ -174,6 +177,8 @@ const props = withDefaults(defineProps<{ menus?: Array<any> }>(), {
 const station = useStationStore();
 import { useBus } from "~/myComponents/bus";
 import { Filter } from '@element-plus/icons-vue'
+import { useLocale } from 'element-plus'
+const { t } = useLocale()
 const bus = useBus();
 // const menus = reactive([
 //   { code: 291, name: "白河堡作业点", status: "离线", equipment: "火箭", id: "110229041" },

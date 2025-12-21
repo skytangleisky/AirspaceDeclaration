@@ -2840,7 +2840,7 @@ onMounted(async() => {
           //   },
           // });
           // circleFeaturesData.features.push(circle);
-          if (item.iShortAngelEnd - item.iShortAngelBegin >= 360) {
+          if (item.iShortAngelEnd - item.iShortAngelBegin >= 360 || item.iShortAngelEnd == item.iShortAngelBegin) {
             const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
               number,
               number

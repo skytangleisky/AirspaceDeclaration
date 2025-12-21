@@ -693,7 +693,6 @@ export default{
             0,0,
         ]);
         gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
-        gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), -1);
         this.imageLoaded = false
         let funcs = []
         for(let key in this.images){
@@ -734,6 +733,7 @@ export default{
             gl.useProgram(this.program);
 
             gl.uniform1i(gl.getUniformLocation(this.program, "u_globe"), isGlobe);
+            gl.uniform1i(gl.getUniformLocation(this.program, 'u_shape'), -1);
 
             gl.bindBuffer(gl.ARRAY_BUFFER, this.globePosBuffer);
             const aGlobePosLocation = gl.getAttribLocation(this.program, 'a_globe_pos');
