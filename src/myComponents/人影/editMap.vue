@@ -86,6 +86,7 @@
 </template>
 <script lang="ts" setup>
 import Frame from '~/frames/frame.vue'
+import { destination } from '~/myComponents/map/js/core.js'
 import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
@@ -207,6 +208,7 @@ import trackSvg from '~/assets/track.svg?url'
 import axios from 'axios'
 import { eventbus } from "~/eventbus";
 import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed, nextTick } from "vue";
+const plane = new Plane()
 const cache = new Array()
 const 视频列表 = computed(()=>{
   const arr = new Array()
@@ -1034,8 +1036,18 @@ const flyTo = (item: any) => {
     console.log(error);
   }
 };
+let lastTime = 0
 const loop = ()=>{
-  // aid = requestAnimationFrame(loop)
+  if(lastTime === 0){
+    lastTime = performance.now()
+  }
+  const deltaTime = (performance.now() - lastTime)/1e3
+  lastTime = performance.now()
+  aid = requestAnimationFrame(loop)
+  const speed = 1
+  plane.orientation = 0
+  const {lng,lat} = destination(...plane.position,plane.orientation,speed*deltaTime)
+  plane.position = [lng,lat]
   // forewarningFeatures.map(item=>{
   //   item.properties.opacity = Math.random()
   // })
@@ -4575,7 +4587,7 @@ onMounted(async() => {
       }
     })
     map.addLayer(CustomLayer)
-    map.addLayer(new Plane())
+    map.addLayer(plane)
     // map.addLayer(new PointLayer())
     烟炉数据().then((res:any)=>{
       for(let item of res.data.results){
@@ -4795,6 +4807,8 @@ watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
     if(!newVal.includes(item)){
       map.removeLayer(`${item}.json`)
       map.removeSource(`${item}.json`)
+      map.removeLayer(`${item}.json_mask`)
+      map.removeSource(`${item}.json_mask`)
     }
   })
   newVal.forEach((item:string)=>{
@@ -4816,6 +4830,49 @@ watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
             'line-color': '#fff',
             'line-width': 5,
             'line-opacity':1,
+          }
+        })
+        const holes:any = []
+        res.data.features.forEach((feature:any)=>{
+          feature.geometry.coordinates.forEach((item:any)=>{
+            const points = item[0]
+            points.push(points[0])
+            holes.push(points)
+          })
+        })
+        map.addLayer({
+          'id': `${item}.json_mask`,
+          'type': 'fill',
+          'source': {
+            "type":"geojson",
+            "data": {
+              "type": "FeatureCollection",
+              "features": [
+                {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                      [
+                        [-180, -90],
+                        [-180, 90],
+                        [180, 90],
+                        [180, -90],
+                        [-180, -90],
+                      ],
+                      ...holes
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          'layout': {
+            'visibility':'visible',
+          },
+          'paint': {
+            'fill-color':'rgba(0,0,0,0.6)',
+            'fill-outline-color':'transparent'
           }
         })
       })

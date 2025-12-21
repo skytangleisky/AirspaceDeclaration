@@ -498,7 +498,7 @@ export const useSettingStore = defineStore('setting',{
         sichuanOptionsOpened:false,
         sichuanOptions:{
           districtOpened:true,
-          district:true,
+          district:false,
           districtFillColor:{r:0,g:0,b:0,a:1},
           districtFillOpacity:0.5,
           districtBaseOpened:true,

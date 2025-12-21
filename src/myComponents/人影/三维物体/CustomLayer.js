@@ -4,17 +4,18 @@ import './GLTFLoader.js'
 // import glbUrl from './airplane.glb?url'
 import glbUrl from './drone.glb?url'
 import mapboxgl from 'mapbox-gl';
-// const this.modelOrigin = [148.9819, -35.39847];//澳大利亚天文台
+// const this.position = [148.9819, -35.39847];//澳大利亚天文台
 export default class CustomLayer{
     constructor(lng,lat){
         this.id = Math.random().toString(36)
         this.type = 'custom'
         this.renderingMode = '3d'
-        // this.modelOrigin = [103.94399181722866, 30.562962069460042]
-        this.modelOrigin = [115.910703, 28.859667]
+        // this.position = [103.94399181722866, 30.562962069460042]
+        this.position = [115.692733, 28.758183]
         this.scale = 0.3
+        this.orientation = 0
         if(lng!=undefined&&lat!=undefined){
-            this.modelOrigin = [lng,lat]
+            this.position = [lng,lat]
         }
     }
     onAdd(map, gl) {
@@ -59,9 +60,9 @@ export default class CustomLayer{
     }
     render(gl, projectionMatrix, projection, globeToMercMatrix, transition, centerInMercator, pixelsPerMeterRatio) {
         if(projection && projection.name === 'globe'){
-            this.elevation = this.map.queryTerrainElevation(this.modelOrigin);
-            let [x,y,z] = new mapboxgl.LngLat(this.modelOrigin[0], this.modelOrigin[1]).toEcef(this.elevation||0);
-            const modelRotate = [(90-this.modelOrigin[1])*Math.PI/180,this.modelOrigin[0]*Math.PI/180,0];
+            this.elevation = this.map.queryTerrainElevation(this.position);
+            let [x,y,z] = new mapboxgl.LngLat(this.position[0], this.position[1]).toEcef(this.elevation||0);
+            const modelRotate = [(90-this.position[1])*Math.PI/180,this.position[0]*Math.PI/180,0];
             this.modelTransform = {
                 translateX: x,
                 translateY: y,
@@ -87,12 +88,12 @@ export default class CustomLayer{
                 new THREE.Vector3(this.modelTransform.scale,-this.modelTransform.scale,this.modelTransform.scale)
             )
             .multiply(new THREE.Matrix4().makeRotationFromQuaternion(q))
-            this.camera.projectionMatrix = p.multiply(g).multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(x, y, z).normalize(),-Math.PI*65/180)).multiply(v);
+            this.camera.projectionMatrix = p.multiply(g).multiply(new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(x, y, z).normalize(),Math.PI*this.orientation/180)).multiply(v);
         }else{
-            this.elevation = this.map.queryTerrainElevation(this.modelOrigin);
-            const modelRotate = [Math.PI / 2, Math.PI/180*65, 0];
+            this.elevation = this.map.queryTerrainElevation(this.position);
+            const modelRotate = [Math.PI / 2, -Math.PI/180*this.orientation, 0];
             const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(
-                this.modelOrigin,
+                this.position,
                 this.elevation||0
             );
             this.modelTransform = {
@@ -139,7 +140,7 @@ export class PointLayer {
         this.id = 'point-layer';
         this.type = 'custom';
         this.renderingMode = '3d';
-        this.modelOrigin = [103.94399181722866, 30.562962069460042]
+        this.position = [103.94399181722866, 30.562962069460042]
     }
     onAdd(map, gl) {
         this.map = map
@@ -171,7 +172,7 @@ export class PointLayer {
         gl.linkProgram(this.program);
     }
     render(gl, projectionMatrix, projection, globeToMercMatrix, transition, centerInMercator, pixelsPerMeterRatio) {
-        let pos = this.modelOrigin, altitude = this.map.queryTerrainElevation(this.modelOrigin);
+        let pos = this.position, altitude = this.map.queryTerrainElevation(this.position);
         if(projection && projection.name === 'globe'){
             const point = new mapboxgl.LngLat(pos[0], pos[1]).toEcef(altitude);
             gl.disable(gl.DEPTH_TEST);
