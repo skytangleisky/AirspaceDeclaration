@@ -51,7 +51,7 @@ export default defineConfig({
     }),
   ],
   build: {
-    // sourcemap: true,
+    sourcemap: false,
     minify: 'esbuild',
     outDir: "lib",
     lib: {
@@ -117,7 +117,7 @@ export default defineConfig({
       '/backend':{
         // agent,
         // target:'http://172.18.7.38:3000',
-        target:'http://192.168.0.114:3000',
+        target:'http://127.0.0.1:3000',
         // agent:shanxi_agent,
         // target:'http://10.194.22.240:3000',
         secure:false,
@@ -134,7 +134,7 @@ export default defineConfig({
       '/ry_api':{//人影接口
         // agent,
         // target:'http://172.18.7.38:8080',
-        target:'http://192.168.0.135:8080',
+        target:'http://192.168.0.135:21000',
         // agent:shanxi_agent,
         // target:'http://10.194.57.247:8007',
         // target:'http://10.194.22.240:21000',

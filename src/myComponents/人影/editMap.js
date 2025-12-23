@@ -5,7 +5,6 @@ import { useSettingStore } from '~/stores/setting';
 import transparentPng from '~/assets/transparent.png?url'
 import huabeiUrl from '~/assets/huabei.json?url'
 import transparent256x256 from './256x256.png?url'
-import flyArea from './默认数据表.geojson?url'
 const extent = [0, 0, 1, 1];
 export default function(){
 	const setting = useSettingStore()
@@ -332,10 +331,6 @@ export default function(){
 					[extent[0], extent[1]],
 				]
 			},
-			"flyArea":{
-				"type":"geojson",
-				"data": flyArea
-			},
 			"district":{
 				"type":"geojson",
 				"data": city
@@ -415,7 +410,7 @@ export default function(){
 				"maxzoom": 14,
 			},
 		},
-		"terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
+		// "terrain": { 'source': 'mapbox-dem', 'exaggeration': 1 },
 		// "sprite_origin": "mapbox://sprites/tanglei201314/clons7b5v00dm01prgrblhncs/6iqitl5z21pbbxxwuij8b59i2",
 		"sprite": window.location.origin+"/kysq/resources/sprite",
 		// "glyphs_origin": "mapbox://fonts/mapbox/{fontstack}/{range}.pbf",
@@ -560,33 +555,6 @@ export default function(){
 					paint: {
 						'raster-opacity': 1,
 						'raster-resampling': 'nearest'
-					}
-				},
-				{
-					'id': 'flyFill',
-					'type': 'fill',
-					'source': 'flyArea', // reference the data source
-					'layout': {
-						visibility:'visible'
-					},
-					'paint': {
-						'fill-color': '#0ff',
-						'fill-opacity': 0.5,
-						'fill-outline-color':'transparent'
-					}
-				},
-				{
-					'id': 'flyLine',
-					'type': 'line',
-					'source': 'flyArea', // reference the data source
-					'layout': {
-						visibility:'visible'
-					},
-					'paint': {
-						'line-color': '#0ff',
-						'line-width': 2,
-						'line-opacity': 1,
-						'line-outline-color':'transparent'
 					}
 				},
 				{

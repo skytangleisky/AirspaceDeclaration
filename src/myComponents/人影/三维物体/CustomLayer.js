@@ -13,7 +13,7 @@ export default class CustomLayer{
         // this.position = [103.94399181722866, 30.562962069460042]
         this.position = [115.692733, 28.758183]
         this.scale = 0.3
-        this.orientation = 0
+        this.orientation = 45
         if(lng!=undefined&&lat!=undefined){
             this.position = [lng,lat]
         }
@@ -127,7 +127,7 @@ export default class CustomLayer{
         gl.clear(gl.DEPTH_BUFFER_BIT);
         this.renderer.resetState();
         this.renderer.render(this.scene, this.camera);
-        this.map.triggerRepaint();
+        // this.map.triggerRepaint();
         if (this.mixer) {
             this.mixer.update(this.clock.getDelta()); // 更新动画
         }

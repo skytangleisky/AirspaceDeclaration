@@ -56,7 +56,7 @@ export default class CustomLayer {
                 gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
                 this.wind.draw(projectionMatrix,0);
             }
-            this.map.triggerRepaint();
+            // this.map.triggerRepaint();
         }
     }
     onRemove(map,gl){

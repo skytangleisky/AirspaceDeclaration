@@ -85,6 +85,457 @@
   </div>
 </template>
 <script lang="ts" setup>
+let enclosureList = new Array<any>();
+import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
+import rocketUrl from '~/assets/rocket.svg'
+import { ScreenLineLayer } from './ScreenLineLayer.js';
+import { MapboxOverlay } from '@deck.gl/mapbox';
+import { TextLayer,PathLayer,IconLayer,ScatterplotLayer } from '@deck.gl/layers';
+const lineData = [
+  [
+    115.68354140757566,
+    28.69573525991848
+  ],
+  [
+    115.68369552131225,
+    28.69568494629405
+  ],
+  [
+    115.68396912812699,
+    28.695728033371438
+  ],
+  [
+    115.68428596802539,
+    28.695771589202295
+  ],
+  [
+    115.68456682588351,
+    28.695778894618115
+  ],
+  [
+    115.68502002380347,
+    28.695692095242578
+  ],
+  [
+    115.68538130771373,
+    28.695472899192524
+  ],
+  [
+    115.68550422319709,
+    28.69512223788196
+  ],
+  [
+    115.68559315550647,
+    28.69481688400363
+  ],
+  [
+    115.68567674751893,
+    28.69446914281251
+  ],
+  [
+    115.6858666878511,
+    28.69386115634603
+  ],
+  [
+    115.68604984391385,
+    28.69355976211385
+  ],
+  [
+    115.68640982506582,
+    28.693012264043745
+  ],
+  [
+    115.68660442496747,
+    28.692863337339872
+  ],
+  [
+    115.68664155523038,
+    28.692649741395314
+  ],
+  [
+    115.6868300442494,
+    28.692208432537413
+  ],
+  [
+    115.68702288126434,
+    28.691896653501402
+  ],
+  [
+    115.68720759955266,
+    28.691812342907582
+  ],
+  [
+    115.68736780437075,
+    28.691692066441192
+  ],
+  [
+    115.68744373709109,
+    28.691398925298927
+  ],
+  [
+    115.68756368837722,
+    28.69106923644064
+  ],
+  [
+    115.68773099953808,
+    28.690611773377228
+  ],
+  [
+    115.68775766675458,
+    28.690410255742478
+  ],
+  [
+    115.688000086425,
+    28.69005916396145
+  ],
+  [
+    115.68804957624457,
+    28.689884317306934
+  ],
+  [
+    115.68805315240343,
+    28.689434030292105
+  ],
+  [
+    115.68823017211821,
+    28.68918146760865
+  ],
+  [
+    115.68840704968352,
+    28.68901756284312
+  ],
+  [
+    115.68851468123637,
+    28.68886613955553
+  ],
+  [
+    115.68892029793756,
+    28.6888262353597
+  ],
+  [
+    115.68919437581962,
+    28.68880062577169
+  ],
+  [
+    115.68936764760457,
+    28.68867500279883
+  ],
+  [
+    115.68934745368341,
+    28.688428955742154
+  ],
+  [
+    115.68933953339518,
+    28.68819397551161
+  ],
+  [
+    115.68943377724759,
+    28.688043336572207
+  ],
+  [
+    115.68948552807785,
+    28.687804439672917
+  ],
+  [
+    115.68965626872898,
+    28.687578611585124
+  ],
+  [
+    115.68980687055506,
+    28.687378258073366
+  ],
+  [
+    115.69001750926873,
+    28.687036799787492
+  ],
+  [
+    115.69008045369344,
+    28.686787103519507
+  ],
+  [
+    115.69040526994064,
+    28.686447508435293
+  ],
+  [
+    115.69051696643658,
+    28.686264882459724
+  ],
+  [
+    115.69064209290832,
+    28.685985278604647
+  ],
+  [
+    115.69075651967961,
+    28.68572073191234
+  ],
+  [
+    115.69100866324504,
+    28.685429438487972
+  ],
+  [
+    115.69144229568656,
+    28.6850181208206
+  ],
+  [
+    115.69173033766475,
+    28.68418904110652
+  ],
+  [
+    115.69217416148604,
+    28.683714749462467
+  ],
+  [
+    115.69243031501327,
+    28.683032614460643
+  ],
+  [
+    115.69258824887959,
+    28.68306572860368
+  ],
+  [
+    115.69268914971911,
+    28.68300619598496
+  ],
+  [
+    115.69280741057202,
+    28.682875066242673
+  ],
+  [
+    115.6930064555724,
+    28.682623890626786
+  ],
+  [
+    115.69319192233752,
+    28.68233508630189
+  ],
+  [
+    115.69341092977368,
+    28.682144853084864
+  ],
+  [
+    115.69351351438638,
+    28.68192823323041
+  ],
+  [
+    115.69351621814417,
+    28.68160589017978
+  ],
+  [
+    115.69362304034559,
+    28.681502584968
+  ],
+  [
+    115.69399597711828,
+    28.681355218787843
+  ],
+  [
+    115.69376009436763,
+    28.68077769382535
+  ],
+  [
+    115.69338915422776,
+    28.68009574017279
+  ],
+  [
+    115.69368496755874,
+    28.67935586055546
+  ],
+  [
+    115.69452205313343,
+    28.677830377058044
+  ],
+  [
+    115.6966187792936,
+    28.67527585530658
+  ],
+  [
+    115.69981602889516,
+    28.67308401491512
+  ],
+  [
+    115.70170590319009,
+    28.6716349166889
+  ],
+  [
+    115.70360411018248,
+    28.671353843970152
+  ],
+  [
+    115.70442099462173,
+    28.670765760437533
+  ],
+  [
+    115.70074515578625,
+    28.6685755524648
+  ],
+  [
+    115.6992357353518,
+    28.667511130835365
+  ]
+]
+const routeData = turf.lineString(lineData)
+function getUavPositionAtTime({
+  route,
+  startTime,     // ms
+  currentTime,   // ms
+  speed = 10,    // m/s
+}) {
+  const elapsed = (currentTime - startTime) / 1000
+  const distance = speed * elapsed // m
+
+  const totalLength = turf.length(route, { units: 'meters' })
+
+  // 超过航线末尾，停在最后
+  const traveled = Math.min(distance, totalLength)
+
+  return turf.along(route, traveled, { units: 'meters' })
+}
+function getUavBearing(route, traveled) {
+  const delta = 0.5 // 米
+
+  const p1 = turf.along(route, Math.max(traveled - delta, 0), {
+    units: 'meters',
+  })
+  const p2 = turf.along(route, traveled + delta, {
+    units: 'meters',
+  })
+
+  return turf.bearing(p1, p2)
+}
+
+const dest = destination(115.692733,28.758183,0,5)
+const pos = [dest.lng,dest.lat]
+const textData = [
+  {
+    "offset": [
+      10,
+      0
+    ],
+    "textColor":[255,255,0,255],
+    "uiTrackNo": 593,
+    "uiAdsAddress": 0,
+    "ubyTrackState": 1,
+    "ubyTrackQuality": 0,
+    "fLongitude": 115.692733,
+    "fLatitude": 28.758183,
+    "ubyAltitudeMCValid": 0,
+    "iAltitudeMC": 0,
+    "ubyAltitudeADSValid": 1,
+    "iAltitudeADS": 2000,
+    "unSsrCode": 202,
+    "ubyRadarDataType": 2,
+    "ubySim": 0,
+    "ubyFixTarget": 0,
+    "ubySpiFlag": 0,
+    "ubyEmergencyType": 0,
+    "fSpeedZ": -11.520557403564453,
+    "fSpeed": 5,
+    "fHeading": 110.392822265625,
+    "ubyFlyingState": 0,
+    "ubyEmitterCat": 5,
+    "strCallCode": "",
+    "trajectory": [
+      pos
+    ],
+    "lastTime": 1763036518493,
+    "label": "0001\n00005 0018\n120551394E41095547N"
+  }
+]
+const deckOverlay = new MapboxOverlay({
+  interleaved: true, // 性能优化
+  layers: [],
+});
+let hoverObject:any;
+function updateTextLayer(textData:any) {
+  deckOverlay.setProps({
+    layers: [
+      new ScreenLineLayer({
+        id: 'screen-line',
+        data: textData,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getAngle: d => 0,
+        getLength: d => 10,
+        getColor: d => [255,0,0,255]
+      }),
+      new TextLayer({
+        id: 'text-layer',
+        data:textData,
+        pickable: true,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getText: d => d.label,
+        getColor: d => d.textColor,
+        getSize: 12,
+        getAngle: 0,
+        getTextAnchor: 'start',
+        getAlignmentBaseline: 'center',
+        // fontFamily: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
+        // fontSettings: {
+        //   sdf: false,
+        //   // 防止生成 atlas 过慢，可限制生成大小
+        //   buffer: 3,
+        //   size: 6400,
+        // },
+        fontSettings: {
+          characterSet: 'auto', // ✅ 自动扫描数据中的字符
+        },
+        billboard: true,  // 始终朝向屏幕
+        background: true,
+        getBackgroundColor: [255,255,255,0.1],
+        border: true,
+        getBorderColor: d => d==hoverObject?d.textColor:[0,0,0,0],
+        getBorderWidth: 1,
+        backgroundPadding:[4,4],
+        backgroundBorderRadius:0,
+        getPixelOffset:d => d.offset,
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateTextLayer(textData.slice())
+          }
+        },
+        updateTriggers:{
+          getPixelOffset: textData.map(d => d.offset),
+          getBorderColor: hoverObject,
+        },
+      }),
+      new PathLayer({
+        id: 'path-layer',
+        data:textData,
+        getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
+        getColor: [255, 255, 255],
+        getWidth: 1,
+        widthUnits: 'pixels',
+      }),
+      new IconLayer({
+        id: 'icon-layer',
+        data: textData,
+        getIcon: d => ({
+          url: squareImageData.airplane,
+          width: 8,
+          height: 8,
+        }),
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getSize: d => 8,
+        sizeScale: 1,
+        billboard: true
+      }),
+      // new ScatterplotLayer({
+      //   id: 'circles',
+      //   data: textData,
+      //   pickable: false,
+      //   getPosition: d => [d.fLongitude, d.fLatitude],
+      //   getRadius: d => 10e3, // 单位由 radiusUnits 决定
+      //   radiusUnits: 'meters',          // 可省略（默认 meters）
+      //   getFillColor: [0, 0, 0, 0],
+      //   stroked: true,
+      //   getLineColor: [255, 255, 255, 255],
+      //   lineWidthUnits: 'pixels',
+      //   getLineWidth: 1,
+      //   radiusMinPixels: 2,
+      // })
+    ]
+  })
+}
 import Frame from '~/frames/frame.vue'
 import { destination } from '~/myComponents/map/js/core.js'
 import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
@@ -189,7 +640,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 import transparentPng from '~/assets/transparent.png?url'
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
-import styles from './drawTheme/theme.js'
+import styles from './drawTheme/inactive.js'
 import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import adsbSvg from '~/assets/adsb.svg?url'
@@ -670,8 +1121,6 @@ const props = withDefaults(
     prevReplyShow: false,
   }
 );
-import {useTheme} from '~/theme';
-const theme = useTheme()
 // style.layers.map((v: any) => {
 //   if (v.id == "simple-tiles") {
 //     v.layout.visibility = props.loadmap ? "visible" : "none";
@@ -680,7 +1129,18 @@ const theme = useTheme()
 //   }
 // });
 let active = () => {};
+
+let mouseDownEvt :any;
+let hoverObjectOffset = [0,0]
 const mousemoveFunc = (e:any)=>{
+  if(hoverObject&&mouseDownEvt){
+    let pt1 = mouseDownEvt.point
+    let pt2 = e.point
+    let offsetX = hoverObjectOffset[0]+pt2.x-pt1.x
+    let offsetY = hoverObjectOffset[1]+pt2.y-pt1.y
+    hoverObject.offset = [offsetX,offsetY]
+    updateTextLayer(textData.slice())
+  }
   mapStatus.currentPos = [e.lngLat.lng,e.lngLat.lat]
   setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
@@ -1037,6 +1497,7 @@ const flyTo = (item: any) => {
   }
 };
 let lastTime = 0
+const startTime = Date.now()
 const loop = ()=>{
   if(lastTime === 0){
     lastTime = performance.now()
@@ -1044,10 +1505,28 @@ const loop = ()=>{
   const deltaTime = (performance.now() - lastTime)/1e3
   lastTime = performance.now()
   aid = requestAnimationFrame(loop)
-  const speed = 1
-  plane.orientation = 0
-  const {lng,lat} = destination(...plane.position,plane.orientation,speed*deltaTime)
-  plane.position = [lng,lat]
+
+  // 简单模拟
+  // const speed = 5
+  // const {lng,lat} = destination(...plane.position,plane.orientation,speed*deltaTime)
+  // plane.position = [lng,lat]
+
+
+  const speed = 5
+  const elapsed = (Date.now() - startTime) / 1000
+  const position = turf.along(routeData, elapsed * speed, { units: 'meters' })
+  const bearing = getUavBearing(routeData, elapsed * speed)
+  plane.position = position.geometry.coordinates
+  plane.orientation = bearing
+  const {lng :lng1,lat:lat1} = destination(...plane.position,plane.orientation,speed)
+  textData.forEach(item=>{
+    item.fLongitude = position.geometry.coordinates[0]
+    item.fLatitude = position.geometry.coordinates[1]
+    item.trajectory = [[lng1,lat1]]
+    item.orientation = bearing
+    item.label = `0001   UAV\n00005 ${(speed*3.6).toString().padStart(4,'0')}\n${toDMS(position.geometry.coordinates[0],position.geometry.coordinates[1])}`
+  })
+  updateTextLayer(textData.slice())
   // forewarningFeatures.map(item=>{
   //   item.properties.opacity = Math.random()
   // })
@@ -1175,7 +1654,19 @@ function load(){
     }
   }
 }
+import squareUrl from '~/assets/square.svg?url'
+import { loadImage } from '~/tools/index.js'
+let squareImageData:any = null
 onMounted(async() => {
+  squareImageData = await loadImage(squareUrl,8,8,{
+    airplane:{
+      style: 'opacity:1.0;fill:#fff',
+    },
+    airplaneMock:{
+      style: 'opacity:1.0;fill:#fff',
+    },
+  },true)
+
   // ElMessage({
   //   message: '当前版本为1.1.97',
   //   type: 'info',
@@ -1220,6 +1711,7 @@ onMounted(async() => {
     pitch: mapStatus.pitch,
     bearing: mapStatus.bearing,
   });
+  map.addControl(deckOverlay)
   map.getCanvas().style.cursor = 'default';
   const GISTYPE={
     GIS_POINT: 1,
@@ -1917,6 +2409,7 @@ onMounted(async() => {
     })
     if(!draw){
       draw = new MapboxDraw({
+        userProperties: true,
         displayControlsDefault: false,
         modes:{...MapboxDraw.modes,
           no_select:{
@@ -1927,8 +2420,23 @@ onMounted(async() => {
           custom_draw_line_with_distance
         },
         styles,
-        defaultMode: 'no_select',
+        defaultMode: 'simple_select',
       })
+      // draw = new MapboxDraw({
+      //   userProperties: true,
+      //   displayControlsDefault: false,
+      //   defaultMode: "simple_select",
+      //   controls: {
+      //     point: true,
+      //     circle: true,
+      //     line_string: true,
+      //     polygon: true,
+      //     trash: true,
+      //     combine_features: false,
+      //     uncombine_features: false,
+      //   },
+      //   styles,
+      // });
       map.addControl(draw)
     }
     const image = new Image()
@@ -2009,7 +2517,12 @@ onMounted(async() => {
         style:"fill:#fff;stroke:#000;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
     })
-    await loadImage2Map(map,triangleUrl,24,24,{
+    await loadImage2Map(map,rocketUrl,48,48,{
+      'my-rocket':{
+        style:"fill:#fff;stroke:black;stroke-width:0.3px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+      },
+    })
+    await loadImage2Map(map,triangleUrl,48,48,{
       'triangle-blue':{
         style:"fill:#fff;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
@@ -2815,7 +3328,7 @@ onMounted(async() => {
               strCode: item.strCode,
               strName: item.strName,
               strPos: item.strPos,
-              iMaxShotRange: item.iMaxShotRange,
+              iMaxShotRange: item.iMaxShotRange||10000,
               iMaxShotHei: item.iMaxShotHei,
               iWeapon: Number(item.strWeapon),
               iWorkType: 1,
@@ -2824,7 +3337,7 @@ onMounted(async() => {
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
-              "icon-image": item.iType == 1 ? "triangle-blue" : "projectile-blue",
+              "icon-image": item.iType == 1 ? "my-rocket" : "my-rocket",
               // "icon-image": "火箭弹图标",
               发报单位:'360000000',
               delayTimeLen:10,
@@ -2857,7 +3370,7 @@ onMounted(async() => {
               number,
               number
             ]; // 圆心点的经纬度
-            const radius: number = item.iMaxShotRange; // 半径（单位：米
+            const radius: number = item.iMaxShotRange||10000; // 半径（单位：米
             const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
             const units: turf.Units = "meters"; // 半径的单位
             const sectorPoints: [number, number][] = calculateCirclePoints(
@@ -2881,7 +3394,7 @@ onMounted(async() => {
               number,
               number
             ]; // 圆心点的经纬度
-            const radius: number = item.iMaxShotRange; // 半径（单位：米
+            const radius: number = item.iMaxShotRange||10000; // 半径（单位：米
             const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
             const startAngle: number = item.iShortAngelBegin; // 起始角度（单位：度）
             const endAngle: number =
@@ -3155,7 +3668,7 @@ onMounted(async() => {
             // "text-letter-spacing": 0.05,】,
             "text-line-height": 1,
             'text-anchor': 'bottom', // 水平垂直居中
-            'text-offset': [0, -1], // 调整文本偏移量
+            'text-offset': [0, -2], // 调整文本偏移量
             'text-justify': 'center', // 水平居中对齐
             "text-ignore-placement": true,
             "text-allow-overlap": true,
@@ -3171,7 +3684,7 @@ onMounted(async() => {
               'interpolate',
               ['linear'],
               ['zoom'],
-              9, 0,   // zoom <= 9 不显示文字
+              6, 0,   // zoom <= 9 不显示文字
               10, 1   // zoom >= 10 显示文字
             ]
           },
@@ -3323,8 +3836,6 @@ onMounted(async() => {
           "minzoom":9,
         });
       }
-
-
       map.on("contextmenu", "stoveLayer", (e: any) => {
         e.handled = true;
         e.originalEvent.stopPropagation()
@@ -3386,6 +3897,11 @@ onMounted(async() => {
         station.人影界面被选中的设备 = feature.properties.strID;
       });
       map.on("mousedown", (e) => {
+        mouseDownEvt = e
+        if(hoverObject){
+          hoverObjectOffset = JSON.parse(JSON.stringify(hoverObject.offset))
+          e.preventDefault()
+        }
         // console.log([e.lngLat.lng,e.lngLat.lat])
         $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
         const fs = map.queryRenderedFeatures(e.point, {
@@ -3402,6 +3918,9 @@ onMounted(async() => {
           }
         }
       });
+      map.on("mouseup",()=>{
+        mouseDownEvt = null
+      })
       active = () => {
         circleFeaturesData.features.forEach((item:any)=>{
           const state = map.getFeatureState({source:'最大射程source',id:item.properties.strID})
@@ -4586,8 +5105,8 @@ onMounted(async() => {
         visibility:setting.人影.监控.roadMap ? 'visible' : 'none'
       }
     })
-    map.addLayer(CustomLayer)
     map.addLayer(plane)
+    // map.addLayer(CustomLayer)
     // map.addLayer(new PointLayer())
     烟炉数据().then((res:any)=>{
       for(let item of res.data.results){
@@ -4610,16 +5129,382 @@ onMounted(async() => {
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
     })
+
+    setting.人影.监控.selectedRegion.forEach((item:string)=>{
+      axios.get(`/backend/region/${item}.json`).then(res=>{
+        map.addLayer({
+          'id': `${item}.json`,
+          'type': 'line',
+          'source': {
+            "type":"geojson",
+            "data": res.data
+          },
+          'layout': {
+            'visibility':'visible',
+            'line-join':'round',
+            'line-cap':'round',
+          },
+          'paint': {
+            'line-color': '#fff',
+            'line-width': 5,
+            'line-opacity':1,
+          }
+        })
+        const holes:any = []
+        res.data.features.forEach((feature:any)=>{
+          feature.geometry.coordinates.forEach((item:any)=>{
+            const points = item[0]
+            points.push(points[0])
+            holes.push(points)
+          })
+        })
+        map.addLayer({
+          'id': `${item}.json_mask`,
+          'type': 'fill',
+          'source': {
+            "type":"geojson",
+            "data": {
+              "type": "FeatureCollection",
+              "features": [
+                {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                      [
+                        [-180, -90],
+                        [-180, 90],
+                        [180, 90],
+                        [180, -90],
+                        [-180, -90],
+                      ],
+                      ...holes
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          'layout': {
+            'visibility':'visible',
+          },
+          'paint': {
+            'fill-color':'rgba(0,0,0,0.6)',
+            'fill-outline-color':'transparent'
+          }
+        })
+      })
+    })
+    updateTextLayer(textData)
+
+
+
+
+
+
+    // 形状00线形;01矩形;02多边形;03圆形,04扇形,05椭圆
+    获取净空区().then((res) => {
+      let a = {
+        type: "FeatureCollection",
+        features: [],
+      };
+      // console.log(res.data.results);
+      for (let i = 0; i < res.data.results.length; i++) {
+        let v = res.data.results[i];
+        let strLngLatList = v.points.match(
+          RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
+        );
+        let list = strLngLatList.map((item: any) => [
+          Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
+          Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
+        ]);
+        if (list.length > 2) {
+          a.features.push({
+            id: v.id,
+            type: "Feature",
+            properties: {
+              color: v.standby2,
+            },
+            geometry: {
+              type: "Polygon",
+              coordinates: [list],
+            },
+          } as never);
+        } else {
+          console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+        }
+        // if (v.enclosure_type == "06") {
+        //   return;
+        //   a.features.push({
+        //     id: v.id,
+        //     type: "Feature",
+        //     properties: {
+        //       color: v.standby2,
+        //     },
+        //     geometry: {
+        //       type: "Point",
+        //       coordinates: list[0],
+        //     },
+        //   } as never);
+        // } else if (v.enclosure_type == "00") {
+        //   return;
+        //   a.features.push({
+        //     id: v.id,
+        //     type: "Feature",
+        //     properties: {
+        //       color: v.standby2,
+        //     },
+        //     geometry: {
+        //       type: "LineString",
+        //       coordinates: list,
+        //     },
+        //   } as never);
+        // } else if (v.enclosure_type == "02"&&v.standby1 == "S") {
+        // } else if (v.enclosure_type == "03") {
+        //   return;
+        //   if (v.circle_center) {
+        //     let center = v.circle_center
+        //       .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
+        //       .split(",")
+        //       .map((v: any) => Number(v));
+        //     a.features.push({
+        //       id: v.id,
+        //       type: "Feature",
+        //       properties: {
+        //         isCircle: true,
+        //         center,
+        //         radiusInKm: v.radius / 1000,
+        //         color: v.standby2,
+        //       },
+        //       geometry: {
+        //         type: "Polygon",
+        //         coordinates: [list],
+        //       },
+        //     } as never);
+        //   } else {
+        //     console.error("v.circle_center=" + v.circle_center);
+        //   }
+        // }
+      }
+      map.addLayer({
+        'id': '净空区',
+        'type': 'fill',
+        'source': {
+          "type":"geojson",
+          "data": a
+        },
+        'layout': {
+          'visibility':'visible',
+        },
+        'paint': {
+          'fill-color':'#f00',
+          'fill-opacity':0.3,
+          'fill-outline-color':'transparent'
+        }
+      })
+      map.addLayer({
+        'id': '净空区_line',
+        'type': 'line',
+        'source': {
+          "type":"geojson",
+          "data": a
+        },
+        'layout': {
+          'visibility':'visible',
+        },
+        'paint': {
+          'line-color':'#f00',
+          'line-opacity':0.5,
+          'line-width':2,
+        }
+      })
+      // draw.add(a as never);
+    });
+
+    获取飞行区().then((res) => {
+      enclosureList = res.data.results
+      let a = {
+        type: "FeatureCollection",
+        features: [],
+      };
+      // console.log(res.data.results);
+      for (let i = 0; i < res.data.results.length; i++) {
+        let v = res.data.results[i];
+        let strLngLatList = v.points.match(
+          RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
+        );
+        let list = strLngLatList.map((item: any) => [
+          Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
+          Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
+        ]);
+        if (list.length > 2) {
+          a.features.push({
+            id: v.id,
+            type: "Feature",
+            properties: {
+              color: v.standby2||'blue',
+            },
+            geometry: {
+              type: "Polygon",
+              coordinates: [list],
+            },
+          } as never);
+        } else {
+          console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+        }
+      }
+      draw.add(a as never);
+    });
+
+
   });
   map.on('draw.create',(e)=>{
-    e.features.map((feature:any)=>{
-      draw.add(feature)
-    })
+    let a = {
+      type: "FeatureCollection",
+      features: new Array<any>(),
+    };
+    let standby2 = 'blue';
+    let data = new Array<any>();
+    e.features.map((item: any) => {
+      item.properties.color = standby2;
+      a.features.push(item);
+      if (item.geometry.type === "Point") {
+        data.push({
+          standby2,
+          id: item.id,
+          enclosure_type: "06",
+          line_width: 0,
+          points: item.geometry.coordinates.join(",") + ";",
+        });
+      } else if (item.geometry.type === "LineString") {
+        console.log(item);
+        data.push({
+          standby2,
+          id: item.id,
+          enclosure_type: "00",
+          line_width: 0,
+          points: item.geometry.coordinates.map((v: any) => v.join(",")).join(";") + ";",
+        });
+      } else if (item.geometry.type === "Polygon") {
+        if (item.properties.isCircle) {
+          data.push({
+            standby2,
+            id: item.id,
+            enclosure_type: "03",
+            line_width: 0,
+            circle_center: item.properties.center.join(",") + ";",
+            radius: item.properties.radiusInKm * 1000,
+            points:
+              item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") + ";",
+          });
+        } else {
+          data.push({
+            standby1:'O',
+            standby2,
+            id: item.id,
+            enclosure_type: "02",
+            line_width: 0,
+            points:
+              item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") + ";",
+          });
+        }
+      }
+    });
+    draw.add(a as never);
+    saveData(data)
+      .then((res) => {
+        console.log(res);
+        data.map((item) => {
+          enclosureList.push(item);
+        });
+      })
+      .catch((e) => {
+        console.log("添加空域失败");
+      });
+
+
     map.getCanvas().style.cursor = "default";
   })
-  map.on('draw.update',(e)=>{
-    console.log(e)
-  })
+  map.on("draw.update", function (e: any) {
+    let data = new Array<any>();
+    e.features.map((item: any) => {
+      let tmp = enclosureList.filter((v) => v.id === item.id);
+      console.log(enclosureList)
+      if (tmp.length === 1) {
+        let enclosure_type = tmp[0].enclosure_type;
+        if (enclosure_type == "06") {
+          data.push(
+            Object.assign(tmp[0], {
+              id: item.id,
+              points: item.geometry.coordinates.join(",") + ";",
+            })
+          );
+        } else if (enclosure_type == "00") {
+          data.push(
+            Object.assign(tmp[0], {
+              id: item.id,
+              points:
+                item.geometry.coordinates.map((v: any) => v.join(",")).join(";") + ";",
+            })
+          );
+        } else {
+          if (item.properties.isCircle) {
+            data.push(
+              Object.assign(tmp[0], {
+                id: item.id,
+                circle_center: item.properties.center.join(",") + ";",
+                radius: item.properties.radiusInKm * 1000,
+                points:
+                  item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") +
+                  ";",
+              })
+            );
+          } else {
+            data.push(
+              Object.assign(tmp[0], {
+                id: item.id,
+                points:
+                  item.geometry.coordinates[0].map((v: any) => v.join(",")).join(";") +
+                  ";",
+              })
+            );
+          }
+        }
+      } else {
+        throw Error("符合条件的数据应该仅有一条！");
+      }
+    });
+    updateData(data)
+      .then((res) => {
+        console.log("空域修改完成");
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  });
+  map.on("draw.delete", function (e: any) {
+    let data = new Array<any>();
+    e.features.map((v: any) => {
+      data.push({ id: v.id });
+    });
+    console.log(data)
+    if (data.length > 0) {
+      deleteData(data)
+        .then((res) => {
+          data.map((item) => {
+            for (let i = 0; i < enclosureList.length; i++) {
+              if (enclosureList[i].id == item.id) {
+                enclosureList.splice(i--, 1);
+              }
+            }
+          });
+          console.log("删除空域完成");
+        })
+        .catch((e) => {
+          throw Error("删除空域失败");
+        });
+    }
+  });
   map.on('draw.modechange', function(e) {
     setting.绘制模式 = e.mode
   });
@@ -4878,7 +5763,7 @@ watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
       })
     }
   })
-},{deep:true,immediate:true})
+},{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){

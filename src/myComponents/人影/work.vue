@@ -116,7 +116,7 @@
         </div>
         <div
           class="item-right-bottom-item"
-          :style="`flex:1;display:flex;justify-content: center;align-items: center;${批复(
+          :style="`flex:1;white-space: nowrap;display:flex;justify-content: center;align-items: center;${批复(
             item
           )}`"
         >
@@ -124,7 +124,7 @@
             批复
           </template>
           <template v-else>
-            西南空管批复{{
+            福州空管批复{{
               "(" +
               moment(
                 item.tmAnswerRev,

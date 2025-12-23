@@ -298,7 +298,7 @@ function safeParseSVG(svgString) {
   document.body.removeChild(iframe);
   return xmlDoc;
 }
-export function loadImage(url:string,width:number,height:number,options:any){
+export function loadImage(url:string,width:number,height:number,options:any,bUrl:boolean=false){
   let opts = JSON.parse(JSON.stringify(options))
   return new Promise((resolve,reject)=>{
     axios.get(url).then(res=>{
@@ -343,8 +343,12 @@ export function loadImage(url:string,width:number,height:number,options:any){
           let y = Math.round(v.y1*cvs.height)
           let w = Math.round((v.x2-v.x1)*cvs.width)
           let h = Math.round((v.y2-v.y1)*cvs.height)
-          let imageData = ctx.getImageData(x,y,w,h)
-          options[key] = imageData
+          if(bUrl){
+            options[key] = cvs.toDataURL('image/png')
+          }else{
+            let imageData = ctx.getImageData(x,y,w,h)
+            options[key] = imageData
+          }
         })
         resolve(options)
       })

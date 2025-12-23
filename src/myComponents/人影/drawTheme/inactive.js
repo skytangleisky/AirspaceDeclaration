@@ -3,6 +3,22 @@ let green = 'rgba(149,242,2,0.24)'
 let blue = 'rgba(2,167,240,0.3)'
 function getInactive(key,color){
   return [{
+    'id': 'gl-draw-polygon-extrusion-inactive_'+key,
+    'type': 'fill-extrusion',
+    'filter': ['all',
+      ['==', 'active', 'false'],
+      ['==', '$type', 'Polygon'],
+      ['!=', 'mode', 'static_select'],
+      ['==', 'user_color', key],
+    ],
+    'paint': {
+      'fill-extrusion-color': color,
+      'fill-extrusion-height': 1000,
+      'fill-extrusion-base': 0,
+      'fill-extrusion-opacity': 0.5
+    }
+  },
+  {
     'id': 'gl-draw-polygon-fill-inactive_'+key,
     'type': 'fill',
     'filter': ['all',
