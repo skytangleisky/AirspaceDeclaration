@@ -442,7 +442,7 @@ const textData = [
   }
 ]
 const deckOverlay = new MapboxOverlay({
-  interleaved: true, // 性能优化
+  interleaved: false, // 性能优化
   layers: [],
 });
 let hoverObject:any;
@@ -497,6 +497,16 @@ function updateTextLayer(textData:any) {
           getPixelOffset: textData.map(d => d.offset),
           getBorderColor: hoverObject,
         },
+        parameters: {
+          // 关闭深度测试
+          depthTest: false,
+          // 明确 source-over 混合
+          blend: true,
+          blendColorSrcFactor: 'src-alpha',
+          blendColorDstFactor: 'one-minus-src-alpha',
+          blendAlphaSrcFactor: 'one',
+          blendAlphaDstFactor: 'one-minus-src-alpha'
+        }
       }),
       new PathLayer({
         id: 'path-layer',
@@ -5106,7 +5116,7 @@ onMounted(async() => {
       }
     })
     map.addLayer(plane)
-    // map.addLayer(CustomLayer)
+    map.addLayer(CustomLayer)
     // map.addLayer(new PointLayer())
     烟炉数据().then((res:any)=>{
       for(let item of res.data.results){

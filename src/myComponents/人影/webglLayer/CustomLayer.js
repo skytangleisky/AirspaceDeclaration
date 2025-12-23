@@ -477,7 +477,6 @@ export default{
     }
 }
 */
-/*
 export default{
     id: 'custom-image-layer',
     type: 'custom',
@@ -788,7 +787,6 @@ export default{
         }
     }
 }
-*/
 
 
 
@@ -796,75 +794,75 @@ export default{
 
 
 
-export default {
-  id: 'simple-triangle',
-  type: 'custom',
-  renderingMode: '3d',
+// export default {
+//   id: 'simple-triangle',
+//   type: 'custom',
+//   renderingMode: '3d',
 
-  onAdd(map, gl) {
-    this.gl = gl;
+//   onAdd(map, gl) {
+//     this.gl = gl;
 
-    // === shader ===
-    const vs = `
-      attribute vec2 a_pos;
-      uniform mat4 u_matrix;
-      void main() {
-        gl_Position = u_matrix * vec4(a_pos, 0.0, 1.0);
-      }
-    `;
+//     // === shader ===
+//     const vs = `
+//       attribute vec2 a_pos;
+//       uniform mat4 u_matrix;
+//       void main() {
+//         gl_Position = u_matrix * vec4(a_pos, 0.0, 1.0);
+//       }
+//     `;
 
-    const fs = `
-      precision mediump float;
-      void main() {
-        gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
-      }
-    `;
+//     const fs = `
+//       precision mediump float;
+//       void main() {
+//         gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+//       }
+//     `;
 
-    const compile = (type, src) => {
-      const s = gl.createShader(type);
-      gl.shaderSource(s, src);
-      gl.compileShader(s);
-      return s;
-    };
+//     const compile = (type, src) => {
+//       const s = gl.createShader(type);
+//       gl.shaderSource(s, src);
+//       gl.compileShader(s);
+//       return s;
+//     };
 
-    this.program = gl.createProgram();
-    gl.attachShader(this.program, compile(gl.VERTEX_SHADER, vs));
-    gl.attachShader(this.program, compile(gl.FRAGMENT_SHADER, fs));
-    gl.linkProgram(this.program);
+//     this.program = gl.createProgram();
+//     gl.attachShader(this.program, compile(gl.VERTEX_SHADER, vs));
+//     gl.attachShader(this.program, compile(gl.FRAGMENT_SHADER, fs));
+//     gl.linkProgram(this.program);
 
-    // === 三角形（NDC，直接裁剪空间） ===
-    const vertices = new Float32Array([
-      -0.5, -0.5,
-       0.5, -0.5,
-       0.0,  0.5
-    ]);
+//     // === 三角形（NDC，直接裁剪空间） ===
+//     const vertices = new Float32Array([
+//       -0.5, -0.5,
+//        0.5, -0.5,
+//        0.0,  0.5
+//     ]);
 
-    this.buffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-  },
+//     this.buffer = gl.createBuffer();
+//     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+//   },
 
-  render(gl, matrix) {
-    // ======== 关键：完全重置状态 ========
-    gl.useProgram(this.program);
+//   render(gl, matrix) {
+//     // ======== 关键：完全重置状态 ========
+//     gl.useProgram(this.program);
 
-    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    gl.disable(gl.DEPTH_TEST);
-    gl.depthMask(false);
+//     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+//     gl.disable(gl.DEPTH_TEST);
+//     gl.depthMask(false);
 
-    gl.disable(gl.CULL_FACE);
+//     gl.disable(gl.CULL_FACE);
 
-    gl.disable(gl.BLEND);
+//     gl.disable(gl.BLEND);
 
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+//     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
-    const loc = gl.getAttribLocation(this.program, 'a_pos');
-    gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+//     const loc = gl.getAttribLocation(this.program, 'a_pos');
+//     gl.enableVertexAttribArray(loc);
+//     gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
 
-    const uMatrix = gl.getUniformLocation(this.program, 'u_matrix');
-    gl.uniformMatrix4fv(uMatrix, false, matrix);
+//     const uMatrix = gl.getUniformLocation(this.program, 'u_matrix');
+//     gl.uniformMatrix4fv(uMatrix, false, matrix);
 
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-  }
-};
+//     gl.drawArrays(gl.TRIANGLES, 0, 3);
+//   }
+// };
