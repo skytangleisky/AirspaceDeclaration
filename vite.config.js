@@ -110,7 +110,7 @@ export default defineConfig({
     // },
     // open:'http://localhost:5173',
     host:true,
-    port:5175,
+    port:5173,
     strictPort:true,
     allowedHosts:true,
     proxy:{

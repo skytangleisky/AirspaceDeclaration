@@ -28,6 +28,7 @@
     "preview": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 vite preview --port 5173"
   },
   "dependencies": {
+    "@mapbox/mapbox-gl-draw": "^0.16.0",
     "@mapbox/geojson-extent": "^1.0.1",
     "@rollup/plugin-inject": "^5.0.5",
     "@sakitam-gis/mapbox-wind": "^2.0.4",
