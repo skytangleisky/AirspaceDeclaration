@@ -24,7 +24,7 @@
     import {del, getList, update, add, getSuperiorUnit} from "~/api/人影/ryUnit.ts"
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
-    import {ubyTypeDict, connectTypeDict, unitReportDict} from "~/utils/Dict.ts"
+    import {ubyTypeDict, connectTypeDict, yesNoDict} from "~/utils/Dict.ts"
     
     const strMgrDict = ref<Dict[]>([]) //上级单位字典
     
@@ -34,7 +34,6 @@
         total: 0,
         pageSize: 5,
         currentPage: 1,
-        pageSizes: [5, 10, 20, 50],
         layout: "total,prev, pager, next,jumper",
     })
     const avueOption = reactive({
@@ -81,7 +80,7 @@
             label: "通报",
             prop: 'bReport', //search: true,
             type: "select",
-            dicData: unitReportDict,
+            dicData: yesNoDict,
             value: 1,
         }, {
             label: '连接方式',

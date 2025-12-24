@@ -1,8 +1,8 @@
 import request from '~/utils/request'
-import {RyUnitQuery} from "~/api/type.ts"
+import {RyOperationOpintQuery} from "~/api/type.ts"
 
 const url = "/backend/db/default"
-const tableName = 'units'
+const tableName = 'zydpara'
 
 export async function add(data: any) {
     return request({
@@ -38,7 +38,7 @@ export async function update(data: any) {
 }
 
 //分页查询
-export async function getList(data: RyUnitQuery) {
+export async function getList(data: RyOperationOpintQuery) {
     const offset = data.currentPage * data.pageSize - data.pageSize
     return request({
         url,
@@ -46,14 +46,13 @@ export async function getList(data: RyUnitQuery) {
         data: {
             offset: offset,
             limit: data.pageSize,
-            select: ["u1.*", "u2.strName as strMgrIDname"],
             //orderby:["strID desc"],
             where:[
                 {
                     relation:"and",
-                    field:"u1.strID",
+                    field:"u1.strCode",
                     relationship:"like",
-                    condition:`%${data?.strID?data.strID:''}%`,
+                    condition:`%${data?.strCode?data.strCode:''}%`,
                 },{
                     relation:"or",
                     field:"u1.strName",
@@ -63,7 +62,7 @@ export async function getList(data: RyUnitQuery) {
             ]
         },
         headers: {
-            table: "units u1 left join units u2 on u1.strMgrID=u2.strID"
+            table:tableName
         }
     })
 }

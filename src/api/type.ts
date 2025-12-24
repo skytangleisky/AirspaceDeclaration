@@ -16,3 +16,9 @@ export interface RyUnitQuery extends QueryList {
     strID?: string;
     strName?: string;
 }
+
+//人影作业点分页查询
+export interface RyOperationOpintQuery extends QueryList {
+    strCode?: string;
+    strName?: string;
+}
