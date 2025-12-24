@@ -4,7 +4,7 @@
             <div class="box-title">{{ props.title }}</div>
             <div class="box-menus">
                 <div class="menu-item" v-for="(item,index) in props.menuList"
-                     :class="activeIndex==index?'active':''" @click="changeActiveIndex(index)">{{ item }}
+                     :class="activeIndex==index?'active':''" @click="changeActiveIndex(index)">{{ item.label }}
                 </div>
             </div>
         </div>
@@ -15,7 +15,12 @@
 </template>
 
 <script setup lang="ts">
-    import {ref} from 'vue'
+    import {ref, PropType} from 'vue'
+    
+    interface MenuItem {
+        label: string;
+        component: any;
+    }
     
     const emits = defineEmits(["changeActiveIndex"])
     const props = defineProps({
@@ -24,7 +29,7 @@
             default: "这是一个标题"
         },
         menuList: {
-            type: Array as () => string[],
+            type: Array as PropType<MenuItem[]>,
         },
         activeIndex: {
             type: Number,
@@ -64,7 +69,7 @@
             color: transparent;
             letter-spacing: .005rem;
             border-left: .04rem solid var(--el-color-primary);
-            padding-left : $grid-1;
+            padding-left: $grid-1;
         }
         
         .box-menus {
