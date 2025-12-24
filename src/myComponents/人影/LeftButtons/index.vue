@@ -6,7 +6,7 @@
 
           <div v-if="!item.click && item.active" class="menu" @click.stop>
             <alarm v-if="item.content==='告警控制'"></alarm>
-            <alarm v-if="item.content==='人影参数'"></alarm>
+            <ryParams v-if="item.content==='人影参数'"></ryParams>
             <alarm v-if="item.content==='辅助管理'"></alarm>
             <alarm v-if="item.content==='历史查询统计'"></alarm>
             <alarm v-if="item.content==='查询统计'"></alarm>
@@ -15,6 +15,7 @@
             class="box-item"
             :content="item.content"
             placement="right"
+            :show-after="500"
           >
             <el-icon class="icon" v-html="item.icon" style="font-size: 24px;"></el-icon>
           </el-tooltip>
@@ -34,6 +35,7 @@ import statisticsRaw from './statistics.svg?raw'
 import routeRaw from './route.svg?raw'
 import configureRaw from './configure.svg?raw'
 import Alarm from './告警控制/index.vue'
+import ryParams from "./ryParams/ryParams.vue"
 import { modelRef } from '~/tools'
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
@@ -118,11 +120,12 @@ function handleClick(item:any){
     .outer{
       padding:4px;
       .inner{
+        
         position: relative;
         padding:4px;
         display: flex;
-        border-radius: 4px;
-        border:1px solid gray;
+        border-radius: $border-radius-1;
+        border:1px solid var(--el-border-color);
         box-sizing: border-box;
         background-color: var(--el-bg-color-opacity-8);
         &:hover{
@@ -133,13 +136,14 @@ function handleClick(item:any){
         }
         .menu{
           position: absolute;
-          left:calc(100% + 4px);
+          left:calc(100% + $grid-2);
           top:0;
           min-width: 100px;
           min-height: 100px;
           background-color: var(--el-bg-color-opacity-8);
           box-sizing: border-box;
-          border:1px solid gray;
+          border:1px solid var(--el-border-color);
+            border-radius: $border-radius-1;
         }
       }
     }

@@ -193,3 +193,111 @@ code {
         }
     }
 }
+
+
+// avue
+.avue-group .el-collapse,
+.avue-group .el-collapse-item__wrap,
+.avue-group .el-collapse-item__header,
+.data-card .item {
+    border: none !important;
+}
+.avue-group .el-collapse-item__wrap,{
+    background-color:transparent;
+}
+.avue-crud--card .el-card {
+    background-color: transparent;
+    border: none;
+    .el-card__body {
+        .avue-crud__header {
+            background-color: transparent;
+        }
+    }
+}
+.avue-dialog .el-dialog__title,
+.avue-dialog .el-drawer__header {
+    color: var(--el-text-color-primary) !important;
+}
+.avue-dialog .el-dialog__header,
+.avue-dialog .el-drawer__header {
+    border: none !important;
+}
+// dialog底部按钮部分
+.avue-dialog__footer {
+    background-color: var(--el-bg-color) !important;
+    border-color: transparent !important;
+}
+
+// 表头
+.avue-crud .el-table th.el-table__cell {
+    background-color: var(--el-bg-color-page) !important;
+    color: var(--el-text-color-regular) !important;
+}
+
+.avue-crud__grid__content {
+    border: 1px solid var(--el-border-color) !important;
+    background: transparent !important;
+    .avue-crud__grid__item {
+        color: var(--el-text-color-regular) !important;
+        .avue-crud__grid__label {
+            color: var(--el-text-color-regular) !important;
+        }
+        .avue-crud__grid__value {
+            color: var(--el-text-color-regular) !important;
+        }
+    }
+}
+.avue-crud__search .el-card__body{
+    padding: 0 !important;
+}
+
+.avue--detail .el-form-item,
+.avue--detail .el-input.is-disabled .el-input__wrapper {
+    background: transparent !important;
+}
+.avue--detail .el-row,
+.avue--detail .el-col {
+    border-color: var(--el-border-color) !important;
+}
+.avue--detail .el-form-item__label {
+    background: var(--el-fill-color) !important;
+    color: var(--el-text-color-regular) !important;
+}
+.avue--detail .el-form-item__content {
+    background: var(--el-fill-color-light) !important;
+    color: var(--el-text-color-primary) !important;
+    border-color: var(--el-border-color) !important;
+}
+.avue--detail .el-input.is-disabled .el-input__inner,
+.avue--detail .el-range-editor.is-disabled,
+.avue--detail .el-range-editor.is-disabled input,
+.avue--detail .el-textarea.is-disabled .el-textarea__inner {
+    background: transparent !important;
+    color: var(--el-text-color-regular) !important;
+}
+
+.avue-crud__dialog__menu {
+    .el-icon {
+        color: var(--el-text-color-primary);
+    }
+}
+.avue--detail{
+    .el-form-item__label{
+        height: .40rem !important;
+        line-height: .40rem !important;
+    }
+}
+
+// elemeltUi-Plus
+// element消息提示
+.el-message {
+    .el-icon {
+        width: 0.16rem;
+        height: 0.16rem;
+        line-height: 0.16rem;
+    }
+}
+
+.el-button{
+    //padding: 0.08rem .15rem!important;
+}

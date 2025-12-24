@@ -22,11 +22,16 @@
     )
 );
 @use "element-plus/theme-chalk/src/dark/css-vars.scss" as *;
-
+// 自定义变量名
+html.dark{
+    color-scheme: dark;
+    --el-bg-color-opacity-8: rgba(36, 51, 73, 1);
+    --el-box-shadow-color: rgba(24, 38, 55, 0.3);
+}
 html.dark {
     // color-scheme: dark;
     --el-color-primary: #1a8cff;
-    --el-color-primary-light-3: #177ee5;
+    --el-color-primary: #177ee5;
     --el-color-primary-light-5: #1570cc;
     --el-color-primary-light-7: #1262b3;
     --el-color-primary-light-8: #105499;
@@ -80,7 +85,7 @@ html.dark {
     --el-box-shadow-lighter: 0px 0px 6px rgba(0, 0, 0, 0.72);
     --el-box-shadow-dark: 0px 16px 48px 16px rgba(0, 0, 0, 0.72),
         0px 12px 32px #000000, 0px 8px 16px -8px #000000;
-    --el-bg-color-page: #1e3148;
+    --el-bg-color-page: #182637;
     --el-bg-color: #506071;
     --el-bg-color-overlay: #506071;
     --el-text-color-primary: #e5eaf3;
@@ -104,8 +109,7 @@ html.dark {
     --el-mask-color: rgba(0, 0, 0, 0.8);
     --el-mask-color-extra-light: rgba(0, 0, 0, 0.3);
 
-    //自定义
-    --el-bg-color-opacity-8: rgba(36, 51, 73, 1);
+
 }
 html.dark .el-button {
     --el-button-disabled-text-color: rgba(255, 255, 255, 0.5);

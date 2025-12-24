@@ -32,6 +32,7 @@
     "@mapbox/mapbox-gl-draw": "^0.16.0",
     "@rollup/plugin-inject": "^5.0.5",
     "@sakitam-gis/mapbox-wind": "^2.0.4",
+    "@smallwei/avue": "^3.7.4",
     "@turf/helpers": "^6.5.0",
     "@turf/turf": "5.1.6",
     "@vue/devtools-api": "^7.7.2",
