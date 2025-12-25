@@ -1,24 +1,23 @@
 <template>
     <div class="left-container">
         <div class="left-button" v-for="item in option" :style="{zIndex: item.zIndex}">
-            <div class="outer">
-                <div :class="`inner ${item.active ? 'active' : ''}`" @click="handleClick(item)">
-                    
-                    <div v-if="!item.click && item.active" class="menu" @click.stop>
-                        <alarm v-if="item.content==='告警控制'"></alarm>
-                        <menuContainer v-if="item.content==='人影参数' || item.content==='辅助管理' || item.content==='历史查询统计'"
-                                       :activeContent="item.content"></menuContainer>
-                        <alarm v-if="item.content==='查询统计'"></alarm>
-                    </div>
-                    <el-tooltip
-                        class="box-item"
-                        :content="item.content"
-                        placement="right"
-                        :show-after="500"
-                    >
-                        <el-icon class="icon" v-html="item.icon" style="font-size: 24px;"></el-icon>
-                    </el-tooltip>
+            
+            <div :class="`inner ${item.active ? 'active' : ''}`" @click="handleClick(item)">
+                <div v-if="!item.click && item.active" class="menu" @click.stop>
+                    <alarm v-if="item.content==='告警控制'"></alarm>
+                    <menuContainer
+                        v-if="item.content==='人影参数' || item.content==='辅助管理' || item.content==='历史查询统计'"
+                        :activeContent="item.content"></menuContainer>
+                    <alarm v-if="item.content==='查询统计'"></alarm>
                 </div>
+                <el-tooltip
+                    class="box-item"
+                    :content="item.content"
+                    placement="right"
+                    :show-after="500"
+                >
+                    <el-icon class="icon" v-html="item.icon" style="font-size: 24px;"></el-icon>
+                </el-tooltip>
             </div>
         </div>
     </div>
@@ -106,46 +105,61 @@
 <style lang="scss" scoped>
     .left-container {
         position: absolute;
-        left: 6px;
-        top: 45px;
+        left: $page-padding;
+        top: .45rem;
         display: flex;
         flex-direction: column;
+        gap: $grid-1;
         
         .left-button {
-            .outer {
-                padding: 4px;
+            
+            .inner {
                 
-                .inner {
+                position: relative;
+                padding: $grid-1;
+                display: flex;
+                border-radius: $border-radius-1;
+                border: 1px solid var(--el-border-color);
+                box-sizing: border-box;
+                background-color: var(--el-bg-color-opacity-8);
+                
+                .el-icon {
+                    color: var(--el-color-primary);
+                }
+                
+                &:hover {
+                    border-color: var(--el-color-primary);
+                    box-shadow: 0 0 .2rem var(--el-box-shadow-color);
+                }
+                
+                &.active {
+                    border:none;
+                    //background-color: var(--el-color-primary);
+                    background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-5));
+                    color: #fff;
+                    box-shadow: 0 0 .2rem var(--el-color-primary-light-5);
                     
-                    position: relative;
-                    padding: 4px;
-                    display: flex;
-                    border-radius: $border-radius-1;
-                    border: 1px solid var(--el-border-color);
-                    box-sizing: border-box;
-                    background-color: var(--el-bg-color-opacity-8);
-                    
-                    &:hover {
-                        border: 1px solid var(--el-color-primary);
-                    }
-                    
-                    &.active {
-                        border: 1px solid var(--el-color-primary);
-                    }
-                    
-                    .menu {
-                        position: absolute;
-                        left: calc(100% + $grid-2);
-                        top: 0;
-                        min-width: 100px;
-                        min-height: 100px;
-                        background-color: var(--el-bg-color-opacity-8);
-                        box-sizing: border-box;
-                        border: 1px solid var(--el-border-color);
-                        border-radius: $border-radius-1;
+                    .el-icon {
+                        color: #fff;
                     }
                 }
+                
+                .menu {
+                    position: absolute;
+                    left: calc(100% + $grid-2);
+                    top: 0;
+                    min-width: 100px;
+                    min-height: 100px;
+                    background-color: var(--el-bg-color-opacity-8);
+                    box-sizing: border-box;
+                    border: 1px solid var(--el-border-color);
+                    border-radius: $border-radius-1;
+                    padding:$grid-3;
+                }
             }
+            
         }
+        
+        
     }
 </style>

@@ -214,6 +214,7 @@ code {
         }
     }
 }
+
 .avue-dialog .el-dialog__title,
 .avue-dialog .el-drawer__header {
     color: var(--el-text-color-primary) !important;
@@ -300,4 +301,9 @@ code {
 
 .el-button{
     //padding: 0.08rem .15rem!important;
+    height: .4rem !important;
+}
+.el-input,
+.el-select__wrapper,{
+    height: .4rem !important;
 }
