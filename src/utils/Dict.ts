@@ -72,3 +72,30 @@ export const strWeaponDict = [{
 }, ]
 
 //
+
+export const engineDict = [{
+    value: 0,
+    label: "sapi"
+}, {
+    value: 1,
+    label: "高炮"
+}, {
+    value: 2,
+    label: "高炮+火箭"
+}, {
+    value: 3,
+    label: "烟炉"
+},{
+    value: 4,
+    label: "火箭+烟炉"
+},{
+    value: 5,
+    label: "其他"
+}]
+export const localeDict = [{
+    value: 0,
+    label: "zh_CN"
+}, {
+    value: 1,
+    label: "zh_EN"
+},]

@@ -8,16 +8,17 @@
                    :data="tableData"
                    :permission="permission"
                    @row-save="rowSave"
-                   @row-update="rowUpdate"
+                   @row-update="handleUpdate"
                    @search-reset="searchReset"
                    @row-del="rowDel"
                    @row-view="rowView"
-                   @search-change="searchChange"
+                   @search-change="handleSearch"
                    @on-load="getDataList"
         >
-            <template #auth_group="{row}">
-                <el-tag style="margin-right: 4px" type="primary"  size="small" v-for="item in row.auth_group"
-                        :key="item">{{ userGroupObj[item] }}
+            <template #roles="{row}">
+                <el-tag v-if="row.roles && row.roles.length >0 " style="margin-right: 4px" type="primary" size="small"
+                        v-for="item in row.roles"
+                        :key="item">{{ getRoleName(item) }}
                 </el-tag>
             </template>
         </avue-crud>
@@ -30,14 +31,13 @@
     import {Dict} from "~/api/type.ts"
     //import {getDict} from "~/api/人影/role.ts";
     import {del, getList, update, add} from "~/api/人影/user.ts"
-    const permission = ref({});
-    interface DictType {
-        value: string | number | boolean,
-        label: string
-    }
     
-    let userGroupDict = ref<DictType[]>([]) //用户组字典
-    let userGroupObj = reactive({})
+    const permission = ref({});
+    //用户组字典
+    let rolesDict = ref<Dict[]>([{
+        value: "admin",
+        label: '超级管理员'
+    }])
     let tableData = ref<any[]>([]) //表格渲染数据
     let form = reactive({})
     
@@ -87,7 +87,8 @@
         }, {
             label: '联系电话',
             prop: 'strPhoneNum',
-        },  {
+            hide: true,
+        }, {
             label: '密码',
             prop: 'password',
             hide: true,
@@ -103,7 +104,7 @@
             prop: 'roles',
             type: 'checkbox',
             slot: true,
-            dicData: userGroupDict.value,
+            dicData: rolesDict.value,
             rules: [{
                 type: 'array',
                 required: true,
@@ -115,6 +116,20 @@
     let searchForm = reactive({})
     
     
+    /**
+     * @author yhl 2025/12/25 11:16
+     * @description 转译角色
+     * @params
+     */
+    const getRoleName = (val: string | number) => {
+        if (!val) return
+        const index = rolesDict.value.findIndex(item => {
+            return item.value === val
+        })
+        if(index === -1) return
+        return rolesDict.value[index].label
+    }
+    
     //点击查看按钮
     function rowView(row: any) {
     
@@ -125,15 +140,15 @@
      * @description 添加用户
      */
     async function rowSave(row: any, done: any) {
-        let params = {...row
-        }
+        let params = {...row}
         try {
             await add(params)
-        } catch {
-        
+            done()
+            ElMessage.success('新增成功')
+            await getDataList()
+        } catch (err) {
+            ElMessage.error("新增失败" + err)
         }
-        await getDataList()
-        done()
     }
     
     
@@ -142,37 +157,51 @@
      * @description 单一删除
      */
     function rowDel(row: any, index: number, done: any) {
-        ElMessageBox.confirm(`确认要删除${row.real_name}的信息吗？`, "提示", {}).then(async () => {
-            let params = {ids: [row.id]}
-            await del(params)
-            await getDataList()
-            done()
+        ElMessageBox.confirm(`确认要删除（${row.strName}）吗？`, "提示", {}).then(async () => {
+            let params = {strID: row.strID}
+            try {
+                await del(params)
+                done()
+                ElMessage.success('删除成功')
+                await getDataList()
+            } catch (err) {
+                ElMessage.error("删除失败" + err)
+            }
+            
         }).catch(() => {
             ElMessage({
                 type: 'info',
                 message: '取消删除',
             })
         })
-        
     }
     
-    
+    /**
+     * @author yhl 2025/12/10 17:02
+     * @description 重置
+     * @params
+     */
+    const searchReset = async () => {
+        searchForm = {}
+        await getDataList()
+    }
     /**
      * @author yhl 2025/8/20 10:31
      * @description 点击编辑按钮 编辑数据
      */
-    async function rowUpdate(row: any, index: number, done: any) {
-        let params = {...row
+    const handleUpdate = async (row: any, index: number, done: any) => {
+        row['[strID]'] = row.strID
+        delete row.strID
+        let params = {...row}
+        console.log("update", params)
+        try {
+            await update(params)
+            ElMessage.success("编辑成功")
+            done()
+            await getDataList()
+        } catch (err) {
+            ElMessage.error("编辑失败" + err)
         }
-        await update(params)
-        ElMessage.success("编辑成功")
-        await getDataList()
-        done()
-    }
-    
-    const searchReset = () => {
-        searchForm = {}
-        getDataList()
     }
     
     /**
@@ -180,9 +209,9 @@
      * @description 搜索
      * @params
      */
-    const searchChange = async (sform: any, done: any) => {
+    const handleSearch = async (sForm: any, done: any) => {
         pageData.currentPage = 1
-        searchForm = sform
+        searchForm = sForm
         await getDataList()
         done()
     }
@@ -192,7 +221,7 @@
      * @description 获取所有用户组
      */
     const getUserGroupDict = () => {
-        userGroupDict.value.length = 0
+        rolesDict.value.length = 0
         
     }
     /**
@@ -203,12 +232,14 @@
     const getDataList = async () => {
         let params = {
             ...searchForm,
-            page_size: pageData.pageSize,
-            current_page: pageData.currentPage
+            pageSize: pageData.pageSize,
+            currentPage: pageData.currentPage
         }
-        //const res = await getList(params)
-        //tableData.value = res.records
-        //pageData.total = res.total_items
+        const res: any = await getList(params)
+        const data = res.data
+        console.log("getDataList", data)
+        tableData.value = data.results
+        pageData.total = data.total
     }
     //初始化页面所需数据
     const init = () => {
@@ -220,6 +251,6 @@
 
 <style lang="scss" scoped>
     .userMana {
-    width: 100%;
+        width: 100%;
     }
 </style>

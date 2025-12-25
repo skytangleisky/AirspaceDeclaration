@@ -21,7 +21,8 @@
 
 <script setup lang="ts">
     import {reactive, ref} from 'vue'
-    import {del, getList, update, add, getSuperiorUnit} from "~/api/人影/ryUnit.ts"
+    import {del, getList, update, add} from "~/api/人影/ryUnit.ts"
+    import {queryRyUnitList} from "~/api/人影/commonApi.ts"
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {ubyTypeDict, connectTypeDict, yesNoDict} from "~/utils/Dict.ts"
@@ -232,7 +233,7 @@
      */
     const getStrMgrDict = async () => {
         try {
-            const res = await getSuperiorUnit()
+            const res = await queryRyUnitList()
             const data = res.data.results
             strMgrDict.value.length = 0
             data.forEach((item: { strID: string, strName: string }) => {

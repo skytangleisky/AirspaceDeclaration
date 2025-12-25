@@ -10,11 +10,9 @@
         </div>
         <div class="box-bottom">
             <transition name="fade" mode="out-in">
-                <keep-alive>
-                    <component
-                        :is="currentComponent"
-                    ></component>
-                </keep-alive>
+                <component
+                    :is="currentComponent"
+                ></component>
             </transition>
         </div>
     </div>
@@ -36,10 +34,10 @@
     const UserMana = defineMarkedAsyncComponent(() => import ("./assistantMana/userMana.vue"))
     const RoleMana = defineMarkedAsyncComponent(() => import ("./assistantMana/roleMana.vue"))
     //历史查询统计
-    const jobHistory = defineMarkedAsyncComponent(()=>import("./historyQuery/jobHistory.vue"))
-    const operationPointStatistics = defineMarkedAsyncComponent(()=>import("./historyQuery/operationPointStatistics.vue"))
-    const replyStatistics = defineMarkedAsyncComponent(()=>import("./historyQuery/replyStatistics.vue"))
-    const violationRecord = defineMarkedAsyncComponent(()=>import("./historyQuery/violationRecord.vue"))
+    const jobHistory = defineMarkedAsyncComponent(() => import("./historyQuery/jobHistory.vue"))
+    const operationPointStatistics = defineMarkedAsyncComponent(() => import("./historyQuery/operationPointStatistics.vue"))
+    const replyStatistics = defineMarkedAsyncComponent(() => import("./historyQuery/replyStatistics.vue"))
+    const violationRecord = defineMarkedAsyncComponent(() => import("./historyQuery/violationRecord.vue"))
     
     const props = defineProps({
         activeContent: {
@@ -81,12 +79,11 @@
         }, {
             label: "用户管理",
             component: UserMana
-        }, {
-            label: "角色管理",
-            component: RoleMana
-        }],
+        },
+            //{ label: "角色管理", component: RoleMana }
+        ],
         defaultIndex: 0
-    },{
+    }, {
         title: '历史查询统计',
         menuList: [{
             label: "作业历史",

@@ -1,8 +1,8 @@
 import request from '~/utils/request'
-import {RyOperationOpintQuery} from "~/api/type.ts"
+import {RyUnitQuery} from "~/api/type.ts"
 
 const url = "/backend/db/default"
-const tableName = 'zydpara'
+const tableName = 'zydhisdata'
 
 export async function add(data: any) {
     return request({
@@ -38,7 +38,7 @@ export async function update(data: any) {
 }
 
 //分页查询
-export async function getList(data: RyOperationOpintQuery) {
+export async function getList(data: RyUnitQuery) {
     const offset = data.currentPage * data.pageSize - data.pageSize
     return request({
         url,
@@ -46,13 +46,14 @@ export async function getList(data: RyOperationOpintQuery) {
         data: {
             offset: offset,
             limit: data.pageSize,
+            select: ["*"],
             //orderby:["strID desc"],
             where:[
                 {
                     relation:"and",
-                    field:"u1.strCode",
+                    field:"u1.strID",
                     relationship:"like",
-                    condition:`%${data?.strCode?data.strCode:''}%`,
+                    condition:`%${data?.strID?data.strID:''}%`,
                 },{
                     relation:"or",
                     field:"u1.strName",
@@ -62,8 +63,9 @@ export async function getList(data: RyOperationOpintQuery) {
             ]
         },
         headers: {
-            table:tableName
+            table: tableName
         }
     })
 }
+
 

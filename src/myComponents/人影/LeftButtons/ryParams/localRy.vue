@@ -10,7 +10,8 @@
     import {reactive, onMounted, ref} from 'vue';
     import {connectTypeDict, ubyTypeDict, yesNoDict} from "~/utils/Dict.ts";
     import {Dict} from "~/api/type.ts";
-    import {getSuperiorUnit, add} from "~/api/人影/ryUnit.ts";
+    import { add} from "~/api/人影/ryUnit.ts";
+    import {queryRyUnitList} from "~/api/人影/commonApi.ts"
     import {ElMessage} from "element-plus";
     
     let addForm = reactive({})
@@ -108,7 +109,7 @@
      */
     const getStrMgrDict = async () => {
         try {
-            const res = await getSuperiorUnit()
+            const res = await queryRyUnitList()
             const data = res.data.results
             strMgrDict.value.length = 0
             data.forEach((item: { strID: string, strName: string }) => {

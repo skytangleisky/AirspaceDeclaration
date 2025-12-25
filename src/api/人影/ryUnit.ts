@@ -68,19 +68,3 @@ export async function getList(data: RyUnitQuery) {
     })
 }
 
-//获取上级单位信息
-export async function getSuperiorUnit() {
-    return request({
-        url,
-        method: 'POST',
-        data: {
-            offset: 0,
-            limit: 0,
-            distinct: true,
-            select: ["strID", "strName"],
-        },
-        headers: {
-            table: tableName
-        }
-    })
-}
