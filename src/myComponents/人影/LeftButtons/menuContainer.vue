@@ -10,9 +10,11 @@
         </div>
         <div class="box-bottom">
             <transition name="fade" mode="out-in">
-                <component
-                    :is="currentComponent"
-                ></component>
+                <keep-alive>
+                    <component
+                        :is="currentComponent"
+                    ></component>
+                </keep-alive>
             </transition>
         </div>
     </div>
@@ -33,6 +35,11 @@
     const VoiceSet = defineMarkedAsyncComponent(() => import ("./assistantMana/set.vue"))
     const UserMana = defineMarkedAsyncComponent(() => import ("./assistantMana/userMana.vue"))
     const RoleMana = defineMarkedAsyncComponent(() => import ("./assistantMana/roleMana.vue"))
+    //历史查询统计
+    const jobHistory = defineMarkedAsyncComponent(()=>import("./historyQuery/jobHistory.vue"))
+    const operationPointStatistics = defineMarkedAsyncComponent(()=>import("./historyQuery/operationPointStatistics.vue"))
+    const replyStatistics = defineMarkedAsyncComponent(()=>import("./historyQuery/replyStatistics.vue"))
+    const violationRecord = defineMarkedAsyncComponent(()=>import("./historyQuery/violationRecord.vue"))
     
     const props = defineProps({
         activeContent: {
@@ -79,6 +86,22 @@
             component: RoleMana
         }],
         defaultIndex: 0
+    },{
+        title: '历史查询统计',
+        menuList: [{
+            label: "作业历史",
+            component: jobHistory
+        }, {
+            label: "作业点使用统计",
+            component: operationPointStatistics
+        }, {
+            label: "批复率统计",
+            component: replyStatistics
+        }, {
+            label: "违规记录",
+            component: violationRecord
+        }],
+        defaultIndex: 0
     },]
     
     
@@ -87,17 +110,15 @@
     const activeIndex = ref<number>(0)
     
     watch(() => props.activeContent, newVal => {
-        console.log("activeContent", newVal)
         const renderIndex = renderData.findIndex(item => {
             return item.title == newVal
         })
-        console.log("renderIndex", renderIndex)
         menuList.value = renderData[renderIndex].menuList
         renderTitle.value = renderData[renderIndex].title
         activeIndex.value = renderData[renderIndex].defaultIndex
     }, {immediate: true})
     
-    
+    //获取动态组件
     const currentComponent = computed(() => {
         if (menuList.value.length === 0) {
             return
@@ -112,9 +133,7 @@
      * @param index - 菜单索引
      */
     const changeMenu = (index: number) => {
-        if (index >= 0 && index < menuList.value.length) {
-            activeIndex.value = index
-        }
+        activeIndex.value = index
     }
 </script>
 

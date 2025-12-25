@@ -6,9 +6,8 @@
                     
                     <div v-if="!item.click && item.active" class="menu" @click.stop>
                         <alarm v-if="item.content==='告警控制'"></alarm>
-                        <menuContainer v-if="item.content==='人影参数' || item.content==='辅助管理'"
+                        <menuContainer v-if="item.content==='人影参数' || item.content==='辅助管理' || item.content==='历史查询统计'"
                                        :activeContent="item.content"></menuContainer>
-                        <alarm v-if="item.content==='历史查询统计'"></alarm>
                         <alarm v-if="item.content==='查询统计'"></alarm>
                     </div>
                     <el-tooltip
