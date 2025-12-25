@@ -4,8 +4,14 @@
       <div :class="`btn-box ${setting.人影.监控.是否显示作业面板?'active':''}`" @click="workButtonClick"><el-icon v-html="workSvg" style="font-size: 32px;"></el-icon><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><el-icon v-html="positionSvg" style="font-size: 32px;"></el-icon><div class="triangleClass"></div></div>
       <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
-      <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
-      <div class="btn-box"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
+      <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick">
+          <div class="toolClass"></div>
+          <div class="triangleClass"></div>
+      </div>
+      <div class="btn-box">
+          <div class="favoritesClass"></div>
+          <div class="triangleClass"></div>
+      </div>
     </div>
     <div class="side-box">
       <div class="side-box-left">

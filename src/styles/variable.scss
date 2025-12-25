@@ -1,15 +1,18 @@
-$grid-1:4px;
-$grid-2:12px;
-$grid-3:16px;
-$grid-4:20px;
-$grid-5:24px;
+$grid-1:.04rem;
+$grid-2:.08rem;
+$grid-3:.16rem;
+$grid-4:.20rem;
+$grid-5:.24rem;
 
 $page-padding:$grid-3;
 
-$border-radius-1:5px;
-$border-radius-2:8px;
-$border-radius-3:12px;
-$border-radius-4:16px;
-$border-radius-5:20px;
+$border-radius-1:.05rem;
+$border-radius-2:.08rem;
+$border-radius-3:.12rem;
+$border-radius-4:.16rem;
+$border-radius-5:.20rem;
 
-$scrollbar-width:8px;
+$scrollbar-width:.08rem;
+
+$global-button-height:.4rem;
+$global-input-height:$global-button-height;

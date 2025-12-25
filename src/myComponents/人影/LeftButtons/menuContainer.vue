@@ -133,18 +133,30 @@
         activeIndex.value = index
     }
 </script>
+<style lang="scss">
 
+</style>
 <style scoped lang="scss">
-    $btn-height: .4rem;
     $btn-width: 0.8rem;
     $tips-height: 0.08rem;
+    
+    :deep(.el-button){
+        height: $global-button-height !important;
+    }
+    :deep(.el-input),
+    :deep(.el-select__wrapper){
+        height: $global-input-height !important;
+    }
+    :deep(.avue-crud__pagination){
+        padding: 0 !important;
+        margin-top: $grid-2 !important;
+    }
     .menu-container {
         width: 6rem;
         
-        .avue-crud__pagination{
-            padding: 0 !important;
-            margin-top: $grid-2 !important;
-        }
+       
+
+
         .fade-enter-active,
         .fade-leave-active {
             transition: opacity 0.25s ease, transform 0.25s ease;
@@ -187,8 +199,8 @@
             gap: $grid-2;
             
             .menu-item {
-                height: $btn-height;
-                line-height: $btn-height;
+                height: $global-button-height;
+                line-height: $global-button-height;
                 background: var(--el-bg-color-overlay);
                 color: var(--el-text-color-primary);
                 padding: 0 $grid-3;
@@ -208,6 +220,7 @@
             
             .menu-item.active {
                 background: linear-gradient(135deg, var(--el-color-primary), var(--el-color-primary-light-5));
+                //background: var(--el-color-primary);
                 color: #fff;
                 box-shadow: 0 0 .2rem var(--el-color-primary-light-5);
                 
@@ -220,7 +233,7 @@
                 //    border-top: calc($tips-height / 2) solid transparent;
                 //    border-bottom: calc($tips-height / 2) solid transparent;
                 //    position: absolute;
-                //    top: calc(($btn-height - $tips-height) / 2);
+                //    top: calc(($global-button-height - $tips-height) / 2);
                 //}
                 //
                 //&::before {
