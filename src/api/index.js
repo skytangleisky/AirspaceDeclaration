@@ -32,9 +32,9 @@ export function getAll({database,table}){
     }
   })
 }
-export function exec({database,query}){
+export function exec(query){
   return request({
-    url: '/backend/transaction?'+database,
+    url: '/backend/transaction',
     method: 'post',
     data:query
   })

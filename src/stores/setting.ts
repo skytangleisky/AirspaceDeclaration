@@ -399,8 +399,10 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        烟炉统计信息:'',
         selectedRegion:new Array<string>(),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
+        checkedKeys_stove:new Array<string>(),//用于烟炉过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
         基本站:false,

@@ -3,11 +3,9 @@
     <div>
       <el-input v-model="condition" style="width: 240px" placeholder="请输入过滤条件">
         <template #prefix><el-icon><Search /></el-icon></template><template #append>
-          <el-button type="primary" size="small" @click="getData()"
-            >搜索</el-button
-          ></template
-        ></el-input
-      >
+          <el-button type="primary" size="small" @click="getData()">搜索</el-button>
+        </template>
+      </el-input>
     </div>
     <div class="flex flex-col relative" style="flex-grow: 1; overflow: auto">
       <div class="flex flex-row z-11">

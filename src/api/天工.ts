@@ -95,6 +95,9 @@ export function 烟炉数据() {
           condition:'1'
         }
       ],
+      orderby:[
+        "strStoveID ASC"
+      ],
       distinct:false,
       offset:0,
       limit:0,
@@ -327,7 +330,7 @@ export function ADSB(){
 //   ]
 
 /*烟炉接口start，注意接口调用后返回的结果是通过websocket返回，而不是通过接口直接返回*/
-export function 即时点火(stoveID:string,count:number=1){
+export function 即时点火(stoveID:string,count:number=1,no:number=1){
   return request({
     url: 'ry_api/api/stove/send_cmd',
     method: 'post',
@@ -337,7 +340,7 @@ export function 即时点火(stoveID:string,count:number=1){
       "stoveID": stoveID,//110108XT2
       "cmd": "JF",
       "iPara": count,//点火数量
-      "sPara": ''
+      "sPara": `${no}`//表示第几根烟条
     }
   })
 }
@@ -1673,16 +1676,21 @@ export function getAllShouldExpendRegion(){
   })
 }
 
-export function 烟炉历史(paginationOption:any,range:[Date, Date]){
-  return request({
-    url:'/backend/db/default',
-    method:'post',
-    headers:{
-      table:'STOVEFIREHIS',
-    },
-    data:{
-      select:['*'],
-      where:range?[
+export function 烟炉历史(paginationOption:any,range:[Date, Date],districts:string[]=[]){
+  const data = {
+    select:['*'],
+    where:new Array(),
+    orderby:[
+      'writeTm desc'
+    ],
+    "distinct": false,
+    "offset": (paginationOption.currentPage - 1) * paginationOption.pageSize,
+    "limit": paginationOption.pageSize,
+  }
+  if(range){
+    data.where.push({
+      relation:'group',
+      children:[
         {
           "relation": "AND",
           "field": "beginTm",
@@ -1695,14 +1703,29 @@ export function 烟炉历史(paginationOption:any,range:[Date, Date]){
           "relationship": "<=",
           "condition": moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
         }
-      ]:[],
-      orderby:[
-        'writeTm desc'
-      ],
-      "distinct": false,
-      "offset": (paginationOption.currentPage - 1) * paginationOption.pageSize,
-      "limit": paginationOption.pageSize,
-    }
+      ]
+    })
+  }
+  if(districts.length>0){
+    data.where.push({
+      relation:'group',
+      children:[
+        ...districts.map(item=>({
+          "relation": "OR",
+          "field": "mgr_unit",
+          "relationship": "like",
+          "condition": item+'%'
+        }))
+      ]
+    })
+  }
+  return request({
+    url:'/backend/db/default',
+    method:'post',
+    headers:{
+      table:'STOVEFIREHIS',
+    },
+    data,
   })
 }
 export function 修改烟炉历史(data:any){

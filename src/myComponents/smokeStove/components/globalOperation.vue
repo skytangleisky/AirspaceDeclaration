@@ -1,7 +1,10 @@
 <template>
   <div class="globalOperation">
     <el-tabs v-model="activeName" @tab-click="tabClickHandle">
-      <el-tab-pane label="烟炉状态" name="first">
+      <el-tab-pane name="first">
+        <template #label>
+          <span>烟炉状态</span>
+        </template>
         <div class="smoke-stove-box">
           <template
               v-for="(item, index) in sortSmokeStoveList"
@@ -10,7 +13,7 @@
             <div class="smoke-stove-item-card">
               <div
                   class="smoke-stove-item"
-                  :class="`${currentStove.strStoveID == item.strStoveID?'active':''} ${item.status==0?'b-transparent default':item.status==1?'b-#2256cd':'b-red'} b-solid`"
+                  :class="`${currentStove.strStoveID == item.strStoveID?'active':''} ${item.status==0?'default':''}`"
                   @click="chooseSmokeStove(item)"
               >
                 <div class="stove-item-top">
@@ -52,17 +55,27 @@
       </el-tab-pane>
       <el-tab-pane label="消息" name="second">
         <div ref="logContainer" style="height: 100%;overflow: auto;white-space: pre;">
-          <div v-for="item in logInfoList" v-html="item" style="display:flex;"></div>
+          <template v-for="item in logInfoList">
+            <div v-if="setting.人影.监控.checkedKeys_stove.some(key=>item.strMgrUnit.includes(key))" v-html="item.text" style="display:flex;"></div>
+          </template>
           <el-icon class="trash" @click="clearAll" v-html="trashSvg" style="position: absolute;right:20px;bottom:0;font-size:20px;"></el-icon>
         </div>
       </el-tab-pane>
       <el-tab-pane label="作业历史" name="third"><smoke-history></smoke-history></el-tab-pane>
     </el-tabs>
+    <div style="position: absolute;top:20px;right:20px;width:1400px;display: flex;justify-content: space-between;align-items: center;">
+      <div><div v-show="activeName=='third'" style="display: flex;" v-html="setting.人影.监控.烟炉统计信息"></div></div>
+      <el-button size="small" :icon="Filter" circle @click="handleFilterClick"></el-button>
+    </div>
   </div>
+  <FilterDialog v-model:show="show"></FilterDialog>
 </template>
 
 <script setup lang="ts">
-import {ElMessage} from "element-plus";
+import { useSettingStore } from '~/stores/setting';
+const setting = useSettingStore()
+import FilterDialog from './filterDialog.vue'
+import { Filter } from "@element-plus/icons-vue";
 import trashSvg from "~/assets/trash.svg?raw";
 import {ref, reactive, inject, watch, computed, onMounted, onBeforeUnmount} from "vue";
 import type {TabsPaneContext} from "element-plus";
@@ -71,24 +84,38 @@ import moment from "moment";
 import {eventbus} from '~/eventbus/index'
 import smokeHistory from './smokeHistory.vue'
 import { useStationStore } from "~/stores/station";
+const show = ref(false)
 const station = useStationStore();
-const sortSmokeStoveList = computed(() => {
-  const selected = new Array()
-  const unSelected = new Array()
-  for(let i=0;i<smokeStoveList.length;i++){
-    if(smokeStoveList[i].checked){
-      selected.push(smokeStoveList[i])
-    }else{
-      unSelected.push(smokeStoveList[i])
+// const sortSmokeStoveList = computed(() => {
+//   // 先排序，选中的在前面
+//   // const selected = new Array()
+//   // const unSelected = new Array()
+//   // for(let i=0;i<smokeStoveList.length;i++){
+//   //   if(smokeStoveList[i].checked){
+//   //     selected.push(smokeStoveList[i])
+//   //   }else{
+//   //     unSelected.push(smokeStoveList[i])
+//   //   }
+//   // }
+//   // return selected.concat(unSelected)
+//   return smokeStoveList
+// })
+
+const smokeStoveList = inject('smokeStoveList', reactive(new Array<any>()))
+const sortSmokeStoveList = reactive<any[]>([])
+watch(()=>setting.人影.监控.checkedKeys_stove, (newVal, oldVal) => {
+  const filterResults = new Array()
+  smokeStoveList.forEach(item => {
+    if(newVal.some((val)=>item.strMgrUnit.includes(val))){
+      filterResults.push(item)
     }
-  }
-  return selected.concat(unSelected)
+  })
+  sortSmokeStoveList.splice(0, sortSmokeStoveList.length, ...filterResults)
 })
 
 const logContainer = ref()
-const logInfoList = inject('logInfoList', reactive(new Array<string>()))
+const logInfoList = inject('logInfoList', reactive(new Array<{text:string,strMgrUnit:string}>()))
 let activeName = ref("first"); //当前选择的tab名字
-const smokeStoveList = inject('smokeStoveList', reactive(new Array<any>()))
 let currentStove = inject<any>("currentStove"); //当前选中的烟炉
 //选择烟炉
 function chooseSmokeStove(item) {
@@ -291,12 +318,23 @@ function getSmokeStoveList() {
         if (!currentStove.strStoveID) {
           currentStove.value = smokeStoveList[0]
         }
+
+
+
+        const filterResults = new Array()
+        smokeStoveList.forEach(item => {
+          if(setting.人影.监控.checkedKeys_stove.some((val)=>item.strMgrUnit.includes(val))){
+            filterResults.push(item)
+          }
+        })
+        sortSmokeStoveList.splice(0, sortSmokeStoveList.length, ...filterResults)
+
       })
       .catch((err) => {
         console.log(err);
       });
 }
-
+import {exec} from '~/api/index.js'
 // 切换tab
 const tabClickHandle = (tab: TabsPaneContext, event: Event) => {
   activeName.value = tab.paneName;
@@ -307,7 +345,7 @@ const process = (obj) => {
     if (obj.type == 'stoveOnline') {
       smokeStoveList.forEach(item => {
         if (item.strStoveID == obj.data.stove_id) {
-          logInfoList.push(moment().format('YYYY-MM-DD HH:mm:ss ') + `[<div class="color-blue">${item.strName}</div>]` + `收到烟炉状态上报`)
+          logInfoList.push({text:moment().format('YYYY-MM-DD HH:mm:ss ') + `[<div style="color:#88f">${item.strName}</div>]` + `收到烟炉状态上报`,strMgrUnit:item.strMgrUnit})
           if (logInfoList.length > 100) {
             logInfoList.splice(0, logInfoList.length - 100)
           }
@@ -322,7 +360,7 @@ const process = (obj) => {
     } else if (obj.type == 'stoveCmdResponse') {
       smokeStoveList.forEach(item => {
         if (item.strStoveID == obj.data.stove_id) {
-          logInfoList.push(moment().format('YYYY-MM-DD HH:mm:ss ') + `[<div class="color-blue">${item.strName}</div>]` + obj.data.res_content)
+          logInfoList.push({text:moment().format('YYYY-MM-DD HH:mm:ss ') + `[<div style="color:#88f">${item.strName}</div>]` + obj.data.res_content,strMgrUnit:item.strMgrUnit})
           if (logInfoList.length > 100) {
             logInfoList.splice(0, logInfoList.length - 100)
           }
@@ -330,15 +368,38 @@ const process = (obj) => {
       })
       for (let i = 0; i < smokeStoveList.length; i++) {
         if (smokeStoveList[i].strStoveID == obj.data.stove_id) {
-          smokeStoveList[i].availableCount = obj.data.res_content.split('').filter(item => item == '1').length;
-          smokeStoveList[i].usedCount = obj.data.res_content.split('').filter(item => item == '0' || item == '2').length;
-          smokeStoveList[i].burningCount = obj.data.res_content.split('').filter(item => item == '3').length;
+          smokeStoveList[i].availableCount = obj.data.res_content.split('').filter((item:any) => item == '1').length;
+          smokeStoveList[i].usedCount = obj.data.res_content.split('').filter((item:any) => item == '0' || item == '2').length;
+          smokeStoveList[i].burningCount = obj.data.res_content.split('').filter((item:any) => item == '3').length;
           smokeStoveList[i].currentTime = moment().format('YYYY-MM-DD HH:mm:ss')
-          smokeStoveList[i].barList.forEach((item, j) => {
-            item.forEach((it, i) => {
+          smokeStoveList[i].barList.forEach((item:any, j:number) => {
+            item.forEach((it:any, i:number) => {
               it.status = Number(obj.data.res_content.substring(j * 7 + i, j * 7 + i + 1))
             })
           })
+          //自动确认烟条点火记录
+          exec({sqls:[`
+DELETE FROM BEPK_RYB_GSYTHPT.stovefirehis
+WHERE id NOT IN (
+    SELECT MIN(id)
+    FROM BEPK_RYB_GSYTHPT.stovefirehis
+    WHERE stoveID = '${smokeStoveList[i].strStoveID}'
+      AND fireStoveBarNo BETWEEN 1 AND ${smokeStoveList[i].usedCount}
+      AND (bEdit = 0 OR bEdit IS NULL)
+    GROUP BY stoveID, fireStoveBarNo
+)
+AND stoveID = '${smokeStoveList[i].strStoveID}'
+AND fireStoveBarNo BETWEEN 1 AND ${smokeStoveList[i].usedCount}
+AND (bEdit = 0 OR bEdit IS NULL)
+`,`
+UPDATE BEPK_RYB_GSYTHPT.stovefirehis
+SET bEdit = 1
+WHERE stoveID = '${smokeStoveList[i].strStoveID}'
+  AND fireStoveBarNo BETWEEN 1 AND ${smokeStoveList[i].usedCount}
+  AND (bEdit = 0 OR bEdit IS NULL)
+`]}).then(res=>{
+    // console.log(res)
+  })
           break;
         }
       }
@@ -365,6 +426,9 @@ onBeforeUnmount(() => {
   eventbus.off('烟炉数据', process)
   eventbus.off('烟炉websocket已连接', getData)
 })
+const handleFilterClick = () => {
+  show.value = true
+}
 </script>
 
 <style lang="scss" scoped>
@@ -391,12 +455,12 @@ onBeforeUnmount(() => {
   }
 
   .smoke-stove-box {
-    height: 100%;
+    height: fit-content;
     display: grid;
     grid-template-columns: repeat(9, 1fr);
     grid-template-rows: repeat(2, auto);
     grid-gap: $grid-2;
-    place-content: center;
+    place-content: top;
 
     .smoke-stove-item-card {
       .smoke-stove-item {
@@ -470,7 +534,7 @@ onBeforeUnmount(() => {
 
       .smoke-stove-item.active {
         // transform: translate(0.04rem,0.04rem);
-        border-color: var(--el-color-primary-light-3);
+        border-color: var(--el-color-success);
         border-width: 4px;
         // background-color: var(--el-color-primary-light-7);
         box-shadow: var(--el-box-shadow-light);

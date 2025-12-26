@@ -153,11 +153,11 @@
             <div class="form-item">
                 <div class="item-title">信息获取</div>
                 <div class="item-content">
-                    <el-button type="primary" @click="click">查询站点信息</el-button>
+                    <el-button type="primary" @click="click">查询站点烟条信息</el-button>
                     <el-button type="primary" @click="queryWeatherInfo">查询站点气象信息</el-button>
-                    <el-button class="elButton" @click="queryAllStoves" type="primary">一键获取烟炉状态</el-button>
-                    <el-button class="elButton" @click="queryWeather" type="primary">一键获取气象信息</el-button>
-                    <el-button class="elButton" @click="setAllTime" type="primary">一键设置烟炉时间</el-button>
+                    <el-button class="elButton" @click="queryAllStoves">获取所有烟炉状态</el-button>
+                    <el-button class="elButton" @click="queryAllWeather">获取所有气象信息</el-button>
+                    <el-button class="elButton" @click="setAllTime">设置所有烟炉时间</el-button>
                 </div>
             </div>
         </div>
@@ -180,66 +180,80 @@ const selectedStove = computed(()=>{
     return arr
 })
 function queryAllStoves() {
-  let promiseList: any[] = []
-  stoveList.forEach((item) => {
-    promiseList.push(查询烟条状态(item.strStoveID))
-  })
-  Promise.all(promiseList).then((res) => {
-    ElMessage({
-      type: "success",
-      message: "一键查询烟条状态成功",
-    });
-  })
-}
-
-function queryWeather() {
-  let promiseList: any[] = []
-  stoveList.forEach((item) => {
-    promiseList.push(查询天气情况(item.strStoveID))
-  })
-  Promise.all(promiseList).then((res) => {
-    ElMessage({
-      type: "success",
-      message: "一键查询天情况成功",
-    });
-  })
-}
-
-function setAllTime() {
-  let promiseList: any[] = []
-  stoveList.forEach((item) => {
-    promiseList.push(给烟炉设置时间(item.strStoveID, moment().format('YYYY-MM-DD HH:mm:ss')))
-  })
-  Promise.all(promiseList).then((res) => {
-    ElMessage({
-      type: "success",
-      message: "一键设置时间成功",
-    });
-  })
-}
-function click(){
-    ElMessageBox.alert('是否确定发送状态查询命令', '提示', {
+    ElMessageBox.alert('发送获取所有烟炉状态查询命令？', '提示', {
         // if you want to disable its autofocus
         // autofocus: false,
         confirmButtonText: '确定',
         type: 'info'
     }).then(() => {
-        查询烟条状态(currentStove.value.strStoveID).then(res=>{
-            ElMessage({
-                type:'success',
-                message: `状态查询命令发送成功`,
-            })
-        }).catch(()=>{
-            ElMessage({
-                type:'error',
-                message: `状态查询命令发送失败`,
-            })
-        });
-        stoveList.forEach((item)=>{
-            if(item.strStoveID === currentStove.value.strStoveID){
-                item.currentTime = '数据获取中···';
-            }
+        let promiseList: any[] = []
+        stoveList.forEach((item) => {
+            promiseList.push(查询烟条状态(item.strStoveID))
         })
+        Promise.all(promiseList).then((res) => {
+            ElMessage({
+            type: "success",
+            message: "一键查询烟条状态成功",
+            });
+        })
+    })
+}
+
+function queryAllWeather() {
+    ElMessageBox.alert('发送获取所有气象信息查询命令？', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        let promiseList: any[] = []
+        stoveList.forEach((item) => {
+            promiseList.push(查询天气情况(item.strStoveID))
+        })
+        Promise.all(promiseList).then((res) => {
+            ElMessage({
+            type: "success",
+            message: "一键查询天情况成功",
+            });
+        })
+    })
+}
+
+function setAllTime() {
+    ElMessageBox.alert('发送设置所有烟炉时间命令？', '提示', {
+        // if you want to disable its autofocus
+        // autofocus: false,
+        confirmButtonText: '确定',
+        type: 'info'
+    }).then(() => {
+        let promiseList: any[] = []
+        stoveList.forEach((item) => {
+            promiseList.push(给烟炉设置时间(item.strStoveID, moment().format('YYYY-MM-DD HH:mm:ss')))
+        })
+        Promise.all(promiseList).then((res) => {
+            ElMessage({
+            type: "success",
+            message: "一键设置时间成功",
+            });
+        })
+    })
+}
+function click(){
+    查询烟条状态(currentStove.value.strStoveID).then(res=>{
+        ElMessage({
+            type:'success',
+            message: `状态查询命令发送成功`,
+        })
+    }).catch(()=>{
+        ElMessage({
+            type:'error',
+            message: `状态查询命令发送失败`,
+        })
+    });
+    stoveList.forEach((item)=>{
+        if(item.strStoveID === currentStove.value.strStoveID){
+            item.currentTime = '数据获取中···';
+        }
     })
 }
 import { 查询烟条状态,即时点火,烟条装载,烟条卸载,烟炉的时间查询,给烟炉设置时间,查询天气情况,获取所有烟炉的预约点火信息,预约点火,取消预约点火,判断是否可以点火 } from "~/api/天工";
@@ -299,7 +313,7 @@ watch([currentStove,currentTime],()=>{
                                                             message: `预约点火开始`,
                                                         })
                                                     }
-                                                    即时点火(stove.strStoveID,item.flare).then(res=>{
+                                                    即时点火(stove.strStoveID,item.flare,stove.usedCount+1).then(res=>{
                                                         console.log(`第${i+1}次预约点火成功`)
                                                         ElMessage({
                                                             type:'success',
@@ -351,7 +365,14 @@ function fire(){
     confirmButtonText: '确定',
     type: 'info'
     }).then(() => {
-        即时点火(currentStove.value.strStoveID,immedForm.num).then(res=>{
+        if(currentStove.value.availableCount < 1){
+            ElMessage({
+                type:'warning',
+                message: `烟炉${currentStove.value.strName}[${currentStove.value.strStoveID}]可用烟条数量不足，无法立即点火`,
+            })
+            return
+        }
+        即时点火(currentStove.value.strStoveID,immedForm.num,currentStove.value.usedCount+1).then(res=>{
             ElMessage({
                 type: 'success',
                 message: `立即点火命令发送成功`,
@@ -373,9 +394,17 @@ function allfire(){
     type: 'info'
     }).then(() => {
         let funcs = new Array()
-        selectedStove.value.forEach(stove=>{
-            funcs.push(Promise.resolve(即时点火(stove.strStoveID,immedForm.num)))
-        })
+        for(let i=0;i<selectedStove.value.length;i++){
+            const stove = selectedStove.value[i]
+            if(stove.availableCount < 1){
+                ElMessage({
+                    type:'warning',
+                    message: `烟炉${stove.strName}[${stove.strStoveID}]可用烟条数量不足，无法立即点火`,
+                })
+                return
+            }
+            funcs.push(Promise.resolve(即时点火(stove.strStoveID,immedForm.num,stove.usedCount+1)))
+        }
         Promise.all(funcs).then(res=>{
             ElMessage({
                 type: 'success',
@@ -497,22 +526,15 @@ function setTime(){
     })
 }
 function queryWeatherInfo(){
-    ElMessageBox.alert('是否确定发送查询气象信息命令', '提示', {
-        // if you want to disable its autofocus
-        // autofocus: false,
-        confirmButtonText: '确定',
-        type: 'info'
-    }).then(()=>{
-        查询天气情况(currentStove.value.strStoveID).then(res=>{
-            ElMessage({
-                type:'success',
-                message: `查询气象信息命令发送成功`,
-            })
-        }).catch(err=>{
-            ElMessage({
-                type:'error',
-                message: `查询气象信息命令发送失败`,
-            })
+    查询天气情况(currentStove.value.strStoveID).then(res=>{
+        ElMessage({
+            type:'success',
+            message: `查询气象信息命令发送成功`,
+        })
+    }).catch(err=>{
+        ElMessage({
+            type:'error',
+            message: `查询气象信息命令发送失败`,
         })
     })
 }
@@ -563,6 +585,13 @@ const 预约 = () => {
         confirmButtonText: '确定',
         type: 'info'
     }).then(() => {
+        if(currentStove.value.availableCount < 1){
+            ElMessage({
+                type:'warning',
+                message: `烟炉${currentStove.value.strName}[${currentStove.value.strStoveID}]可用烟条数量不足，无法预约`,
+            })
+            return
+        }
         预约点火({beginTime:appointForm.beginTime,interval:appointForm.interval,flare:appointForm.flare,times:appointForm.times,stoveID:currentStove.value.strStoveID}).then(res=>{
             currentTime.value = Date.now()
             ElMessage({
@@ -585,9 +614,17 @@ const 批量预约 = () => {
         type: 'info'
     }).then(() => {
         const funcs = new Array()
-        selectedStove.value.forEach((stove:any)=>{
+        for(let i=0;i<selectedStove.value.length;i++){
+            const stove = selectedStove.value[i]
+            if(stove.availableCount < 1){
+                ElMessage({
+                    type:'warning',
+                    message: `烟炉${stove.strName}[${stove.strStoveID}]可用烟条数量不足，无法预约`,
+                })
+                return
+            }
             funcs.push(Promise.resolve(预约点火({beginTime:appointForm.beginTime,interval:appointForm.interval,flare:appointForm.flare,times:appointForm.times,stoveID:stove.strStoveID})))
-        })
+        }
         Promise.all(funcs).then(res=>{
             currentTime.value = Date.now()
             ElMessage({
