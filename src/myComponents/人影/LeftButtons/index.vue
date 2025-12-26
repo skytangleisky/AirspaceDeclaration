@@ -105,8 +105,6 @@
 </script>
 <style lang="scss" scoped>
     $arrow-size: .12rem;
-    
-    
     .left-container {
         position: absolute;
         left: $page-padding;
@@ -131,9 +129,9 @@
                 background-color: var(--el-bg-color-opacity-8);
                 box-sizing: border-box;
                 border: 1px solid var(--el-border-color);
-                border-radius: $border-radius-1;
+                border-radius: $border-radius-2;
                 padding: $grid-3;
-                
+                //伪元素画小三角
                 &::before {
                     content: "";
                     display: block;
@@ -141,11 +139,27 @@
                     height: 0;
                     border-top: calc($arrow-size / 2) solid transparent;
                     border-bottom: calc($arrow-size / 2) solid transparent;
+                    border-right: $arrow-size solid var(--el-border-color);
                     position: absolute;
                     top: .12rem;
-                    left: -$arrow-size;
-                    border-right: $arrow-size solid var(--el-bg-color-opacity-8);
+                    left: -$arrow-size - 0.01rem;
+                    //left:-(calc(#{$arrow-size} + .01rem))  ;
+                    //border-right: $arrow-size solid var(--el-border-color);
                 }
+                
+                &::after {
+                    content: "";
+                    display: block;
+                    width: 0;
+                    height: 0;
+                    border-top: calc((#{$arrow-size} - .02rem) / 2) solid transparent;
+                    border-bottom: calc((#{$arrow-size} - .02rem) / 2) solid transparent;
+                    border-right: calc(#{$arrow-size} - .02rem) solid var(--el-bg-color-opacity-8);
+                    position: absolute;
+                    top: .13rem;
+                    left: -$arrow-size + .02rem;
+                }
+                
             }
             
         }
