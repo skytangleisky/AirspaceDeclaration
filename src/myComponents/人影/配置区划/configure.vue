@@ -94,6 +94,7 @@ function buildTree(list: Array<any>, parentId: string | null = null): Array<any>
 </script>
 <style lang="scss" scoped>
   .configure-region{
+    overflow: hidden;
     padding:10px 20px;
     cursor:default;
     width:100%;

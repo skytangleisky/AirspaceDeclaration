@@ -1,5 +1,5 @@
 <template>
-  <frame v-model:render="setting.批复率统计" :width="1400" :height="520">
+  <frame title="批复率统计" v-model:render="setting.批复率统计" :width="1400" :height="520">
     <Configure></Configure>
   </frame>
 </template>

@@ -1,7 +1,7 @@
 <template>
   <div class="rocket" @mousedown.stop>
     <div class="title">
-      <div>人影地面作业装备通用火箭发射系统-唐刘村作业点</div><div class="status"></div>
+      </div><div class="status">
     </div>
     <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
       <el-tab-pane label="作业控制" name="first">

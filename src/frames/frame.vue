@@ -1,12 +1,16 @@
 <template>
   <teleport to="#wstd-container">
     <div ref="meeting" v-dragable class="meeting" v-show="SHOW" v-if="IF">
+      <div class="title">{{ title }}</div>
       <slot></slot>
       <div class="close-btn" @click="close" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div>
   </teleport>
 </template>
 <script setup lang="ts">
+const title = defineModel('title',{
+  default:'标题'
+})
 import {onMounted, ref, watch} from 'vue'
 function close(){
   if(once.value){
@@ -54,8 +58,12 @@ import closeUrl from '~/assets/close.svg?raw'
 </script>
 <style lang="scss" scoped>
 .meeting{
+  background:darkblue;
+  width:100%;
   border-radius:4px;
   box-sizing:border-box;
+  display: flex;
+  flex-direction: column;
   --width:800px;
   --height:400px;
   width:var(--width);
@@ -73,6 +81,16 @@ import closeUrl from '~/assets/close.svg?raw'
     .close-btn {
       display: flex;
     }
+  }
+  .title{
+    background-color: var(--el-color-primary);
+    position: relative;
+    white-space: nowrap;
+    font-size: 0.2rem;
+    font-weight: bold;
+    color: white;
+    padding-left: 4px;
+    text-align: left;
   }
 
   .close-btn {

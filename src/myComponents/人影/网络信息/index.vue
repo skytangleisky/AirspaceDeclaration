@@ -1,5 +1,5 @@
 <template>
-  <frame v-model:render="setting.网络信息" :width="1400" :height="520">
+  <frame title="网络信息" v-model:render="setting.网络信息" :width="1400" :height="520">
     <Configure></Configure>
   </frame>
 </template>

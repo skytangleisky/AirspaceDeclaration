@@ -408,7 +408,7 @@ const pos = [dest.lng,dest.lat]
 const textData = [
   {
     "offset": [
-      10,
+      100,
       0
     ],
     "textColor":[255,255,0,255],
@@ -457,10 +457,50 @@ function updateTextLayer(textData:any) {
         getLength: d => 10,
         getColor: d => [255,0,0,255]
       }),
+      new IconLayer({
+        id: 'billboard-layer',
+        pickable:true,
+        data: textData,
+        iconAtlas:billboardUrl,
+        iconMapping:{
+          marker: {
+            x: 0,
+            y: 0,
+            width: 442,
+            height: 171,
+            mask: false,
+          },
+          active: {
+            x: 0,
+            y: 171,
+            width: 442,
+            height: 171,
+            mask: false,
+          }
+        },
+        getPixelOffset: d => [d.offset[0],d.offset[1]],
+        getIcon: d => d==hoverObject?'active':'marker',
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getSize: 152,
+        sizeScale: 0.45,
+        billboard: true,
+        sizeUnits: 'pixels',
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateTextLayer(textData.slice())
+          }
+        },
+        updateTriggers:{
+          getPixelOffset: textData.map(d => d.offset),
+          getBorderColor: hoverObject,
+        },
+      }),
       new TextLayer({
         id: 'text-layer',
+        getWidth:500,
         data:textData,
-        pickable: true,
+        pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
         getColor: d => d.textColor,
@@ -479,24 +519,14 @@ function updateTextLayer(textData:any) {
           characterSet: 'auto', // ✅ 自动扫描数据中的字符
         },
         billboard: true,  // 始终朝向屏幕
-        background: true,
+        background: false,
         getBackgroundColor: [255,255,255,0.1],
         border: true,
         getBorderColor: d => d==hoverObject?d.textColor:[0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
-        getPixelOffset:d => d.offset,
-        onHover(info,evt){
-          if(!mouseDownEvt){
-            hoverObject = info.object
-            updateTextLayer(textData.slice())
-          }
-        },
-        updateTriggers:{
-          getPixelOffset: textData.map(d => d.offset),
-          getBorderColor: hoverObject,
-        },
+        getPixelOffset:d => [d.offset[0]-70,d.offset[1]],
         parameters: {
           // 关闭深度测试
           depthTest: false,
@@ -527,7 +557,7 @@ function updateTextLayer(textData:any) {
         getPosition: d => [d.fLongitude, d.fLatitude],
         getSize: d => 8,
         sizeScale: 1,
-        billboard: true
+        billboard: false,
       }),
       // new ScatterplotLayer({
       //   id: 'circles',
@@ -693,7 +723,7 @@ const 视频列表 = computed(()=>{
   }
   return arr
 })
-import { planDataType,zyddataType } from "./planPanel.vue";
+import billboardUrl from '~/assets/billboard.png?url'
 import PlanPanel from "./planPanel.vue";
 import Dialog from "./dialog.vue";
 import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";

@@ -626,6 +626,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   bottom:10px;
   height:auto;
   pointer-events: none;
+  z-index: 2;
   &::v-deep(.el-scrollbar__wrap){
     display: flex;
     flex-direction: column;

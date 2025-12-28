@@ -110,6 +110,7 @@ watch(()=>setting.触发网络信息查询,()=>{
 </script>
 <style lang="scss" scoped>
 .configure{
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor:default;
