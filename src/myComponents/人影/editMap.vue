@@ -466,15 +466,15 @@ function updateTextLayer(textData:any) {
           marker: {
             x: 0,
             y: 0,
-            width: 442,
-            height: 171,
+            width: 443,
+            height: 174,
             mask: false,
           },
           active: {
             x: 0,
-            y: 171,
-            width: 442,
-            height: 171,
+            y: 174,
+            width: 443,
+            height: 174,
             mask: false,
           }
         },
