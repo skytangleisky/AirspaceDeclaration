@@ -109,42 +109,37 @@ watch([()=>setting.人影.监控.checkedKeys_stove,数据更新时间],()=>{
     option.arr = new Array()
     paginationOption.total = 0
   }
-  let sql =
-`SELECT
+let sql = `SELECT
     m.name,
     t.mgr_unit_prefix,
-    t.cnt
+    t.cnt,
+    g.mgr_unit_cnt
 FROM (
-    SELECT
-        SUBSTR(mgr_unit, 1, 6) AS mgr_unit_prefix,
-        COUNT(*) AS cnt
-    FROM stovefirehis
-    WHERE mgr_unit IS NOT NULL AND bEdit = 1
-    GROUP BY SUBSTR(mgr_unit, 1, 6)
-) t
-JOIN map_border_info m
-  ON t.mgr_unit_prefix = m.adcode;
-`
-if(range.value){
-sql = `SELECT
-    m.name,
-    t.mgr_unit_prefix,
-    t.cnt
-FROM (
+    -- 原来的统计：prefix 级别
     SELECT
         SUBSTR(mgr_unit, 1, 6) AS mgr_unit_prefix,
         COUNT(*) AS cnt
     FROM stovefirehis
     WHERE mgr_unit IS NOT NULL
       AND bEdit = 1
-      AND beginTm >= '${moment(range.value[0]).format('YYYY-MM-DD HH:mm:ss')}'
-      AND beginTm < '${moment(range.value[1]).format('YYYY-MM-DD HH:mm:ss')}'
+      ${range.value ? `AND beginTm >= '${moment(range.value[0]).format('YYYY-MM-DD HH:mm:ss')}' AND beginTm < '${moment(range.value[1]).format('YYYY-MM-DD HH:mm:ss')}'`:''}
     GROUP BY SUBSTR(mgr_unit, 1, 6)
 ) t
 JOIN map_border_info m
-  ON t.mgr_unit_prefix = m.adcode;
+  ON t.mgr_unit_prefix = m.adcode
+JOIN (
+    -- 新增统计：prefix 下 mgr_unit 的分组数量
+    SELECT
+        SUBSTR(mgr_unit, 1, 6) AS mgr_unit_prefix,
+        COUNT(DISTINCT mgr_unit) AS mgr_unit_cnt
+    FROM stovefirehis
+    WHERE mgr_unit IS NOT NULL
+      AND bEdit = 1
+      ${range.value ? `AND beginTm >= '${moment(range.value[0]).format('YYYY-MM-DD HH:mm:ss')}' AND beginTm < '${moment(range.value[1]).format('YYYY-MM-DD HH:mm:ss')}'`:''}
+    GROUP BY SUBSTR(mgr_unit, 1, 6)
+) g
+ON t.mgr_unit_prefix = g.mgr_unit_prefix;
 `
-}
   exec({sqls:[sql]}).then((res:any)=>{
     res.data[0] = res.data[0].filter((item:any)=>{
       return setting.人影.监控.checkedKeys_stove.some(key=>item.MGR_UNIT_PREFIX.includes(key))
@@ -152,12 +147,12 @@ JOIN map_border_info m
     const totalCnt = res.data[0].reduce((sum:number, item:any) => {
       return sum + Number(item.CNT || 0);
     }, 0);
+    const totalMgrUnitCnt = res.data[0].reduce((sum:number, item:any) => {
+      return sum + Number(item.MGR_UNIT_CNT || 0);
+    }, 0);
     if(res.data[0].length>0){
-      if(range.value){
-        setting.人影.监控.烟炉统计信息 = moment(range.value[0]).format('YYYY-MM-DD HH:mm') + '至' + moment(range.value[1]).format('YYYY-MM-DD HH:mm') + '，共'+moment(range.value[1]).diff(moment(range.value[0]),'days',true).toFixed(1) + '天，'+ res.data[0].map((item:any)=>`${item.name}<div class="numberText">${item.CNT}</div>次`).join('，')+','+`共计<div class="sumText">${totalCnt}</div>次`
-      }else{
-        setting.人影.监控.烟炉统计信息 = res.data[0].map((item:any)=>`${item.name}<div class="numberText">${item.CNT}</div>次`).join('，')+','+`共计<div class="sumText">${totalCnt}</div>次`
-      }
+      const prefix = range.value ? moment(range.value[0]).format('YYYY-MM-DD HH:mm') + '至' + moment(range.value[1]).format('YYYY-MM-DD HH:mm') + '，共'+moment(range.value[1]).diff(moment(range.value[0]),'days',true).toFixed(1) + '天，':''
+      setting.人影.监控.烟炉统计信息 =  prefix + res.data[0].map((item:any)=>`${item.name}<div class="numberText">${item.MGR_UNIT_CNT}</div>个作业点<div class="numberText">${item.CNT}</div>次`).join('，')+','+`共计<div class="sumText">${totalMgrUnitCnt}</div>个作业点<div class="sumText">${totalCnt}</div>次`
     }else{
       setting.人影.监控.烟炉统计信息 = ''
     }
