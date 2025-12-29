@@ -364,7 +364,7 @@ export default function(){
 				"type": "raster",
 				// url:url2,
 				"tiles": [
-					window.location.origin+"/backend/image?x={x}&y={y}&z={z}"
+					window.location.origin+"/backend/image?x={x}&y={y}&z={z}&strokeColor=rgba(0,255,255,1)&fillColor=rgba(0,255,255,0.5)&textColor=rgba(0,0,0,1)"
 				],
 				"tileSize": 256
 			},
