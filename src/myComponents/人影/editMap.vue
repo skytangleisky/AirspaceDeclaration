@@ -2955,12 +2955,12 @@ onMounted(async() => {
           //   },
           // });
           // circleFeaturesData.features.push(circle);
-          if (item.iShortAngelEnd - item.iShortAngelBegin >= 360) {
+          if (!item.iMaxShotRange || item.iShortAngelEnd - item.iShortAngelBegin >= 360) {
             const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
               number,
               number
             ]; // 圆心点的经纬度
-            const radius: number = item.iMaxShotRange; // 半径（单位：米
+            const radius: number = item.iMaxShotRange||10000; // 半径（单位：米
             const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
             const units: turf.Units = "meters"; // 半径的单位
             const sectorPoints: [number, number][] = calculateCirclePoints(

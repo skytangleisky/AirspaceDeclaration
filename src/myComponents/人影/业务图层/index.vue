@@ -145,7 +145,6 @@
 <style lang="scss" scoped>
     .business-layer {
         padding: $grid-2;
-        z-index: 1;
         border-radius: $border-radius-1;
         //width:3.2rem;
         //height: 1.8rem;
@@ -158,7 +157,6 @@
         background-color: var(--el-bg-color-opacity-8);
         box-sizing: border-box;
         backdrop-filter: blur(.12rem);
-        
         .close-btn {
             right: .04rem;
             top: .04rem;
