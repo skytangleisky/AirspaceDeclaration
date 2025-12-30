@@ -11,6 +11,7 @@ import {useSettingStore} from "~/stores/setting";
 // import ElementPlus from "element-plus";
 // import "element-plus/dist/index.css";
 import '~/theme'
+import {isDark,useTheme} from "~/theme"
 import "~/style.css"
 import "~/styles/index.scss"
 import "~/styles/element/index.scss"
@@ -26,6 +27,8 @@ import 'mapbox-gl_wstd/dist/mapbox-gl.css'
 //   ...coms, // 展开数组应该也是可以的
 // };
 export {
+  isDark,
+  useTheme,
   resize,
   dragable,
   RgyxWorkPoint,
