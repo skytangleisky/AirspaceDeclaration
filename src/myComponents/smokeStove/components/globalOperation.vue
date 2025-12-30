@@ -381,7 +381,7 @@ const process = (obj) => {
           exec({sqls:[`
 DELETE FROM BEPK_RYB_GSYTHPT.stovefirehis
 WHERE id NOT IN (
-    SELECT MIN(id)
+    SELECT MAX(id)
     FROM BEPK_RYB_GSYTHPT.stovefirehis
     WHERE stoveID = '${smokeStoveList[i].strStoveID}'
       AND fireStoveBarNo BETWEEN 1 AND ${smokeStoveList[i].usedCount}
