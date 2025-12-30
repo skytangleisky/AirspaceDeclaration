@@ -173,8 +173,8 @@ export class PointLayer {
         let pos = this.modelOrigin, altitude = this.map.queryTerrainElevation(this.modelOrigin);
         if(projection && projection.name === 'globe'){
             const point = new mapboxgl.LngLat(pos[0], pos[1]).toEcef(altitude);
-            gl.disable(gl.DEPTH_TEST);
-            gl.depthMask(false);
+            // gl.disable(gl.DEPTH_TEST);
+            // gl.depthMask(false);
             gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             gl.useProgram(this.program);
@@ -185,8 +185,8 @@ export class PointLayer {
             gl.drawArrays(gl.POINTS, 0, 1);
         }else{
             const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(pos,altitude);
-            gl.disable(gl.DEPTH_TEST);
-            gl.depthMask(false);
+            // gl.disable(gl.DEPTH_TEST);
+            // gl.depthMask(false);
             gl.enable(gl.BLEND);
             gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             gl.useProgram(this.program);

@@ -4,8 +4,7 @@
             <div :class="`map-tool-btn ${setting.人影.监控.是否显示作业面板?'active':''}`" @click="workButtonClick">
                 <el-icon v-html="workSvg"></el-icon>
             </div>
-            <div :class="`map-tool-btn ${setting.人影.监控.是否显示分布面板?'active':''}`"
-                 @click="distributionButtonClick">
+            <div :class="`map-tool-btn ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick">
                 <el-icon v-html="positionSvg"></el-icon>
             </div>
             <div :class="`map-tool-btn ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick">
@@ -31,7 +30,7 @@
             <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
         </el-scrollbar>
         <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:fit-content;max-height:calc(100% - 20px);overflow: auto;">
-          <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+            <control-pane style="position:relative" :list="list" theme="default"></control-pane>
         </div> -->
     </div>
 </template>
@@ -45,7 +44,7 @@
     import {useMapStatusStore} from '~/stores/mapStatus'
     import {getMask} from '~/api/天工'
     import {resetTheme} from '~/theme'
-    
+
     const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
     const setting = useSettingStore()
     const mapStatus = useMapStatusStore()
@@ -765,10 +764,12 @@
         
     }
     .side-box {
+        --top: calc(#{$page-padding} + .4rem + #{$grid-3});
+        max-height: calc(100% - var(--top) - #{$page-padding});
         pointer-events: none;
         position: absolute;
         //bottom: 16px;
-        top: calc(#{$page-padding} + .4rem + #{$grid-3});
+        top: var(--top);
         right: $page-padding;
         display: flex;
     }

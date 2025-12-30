@@ -180,12 +180,12 @@ export function 作业点(){
           "relationship": "LIKE",
           "condition": getMask()
         },
-        {
-          "relation": "AND",
-          "field": "z.strWeapon",
-          "relationship": "!=",
-          "condition": "3"
-        },
+        // {
+        //   "relation": "AND",
+        //   "field": "z.strWeapon",
+        //   "relationship": "!=",
+        //   "condition": "3"
+        // },
         // {
         //   "relation": "AND",
         //   "field": "z.strIP",

@@ -1,5 +1,5 @@
 <template>
-    <div style="flex:1;width:100%;height: 100%;background-color: var(--el-bg-color-opacity-8);display: flex;flex-direction: column;">
+    <div style="flex:1;width:100%;height: 100%;background-color: var(--el-bg-color-opacity-8);display: flex;flex-direction: column">
         <el-tabs type="border-card" class="demo-tabs" style="height: 100%;">
             <el-tab-pane style="position: relative;">
                 <template #label>
