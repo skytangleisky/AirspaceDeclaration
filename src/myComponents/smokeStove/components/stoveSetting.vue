@@ -153,9 +153,9 @@
             <div class="form-item">
                 <div class="item-title">信息获取</div>
                 <div class="item-content">
-                    <el-button type="primary" @click="click">查询站点烟条信息</el-button>
+                    <el-button type="primary" @click="click">查询单站烟条信息</el-button>
                     <el-button type="primary" @click="queryAllStoves">获取所有烟炉状态</el-button>
-                    <el-button class="elButton" @click="queryWeatherInfo">查询站点气象信息</el-button>
+                    <el-button class="elButton" @click="queryWeatherInfo">查询单站气象信息</el-button>
                     <el-button class="elButton" @click="queryAllWeather">获取所有气象信息</el-button>
                     <el-button class="elButton" @click="setAllTime">设置所有烟炉时间</el-button>
                 </div>
