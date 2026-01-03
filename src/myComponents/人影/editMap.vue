@@ -129,6 +129,7 @@ import JYJCurl from '~/assets/JYJC.png?url'
 import upUrl from '~/assets/up.svg?url'
 import 地标Url from '~/assets/地标.svg?url'
 import rocketUrl from '~/assets/rocket.svg?url'
+import billboardUrl from '~/assets/billboard.png?url'
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
@@ -719,7 +720,7 @@ function 处理飞机实时位置(d:Array<{
   "ubyEmitterCat": 5,
   "strCallCode": ""
 }>){
-  d.forEach((item:any)=>{
+  map.getSource('zydSource')&&d.forEach((item:any)=>{
     const str = [
       item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:''),
       item.iAltitudeADS.toString().padStart(5,'0')+' '+(item.fSpeed * 3.6).toFixed(0).padStart(4,'0'),
@@ -732,14 +733,14 @@ function 处理飞机实时位置(d:Array<{
         data = textData.splice(i--,1)[0]
       }
     }
-    let color = [255,255,255,255]
+    let textColor = [255,255,255,255]
     zydFeaturesData.features.forEach((feature:any)=>{
       const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
       if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
         const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
         if(distance<20e3){
           str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |PAS0'
-          color = [255,255,0,255]
+          textColor = [255,255,0,255]
         }
       }
     })
@@ -749,15 +750,15 @@ function 处理飞机实时位置(d:Array<{
         const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
         if(distance<10e3){
           str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |AS'
-          color = [255,0,0,255]
+          textColor = [255,0,0,255]
         }
       }
     })
-    const targetData = {...item,trajectory:[destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)],lastTime:Date.now(),label:str.join('\n'),color}
+    const targetData = {...item,trajectory:[destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)],lastTime:Date.now(),label:str.join('\n'),textColor}
     if(data){
       textData.push(Object.assign(data,targetData))
     }else{
-      textData.push(Object.assign({offset:[20,0],color},targetData))
+      textData.push(Object.assign({offset:[100,0],textColor},targetData))
     }
   })
   for(let i=0;i<textData.length;i++){
@@ -1205,7 +1206,7 @@ const textData = [
       10,
       0
     ],
-    "color":[255,255,0,255],
+    "textColor":[255,255,0,255],
     "uiTrackNo": 593,
     "uiAdsAddress": 0,
     "ubyTrackState": 1,
@@ -1242,7 +1243,6 @@ const deckOverlay = new MapboxOverlay({
   interleaved: true, // 性能优化
   layers: [],
 });
-import { GL } from '@luma.gl/constants';
 let hoverObject:any;
 function updateTextLayer(textData:any) {
   deckOverlay.setProps({
@@ -1261,7 +1261,7 @@ function updateTextLayer(textData:any) {
         pickable: true,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d => d.color,
+        getColor: d => d.textColor,
         getSize: 12,
         getAngle: 0,
         getTextAnchor: 'start',
@@ -1280,11 +1280,11 @@ function updateTextLayer(textData:any) {
         background: true,
         getBackgroundColor: [255, 255, 255, 0],
         border: true,
-        getBorderColor: d => d==hoverObject?d.color:[0,0,0,0],
+        getBorderColor: d => d==hoverObject?d.textColor:[0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
-        getPixelOffset:d => d.offset,
+        getPixelOffset:d => [d.offset[0] - 70,d.offset[1]],
         onHover(info,evt){
           if(!mouseDownEvt){
             hoverObject = info.object
@@ -1331,6 +1331,136 @@ function updateTextLayer(textData:any) {
         getLineWidth: 1,
         radiusMinPixels: 2,
       })
+    ]
+  })
+}
+function updateTextLayer2(textData:any) {
+  deckOverlay.setProps({
+    layers: [
+      new ScreenLineLayer({
+        id: 'screen-line',
+        data: textData,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getAngle: d => 0,
+        getLength: d => 10,
+        getColor: d => [255,0,0,255]
+      }),
+      new IconLayer({
+        id: 'billboard-layer',
+        pickable:true,
+        data: textData,
+        iconAtlas:billboardUrl,
+        iconMapping:{
+          marker: {
+            x: 0,
+            y: 0,
+            width: 443,
+            height: 174,
+            mask: false,
+          },
+          active: {
+            x: 0,
+            y: 174,
+            width: 443,
+            height: 174,
+            mask: false,
+          }
+        },
+        getPixelOffset: d => [d.offset[0],d.offset[1]],
+        getIcon: d => d==hoverObject?'active':'marker',
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getSize: 152,
+        sizeScale: 0.45,
+        billboard: true,
+        sizeUnits: 'pixels',
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateTextLayer(textData.slice())
+          }
+        },
+        updateTriggers:{
+          getPixelOffset: textData.map(d => d.offset),
+          getBorderColor: hoverObject,
+        },
+      }),
+      new TextLayer({
+        id: 'text-layer',
+        getWidth:500,
+        data:textData,
+        pickable: false,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getText: d => d.label,
+        getColor: d => d.textColor,
+        getSize: 12,
+        getAngle: 0,
+        getTextAnchor: 'start',
+        getAlignmentBaseline: 'center',
+        // fontFamily: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
+        // fontSettings: {
+        //   sdf: false,
+        //   // 防止生成 atlas 过慢，可限制生成大小
+        //   buffer: 3,
+        //   size: 6400,
+        // },
+        fontSettings: {
+          characterSet: 'auto', // ✅ 自动扫描数据中的字符
+        },
+        billboard: true,  // 始终朝向屏幕
+        background: false,
+        getBackgroundColor: [255,255,255,0.1],
+        border: true,
+        getBorderColor: d => d==hoverObject?d.textColor:[0,0,0,0],
+        getBorderWidth: 1,
+        backgroundPadding:[4,4],
+        backgroundBorderRadius:0,
+        getPixelOffset:d => [d.offset[0]-70,d.offset[1]],
+        parameters: {
+          // 关闭深度测试
+          depthTest: false,
+          // 明确 source-over 混合
+          blend: true,
+          blendColorSrcFactor: 'src-alpha',
+          blendColorDstFactor: 'one-minus-src-alpha',
+          blendAlphaSrcFactor: 'one',
+          blendAlphaDstFactor: 'one-minus-src-alpha'
+        }
+      }),
+      new PathLayer({
+        id: 'path-layer',
+        data:textData,
+        getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
+        getColor: [255, 255, 255],
+        getWidth: 1,
+        widthUnits: 'pixels',
+      }),
+      new IconLayer({
+        id: 'icon-layer',
+        data: textData,
+        getIcon: d => ({
+          url: squareImageData.airplane,
+          width: 8,
+          height: 8,
+        }),
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getSize: d => 8,
+        sizeScale: 1,
+        billboard: false,
+      }),
+      // new ScatterplotLayer({
+      //   id: 'circles',
+      //   data: textData,
+      //   pickable: false,
+      //   getPosition: d => [d.fLongitude, d.fLatitude],
+      //   getRadius: d => 10e3, // 单位由 radiusUnits 决定
+      //   radiusUnits: 'meters',          // 可省略（默认 meters）
+      //   getFillColor: [0, 0, 0, 0],
+      //   stroked: true,
+      //   getLineColor: [255, 255, 255, 255],
+      //   lineWidthUnits: 'pixels',
+      //   getLineWidth: 1,
+      //   radiusMinPixels: 2,
+      // })
     ]
   })
 }
@@ -2609,7 +2739,6 @@ onMounted(async() => {
         }
       });
     })
-    /*
     await axios({
       method:'get',
       url:'/kysq/resources/导航台.map',
@@ -2798,7 +2927,6 @@ onMounted(async() => {
           throw new Error('Unknow GISTYPE: '+result.tagLayerPara.sLayerType)
       }
     })
-    */
     if(!map)return;
     // 模拟飞机
     // for (let i = 0; i < 60; i++) {
@@ -5512,6 +5640,28 @@ onMounted(async() => {
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
     })
+    setting.人影.监控.selectedRegion.forEach((item:string)=>{
+      axios.get(`/backend/region/${item}.json`).then(res=>{
+        map.addLayer({
+          'id': `${item}.json`,
+          'type': 'line',
+          'source': {
+            "type":"geojson",
+            "data": res.data
+          },
+          'layout': {
+            'visibility':'visible',
+            'line-join':'round',
+            'line-cap':'round',
+          },
+          'paint': {
+            'line-color': '#fff',
+            'line-width': 5,
+            'line-opacity':1,
+          }
+        })
+      })
+    })
   });
   map.on('draw.create',(e)=>{
     e.features.map((feature:any)=>{
@@ -5736,7 +5886,7 @@ watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
       })
     }
   })
-},{deep:true,immediate:true})
+},{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   setting.人影.监控.tmpZydData = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){

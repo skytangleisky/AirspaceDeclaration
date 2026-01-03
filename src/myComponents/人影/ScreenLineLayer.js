@@ -134,6 +134,7 @@ export class ScreenLineLayer extends Layer {
     const viewportSizeLoc = gl.getUniformLocation(program, 'viewportSize');
     gl.uniform2f(viewportSizeLoc, viewport.width, viewport.height);
 
+    gl.disable(gl.DEPTH_TEST);
     // 绘制 instanced
     gl.drawArraysInstanced(GL.LINES, 0, 2, data.length);
   }

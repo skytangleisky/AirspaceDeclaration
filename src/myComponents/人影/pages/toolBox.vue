@@ -26,6 +26,7 @@
             </template>
         </div>
         <el-scrollbar
+            v-if="hasPermission(['cd8b124a-ccb9-4acc-8996-6eaf9ead3113'])"
             style="position: absolute;top:10px;left:10px;bottom:10px;height:auto;pointer-events: none;width:320px;">
             <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
         </el-scrollbar>
@@ -94,7 +95,7 @@
             }
         }
     })
-    import {modelRef} from '~/tools'
+    import {hasPermission, modelRef} from '~/tools'
     
     const theme = useTheme()
     const mask = getMask()

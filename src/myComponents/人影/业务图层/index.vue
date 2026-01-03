@@ -1,10 +1,8 @@
 <template>
-    <div v-if="setting.showBusinessLayer" class="business-layer">
+    <div v-if="hasPermission(['550fe8a1-9cc0-44c2-9604-03f4a24f07c8']) && setting.showBusinessLayer" class="business-layer">
         <el-button type="danger" link class="close-btn" :icon="Close" @click="close" @mousedown.stop></el-button>
         <div class="top">
             <div class="title">业务图层</div>
-        
-        
         </div>
         <el-tree
             style="flex:1;overflow: auto;"
@@ -67,6 +65,7 @@
     import closeViewRaw from '~/assets/closeView.svg?raw'
     import {useSettingStore} from '~/stores/setting'
     import {reactive, computed} from 'vue'
+    import {hasPermission} from '~/tools'
     
     function handleClick(node: Node) {
         node.data.hide = !node.data.hide
@@ -145,6 +144,7 @@
 <style lang="scss" scoped>
     .business-layer {
         padding: $grid-2;
+        z-index: 1;
         border-radius: $border-radius-1;
         //width:3.2rem;
         //height: 1.8rem;

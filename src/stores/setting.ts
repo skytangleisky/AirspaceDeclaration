@@ -13,6 +13,12 @@ export const formatUrl = (url: string) => {
 };
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    触发系统菜单数据查询:Date.now(),
+    触发作业状态数据查询:Date.now(),
+    触发语音记录查询:Date.now(),
+    触发注册飞机查询:Date.now(),
+    触发完成信息查询:Date.now(),
+    触发网络信息查询:Date.now(),
     planProps:{
       当前作业进度:new Array(),
       今日作业记录:new Array(),
@@ -424,7 +430,7 @@ export const useSettingStore = defineStore('setting',{
     人影:{
       监控:{
         tmpZydData:shallowReactive(new Array()),//用于存储临时作业点数据
-        selectedRegion:new Array<string>(),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>('360000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,

@@ -11,7 +11,8 @@ const setting = useSettingStore();
 let sleeper = new Sleeper();
 let bus = useBus();
 class MyWebSocket extends WebSocket {
-  dead: boolean = false;
+  dead: boolean = false;//不再重连
+  immediate: boolean = false;//立即重连
 }
 let ws: MyWebSocket;
 function connect() {
@@ -19,6 +20,12 @@ function connect() {
     `${window.location.protocol == "https:" ? "wss:" : "ws:"}//` + window.location.host + "/backend"
   );
   ws.onopen = function () {
+    setting.触发系统菜单数据查询 = Date.now()
+    setting.触发作业状态数据查询 = Date.now()
+    setting.触发语音记录查询 = Date.now()
+    setting.触发注册飞机查询 = Date.now()
+    setting.触发完成信息查询 = Date.now()
+    setting.触发网络信息查询 = Date.now()
     setting.网络状态 = "已连接"
     ws.send(JSON.stringify({ type: "login", content: Date.now()}));
     const loop = async () => {
@@ -35,7 +42,7 @@ function connect() {
         await sleeper.sleep(5000);
         loop();
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         //不做处理
       }
     };
@@ -80,8 +87,24 @@ function connect() {
       case "人影航迹数据":
         eventbus.emit('人影-飞机位置',obj.data.aircrafts)
         break;
+      case "notify":
+        if(obj.data.tableName=='zyddata'||obj.data.tableName=='zydhisdata'){
+          setting.触发作业状态数据查询 = Date.now()
+        }else if(obj.data.tableName=='audio'){
+          setting.触发语音记录查询 = Date.now()
+        }else if(obj.data.tableName=='plane_addr'){
+          setting.触发注册飞机查询 = Date.now()
+        }else if(obj.data.tableName=='overinfo'){
+          setting.触发完成信息查询 = Date.now()
+        }else if(obj.data.tableName=='connection'){
+          setting.触发网络信息查询 = Date.now()
+        }else if(obj.data.tableName=='subusers'){
+          setting.触发系统菜单数据查询 = Date.now()
+        }
+        // console.log(obj.data)
+        break;
       default:
-        console.log(obj)
+        // console.log(obj)
     }
     // infos.usedJSHeapSize = (performance.memory.usedJSHeapSize / 1000 / 1000).toFixed(2) + "MB";
   };
@@ -89,13 +112,23 @@ function connect() {
     // console.log(err)
   }
   ws.onclose = function () {
-    countdown = 5;
-    sleeper.abort();
-    setting.在线人数 = "-";
-    if (!ws.dead) {
-      reconnect()
+    if(ws.immediate){
+      ws.immediate = false
+      if (!ws.dead) {
+        sleeper.abort()
+        setting.在线人数 = "-"
+        setting.网络状态 = "重连中..."
+        connect()
+      }
+    }else{
+      countdown = 5
+      sleeper.abort()
+      setting.在线人数 = "-"
+      if (!ws.dead) {
+        reconnect()
+      }
     }
-  };
+  }
 }
 let timer:any = 0
 let reconnect = ()=>{
@@ -122,8 +155,16 @@ function process(){
     })
   );
 }
+let inited = false
 onMounted(() => {
-  eventbus.on('获取nps数据',process)
+  if(!window.websocketInited){
+    window.websocketInited = true
+  }else{
+    return;
+  }
+  inited = true
+  document.addEventListener('visibilitychange', handler)
+  eventbus.on('获取nps数据',process);
   connect();
   window.addEventListener("beforeunload", dispose);
 });
@@ -135,11 +176,35 @@ function dispose() {
     ws.close();
   }
 }
+defineExpose({
+  ReconnectImmediately(){
+    ws.immediate = true
+    ws.close()
+  }
+})
 onBeforeUnmount(() => {
+  if(!inited){
+    return;
+  }
+  document.removeEventListener('visibilitychange', handler)
   clearInterval(timer)
   setting.在线人数 = "";
   setting.网络状态 = "";
   setting.内存占用 = "";
   dispose();
 });
+function handler(){
+  if(document.visibilityState=='visible'){
+    //页面可见
+    if(ws.readyState!==WebSocket.OPEN){
+      sleeper = new Sleeper();
+      setting.网络状态 = "重连中..."
+      connect();
+    }
+  }else{
+    //页面不可见
+    dispose();
+  }
+}
 </script>
+
