@@ -56,7 +56,7 @@ export function 获取净空区() {
   })
 }
 
-
+// 形状00线形;01矩形;02多边形;03圆形,04扇形,05椭圆,06点
 export function 获取飞行区() {
   return request({
     headers,
@@ -68,16 +68,39 @@ export function 获取飞行区() {
       "where":[
         {
           "relation":"AND",
-          "field":"enclosure_type",
-          "relationship":"=",
-          "condition":"02"
-        },
-        {
-          "relation":"AND",
           "field":"standby1",
           "relationship":"=",
           "condition":"O"//S净空区(糖果图) P禁飞区  D危险区 M可飞区   R限飞区  O计划空域  L	航线  F	航路 A	走廊
         },
+        {
+          "relation":"group",
+          "children":[
+            {
+              "relation":"or",
+              "field":"enclosure_type",
+              "relationship":"=",
+              "condition":"02"
+            },
+            {
+              "relation":"or",
+              "field":"enclosure_type",
+              "relationship":"=",
+              "condition":"00"
+            },
+            {
+              "relation":"or",
+              "field":"enclosure_type",
+              "relationship":"=",
+              "condition":"03"
+            },
+            {
+              "relation":"or",
+              "field":"enclosure_type",
+              "relationship":"=",
+              "condition":"06"
+            },
+          ]
+        }
         // {
         //   "relation":"OR",
         //   "field":"standby1",

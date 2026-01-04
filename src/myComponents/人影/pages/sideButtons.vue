@@ -29,9 +29,11 @@ const groups = reactive([
     {name:'注册飞机',click:(parent:any,index:number)=>setting.人影.监控.注册飞机列表显示 = true},
   ]},
   {name:'标绘',children:[
+    {name:'编辑',active:computed(()=>setting.绘制模式 === 'simple_select'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.编辑()},
     {name:'标点',active:computed(()=>setting.绘制模式 === 'draw_point'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标点()},
     {name:'标线',active:computed(()=>setting.绘制模式 === 'draw_line_string'),click:(parent:any, index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标线()},
     {name:'标面',active:computed(()=>setting.绘制模式 === 'draw_polygon'),click:(parent:any, index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标面()},
+    {name:'标圆',active:computed(()=>setting.绘制模式 === 'draw_circle'),click:(parent:any, index:number)=>parent.children[index].active ? setting.绘制复原() : setting.标圆()},
     {name:'清除',click:(parent:any, index:any) => setting.清除()},
   ]},
   {name:'工具',children:[

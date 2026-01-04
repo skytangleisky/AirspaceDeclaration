@@ -20,7 +20,7 @@ const option = {
 const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
-const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
+// const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',

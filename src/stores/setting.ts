@@ -996,6 +996,12 @@ export const useSettingStore = defineStore('setting',{
     标面(){
       console.log('标面')
     },
+    标圆(){
+      console.log('标圆')
+    },
+    编辑(){
+      console.log('编辑')
+    },
   },
   persist: {
     serializer: {

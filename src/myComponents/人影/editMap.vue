@@ -680,7 +680,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 
 import transparentPng from '~/assets/transparent.png?url'
 // import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.scss";
-import styles from './drawTheme/inactive.js'
+import styles from './drawTheme/theme.js'
 import mapboxgl from 'mapbox-gl_wstd'
 import menusSvg from '~/assets/menus.svg?raw'
 import adsbSvg from '~/assets/adsb.svg?url'
@@ -1621,10 +1621,18 @@ setting.标面 = ()=>{
   map.getCanvas().style.cursor = "crosshair";
   draw.changeMode('draw_polygon')
 }
+setting.标圆 = ()=>{
+  map.getCanvas().style.cursor = "crosshair";
+  draw.changeMode('draw_circle')
+}
+setting.编辑 = ()=>{
+  map.getCanvas().style.cursor = "default";
+  draw.changeMode('simple_select')
+}
 
 setting.绘制复原 = ()=>{
   map.getCanvas().style.cursor = "default";
-  draw.changeMode('simple_select')
+  draw.changeMode('no_select')
 }
 let draw:MapboxDraw;
 defineExpose({
@@ -1903,7 +1911,7 @@ onMounted(async() => {
           'circle-color': [
             'case',
             ['boolean', ['feature-state', 'active'], false],
-            'red',
+            'rgba(217,0,27,0.24)',
             'gray'
           ]
         }
@@ -2457,10 +2465,10 @@ onMounted(async() => {
             onClick:()=>{},
             onMouseMove(state, e) {},
           },
-          custom_draw_line_with_distance
+          custom_draw_line_with_distance,
         },
         styles,
-        defaultMode: 'simple_select',
+        defaultMode: setting.绘制模式,
       })
       // draw = new MapboxDraw({
       //   userProperties: true,
@@ -3312,6 +3320,9 @@ onMounted(async() => {
           // $(stationMenu).removeData();
           // $(stationMenu).data(feature.properties);
         }
+        fs.forEach((item:any)=>{
+          draw.setFeatureProperty(item.properties.id, 'color', '#ff6600')
+        })
       }
     }
     // getTodayRecords().then((res:any)=>{
@@ -5362,12 +5373,12 @@ onMounted(async() => {
     });
 
     获取飞行区().then((res) => {
-      enclosureList = res.data.results
       let a = {
         type: "FeatureCollection",
         features: [],
       };
-      // console.log(res.data.results);
+      console.log(res.data.results);
+      enclosureList = res.data.results;
       for (let i = 0; i < res.data.results.length; i++) {
         let v = res.data.results[i];
         let strLngLatList = v.points.match(
@@ -5377,20 +5388,70 @@ onMounted(async() => {
           Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
           Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
         ]);
-        if (list.length > 2) {
+        if (v.enclosure_type == "06") {
           a.features.push({
             id: v.id,
             type: "Feature",
             properties: {
-              color: v.standby2||'blue',
+              color: v.standby2||'rgba(217,0,27,0.24)',
             },
             geometry: {
-              type: "Polygon",
-              coordinates: [list],
+              type: "Point",
+              coordinates: list[0],
             },
           } as never);
-        } else {
-          console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+        } else if (v.enclosure_type == "00") {
+          a.features.push({
+            id: v.id,
+            type: "Feature",
+            properties: {
+              color: v.standby2||'rgba(217,0,27,0.24)',
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: list,
+            },
+          } as never);
+        } else if (v.enclosure_type == "02") {
+          if (list.length > 2) {
+            a.features.push({
+              id: v.id,
+              type: "Feature",
+              properties: {
+                color: v.standby2||'rgba(217,0,27,0.24)',
+              },
+              geometry: {
+                type: "Polygon",
+                coordinates: [list],
+              },
+            } as never);
+          } else {
+            console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+          }
+        } else if (v.enclosure_type == "03") {
+          if (v.circle_center) {
+            console.log(v)
+            let center = v.circle_center
+              .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
+              .split(",")
+              .map((v: any) => Number(v));
+            a.features.push({
+              id: v.id,
+              type: "Feature",
+              properties: {
+                isCircle: true,
+                center,
+                radiusInKm: v.radius / 1000,
+                color: v.standby2||'rgba(217,0,27,0.24)',
+              },
+              geometry: {
+                type: "Polygon",
+                coordinates: [list],
+              },
+            } as never);
+          } else {
+            console.error("v.circle_center=" + v.circle_center);
+          }
         }
       }
       draw.add(a as never);
@@ -5403,13 +5464,14 @@ onMounted(async() => {
       type: "FeatureCollection",
       features: new Array<any>(),
     };
-    let standby2 = 'blue';
+    let standby2 = '#3bb2d0';
     let data = new Array<any>();
     e.features.map((item: any) => {
       item.properties.color = standby2;
       a.features.push(item);
       if (item.geometry.type === "Point") {
         data.push({
+          standby1:'O',
           standby2,
           id: item.id,
           enclosure_type: "06",
@@ -5419,6 +5481,7 @@ onMounted(async() => {
       } else if (item.geometry.type === "LineString") {
         console.log(item);
         data.push({
+          standby1:'O',
           standby2,
           id: item.id,
           enclosure_type: "00",
@@ -5428,6 +5491,7 @@ onMounted(async() => {
       } else if (item.geometry.type === "Polygon") {
         if (item.properties.isCircle) {
           data.push({
+            standby1:'O',
             standby2,
             id: item.id,
             enclosure_type: "03",
@@ -5546,6 +5610,7 @@ onMounted(async() => {
     }
   });
   map.on('draw.modechange', function(e) {
+    console.log('modechange',e)
     setting.绘制模式 = e.mode
   });
   map.on("click",(e)=>{
