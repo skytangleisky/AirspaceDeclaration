@@ -41,7 +41,6 @@
     "d3": "^7.9.0",
     "echarts": "^5.1.2",
     "element-plus": "^2.9.0",
-    "events": "^3.3.0",
     "gl-matrix": "^3.4.3",
     "gsap": "^3.12.7",
     "https-proxy-agent": "^7.0.6",
