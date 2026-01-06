@@ -16,11 +16,8 @@ const option = {
   maxSockets: 256,       // 最大并发 socket 数
   maxFreeSockets: 32     // 空闲 socket 上限
 }
-// const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-const agent = new HttpsProxyAgent('http://127.0.0.1:5100',option)
-// const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
-// const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
-const bj_agent = new HttpsProxyAgent('http://127.0.0.1:1100',option)
+const agent = new HttpsProxyAgent('http://192.168.0.141:5100',option)
+const bj_agent = new HttpsProxyAgent('http://192.168.0.141:1100',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -89,7 +86,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": fileURLToPath(new URL("./src", import.meta.url)),
-      // pinia: `${__dirname}/packages/pinia/src/index.ts`,
+      pinia: `${__dirname}/packages/pinia/src/index.ts`,
       '@mapbox/mapbox-gl-draw':path.resolve(__dirname, 'packages/mapbox-gl-draw'),
       marchingsquares:path.resolve(__dirname, 'packages/marchingsquares.js/src/main.js'),
     },

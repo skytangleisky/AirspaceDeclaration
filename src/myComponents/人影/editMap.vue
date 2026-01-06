@@ -4552,6 +4552,83 @@ onMounted(async() => {
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
     })
+    const holes:any = []
+    for(let item of setting.人影.监控.selectedRegion){
+      const res = await axios.get(`/backend/region/${item}.json`)
+      map.addLayer({
+        'id': `${item}.json`,
+        'type': 'line',
+        'source': {
+          "type":"geojson",
+          "data": res.data
+        },
+        'layout': {
+          'visibility':'visible',
+          'line-join':'round',
+          'line-cap':'round',
+        },
+        'paint': {
+          'line-color': '#fff',
+          'line-width': 5,
+          'line-opacity':1,
+        }
+      })
+      res.data.features.forEach((feature:any)=>{
+        feature.geometry.coordinates.forEach((item:any)=>{
+          const points = item[0]
+          points.push(points[0])
+          holes.push(points)
+        })
+      })
+    }
+    const holePolygons = holes.map((coords:any) =>
+      turf.polygon([coords])
+    )
+    let mergedHole = holePolygons[0]
+    for (let i = 1; i < holePolygons.length; i++) {
+      mergedHole = turf.union(mergedHole, holePolygons[i])
+    }
+    map.addLayer({
+      'id': `json_mask`,
+      'type': 'fill',
+      'source': {
+        "type":"geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [-180, -90],
+                    [-180, 90],
+                    [180, 90],
+                    [180, -90],
+                    [-180, -90],
+                  ],
+                  mergedHole.geometry.coordinates[0][0]
+                ]
+              }
+            }
+          ]
+        }
+      },
+      'layout': {
+        'visibility':'visible',
+      },
+      'paint': {
+        'fill-color':'rgba(0,0,0,0.6)',
+        'fill-outline-color':'transparent'
+      }
+    })
+
+
+
+
+
+
   });
   map.on('draw.create',(e)=>{
     e.features.map((feature:any)=>{
@@ -4775,7 +4852,7 @@ watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
       })
     }
   })
-},{deep:true,immediate:true})
+},{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){

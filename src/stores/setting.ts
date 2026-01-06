@@ -410,7 +410,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        selectedRegion:new Array<string>('510000'),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>('500000','510000','520000','530000','540000','610000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
@@ -505,7 +505,7 @@ export const useSettingStore = defineStore('setting',{
           districtOpened:true,
           district:true,
           districtFillColor:{r:0,g:0,b:0,a:1},
-          districtFillOpacity:0.5,
+          districtFillOpacity:0.2,
           districtBaseOpened:true,
           districtBase:true,
           districtBaseWidth:2,
