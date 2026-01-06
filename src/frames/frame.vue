@@ -1,7 +1,7 @@
 <template>
   <teleport to="#wstd-container">
     <div ref="meeting" v-dragable class="meeting" v-show="SHOW" v-if="IF">
-      <div class="title">{{ title }}</div>
+      <div class="title" @mousedown.stop>{{ title }}</div>
       <slot></slot>
       <div class="close-btn" @click="close" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div>
@@ -30,19 +30,34 @@ const render = defineModel('render',{
   default:true
 })
 const width = defineModel('width',{
-  default:800
+  default:'100%'
 })
 const height = defineModel('height',{
-  default:400
+  default:'100%'
+})
+watch(width,(newVal,oldVal)=>{
+  if(meeting.value){
+    meeting.value!.style.setProperty('--width', newVal);
+  }
+  if(width.value=='100%'&&height.value=='100%'){
+    meeting.value!.style.setProperty('border', 'none');
+  }
+})
+watch(height,(newVal,oldVal)=>{
+  if(meeting.value){
+    meeting.value!.style.setProperty('--height', newVal);
+  }
+  if(width.value=='100%'&&height.value=='100%'){
+    meeting.value!.style.setProperty('border', 'none');
+  }
 })
 const meeting = ref()
 onMounted(()=>{
   if(meeting.value){
-    if(width.value>0){
-      meeting.value!.style.setProperty('--width', width.value+'px');
-    }
-    if(height.value>0){
-      meeting.value!.style.setProperty('--height', height.value+'px');
+    meeting.value!.style.setProperty('--width', width.value);
+    meeting.value!.style.setProperty('--height', height.value);
+    if(width.value=='100%'&&height.value=='100%'){
+      meeting.value!.style.setProperty('border', 'none');
     }
   }
 })
@@ -59,13 +74,12 @@ import closeUrl from '~/assets/close.svg?raw'
 <style lang="scss" scoped>
 .meeting{
   background:darkblue;
-  width:100%;
   border-radius:4px;
   box-sizing:border-box;
   display: flex;
   flex-direction: column;
-  --width:800px;
-  --height:400px;
+  --width:100%;
+  --height:100%;
   width:var(--width);
   height:var(--height);
   background:var(--el-bg-color-opacity-8);
@@ -83,26 +97,28 @@ import closeUrl from '~/assets/close.svg?raw'
     }
   }
   .title{
-    background-color: var(--el-color-primary);
+    width:100%;
+    box-sizing: border-box;
+    cursor:default;
+    background-color: var(--el-bg-color);
     position: relative;
     white-space: nowrap;
     font-size: 0.2rem;
     font-weight: bold;
-    color: white;
     padding-left: 4px;
     text-align: left;
   }
 
   .close-btn {
-    right:-1px;
-    top:-1px;
+    right: 0px;
+    top:0px;
     position: absolute;
     justify-content: center;
     align-items:center;
     font-size: 0.16rem;
     z-index:999;
     color:white;
-    display: none;
+    display: flex;
     cursor:pointer;
     &:hover {
       display: flex;

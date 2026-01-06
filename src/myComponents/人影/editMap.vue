@@ -81,6 +81,7 @@
     <ConfigureAudioData></ConfigureAudioData>
     <ConfigureReplyRate></ConfigureReplyRate>
     <ConfigrueNetwork></ConfigrueNetwork>
+    <ConfigrueLowAirspace></ConfigrueLowAirspace>
     <!-- <Overview></Overview> -->
   </div>
 </template>
@@ -584,6 +585,7 @@ import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
 import ConfigureAudioData from '~/myComponents/人影/语音管理/index.vue'
 import ConfigrueNetwork from '~/myComponents/人影/网络信息/index.vue'
+import ConfigrueLowAirspace from '~/myComponents/人影/飞行活动/index.vue'
 import Overview from '~/myComponents/人影/弹药概况/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
@@ -1626,7 +1628,7 @@ setting.标圆 = ()=>{
   draw.changeMode('draw_circle')
 }
 setting.编辑 = ()=>{
-  map.getCanvas().style.cursor = "default";
+  map.getCanvas().style.cursor = "pointer";
   draw.changeMode('simple_select')
 }
 
@@ -5460,6 +5462,8 @@ onMounted(async() => {
 
   });
   map.on('draw.create',(e)=>{
+    console.log(e)
+    return;
     let a = {
       type: "FeatureCollection",
       features: new Array<any>(),
@@ -5611,6 +5615,9 @@ onMounted(async() => {
   });
   map.on('draw.modechange', function(e) {
     console.log('modechange',e)
+    if(e.mode === 'simple_select'){
+      map.getCanvas().style.cursor = 'pointer';
+    }
     setting.绘制模式 = e.mode
   });
   map.on("click",(e)=>{

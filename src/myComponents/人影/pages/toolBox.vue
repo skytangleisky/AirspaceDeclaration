@@ -485,6 +485,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       setting.网络信息 = true
     }
   },
+  {
+    label: '飞行活动', type: 'button', click() {
+      setting.飞行活动 = true
+    }
+  },
   // {
   //   label: '弹药概况', type: 'button', click() {
   //     setting.弹药概况 = true

@@ -10,7 +10,7 @@ const inactive = [
     'paint': {
       'fill-color': ['coalesce', ['get', 'user_color'], '#3bb2d0'],
       'fill-outline-color': ['coalesce', ['get', 'user_color'], '#3bb2d0'],
-      'fill-opacity': 0.1
+      'fill-opacity': 0.8
     }
   },
   {

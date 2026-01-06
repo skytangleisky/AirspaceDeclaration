@@ -1,5 +1,5 @@
 <template>
-  <frame title="配置区划" v-model:render="setting.显示全国行政区划配置" width="500px" height="300px">
+  <frame title="飞行活动" v-model:render="setting.飞行活动">
     <Configure></Configure>
   </frame>
 </template>

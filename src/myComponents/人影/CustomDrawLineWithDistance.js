@@ -44,7 +44,7 @@ export default {
   },
 
   onStop(state) {
-    this._removeDistanceLabels();
+    // this._removeDistanceLabels();
     DrawLineString.onStop.call(this, state);
   },
   onTrash(state) {

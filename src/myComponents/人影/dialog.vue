@@ -110,7 +110,7 @@
                 </div>
             </div>
         </div>
-        <Frame title="作业点过滤" v-model:render="show">
+        <Frame title="作业点过滤" v-model:render="show" width="500px" height="300px">
             <ZydFilter></ZydFilter>
         </Frame>
     </div>
