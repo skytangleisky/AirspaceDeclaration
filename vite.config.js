@@ -17,10 +17,10 @@ const option = {
   maxFreeSockets: 32     // 空闲 socket 上限
 }
 // const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
+const agent = new HttpsProxyAgent('http://127.0.0.1:5100',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
-const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
+const bj_agent = new HttpsProxyAgent('http://127.0.0.1:1100',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -116,10 +116,6 @@ export default defineConfig({
     proxy:{
       '/backend':{
         agent,
-        // target:'http://172.18.7.38:3000',
-        // target:'http://192.168.0.114:3000',
-        // agent:shanxi_agent,
-        // target:'http://10.194.22.240:3000',
         target:'http://127.0.0.1:3000',
         secure:false,
         changeOrigin:true,
@@ -133,21 +129,15 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        // agent,
-        // target:'http://172.18.7.38:8080',
-        // target:'http://192.168.0.135:8080',
-        // agent:shanxi_agent,
-        // target:'http://10.194.57.247:8007',
-        // target:'http://10.194.22.240:21000',
-        target:'http://127.0.0.1:8080',
+        agent,
+        target:'http://127.0.0.1:21000',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
         ws:true,
       },
-      /*
       '/adsb':{
-        agent,
+        agent: bj_agent,
         target:'http://10.225.3.150:18185',
         // target:'http://113.44.175.230:18301',
         // rewrite:path=>path.replace(/^\/adsb/,''),
@@ -155,44 +145,44 @@ export default defineConfig({
         changeOrigin:true,
       },
       '/videoLive':{
-        agent,
+        agent: bj_agent,
         target:'http://10.225.3.150:8091',
         changeOrigin:true,
         secure:false,
       },
       '/openUrl':{
-        agent,
+        agent: bj_agent,
         target:'http://172.18.7.210:83',
         changeOrigin:true,
         secure:false,
       },
       '/tile':{//地图
-        agent,
+        agent: bj_agent,
         target:'http://10.225.6.188:3141',
         rewrite:path=>path.replace(/^\/tile/,''),
         changeOrigin:true,
         secure:false,
       },
       '/cdb':{
-        agent,
+        agent: bj_agent,
         target:'http://10.225.6.188:3141',
         changeOrigin:true,
         secure:false,
       },
       '/geoserver':{
-        agent,
+        agent: bj_agent,
         target:'http://10.225.6.188:3141',
         changeOrigin:true,
         secure:false,
       },
       '/zcgk':{//三维产品接口
-        agent,
+        agent: bj_agent,
         target:'http://10.225.6.188:3141',
         changeOrigin:true,
         secure:false,
       },
       '/ryyth-meteordata':{//睿图雷达
-        agent,
+        agent: bj_agent,
         target:'http://10.225.6.188:3141',
         changeOrigin:true,
         secure:false,
@@ -207,19 +197,18 @@ export default defineConfig({
       //   secure:false,
       // },
       '/weatherModification':{
-        agent,
+        agent: bj_agent,
         target:'http://10.225.3.150:18185',
         changeOrigin:true,
         secure:false,
       },
       '/planPath':{
-        agent,
+        agent: bj_agent,
         target:'http://10.225.3.150:8091',
         rewrite:path=>path.replace(/^\/planPath/,''),
         changeOrigin:true,
         secure:false,
       }
-      */
     }
   }
 });
