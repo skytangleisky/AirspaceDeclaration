@@ -40,29 +40,101 @@
     import AirspaceCommand from './分布/空域指挥.vue'
     import {useSettingStore} from '~/stores/setting';
     import toolMode from './toolMode.vue';
+    
     const setting = useSettingStore();
-    import { getMask } from '~/api/天工'
+    import {getMask} from '~/api/天工'
+    
     const mask = getMask()
-    const showSecondaryRadar = computed(()=>{
-        return mask=='%%'
+    const showSecondaryRadar = computed(() => {
+        return mask == '%%'
     })
 </script>
 <style lang="scss" scoped>
     .toolKitBgClass {
+        position: relative;
+        display: flex;
+        flex-direction: column;
         box-sizing: border-box;
-        border-radius: 5px;
+        border-radius: $border-radius-2;
         top: 0;
         left: 0;
-        width: 391px;
-        min-height: 559px;
-        max-height: 100%;
-        border: 1px solid #bdd4ff;
-        background-color: #f4f8ff;
-        padding: $grid-1;
+        width: 6rem;
+        //height: 5.6rem;
+        border: 1px solid var(--el-border-color);
+        background-color: var(--el-bg-color-opacity-8);
+        padding: $grid-3;
         pointer-events: auto;
+        gap: $grid-2;
+        
+        :deep(.toolMode) {
+            background-color: var(--el-bg-color);
+            border-radius: $border-radius-1;
+            padding: $grid-2;
+            
+            .tool-mode-title {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: $grid-2;
+                
+                .title-left {
+                    display: flex;
+                    align-items: center;
+                    font-weight: 600;
+                }
+                
+                .svg-icon {
+                    font-size: .2rem;
+                    //margin-right: $grid-1;
+                }
+                
+            }
+            
+            
+            .tool-mode-content {
+                width: 100%;
+                gap: $grid-1;
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                
+                .tool-mode-item {
+                    box-sizing: border-box;
+                    height: .32rem;
+                    line-height: .32rem;
+                    border: 1px solid var(--el-border-color);
+                }
+                
+                .radio-item {
+                    cursor: pointer;
+                    user-select: none;;
+                    text-align: center;
+                    border-radius: $border-radius-1;
+                    padding: 0 10px;
+                    
+                    &:hover {
+                        border-color: var(--el-color-primary);
+                    }
+                }
+                
+                .radio-item.active {
+                    background-color: var(--el-color-primary);
+                    border-color: var(--el-color-primary);
+                    color: #fff;
+                }
+            }
+        }
+        
+        // 图例图标
+        $icon-size: .16rem;
+        
+        :deep(.legend-icon) {
+            width: $icon-size;
+            height: $icon-size;
+            margin-right: $grid-1;
+        }
+        
+        :deep(.svg-icon) {
+            margin-right: $grid-1;
+        }
     }
-    .dark .toolKitBgClass {
-        border: 1px solid #c1d3fb;
-        background-color: #273347;
-    }
+
 </style>

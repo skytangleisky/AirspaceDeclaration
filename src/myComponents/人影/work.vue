@@ -200,6 +200,7 @@
       </div>
     </div>
   </div>
+    <el-empty v-if="v.length ==0" :image-size="64" />
 </template>
 <script lang="ts" setup>
   import { onMounted, onUnmounted, ref, computed } from 'vue'

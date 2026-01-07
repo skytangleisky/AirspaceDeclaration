@@ -1,195 +1,268 @@
 a {
-    color: var(--el-color-primary);
+  color: var(--el-color-primary);
 }
 
 code {
-    border-radius: 2px;
-    padding: 2px 4px;
-    background-color: var(--el-color-primary-light-9);
-    color: var(--el-color-primary);
+  border-radius: 2px;
+  padding: 2px 4px;
+  background-color: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 
 /* 滚动条样式 */
 ::-webkit-scrollbar {
-    width: $scrollbar-width;
-    height: $scrollbar-width;
+  width: $scrollbar-width;
+  height: $scrollbar-width;
 }
+
 /* 滑块样式 */
 ::-webkit-scrollbar-thumb {
-    background-color: var(--el-text-color-secondary);
-    border-radius: 10px;
+  background-color: var(--el-text-color-secondary);
+  border-radius: 10px;
 }
+
 /* 滚动条轨道样式 */
 ::-webkit-scrollbar-track {
-    background-color: var(--el-fill-color);
-    // border: 1px solid var(--el-border-color);
-    border-radius: 10px;
+  background-color: var(--el-fill-color);
+  // border: 1px solid var(--el-border-color);
+  border-radius: 10px;
 }
 
 //容器
 .wstd-container {
-    .map-btn {
-        border-radius: $border-radius-1;
-        background-color: var(--el-bg-color-opacity-8);
-        border: 0.01rem solid var(--el-border-color);
-        &:hover {
-            border-color: var(--el-color-primary);
-        }
-    }
-    .map-btn.active {
-        border-color: var(--el-color-primary);
-        color: var(--el-text-color-primary);
-    }
-    .top {
-        display: flex;
-        margin-bottom: $grid-1;
-        .top-item {
-            margin-right: $grid-2;
-        }
-        .box {
-            display: flex;
-            padding: 0.08rem 0.12rem;
-            align-items: center;
-            background-color: var(--el-bg-color-opacity-8);
-            border-radius: $border-radius-1;
-            .svg-icon {
-                margin-right: 0.04rem;
-                display: flex;
-                align-items: center;
-            }
-        }
-    }
-    .bottom {
-        max-width: 840px;
-        padding: 0 0.1rem 0.1rem;
-        border-radius: $border-radius-1;
-        background: var(--el-bg-color-opacity-8);
-        box-sizing: border-box;
 
-        // border: .01rem solid $color-bg-light-2;
-        // box-shadow: inset 0rem 0rem .1rem 0rem $color-bg-light-2;
-        .close-btn {
-            right:-10px;
-            top:-10px;
-            position: absolute;
-            width:20px;
-            height:20px;
-            justify-content: center;
-            align-items:center;
-            font-size: 0.16rem;
-            display: none;
-            z-index:999;
-            color:white;
-            &:hover {
-                .el-icon {
-                    color: #ff4d4f;
-                }
-            }
-            &:active {
-                transform: rotateX(180deg);
-                transition: transform 0.3s;
-                transition-timing-function: ease-in-out;
-                .el-icon {
-                    color: #d32f2f;
-                }
-            }
-        }
-        .close-btn {
-            display: flex;
-        }
-        .bottom-content {
-            max-height: 3.6rem;
-            height: fit-content;
-            overflow-y: auto;
-        }
+  .top {
+    display: flex;
+    gap: $grid-2;
+    margin-bottom: $grid-2;
+
+    .map-btn {
+      display: flex;
+      align-items: center;
+      height: $global-button-height;
+      padding: 0 $grid-2;
+      border-radius: $border-radius-1;
+      box-sizing: border-box;
+      border: 0.01rem solid var(--el-border-color);
+      background-color: var(--el-color-primary-light-9);
+
+      .svg-icon {
+        margin-right: 0.04rem;
+        display: flex;
+        align-items: center;
+      }
+
+      &:hover {
+        background-color: var(--el-bg-color-page);
+        box-shadow: 0 0 .2rem var(--el-box-shadow-color);
+        border-color: var(--el-color-primary);
+      }
+
+      &.active {
+        background-color: var(--el-bg-color-page);
+        box-shadow: 0 0 .2rem var(--el-color-primary-light-5);
+        border-color: var(--el-color-primary);
+      }
+
+      &.disabled {
+        background-color: var(--el-text-color-disabled);
+        border-color: transparent;
+        box-shadow: none;
+      }
     }
-    .wstd-content {
-        background-color: var(--el-bg-color-opacity-8);
-        padding: $grid-2;
-        border-radius: $border-radius-2;
-        border:1px solid var(--el-border-color);
-        // width: 720px;
-        // 表格
-        table {
-            border-collapse: collapse;
-            overflow: auto;
-            min-width: 100%;
-            tr {
-                height: 24px;
-                font-weight: 400;
-                border-bottom: 1px solid var(--el-border-color);
-                font-size: 12px;
-                // line-height: 28px;
-            }
-            thead {
-                tr {
-                    // height: 24px;
-                    th {
-                        border-top: none;
-                        background-color: var(--el-color-primary);
-                        color: #fff;
-                    }
-                    th:first-child {
-                        border-left: none;
-                    }
-                    th:last-child {
-                        border-right: none;
-                    }
-                }
-            }
-            tbody {
-                background-color: var(--el-bg-color);
-                tr {
-                    &:hover {
-                        background: var(--el-bg-color-overlay);
-                    }
-                    cursor: pointer;
-                }
-                tr.selected {
-                    background: var(--el-color-primary-light-8);
-                }
-                td:first-child {
-                    border-left: none;
-                }
-                td:last-child {
-                    border-right: none;
-                }
-                tr:last-child td {
-                    border-bottom: none;
-                }
-            }
-            th,
-            td {
-                text-align: left;
-                padding: 0 4px;
-                // border: 1px solid var(--el-border-color);
-            }
-        }
+  }
+
+  .bottom {
+    max-width: 840px;
+    padding: 0 0.1rem 0.1rem;
+    border-radius: $border-radius-1;
+    background: var(--el-bg-color-opacity-8);
+    box-sizing: border-box;
+
+    // border: .01rem solid $color-bg-light-2;
+    // box-shadow: inset 0rem 0rem .1rem 0rem $color-bg-light-2;
+    .close-btn {
+      position: absolute;
+      right: .08rem;
+      top: .08rem;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+      //font-size: 0.16rem;
+      //color:white;
+      //&:hover {
+      //    .el-icon {
+      //        color:var(--el-color-danger-dark-2);
+      //    }
+      //}
+      //&:active {
+      //    transform: rotateX(180deg);
+      //    transition: transform 0.3s;
+      //    transition-timing-function: ease-in-out;
+      //    .el-icon {
+      //        color: #d32f2f;
+      //    }
+      //}
     }
+
+    .bottom-content {
+      max-height: 3.6rem;
+      height: fit-content;
+      overflow-y: auto;
+    }
+  }
+
+  $table-height: .32rem;
+
+  .wstd-content {
+    background-color: var(--el-bg-color-opacity-8);
+    padding: $grid-3;
+    padding-top: calc(#{$grid-3} + .2rem);
+    border-radius: $border-radius-1;
+    border: 1px solid var(--el-border-color);
+    // width: 720px;
+    // 表格
+    table {
+      border-collapse: collapse;
+      overflow: auto;
+      min-width: 100%;
+
+      tr {
+        height: $table-height;
+        font-weight: 400;
+        border-bottom: 1px solid var(--el-border-color);
+        font-size: .14rem;
+      }
+
+      thead {
+        tr {
+
+          th {
+            border-top: none;
+            background-color: var(--el-color-primary);
+            font-weight: 400;
+            color: #fff;
+          }
+
+          th:first-child {
+            border-left: none;
+          }
+
+          th:last-child {
+            border-right: none;
+          }
+        }
+      }
+
+      tbody {
+        background-color: var(--el-bg-color);
+
+        tr {
+          &:hover {
+            background: var(--el-bg-color-overlay);
+          }
+
+          cursor: pointer;
+        }
+
+        tr.selected {
+          background: var(--el-color-primary-light-8);
+        }
+
+        td:first-child {
+          border-left: none;
+        }
+
+        td:last-child {
+          border-right: none;
+        }
+
+        tr:last-child td {
+          border-bottom: none;
+        }
+      }
+
+      th,
+      td {
+        text-align: left;
+        padding: 0 4px;
+        // border: 1px solid var(--el-border-color);
+      }
+    }
+  }
 }
 
 .module-top {
-    color: var(--el-text-color-primary);
-    font-size: 0.16rem;
-    margin-bottom: $grid-2;
-    border-left:0.04rem solid var(--el-color-primary);
-    padding-left: $grid-1;
+  color: var(--el-text-color-primary);
+  font-size: 0.16rem;
+  margin-bottom: $grid-2;
+  border-left: 0.04rem solid var(--el-color-primary);
+  padding-left: $grid-1;
 }
 
 .dark {
-    .wstd-container,
-    .smokeStove {
-        .el-input__wrapper {
-            background-color: var(
-                --el-input-bg-color,
-                var(--el-fill-color-blank)
-            ) !important;
-            box-shadow: 0 0 0 1px
-                var(--el-input-border-color, var(--el-border-color)) inset;
-        }
-        .el-input.is-disabled .el-input__wrapper {
-            background-color: var(--el-disabled-bg-color);
-            box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
-        }
+  .wstd-container,
+  .smokeStove {
+    .el-input__wrapper {
+      background-color: var(
+                      --el-input-bg-color,
+                      var(--el-fill-color-blank)
+      ) !important;
+      box-shadow: 0 0 0 1px var(--el-input-border-color, var(--el-border-color)) inset;
     }
+
+    .el-input.is-disabled .el-input__wrapper {
+      background-color: var(--el-disabled-bg-color);
+      box-shadow: 0 0 0 1px var(--el-disabled-border-color) inset;
+    }
+  }
+}
+
+
+//地图工具按钮
+.map-tool-btn {
+  border-radius: $border-radius-1;
+  height: .4rem;
+  width: .4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 0.01rem solid var(--el-border-color);
+  background-color: var(--el-color-primary-light-9);
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--el-bg-color-page);
+    box-shadow: 0 0 .2rem var(--el-box-shadow-color);
+    border-color: var(--el-color-primary);
+  }
+
+  &.active {
+    background-color: var(--el-bg-color-page);
+    box-shadow: 0 0 .2rem var(--el-color-primary-light-5);
+    border-color: var(--el-color-primary);
+  }
+
+  &.disabled {
+    background-color: var(--el-text-color-disabled);
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .el-icon {
+    color: var(--el-color-primary);
+    font-size: .28rem;
+  }
+}
+
+.dark .map-tool-btn {
+  background-color: var(--el-bg-color-opacity-8);
+
+  .el-icon {
+    color: var(--el-text-color-primary);
+  }
 }

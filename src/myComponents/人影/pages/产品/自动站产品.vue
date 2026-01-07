@@ -2,7 +2,7 @@
     <div class="toolMode">
         <div class="tool-mode-title">
             <div class="title-left">
-                <svg-icon name="layer"></svg-icon>
+                <svg-icon name="layer" width=".2rem" height=".2rem"></svg-icon>
                 <span style="user-select: none;cursor:default;">自动站雨量</span>
             </div>
             <div class="title-right">
@@ -57,50 +57,5 @@
 </script>
 
 <style scoped lang="scss">
-    .toolMode {
-        background-color: var(--el-bg-color);
-        border-radius: $border-radius-1;
-        padding: $grid-1;
-        .tool-mode-title {
-            display: flex;
-            justify-content: space-between;
-        }
-        .title-left {
-            display: flex;
-            align-items: center;
-            margin-bottom: $grid-1;
-            .svg-icon {
-                margin-right: 0.04rem;
-            }
-        }
-        .tool-mode-content {
-            width: 100%;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-bottom: -$grid-1;
-            .tool-mode-item {
-                box-sizing: border-box;
-                height: .24rem;
-                line-height: .20rem;
-                margin-bottom: $grid-1;
-            }
-            .radio-item {
-                cursor: pointer;
-                user-select: none;;
-                text-align: center;
-                border: 1px solid transparent;
-                border-radius: $border-radius-1;
-                padding:0 10px;
-                &:hover {
-                    border-color: var(--el-color-primary);
-                }
-            }
-            .radio-item.active {
-                background-color: var(--el-color-primary);
-                border-color: var(--el-color-primary);
-                color: #fff;
-            }
-        }
-    }
+
 </style>

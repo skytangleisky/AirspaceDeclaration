@@ -2,7 +2,7 @@
     <div class="toolMode">
         <div class="tool-mode-title">
             <div class="title-left">
-                <svg-icon name="layer"></svg-icon>
+                <svg-icon name="layer" width=".2rem" height=".2rem"></svg-icon>
                 <span style="user-select: none;cursor:default;">二次雷达</span>
             </div>
             <div class="title-right">
@@ -13,16 +13,16 @@
             <slot name="content"></slot>
             <el-checkbox v-model="setting.人影.监控.plane">
                 <div style="display: flex;align-items: center;">
-                <svg-icon name="greenPlane" width="20" height="20"></svg-icon>飞机图层</div>
+                <svg-icon name="greenPlane" :width="iconSize" :height="iconSize"></svg-icon>飞机图层</div>
             </el-checkbox>
             <el-checkbox v-model="setting.人影.监控.ryPlane">
-                <div style="display: flex;align-items: center;"><svg-icon name="colorfulPlane" width="20" height="20"></svg-icon>仅显示人影飞机</div>
+                <div style="display: flex;align-items: center;"><svg-icon name="colorfulPlane" :width="iconSize" :height="iconSize"></svg-icon>仅显示人影飞机</div>
             </el-checkbox>
             <el-checkbox v-model="setting.人影.监控.planeLabel">
-                <div style="display: flex;align-items: center;"><svg-icon name="bubble" width="20" height="20"></svg-icon>飞机标牌</div>
+                <div style="display: flex;align-items: center;"><svg-icon name="bubble" :width="iconSize" :height="iconSize"></svg-icon>飞机标牌</div>
             </el-checkbox>
             <el-checkbox v-model="setting.人影.监控.track">
-                <div style="display: flex;align-items: center;"><svg-icon name="track" width="20" height="20"></svg-icon>人影飞机轨迹</div>
+                <div style="display: flex;align-items: center;"><svg-icon name="track" :width="iconSize" :height="iconSize"></svg-icon>人影飞机轨迹</div>
             </el-checkbox>
         </div>
     </div>
@@ -34,32 +34,14 @@
     import { useSettingStore } from "~/stores/setting";
     import { modelRef } from '~/tools'
     const setting = useSettingStore()
+    const iconSize = ".2rem"
 </script>
 
 <style scoped lang="scss">
     .toolMode {
-        background-color: var(--el-bg-color);
-        border-radius: $border-radius-1;
-        padding: $grid-1;
-        .tool-mode-title {
-            display: flex;
-            justify-content: space-between;
-        }
-        .title-left {
-            display: flex;
-            align-items: center;
-            margin-bottom: $grid-1;
-            .svg-icon {
-                margin-right: 0.04rem;
-            }
-        }
         .tool-mode-content {
-            width: 100%;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            justify-content: space-between;
-            flex-wrap: wrap;
-            margin-bottom: -$grid-1;
+            grid-template-columns: repeat(3, 1fr) !important;
         }
     }
     .飞机{

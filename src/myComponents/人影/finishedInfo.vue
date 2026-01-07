@@ -80,7 +80,7 @@
     <el-table-column prop="strZydIDName" label="作业点名称" width="120" />
     <!-- <el-table-column prop="tagPos" label="经纬度" width="200" /> -->
     <el-table-column prop="beginTm" label="作业时间" width="160" />
-    <el-table-column prop="timeLen" label="作业时长（秒）" width="120" />
+    <el-table-column prop="timeLen" label="作业时长（秒）" width="140" />
     <el-table-column label="作业类型" width="150">
       <template #default="{row}">
         {{ workType[row.workType] }}
@@ -118,7 +118,7 @@
       <template #default="{row}">{{effect[row.workEffect]}}</template>
     </el-table-column>
   </el-table>
-  <el-pagination size="small" v-model:current-page="pageOption.page" :page-size="pageOption.size"  layout="prev,pager, next, jumper, total" :total="pageOption.total" />
+  <el-pagination v-model:current-page="pageOption.page" :page-size="pageOption.size"  layout="prev,pager, next, jumper, total" :total="pageOption.total" />
   <Add v-model:show="addShow"></Add>
   <Confirm v-model:show="confirmShow" :data="rowData"></Confirm>
   <View v-model:show="viewShow" :data="rowData"></View>

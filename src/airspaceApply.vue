@@ -16,9 +16,6 @@ localStorage.setItem('accessToken','ffea9a57ba25e9bec28b5fd27cb2d97c')
   position: relative;
   height: 100%;
   width: 100%;
-  color: #000;
-}
-.dark .wstd-container{
-  color:#fff;
+  color:var(--el-text-color-primary);
 }
 </style>

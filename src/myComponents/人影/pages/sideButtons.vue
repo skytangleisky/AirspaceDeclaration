@@ -45,88 +45,109 @@ const groups = reactive([
 ])
 </script>
 <style lang="scss" scoped>
-.sideButtons {
-  display: flex;
-  flex-direction: column;
-  width: fit-content;
-  height: 100%;
-  font-size:16px;
-  user-select: none;
-  pointer-events: none;
-  .sideButtonGroup{
-    pointer-events: auto;
-    margin-bottom:5px;
-    display: flex;
-    flex-direction: column;
-    padding:4px 4px;
-    justify-content: center;
-    margin-right: 10px;
-    border-radius: 4px;
-    border:1px solid gray;
-    background-color: #fff;
-    .sideButton{
-      cursor:pointer;
-      width:100%;
-      height:24px;
-      padding:5px 10px;
-      box-sizing: border-box;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      color:darkblue;
-      border-radius:4px;
-      border: 2px solid transparent;
-      // background-color: var(--el-color-primary);
-      &:hover{
-        border:2px solid var(--el-color-primary-dark-2);
-      }
-      &:active{
-        background-color: var(--el-color-primary-light-3);
-      }
-      &.selected{
-        background-color: var(--el-color-primary);
-      }
-    }
-    .list-outer{
-      interpolate-size: allow-keywords;
-      transition: height 0.3s ease-in-out, opacity 0.3s linear;
-      height: auto;
-      opacity: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      &.hide{
-        height: 0;
-        opacity: 0;
-        transition: height 0.3s ease-in-out, opacity 0.3s linear;
-      }
-      .list{
-        padding-top:2px;
-        .sideButton-outer{
-          &:nth-child(1){
-            border-top:1px solid gray;
-            padding-top:2px;
-          }
-        }
+    .sideButtons {
         display: flex;
         flex-direction: column;
-        gap:2px;
-        .sideButton{
-          color:#000;
+        width: fit-content;
+        height: 100%;
+        font-size: .16rem;
+        user-select: none;
+        pointer-events: none;
+        margin-right: $grid-2;
+        gap: $grid-2;
+        
+        .sideButtonGroup {
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            
+            border-radius: $border-radius-1;
+            border: 1px solid var(--el-border-color);
+            background-color: var(--el-bg-color-opacity-8);
+            overflow: hidden;
+            .sideButton {
+                cursor: pointer;
+                width: 100%;
+                height: .32rem;
+                line-height: .32rem;
+                padding: $grid-1 $grid-2;
+                box-sizing: border-box;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: var(--el-color-primary);
+                &:hover {
+                    color: #fff;
+                    background-color: var(--el-color-primary-light-3);
+                }
+                
+                &.selected {
+                    background-color: var(--el-color-primary);
+                }
+                
+                
+                
+            }
+            
+            .list-outer {
+                interpolate-size: allow-keywords;
+                transition: height 0.3s ease-in-out, opacity 0.3s linear;
+                height: auto;
+                opacity: 1;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+                
+                &.hide {
+                    height: 0;
+                    opacity: 0;
+                    transition: height 0.3s ease-in-out, opacity 0.3s linear;
+                }
+                
+                .list {
+                    display: flex;
+                    flex-direction: column;
+                    
+                    .sideButton {
+                        color: var(--el-text-primary);
+                        
+                        &:hover {
+                            color: #fff;
+                            border-color: transparent;
+                            background-color: var(--el-color-primary-light-3);
+                        }
+                        
+                        &.selected {
+                            color: #fff;
+                        }
+                        
+                        
+                        &:first-child {
+                            border-top: 1px solid var(--el-border-color);
+                        }
+                        
+                        &:last-child {
+                            border-radius: 0 0 $border-radius-1 $border-radius-1;
+                        }
+                    }
+                    
+                }
+            }
         }
-      }
     }
-  }
-}
-.dark .sideButtonGroup{
-  background-color: #273347;
-  .sideButton{
-    color:lightblue;
-  }
-  .list-outer .list{
-    .sideButton{
-      color:#ddd;
+    
+    .dark .sideButtonGroup {
+        background-color: #273347;
+        
+        .sideButton {
+            color: lightblue;
+        }
+        
+        .list-outer .list {
+            .sideButton {
+                color: #ddd;
+            }
+        }
     }
-  }
-}
 </style>
