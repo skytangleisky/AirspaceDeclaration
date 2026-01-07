@@ -11,7 +11,7 @@
 const title = defineModel('title',{
   default:'标题'
 })
-import {onMounted, ref, watch} from 'vue'
+import {nextTick, onMounted, ref, watch} from 'vue'
 function close(){
   if(once.value){
     IF.value=false
@@ -27,7 +27,7 @@ const once = defineModel<boolean>('once',{
 })
 const render = defineModel('render',{
   required:false,
-  default:true
+  default:false
 })
 const width = defineModel('width',{
   default:'100%'
@@ -64,6 +64,12 @@ onMounted(()=>{
 watch(render,(newVal,oldVal)=>{
   if(once.value){
     IF.value=newVal
+    if(IF.value==true){
+      nextTick(()=>{
+        meeting.value!.style.setProperty('--width', width.value);
+        meeting.value!.style.setProperty('--height', height.value);
+      })
+    }
   }else{
     SHOW.value=newVal
   }
