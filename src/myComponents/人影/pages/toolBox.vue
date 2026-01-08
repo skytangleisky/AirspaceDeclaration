@@ -451,6 +451,10 @@
                 label: '二次雷达信号',
                 value: modelRef(setting, '人影.监控.plane'),
                 type: 'checkbox'
+            },{
+                label: '二次雷达信号数量',
+                value: modelRef(setting, '人影.监控.planeCount'),
+                type: 'text'
             }, {
                 label: 'ADS-B信号',
                 value: modelRef(setting, '人影.监控.adsb'),

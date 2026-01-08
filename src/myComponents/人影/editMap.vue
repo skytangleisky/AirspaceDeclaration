@@ -766,6 +766,7 @@ function 处理飞机实时位置(d:Array<{
       textData.splice(i--,1)
     }
   }
+  setting.人影.监控.planeCount = textData.length
   updateTextLayer(textData.slice())
   const tmp = d.filter(item=>{
     for(let plane of setting.人影.监控.注册飞机数据){
