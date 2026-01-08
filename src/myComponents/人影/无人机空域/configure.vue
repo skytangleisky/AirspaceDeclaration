@@ -2,13 +2,6 @@
   <div class="configure" @mousedown.stop>
     <div class="table">
       <el-table :data="filterTableData" style="width: 100%" height="100%" highlight-current-row>
-        <el-table-column label="操作">
-          <template #default="{ row }">
-            <el-button type="primary" size="small" @click="handleEdit(row)">
-              编辑
-            </el-button>
-          </template>
-        </el-table-column>
         <el-table-column label="序号" width="60">
           <template #default="{ $index }">
             {{ $index + 1 }}
@@ -17,7 +10,7 @@
         <!-- <el-table-column label="ID" prop="id" sortable width="100"/> -->
         <el-table-column label="状态" sortable width="150">
           <template #default="{ row }">
-            <el-tag :type="getType(row.emStatus)">
+            <el-tag>
             {{ status2value(row.emStatus) }}
             </el-tag>
           </template>
@@ -31,8 +24,9 @@
         <el-table-column label="预计结束时间" prop="endTime" sortable width="180" />
         <el-table-column label="操控模式" prop="operationModeDesc" sortable width="120"/>
         <el-table-column label="飞行模式" prop="flightModeDesc" sortable width="120"/>
-        <el-table-column label="申请主体名称" prop="applicantName" sortable width="180" />
+        <el-table-column label="申请主体名称" prop="" sortable width="180" />
         <el-table-column label="通信联络方式" prop="remarkCont" sortable width="180" />
+
       </el-table>
     </div>
     <div class="pagination">
@@ -88,21 +82,6 @@ provide('form',form)
 import {useSettingStore} from '~/stores/setting'
 const setting = useSettingStore()
 import { computed, ref, reactive, watch, provide, onMounted } from 'vue'
-const getType = computed(()=>{
-  return (status:number)=>{
-    const text = status2value(status)
-    switch(text){
-      case '已申请':
-        return 'success'
-      case '已批准':
-        return 'primary'
-      case '不批准':
-        return 'info'
-      default:
-        return 'danger'
-    }
-  }
-})
 import type { ComponentSize } from 'element-plus'
 import { fetchList } from './api'
 const currentPage4 = ref(1)
@@ -153,11 +132,11 @@ function status2value(key:number){
     { key: 0, value: "空闲" },
     { key: 9, value: "作业完成" },
     { key: 70, vlaue: "作业保存" },
-    { key: 72, value: "已申请" },
+    { key: 72, value: "作业申请待批复" },
     { key: 73, value: "撤销申请待回执" },
     { key: 74, value: "已撤销" },
-    { key: 75, value: "已批准" },
-    { key: 76, value: "不批准" },
+    { key: 75, value: "作业批准" },
+    { key: 76, value: "作业不批准" },
     { key: 90, value: "作业开始带回执" },
     { key: 91, value: "作业开始" },
     { key: 92, value: "作业暂停待回执" },
@@ -166,9 +145,6 @@ function status2value(key:number){
     { key: 100, value: "作业结束" },
   ]
   return ubyStatus.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
-}
-function handleEdit(row: any) {
-  console.log(row)
 }
 </script>
 <style lang="scss" scoped>

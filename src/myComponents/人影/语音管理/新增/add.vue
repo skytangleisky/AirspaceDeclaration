@@ -1,8 +1,5 @@
 <template>
   <div class="add" @mousedown.stop>
-    <div class="title">
-      <span>{{ form.title }}</span>
-    </div>
     <el-form :model="form" label-width="auto" style="flex:1;">
       <el-row :gutter="20">
         <el-col :span="12">

@@ -5,6 +5,7 @@
         v-resize="resize"
         ref="mapRef"
         class="mapboxContainer"
+        style="z-index:0"
       ></div>
       <svg class="center" v-if="setting.人影.监控.准心" width="20" height="20" viewBox="0 0 20 20">
         <path
@@ -81,7 +82,9 @@
     <ConfigureAudioData></ConfigureAudioData>
     <ConfigureReplyRate></ConfigureReplyRate>
     <ConfigrueNetwork></ConfigrueNetwork>
-    <ConfigrueLowAirspace></ConfigrueLowAirspace>
+    <ConfigrueFlightActivity></ConfigrueFlightActivity>
+    <ConfigrueUAVAirspace></ConfigrueUAVAirspace>
+    <ConfigureEnclosure></ConfigureEnclosure>
     <!-- <Overview></Overview> -->
   </div>
 </template>
@@ -585,7 +588,9 @@ import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
 import ConfigureAudioData from '~/myComponents/人影/语音管理/index.vue'
 import ConfigrueNetwork from '~/myComponents/人影/网络信息/index.vue'
-import ConfigrueLowAirspace from '~/myComponents/人影/飞行活动/index.vue'
+import ConfigrueFlightActivity from '~/myComponents/人影/飞行活动/index.vue'
+import ConfigrueUAVAirspace from '~/myComponents/人影/无人机空域/index.vue'
+import ConfigureEnclosure from '~/myComponents/人影/电子围栏/index.vue'
 import Overview from '~/myComponents/人影/弹药概况/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
@@ -1414,6 +1419,7 @@ function 处理飞机实时位置(d:Array<{
     }
   }
   setting.人影.监控.飞机数据.splice(0,setting.人影.监控.飞机数据.length,...data.features)
+  setting.人影.监控.planeCount = data.features.length
   map?.getSource("飞机原数据")?.setData(data);
 }
 function 处理ADSB(d:Array<{
@@ -5183,70 +5189,90 @@ onMounted(async() => {
       map.getSource('stoveSource').setData(stoveFeaturesData)
     })
 
-    setting.人影.监控.selectedRegion.forEach((item:string)=>{
-      axios.get(`/backend/region/${item}.json`).then(res=>{
-        map.addLayer({
-          'id': `${item}.json`,
-          'type': 'line',
-          'source': {
-            "type":"geojson",
-            "data": res.data
-          },
-          'layout': {
-            'visibility':'visible',
-            'line-join':'round',
-            'line-cap':'round',
-          },
-          'paint': {
-            'line-color': '#fff',
-            'line-width': 5,
-            'line-opacity':1,
-          }
-        })
-        const holes:any = []
-        res.data.features.forEach((feature:any)=>{
-          feature.geometry.coordinates.forEach((item:any)=>{
-            const points = item[0]
-            points.push(points[0])
-            holes.push(points)
-          })
-        })
-        map.addLayer({
-          'id': `${item}.json_mask`,
-          'type': 'fill',
-          'source': {
-            "type":"geojson",
-            "data": {
-              "type": "FeatureCollection",
-              "features": [
-                {
-                  "type": "Feature",
-                  "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                      [
-                        [-180, -90],
-                        [-180, 90],
-                        [180, 90],
-                        [180, -90],
-                        [-180, -90],
-                      ],
-                      ...holes
-                    ]
-                  }
-                }
-              ]
-            }
-          },
-          'layout': {
-            'visibility':'visible',
-          },
-          'paint': {
-            'fill-color':'rgba(0,0,0,0.6)',
-            'fill-outline-color':'transparent'
-          }
+    const holes:any = []
+    for(let item of setting.人影.监控.selectedRegion){
+      const res = await axios.get(`/backend/region/${item}.json`)
+      if(map.getLayer(`${item}.json`)){
+        map.removeLayer(`${item}.json`)
+      }
+      if(map.getSource(`${item}.json`)){
+        map.removeSource(`${item}.json`)
+      }
+      map.addLayer({
+        'id': `${item}.json`,
+        'type': 'line',
+        'source': {
+          "type":"geojson",
+          "data": res.data
+        },
+        'layout': {
+          'visibility':'visible',
+          'line-join':'round',
+          'line-cap':'round',
+        },
+        'paint': {
+          'line-color': '#fff',
+          'line-width': 5,
+          'line-opacity':1,
+        }
+      })
+      res.data.features.forEach((feature:any)=>{
+        feature.geometry.coordinates.forEach((item:any)=>{
+          const points = item[0]
+          points.push(points[0])
+          holes.push(points)
         })
       })
+    }
+    const holePolygons = holes.map((coords:any) =>
+      turf.polygon([coords])
+    )
+    let mergedHole = holePolygons[0]
+    for (let i = 1; i < holePolygons.length; i++) {
+      mergedHole = turf.union(mergedHole, holePolygons[i])
+    }
+    if(map.getLayer('json_mask')){
+      map.removeLayer('json_mask')
+    }
+    if(map.getSource('json_mask')){
+      map.removeSource('json_mask')
+    }
+    map.addLayer({
+      'id': `json_mask`,
+      'type': 'fill',
+      'source': {
+        "type":"geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": [
+                  [
+                    [-180, -90],
+                    [-180, 90],
+                    [180, 90],
+                    [180, -90],
+                    [-180, -90],
+                  ],
+                  ...mergedHole.geometry.coordinates.map((item:any)=>{
+                    return item[0]
+                  })
+                ]
+              }
+            }
+          ]
+        }
+      },
+      'layout': {
+        'visibility':'visible',
+      },
+      'paint': {
+        'fill-color':'rgba(0,0,0,0.6)',
+        'fill-outline-color':'transparent'
+      }
     })
     updateTextLayer(textData)
 
@@ -5796,83 +5822,92 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
-watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
-  if(oldVal==undefined){
-    oldVal = []
-  }
-  oldVal.forEach((item:string)=>{
-    if(!newVal.includes(item)){
+watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
+  oldValue.forEach(item=>{
+    if(map.getLayer(`${item}.json`)){
       map.removeLayer(`${item}.json`)
+    }
+    if(map.getSource(`${item}.json`)){
       map.removeSource(`${item}.json`)
-      map.removeLayer(`${item}.json_mask`)
-      map.removeSource(`${item}.json_mask`)
     }
   })
-  newVal.forEach((item:string)=>{
-    if(!oldVal.includes(item)){
-      axios.get(`/backend/region/${item}.json`).then(res=>{
-        map.addLayer({
-          'id': `${item}.json`,
-          'type': 'line',
-          'source': {
-            "type":"geojson",
-            "data": res.data
-          },
-          'layout': {
-            'visibility':'visible',
-            'line-join':'round',
-            'line-cap':'round',
-          },
-          'paint': {
-            'line-color': '#fff',
-            'line-width': 5,
-            'line-opacity':1,
-          }
-        })
-        const holes:any = []
-        res.data.features.forEach((feature:any)=>{
-          feature.geometry.coordinates.forEach((item:any)=>{
-            const points = item[0]
-            points.push(points[0])
-            holes.push(points)
-          })
-        })
-        map.addLayer({
-          'id': `${item}.json_mask`,
-          'type': 'fill',
-          'source': {
-            "type":"geojson",
-            "data": {
-              "type": "FeatureCollection",
-              "features": [
-                {
-                  "type": "Feature",
-                  "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                      [
-                        [-180, -90],
-                        [-180, 90],
-                        [180, 90],
-                        [180, -90],
-                        [-180, -90],
-                      ],
-                      ...holes
-                    ]
-                  }
-                }
+  const holes:any = []
+  for(let item of setting.人影.监控.selectedRegion){
+    const res = await axios.get(`/backend/region/${item}.json`)
+    map.addLayer({
+      'id': `${item}.json`,
+      'type': 'line',
+      'source': {
+        "type":"geojson",
+        "data": res.data
+      },
+      'layout': {
+        'visibility':'visible',
+        'line-join':'round',
+        'line-cap':'round',
+      },
+      'paint': {
+        'line-color': '#fff',
+        'line-width': 5,
+        'line-opacity':1,
+      }
+    })
+    res.data.features.forEach((feature:any)=>{
+      feature.geometry.coordinates.forEach((item:any)=>{
+        const points = item[0]
+        points.push(points[0])
+        holes.push(points)
+      })
+    })
+  }
+  const holePolygons = holes.map((coords:any) =>
+    turf.polygon([coords])
+  )
+  let mergedHole = holePolygons[0]
+  for (let i = 1; i < holePolygons.length; i++) {
+    mergedHole = turf.union(mergedHole, holePolygons[i])
+  }
+  if(map.getLayer('json_mask')){
+    map.removeLayer('json_mask')
+  }
+  if(map.getSource('json_mask')){
+    map.removeSource('json_mask')
+  }
+  map.addLayer({
+    'id': `json_mask`,
+    'type': 'fill',
+    'source': {
+      "type":"geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [
+          {
+            "type": "Feature",
+            "geometry": {
+              "type": "Polygon",
+              "coordinates": [
+                [
+                  [-180, -90],
+                  [-180, 90],
+                  [180, 90],
+                  [180, -90],
+                  [-180, -90],
+                ],
+                ...mergedHole.geometry.coordinates.map((item:any)=>{
+                  return item[0]
+                })
               ]
             }
-          },
-          'layout': {
-            'visibility':'visible',
-          },
-          'paint': {
-            'fill-color':'rgba(0,0,0,0.6)',
-            'fill-outline-color':'transparent'
           }
-        })
-      })
+        ]
+      }
+    },
+    'layout': {
+      'visibility':'visible',
+    },
+    'paint': {
+      'fill-color':'rgba(0,0,0,0.6)',
+      'fill-outline-color':'transparent'
     }
   })
 },{deep:true})

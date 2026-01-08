@@ -5,7 +5,7 @@
         <!-- <el-table-column label="id" prop="id" sortable /> -->
         <!-- <el-table-column label="uuid" prop="uuid" sortable /> -->
         <el-table-column label="作业点ID" prop="strZydID" sortable />
-        <el-table-column label="作业点名称" prop="strName" sortable />
+        <el-table-column label="作业点名称" prop="strName" sortable show-overflow-tooltip />
         <el-table-column label="申请次数" prop="申请次数" sortable />
         <el-table-column label="批复次数" prop="批复次数" sortable />
         <el-table-column label="批准次数" prop="批准次数" sortable />

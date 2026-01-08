@@ -1,5 +1,5 @@
 <template>
-  <frame v-model:render="setting.语音管理" :width="1600" :height="600">
+  <frame title="语音管理" v-model:render="setting.语音管理" once width="1600px" height="600px">
     <Configure></Configure>
   </frame>
 </template>

@@ -1,6 +1,6 @@
 <template>
-  <div class="planPanel wstd-container" style="z-index: 1;height:fit-content;width: fit-content;">
-    <div class="bottom wstd-content" style="position: relative;margin-bottom:10px;" v-show="tabActive !== ''">
+  <div class="planPanel wstd-container" style="z-index: 1;height:fit-content;width: fit-content;pointer-events: none;">
+    <div class="bottom wstd-content" style="position: relative;margin-bottom:10px;pointer-events: auto;" v-show="tabActive !== ''">
       <div class="close-btn" @click="tabActive = ''">
         <el-icon v-html="closeSvg"></el-icon>
       </div>
@@ -27,11 +27,12 @@
           </el-scrollbar>
       </div>
     </div>
-    <div class="top" style="margin-top:10px;margin-bottom:0;">
+    <div class="top" style="margin-top:10px;margin-bottom:0">
       <div
         v-for="(item, index) in tabList"
         :key="index"
         class="top-item"
+        style="pointer-events: auto;"
         @click="tabActive == item.label ? tabActive = '' : tabActive = item.label"
       >
         <el-badge :value="item.total" type="success" :hidden="item.hideBadge">

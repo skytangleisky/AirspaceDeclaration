@@ -2,13 +2,13 @@ import request from '~/utils/request'
 import moment from 'moment'
 export function fetchList({page,size,range}:{page:number,size:number,range:any}){
   return request({
-    url:'/backend/db/flight_activity_apply',
+    url:'/backend/db/default',
     method:'post',
     headers:{
-      table:'flight_activity_apply f left join applicant_info a on f.businessId = a.businessId',
+      table:'flight_activity_apply',
     },
     data:{
-      select:['f.*','a.name as applicantName'],
+      select:['*'],
       where: range?[
         {
           "relation": "and",
@@ -23,7 +23,7 @@ export function fetchList({page,size,range}:{page:number,size:number,range:any})
           "condition":moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
         }
       ]:[],
-      "orderby":['f.id asc'],
+      "orderby":['id asc'],
       "distinct": false,
       "offset": (page-1)*size,
       "limit": size

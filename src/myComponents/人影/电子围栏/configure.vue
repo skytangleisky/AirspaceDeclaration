@@ -15,20 +15,20 @@
           </template>
         </el-table-column>
         <!-- <el-table-column label="ID" prop="id" sortable width="100"/> -->
-        <el-table-column label="状态" sortable width="150">
+        <el-table-column label="开始生效时间" prop="create_time" sortable width="180" />
+        <el-table-column label="结束生效时间" prop="end_time" sortable width="180" />
+        <!-- <el-table-column label="状态" sortable width="150">
           <template #default="{ row }">
             <el-tag :type="getType(row.emStatus)">
             {{ status2value(row.emStatus) }}
             </el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="活动名称" prop="name" sortable width="200" show-overflow-tooltip/>
         <el-table-column label="申请时间" prop="createTime" sortable width="180" />
         <el-table-column label="起飞" prop="remarkTLA" sortable show-overflow-tooltip/>
         <el-table-column label="活动类型" prop="typeDesc" sortable width="120"/>
         <el-table-column label="任务性质" prop="taskCategoryDesc" sortable width="120"/>
-        <el-table-column label="预计开始时间" prop="begTime" sortable width="180" />
-        <el-table-column label="预计结束时间" prop="endTime" sortable width="180" />
         <el-table-column label="操控模式" prop="operationModeDesc" sortable width="120"/>
         <el-table-column label="飞行模式" prop="flightModeDesc" sortable width="120"/>
         <el-table-column label="申请主体名称" prop="applicantName" sortable width="180" />
@@ -58,6 +58,7 @@
       />
     </div>
   </div>
+  <Add v-model:render=render></Add>
 </template>
 
 <script lang="ts" setup>
@@ -67,6 +68,7 @@ const Tomorrow = moment().add(1, 'day')
 //   new Date(moment().year(), moment().month(), moment().date(), 0, 0),
 //   new Date(Tomorrow.year(), Tomorrow.month(), Tomorrow.date(), 0, 0),
 // ])
+import Add from './新增/index.vue'
 const range = ref<any>()
 const now = new Date()
 const defaultDates = [
@@ -168,8 +170,10 @@ function status2value(key:number){
   return ubyStatus.filter((item) => item.key == key)[0]?.value || `未知状态${key}`;
 }
 function handleEdit(row: any) {
+  render.value = true
   console.log(row)
 }
+const render = ref(false)
 </script>
 <style lang="scss" scoped>
 .configure{

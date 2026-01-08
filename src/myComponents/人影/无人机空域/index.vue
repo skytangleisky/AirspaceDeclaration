@@ -1,5 +1,5 @@
 <template>
-  <frame title="批复率统计" v-model:render="setting.批复率统计" width="1400px" height="540px">
+  <frame title="无人机空域" v-model:render="setting.无人机空域">
     <Configure></Configure>
   </frame>
 </template>

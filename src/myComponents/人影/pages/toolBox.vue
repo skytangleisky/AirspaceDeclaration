@@ -395,7 +395,10 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
   {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
   {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
-  ...(mask=='%%'?[{label: '二次雷达信号', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},{label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
+  ...(mask=='%%'?[
+    {label: '二次雷达信号', value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
+    {label: '二次雷达信号数量', value: modelRef(setting, '人影.监控.planeCount'), type: 'text'},
+    {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
   {label: '飞机标牌', value: modelRef(setting, '人影.监控.planeLabel'), type: 'checkbox'},
   {label: '航迹', value: modelRef(setting, '人影.监控.track'), type: 'checkbox'},
   {
@@ -488,6 +491,16 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {
     label: '飞行活动', type: 'button', click() {
       setting.飞行活动 = true
+    }
+  },
+  {
+    label: '电子围栏', type: 'button', click() {
+      setting.电子围栏 = true
+    }
+  },
+  {
+    label: '无人机空域', type: 'button', click() {
+      setting.无人机空域 = true
     }
   },
   // {
