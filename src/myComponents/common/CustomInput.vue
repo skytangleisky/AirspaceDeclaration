@@ -13,7 +13,7 @@
     </template>
     <div v-else style="position: relative;display: flex;vertical-align: middle;">
       {{ modelValue }}
-      <el-icon v-html="removeSvg" style="position: absolute;top:50%;transform:translateY(-50%);left:100%;margin:2px;padding:2px;background:#2b2b2b;border-radius: 50%;" @click="removeImage"></el-icon>
+      <el-icon v-html="removeSvg" style="position: absolute;top:50%;transform:translateY(-50%);left:100%;margin:2px;padding:2px;" @click="removeImage"></el-icon>
     </div>
   </div>
   <div v-else style="width: 100%;">

@@ -48,7 +48,8 @@ import {
   onBeforeUnmount,
   toRefs,
   defineAsyncComponent,
-  ComputedRef
+  ComputedRef,
+  toRaw
 } from "vue";
 
 const EditMap = defineAsyncComponent(() => import("../editMap.vue"));
@@ -227,7 +228,7 @@ const selectorColor = computed({
 })
 const tweakPaneRef = ref<HTMLElement>();
 const confirm = (data: prevRequestDataType) => {
-  eventbus.emit("人影-地面作业申请-网络上报", data);
+  eventbus.emit("人影-地面作业申请-网络上报", toRaw(data));
 };
 
 function accept(data) {

@@ -127,9 +127,9 @@ const groups = reactive([
                             border-top: 1px solid var(--el-border-color);
                         }
                         
-                        &:last-child {
-                            border-radius: 0 0 $border-radius-1 $border-radius-1;
-                        }
+                        // &:last-child {
+                        //     border-radius: 0 0 $border-radius-1 $border-radius-1;
+                        // }
                     }
                     
                 }

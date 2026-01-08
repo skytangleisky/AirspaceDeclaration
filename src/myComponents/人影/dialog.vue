@@ -124,7 +124,7 @@
     import Colormap from './色标.vue'
     import {Close} from "@element-plus/icons-vue";
     import closeSvg from '~/assets/close.svg?raw'
-    import {reactive, onMounted, watch, computed, ref} from "vue";
+    import {reactive, onMounted, watch, computed, ref, toRaw} from 'vue';
     
     const show = ref(false)
     import {useStationStore} from "~/stores/station";
@@ -219,7 +219,7 @@
     };
     const flyTo = (event: any, v: any) => {
         station.人影界面被选中的设备 = v.strID;
-        eventbus.emit("人影-将站点移动到屏幕中心", v);
+        eventbus.emit("人影-将站点移动到屏幕中心", toRaw(v));
     };
 </script>
 <style scoped lang="scss">
