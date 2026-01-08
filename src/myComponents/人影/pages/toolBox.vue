@@ -13,7 +13,7 @@
             <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick">
                 <div class="toolClass"></div>
             </div>
-            <div class="map-tool-btn">
+            <div class="map-tool-btn disabled">
                 <div class="favoritesClass"></div>
             </div>
         </div>
