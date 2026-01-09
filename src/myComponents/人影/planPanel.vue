@@ -136,7 +136,7 @@
                                     </div>
                                     <div
                                         class="item-right-bottom-item"
-                                        :style="`flex:1;display:flex;justify-content: center;align-items: center;${批复(
+                                        :style="`flex:1;display:flex;justify-content: center;align-items: center;white-space:nowrap;${批复(
                                             item
                                         )}`"
                                     >
