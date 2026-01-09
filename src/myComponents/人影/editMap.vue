@@ -5216,21 +5216,20 @@ onMounted(async() => {
           'line-opacity':1,
         }
       })
-      res.data.features.forEach((feature:any)=>{
-        feature.geometry.coordinates.forEach((item:any)=>{
-          const points = item[0]
-          points.push(points[0])
-          holes.push(points)
-        })
-      })
+      holes.push(...res.data.features)
     }
-    const holePolygons = holes.map((coords:any) =>
-      turf.polygon([coords])
-    )
-    let mergedHole = holePolygons[0]
-    for (let i = 1; i < holePolygons.length; i++) {
-      mergedHole = turf.union(mergedHole, holePolygons[i])
-    }
+    let outer:any = turf.polygon([
+      [
+        [-180, -90],
+        [-180, 90],
+        [180, 90],
+        [180, -90],
+        [-180, -90],
+      ]
+    ])
+    holes.forEach((feature:any)=>{
+      outer = turf.difference(outer, turf.buffer(feature,0))
+    })
     if(map.getLayer('json_mask')){
       map.removeLayer('json_mask')
     }
@@ -5244,26 +5243,7 @@ onMounted(async() => {
         "type":"geojson",
         "data": {
           "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                  [
-                    [-180, -90],
-                    [-180, 90],
-                    [180, 90],
-                    [180, -90],
-                    [-180, -90],
-                  ],
-                  ...mergedHole.geometry.coordinates.map((item:any)=>{
-                    return item[0]
-                  })
-                ]
-              }
-            }
-          ]
+          "features": [outer]
         }
       },
       'layout': {
@@ -5834,6 +5814,12 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
   const holes:any = []
   for(let item of setting.人影.监控.selectedRegion){
     const res = await axios.get(`/backend/region/${item}.json`)
+    if(map.getLayer(`${item}.json`)){
+      map.removeLayer(`${item}.json`)
+    }
+    if(map.getSource(`${item}.json`)){
+      map.removeSource(`${item}.json`)
+    }
     map.addLayer({
       'id': `${item}.json`,
       'type': 'line',
@@ -5852,21 +5838,20 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
         'line-opacity':1,
       }
     })
-    res.data.features.forEach((feature:any)=>{
-      feature.geometry.coordinates.forEach((item:any)=>{
-        const points = item[0]
-        points.push(points[0])
-        holes.push(points)
-      })
-    })
+    holes.push(...res.data.features)
   }
-  const holePolygons = holes.map((coords:any) =>
-    turf.polygon([coords])
-  )
-  let mergedHole = holePolygons[0]
-  for (let i = 1; i < holePolygons.length; i++) {
-    mergedHole = turf.union(mergedHole, holePolygons[i])
-  }
+  let outer:any = turf.polygon([
+    [
+      [-180, -90],
+      [-180, 90],
+      [180, 90],
+      [180, -90],
+      [-180, -90],
+    ]
+  ])
+  holes.forEach((feature:any)=>{
+    outer = turf.difference(outer, turf.buffer(feature,0))
+  })
   if(map.getLayer('json_mask')){
     map.removeLayer('json_mask')
   }
@@ -5880,26 +5865,7 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
       "type":"geojson",
       "data": {
         "type": "FeatureCollection",
-        "features": [
-          {
-            "type": "Feature",
-            "geometry": {
-              "type": "Polygon",
-              "coordinates": [
-                [
-                  [-180, -90],
-                  [-180, 90],
-                  [180, 90],
-                  [180, -90],
-                  [-180, -90],
-                ],
-                ...mergedHole.geometry.coordinates.map((item:any)=>{
-                  return item[0]
-                })
-              ]
-            }
-          }
-        ]
+        "features": [outer]
       }
     },
     'layout': {
