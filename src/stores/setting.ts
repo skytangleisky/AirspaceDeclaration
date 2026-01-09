@@ -42,18 +42,17 @@ export const useSettingStore = defineStore('setting',{
       {
         value:1,
         label: "矢量地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=vec_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        tileData: ["/maps1?x={x}&y={y}&z={z}"],
       },
       {
         value:2,
         label: "影像地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
-        // tileData: ["/maps/vt?lyrs=s&gl=CN&x={x}&y={y}&z={z}"],
+        tileData: ["/maps2?x={x}&y={y}&z={z}"],
       },
       {
         value:3,
         label: "地形地图",
-        tileData: ["/tile/xbry/maps/DataServer?T=ter_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}"],
+        tileData: ["/maps3?x={x}&y={y}&z={z}"],
       },
     ],
     绘制模式:'no_select',
@@ -575,7 +574,7 @@ export const useSettingStore = defineStore('setting',{
         },
         bottom_disappear:true,
         tile: 0,
-        tileOpacity:0.4,
+        tileOpacity:1,
         fps:0,
       },
       回放:{

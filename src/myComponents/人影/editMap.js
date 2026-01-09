@@ -377,7 +377,8 @@ export default function(){
 			},
 			"raster-road":{
 				type:'raster',
-				tiles:['/tile/xbry/maps/DataServer?T=cia_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}'],
+				// tiles:['/tile/xbry/maps/DataServer?T=cia_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}'],
+				tiles:['/maps0?x={x}&y={y}&z={z}'],
 				tileSize:256,
 			},
 			'wms-source1':{
@@ -448,7 +449,7 @@ export default function(){
 						visibility:setting.人影.监控.loadmap?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': setting.人影.监控.tileOpacity
+						'raster-opacity': 1.0
 					}
 				},
 				{

@@ -203,12 +203,26 @@ export default defineConfig({
         changeOrigin:true,
         secure:false,
       },
-      '/maps':{
-        agent,
-        target:'http://127.0.0.1:3241',
+      '/maps0':{
+        target:'http://127.0.0.1:3140',
         changeOrigin:true,
         secure:false,
-      }
+      },
+      '/maps1':{
+        target:'http://127.0.0.1:3141',
+        changeOrigin:true,
+        secure:false,
+      },
+      '/maps2':{
+        target:'http://127.0.0.1:3142',
+        changeOrigin:true,
+        secure:false,
+      },
+      '/maps3':{
+        target:'http://127.0.0.1:3143',
+        changeOrigin:true,
+        secure:false,
+      },
     }
   }
 });
