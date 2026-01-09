@@ -432,7 +432,8 @@ export function 空域申请批准(data){
     data:{
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": "110000000",//北京气象局
+      // "replyUnitID": "110000000",//北京气象局
+      "replyUnitID": "610000000",//西指分区
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.workBeginTime),
@@ -1675,3 +1676,27 @@ export function getAllShouldExpendRegion(){
 
 
 
+export function getSubRegion(adcode = '620000'){
+  return request({
+    url:'/backend/db/default',
+    method:'post',
+    headers:{
+      table:'map_border_info',
+    },
+    data:{
+      select:['name','adcode','parent_adcode'],
+      where:[
+        {
+          "relation": "AND",
+          "field": "parent_adcode",
+          "relationship": '=',
+          "condition": adcode
+        }
+      ],
+      orderby:['adcode asc'],
+      "distinct": false,
+      "offset": 0,
+      "limit": 0
+    }
+  })
+}

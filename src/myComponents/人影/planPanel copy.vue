@@ -101,7 +101,7 @@
                                 <div>上报单位</div>
                                 <div class="top-item-value">
                                     <!-- {{ item.unitName }} -->
-                                    北京气象局
+                                    陕西气象局
                                 </div>
                             </div>
                         </div>
@@ -126,7 +126,7 @@
                                     批复
                                 </template>
                                 <template v-else>
-                                    北空批复{{
+                                    西指分区批复{{
                                         "(" +
                                         moment(
                                             item.tmAnswerRev,

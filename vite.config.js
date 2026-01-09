@@ -17,10 +17,10 @@ const option = {
   maxFreeSockets: 32     // 空闲 socket 上限
 }
 // const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-const agent = new HttpsProxyAgent('http://127.0.0.1:4444',option)
+const agent = new HttpsProxyAgent('http://127.0.0.1:1100',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
-const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
+const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:6100',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',

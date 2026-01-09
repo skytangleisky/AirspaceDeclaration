@@ -337,11 +337,11 @@ export default function(){
 			},
 			"beijing":{
 				"type":"geojson",
-				"data": beijing
+				"data": '/backend/region/610000_full.json'
 			},
 			"beijingBorder":{
 				"type":"geojson",
-				"data": beijingBorder
+				"data": '/backend/region/610000.json'
 			},
 			"huabeiBorder":{
 				"type":"geojson",

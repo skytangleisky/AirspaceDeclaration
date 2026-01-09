@@ -144,7 +144,7 @@
                                             批复
                                         </template>
                                         <template v-else>
-                                            北空批复{{
+                                            西指分区批复{{
                                                 "(" +
                                                 moment(
                                                     item.tmAnswerRev,

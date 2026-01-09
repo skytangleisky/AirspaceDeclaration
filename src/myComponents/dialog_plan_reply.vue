@@ -29,7 +29,7 @@
                     <el-input
                         disabled
                         name="申请单位"
-                        value="北京气象局"
+                        value="陕西气象局"
                         @mousedown.stop
                     />
                 </div>
@@ -40,7 +40,7 @@
                     <el-input
                         disabled
                         name="空管单位"
-                        value="北空"
+                        value="西指分区"
                         @mousedown.stop
                     />
                 </div>

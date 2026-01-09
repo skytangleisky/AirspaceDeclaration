@@ -2653,12 +2653,12 @@ onMounted(async() => {
               strCode: item.strCode,
               strName: item.strName,
               strPos: item.strPos,
-              iMaxShotRange: item.iMaxShotRange,
-              iMaxShotHei: item.iMaxShotHei,
+              iMaxShotRange: Number(item.iMaxShotRange),
+              iMaxShotHei: Number(item.iMaxShotHei),
               iWeapon: Number(item.strWeapon),
               iWorkType: 1,
-              iShotRangeBegin: item.iShortAngelBegin,
-              iShotRangeEnd: item.iShortAngelEnd,
+              iShotRangeBegin: Number(item.iShortAngelBegin),
+              iShotRangeEnd: Number(item.iShortAngelEnd),
               beginTime: moment().format("HH:mm:ss"),
               unitName: item.unitName,
               duration: 1,
@@ -4379,6 +4379,78 @@ onMounted(async() => {
         visibility:setting.人影.监控.roadMap ? 'visible' : 'none'
       }
     })
+
+
+
+  const holes:any = []
+  for(let item of setting.人影.监控.selectedRegion){
+    const res = await axios.get(`/backend/region/${item}.json`)
+    if(map.getLayer(`${item}.json`)){
+      map.removeLayer(`${item}.json`)
+    }
+    if(map.getSource(`${item}.json`)){
+      map.removeSource(`${item}.json`)
+    }
+    map.addLayer({
+      'id': `${item}.json`,
+      'type': 'line',
+      'source': {
+        "type":"geojson",
+        "data": res.data
+      },
+      'layout': {
+        'visibility':'visible',
+        'line-join':'round',
+        'line-cap':'round',
+      },
+      'paint': {
+        'line-color': '#fff',
+        'line-width': 5,
+        'line-opacity':1,
+      }
+    })
+    holes.push(...res.data.features)
+  }
+  let outer:any = turf.polygon([
+    [
+      [-180, -90],
+      [-180, 90],
+      [180, 90],
+      [180, -90],
+      [-180, -90],
+    ]
+  ])
+  holes.forEach((feature:any)=>{
+    outer = turf.difference(outer, turf.buffer(feature,0))
+  })
+  if(map.getLayer('json_mask')){
+    map.removeLayer('json_mask')
+  }
+  if(map.getSource('json_mask')){
+    map.removeSource('json_mask')
+  }
+  map.addLayer({
+    'id': `json_mask`,
+    'type': 'fill',
+    'source': {
+      "type":"geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [outer]
+      }
+    },
+    'layout': {
+      'visibility':'visible',
+    },
+    'paint': {
+      'fill-color':'rgba(0,0,0,0.6)',
+      'fill-outline-color':'transparent'
+    }
+  })
+
+
+
+
     // map.addLayer(CustomLayer)
     // map.addLayer(new Plane())
     // map.addLayer(new PointLayer())
@@ -4606,41 +4678,81 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
-watch(()=>setting.人影.监控.selectedRegion,(newVal,oldVal)=>{
-  if(oldVal==undefined){
-    oldVal = []
-  }
-  oldVal.forEach((item:string)=>{
-    if(!newVal.includes(item)){
+watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
+  oldValue.forEach(item=>{
+    if(map.getLayer(`${item}.json`)){
       map.removeLayer(`${item}.json`)
+    }
+    if(map.getSource(`${item}.json`)){
       map.removeSource(`${item}.json`)
     }
   })
-  newVal.forEach((item:string)=>{
-    if(!oldVal.includes(item)){
-      axios.get(`/backend/region/${item}.json`).then(res=>{
-        map.addLayer({
-          'id': `${item}.json`,
-          'type': 'line',
-          'source': {
-            "type":"geojson",
-            "data": res.data
-          },
-          'layout': {
-            'visibility':'visible',
-            'line-join':'round',
-            'line-cap':'round',
-          },
-          'paint': {
-            'line-color': '#fff',
-            'line-width': 5,
-            'line-opacity':1,
-          }
-        })
-      })
+  const holes:any = []
+  for(let item of setting.人影.监控.selectedRegion){
+    const res = await axios.get(`/backend/region/${item}.json`)
+    if(map.getLayer(`${item}.json`)){
+      map.removeLayer(`${item}.json`)
+    }
+    if(map.getSource(`${item}.json`)){
+      map.removeSource(`${item}.json`)
+    }
+    map.addLayer({
+      'id': `${item}.json`,
+      'type': 'line',
+      'source': {
+        "type":"geojson",
+        "data": res.data
+      },
+      'layout': {
+        'visibility':'visible',
+        'line-join':'round',
+        'line-cap':'round',
+      },
+      'paint': {
+        'line-color': '#fff',
+        'line-width': 5,
+        'line-opacity':1,
+      }
+    })
+    holes.push(...res.data.features)
+  }
+  let outer:any = turf.polygon([
+    [
+      [-180, -90],
+      [-180, 90],
+      [180, 90],
+      [180, -90],
+      [-180, -90],
+    ]
+  ])
+  holes.forEach((feature:any)=>{
+    outer = turf.difference(outer, turf.buffer(feature,0))
+  })
+  if(map.getLayer('json_mask')){
+    map.removeLayer('json_mask')
+  }
+  if(map.getSource('json_mask')){
+    map.removeSource('json_mask')
+  }
+  map.addLayer({
+    'id': `json_mask`,
+    'type': 'fill',
+    'source': {
+      "type":"geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [outer]
+      }
+    },
+    'layout': {
+      'visibility':'visible',
+    },
+    'paint': {
+      'fill-color':'rgba(0,0,0,0.6)',
+      'fill-outline-color':'transparent'
     }
   })
-},{deep:true,immediate:true})
+},{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){

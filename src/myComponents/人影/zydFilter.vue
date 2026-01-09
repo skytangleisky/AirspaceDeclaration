@@ -23,6 +23,7 @@
 
 <script lang="ts" setup>
 import { ref, watch, reactive, onMounted } from 'vue'
+import { getSubRegion } from '~/api/天工.ts'
 import 北京raw from '/省市县/北京.csv?url&raw'
 import 天津raw from '/省市县/天津.csv?url&raw'
 import 河北raw from '/省市县/河北.csv?url&raw'
@@ -68,8 +69,8 @@ type Item = {
 import {getMask} from '~/api/天工.ts'
 const mask = getMask()
 
-const data: Tree[] = reactive<Tree[]>([])
-mask=='%%'&&data.push({
+const data: Tree[] = reactive<Tree[]>([]);
+/*mask=='%%'&&data.push({
   id: "11",
   label: '北京',
   children: (北京 as Item[]).map((item:Item)=>{
@@ -123,8 +124,7 @@ mask=='%%'&&data.push({
       label:item.district,
     }
   })
-})
-
+});*/
 
 const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfCheckedNodes }) => {
   // console.log("当前点击节点:", data)
@@ -134,7 +134,20 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
   setting.人影.监控.checkedKeys = checkedKeys
 }
 
-onMounted(()=>{
+onMounted(async()=>{
+  await getSubRegion('610000').then((res:any)=>{
+    (mask=='%%'||mask=='61%')&&data.push({
+      id: "61",
+      label: '陕西',
+      children: (res.data.results as any[]).map((item)=>{
+        setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
+        return {
+          id:item.adcode.substring(0,4),
+          label:item.name,
+        }
+      })
+    })
+  })
   treeRef.value!.setCheckedKeys(setting.人影.监控.checkedKeys)
 })
 </script>
@@ -144,7 +157,8 @@ onMounted(()=>{
   padding:10px 20px;
   cursor:default;
   width:100%;
-  height:100%;
+  height: 100%;
+  overflow: hidden;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
