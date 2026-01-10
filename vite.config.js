@@ -10,13 +10,13 @@ import path from "path";
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
+import { timeout } from "d3";
 const option = {
-  keepAlive: false,
-  keepAliveMsecs: 1,  // TCP 空闲连接存活时间（默认 1000ms，可调大）
-  maxSockets: 256,       // 最大并发 socket 数
-  maxFreeSockets: 1     // 空闲 socket 上限
+  keepAlive: true
 }
+
 const agent = new HttpsProxyAgent('https://127.0.0.1:1100',option)
+const testAgent = new HttpsProxyAgent('https://127.0.0.1:8181',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -111,7 +111,7 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        target:'http://192.168.0.114:3000',
+        target:'http://127.0.0.1:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
@@ -124,7 +124,7 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        target:'http://192.168.0.135:21000',
+        target:'http://127.0.0.1:21000',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
@@ -219,6 +219,7 @@ export default defineConfig({
         secure:false,
       },
       '/maps3':{
+        agent:testAgent,
         target:'http://127.0.0.1:3143',
         changeOrigin:true,
         secure:false,
