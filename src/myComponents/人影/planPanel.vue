@@ -21,7 +21,7 @@
               <div v-show="tabActive == '完成信息查询'">
                   <FinishedInfo></FinishedInfo>
               </div>
-              <div v-show="tabActive == '人影飞机'">
+              <div v-show="tabActive == '商飞飞机'">
                   <PlaneInfo></PlaneInfo>
               </div>
           </el-scrollbar>
@@ -85,7 +85,7 @@ const tabList = reactive([
     hideBadge:true,
   },
   {
-    label: "人影飞机",
+    label: "商飞飞机",
     icon: "plane",
     total: computed(()=>setting.人影.监控.需要重点关注的飞机.length),
     hideBadge:false,

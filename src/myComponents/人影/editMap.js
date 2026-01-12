@@ -449,7 +449,7 @@ export default function(){
 						visibility:setting.人影.监控.loadmap?'visible':'none'
 					},
 					paint: {
-						'raster-opacity': 1.0
+						'raster-opacity': setting.人影.监控.tileOpacity
 					}
 				},
 				{

@@ -16,7 +16,7 @@ const option = {
 }
 
 const agent = new HttpsProxyAgent('https://127.0.0.1:1100',option)
-const testAgent = new HttpsProxyAgent('https://127.0.0.1:8181',option)
+const testAgent = new HttpsProxyAgent('https://192.168.0.141:4444',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',

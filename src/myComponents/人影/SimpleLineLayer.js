@@ -1,7 +1,7 @@
 import { Layer } from '@deck.gl/core';
 import { GL } from '@luma.gl/constants';
 
-export class ScreenLineLayer extends Layer {
+export default class ScreenLineLayer extends Layer {
   static layerName = 'ScreenLineLayer';
 
   initializeState() {
@@ -102,7 +102,7 @@ export class ScreenLineLayer extends Layer {
     const instanceColors = [];
 
     data.forEach(d => {
-      const screenPos = viewport.project([d.fLongitude, d.fLatitude]); // 经纬度 -> 屏幕像素
+      const screenPos = viewport.project([d.fLongitude, d.fLatitude, d.iAltitudeADS2]); // 经纬度 -> 屏幕像素
       instancePositions.push(screenPos[0], screenPos[1]);
       const x = d.offset[0] - 4
       const y = d.offset[1]

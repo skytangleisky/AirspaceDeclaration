@@ -92,7 +92,7 @@
 let enclosureList = new Array<any>();
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
-import { ScreenLineLayer } from './ScreenLineLayer.js';
+import SimpleLineLayer from './SimpleLineLayer.js';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TextLayer,PathLayer,IconLayer,ScatterplotLayer } from '@deck.gl/layers';
 const lineData = [
@@ -408,7 +408,7 @@ function getUavBearing(route, traveled) {
 }
 
 const dest = destination(115.692733,28.758183,0,5)
-const pos = [dest.lng,dest.lat]
+const pos = [dest.lng,dest.lat,0]
 const textData = [
   {
     "offset": [
@@ -441,6 +441,7 @@ const textData = [
     "trajectory": [
       pos
     ],
+    "trail":[pos],
     "lastTime": 1763036518493,
     "label": "0001\n00005 0018\n120551394E41095547N"
   }
@@ -449,11 +450,15 @@ const deckOverlay = new MapboxOverlay({
   interleaved: false, // 性能优化
   layers: [],
 });
+const deckOverlay2 = new MapboxOverlay({
+  interleaved: false, // 性能优化
+  layers: [],
+});
 let hoverObject:any;
-function updateTextLayer(textData:any) {
-  deckOverlay.setProps({
+function updateTextLayer2(textData:any) {
+  deckOverlay2.setProps({
     layers: [
-      new ScreenLineLayer({
+      new SimpleLineLayer({
         id: 'screen-line',
         data: textData,
         getPosition: d => [d.fLongitude, d.fLatitude],
@@ -482,7 +487,7 @@ function updateTextLayer(textData:any) {
             mask: false,
           }
         },
-        getPixelOffset: d => [d.offset[0],d.offset[1]],
+        getPixelOffset: d => [d.offset[0]+80,d.offset[1]],
         getIcon: d => d==hoverObject?'active':'marker',
         getPosition: d => [d.fLongitude, d.fLatitude],
         getSize: 152,
@@ -492,7 +497,7 @@ function updateTextLayer(textData:any) {
         onHover(info,evt){
           if(!mouseDownEvt){
             hoverObject = info.object
-            updateTextLayer(textData.slice())
+            updateTextLayer2(textData.slice())
           }
         },
         updateTriggers:{
@@ -530,7 +535,7 @@ function updateTextLayer(textData:any) {
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
-        getPixelOffset:d => [d.offset[0]-70,d.offset[1]],
+        getPixelOffset:d => [d.offset[0]+10,d.offset[1]],
         parameters: {
           // 关闭深度测试
           depthTest: false,
@@ -580,8 +585,154 @@ function updateTextLayer(textData:any) {
     ]
   })
 }
+function updateTextLayer(textData:any) {
+  const data1 = textData.filter(item=>item.商飞)
+  if(data1.length>0){
+    updateTextLayer2(data1)
+  }
+  const data2 = textData.filter(item=>!item.商飞)
+  if(setting.人影.监控.plane){
+    deckOverlay.setProps({
+      layers: [
+        new SimpleLineLayer({
+          picking:false,
+          visible:setting.人影.监控.planeLabel,
+          id: 'screen-line',
+          data: data2,
+          getPosition: d => [116.4, 39.9, 0],
+          getAngle: d => 0,
+          getLength: d => 100,
+          getColor: d => d==hoverObject?[255,255,0,255]:d.textColor
+        }),
+        new PathLayer({
+          visible:setting.人影.监控.track,
+          id: 'path-trail',
+          data:data2,
+          getPath: d=>d.trail,
+          getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
+          getWidth: 0.1,
+          widthUnits: 'pixels',
+        }),
+        new ScatterplotLayer({
+          visible:setting.人影.监控.track,
+          id: 'path-trail-points',
+          data:data2.flatMap(d => d.trail),
+          getPosition: d => d,
+          getRadius: 2,        // 米（或像素，见下）
+          radiusUnits: 'pixels',
+          getFillColor: [0, 180, 255, 160],
+
+          pickable: false,
+        }),
+        new PathLayer({
+          id: 'path-layer',
+          data:data2,
+          getPath: d => [[d.fLongitude, d.fLatitude,d.iAltitudeADS2],...d.trajectory],
+          visible: setting.人影.监控.速度矢量线,
+          getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
+          getWidth: 1,
+          widthUnits: 'pixels',
+        }),
+        // new IconLayer({
+        //   id: 'icon-layer2',
+        //   data: data2,
+        //   getIcon: d => ({
+        //     url: planeImageData.airplane,
+        //     width: 24,
+        //     height: 24,
+        //   }),
+        //   getAngle: d => -d.fHeading,
+        //   getPosition: d => [d.fLongitude, d.fLatitude],
+        //   getSize: d => 24,
+        //   sizeScale: 1,
+        //   billboard: false
+        // }),
+        new IconLayer({
+          id: 'icon-layer',
+          data: data2,
+          getIcon: d => {
+            return d==hoverObject?{
+              url: squareImageData.airplaneMock,
+              width: 8,
+              height: 8,
+            }:{
+              url: squareImageData.airplane,
+              width: 8,
+              height: 8,
+            }
+          },
+          getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
+          getSize: d => 8,
+          sizeScale: 1,
+          billboard: false
+        }),
+        new TextLayer({
+          visible:setting.人影.监控.planeLabel,
+          id: 'text-layer',
+          data:data2,
+          pickable: true,
+          getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
+          getText: d => d.label,
+          getColor: d => d==hoverObject?[255,255,0,255]:d.textColor,
+          getSize: 12,
+          getAngle: 0,
+          getTextAnchor: 'start',
+          getAlignmentBaseline: 'center',
+          // fontFamily: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
+          // fontSettings: {
+          //   sdf: false,
+          //   // 防止生成 atlas 过慢，可限制生成大小
+          //   buffer: 3,
+          //   size: 6400,
+          // },
+          fontSettings: {
+            characterSet: 'auto', // ✅ 自动扫描数据中的字符
+          },
+          billboard: true,  // 始终朝向屏幕
+          background: true,
+          getBackgroundColor: [255, 255, 255, 0],
+          border: true,
+          getBorderColor: d => d==hoverObject?[255,255,0,255]:[0,0,0,0],
+          getBorderWidth: 1,
+          backgroundPadding:[4,4],
+          backgroundBorderRadius:0,
+          getPixelOffset:d => [d.offset[0],d.offset[1]],
+          onHover(info,evt){
+            if(!mouseDownEvt){
+              hoverObject = info.object
+              updateTextLayer(data2.slice())
+            }
+          },
+          updateTriggers:{
+            getPixelOffset: data2.map(d => d.offset),
+            getBorderColor: hoverObject,
+          },
+        }),
+        new ScatterplotLayer({
+          visible: setting.人影.监控.距离环,
+          id: 'circles',
+          data: data2,
+          pickable: false,
+          getPosition: d => [d.fLongitude, d.fLatitude],
+          getRadius: d => 10e3, // 单位由 radiusUnits 决定
+          radiusUnits: 'meters',          // 可省略（默认 meters）
+          getFillColor: [0, 0, 0, 0],
+          stroked: true,
+          getLineColor: [255, 255, 255, 255],
+          lineWidthUnits: 'pixels',
+          getLineWidth: 1,
+          radiusMinPixels: 2,
+        }),
+      ]
+    })
+  }else{
+    deckOverlay.setProps({
+      layers: []
+    })
+  }
+}
 import Frame from '~/frames/frame.vue'
-import { destination } from '~/myComponents/map/js/core.js'
+import { destination,getDistance } from '~/myComponents/map/js/core.js'
 import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
@@ -1222,7 +1373,7 @@ function 过滤({altitude,ssrCode}){
 function 移除draw绘制的所有图形(){
   draw&&draw.deleteAll()
 }
-function 处理飞机实时位置(d:Array<{
+function 处理飞机实时位置2(d:Array<{
   "uiTrackNo": 7,
   "uiAdsAddress": 0,
   "ubyTrackState": 1,
@@ -1262,38 +1413,36 @@ function 处理飞机实时位置(d:Array<{
         tmp[j].icon = 'airplaneMock'
       }
     }
-    /*
-    let has = false;
-    for(let i=0;i<trackLinesFeaturesData.features.length;i++){
-      if(trackLinesFeaturesData.features[i].properties.uiTrackNo == tmp[j].uiTrackNo&&trackLinesFeaturesData.features[i].properties.unSsrCode == tmp[j].unSsrCode){
-        has = true;
-        trackLinesFeaturesData.features[i].properties.icon = tmp[j].icon
-        trackLinesFeaturesData.features[i].geometry.coordinates.push(wgs84togcj02(tmp[j].fLongitude,tmp[j].fLatitude))
-        break;
-      }
-    }
-    if(!has){
-      for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-        const item = setting.人影.监控.需要重点关注的飞机[i]
-        if(item.iAddress == tmp[j].unSsrCode){
-          tmp[j].icon = 'airplaneMock';
-          console.log(tmp[j].icon)
-        }
-      }
-      trackLinesFeaturesData.features.push({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates:[wgs84togcj02(tmp[j].fLongitude,tmp[j].fLatitude)],
-        },
-        properties: {
-          uiTrackNo:tmp[j].uiTrackNo,
-          unSsrCode:tmp[j].unSsrCode,
-          icon:tmp[j].icon
-        }
-      })
-    }
-    */
+    // let has = false;
+    // for(let i=0;i<trackLinesFeaturesData.features.length;i++){
+    //   if(trackLinesFeaturesData.features[i].properties.uiTrackNo == tmp[j].uiTrackNo&&trackLinesFeaturesData.features[i].properties.unSsrCode == tmp[j].unSsrCode){
+    //     has = true;
+    //     trackLinesFeaturesData.features[i].properties.icon = tmp[j].icon
+    //     trackLinesFeaturesData.features[i].geometry.coordinates.push(wgs84togcj02(tmp[j].fLongitude,tmp[j].fLatitude))
+    //     break;
+    //   }
+    // }
+    // if(!has){
+    //   for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
+    //     const item = setting.人影.监控.需要重点关注的飞机[i]
+    //     if(item.iAddress == tmp[j].unSsrCode){
+    //       tmp[j].icon = 'airplaneMock';
+    //       console.log(tmp[j].icon)
+    //     }
+    //   }
+    //   trackLinesFeaturesData.features.push({
+    //     type: 'Feature',
+    //     geometry: {
+    //       type: 'LineString',
+    //       coordinates:[wgs84togcj02(tmp[j].fLongitude,tmp[j].fLatitude)],
+    //     },
+    //     properties: {
+    //       uiTrackNo:tmp[j].uiTrackNo,
+    //       unSsrCode:tmp[j].unSsrCode,
+    //       icon:tmp[j].icon
+    //     }
+    //   })
+    // }
 
     let has = false;
     for(let i=0;i<trackPointsFeaturesData.features.length;i++){
@@ -1421,6 +1570,173 @@ function 处理飞机实时位置(d:Array<{
   setting.人影.监控.飞机数据.splice(0,setting.人影.监控.飞机数据.length,...data.features)
   setting.人影.监控.planeCount = data.features.length
   map?.getSource("飞机原数据")?.setData(data);
+}
+function 处理飞机实时位置(d:Array<{
+  "uiTrackNo": 7,
+  "uiAdsAddress": 0,
+  "ubyTrackState": 1,
+  "ubyTrackQuality": 0,
+  "fLongitude": 116.90878295898438,
+  "fLatitude": 47.65209197998047,
+  "ubyAltitudeMCValid": 0,
+  "iAltitudeMC": 0,
+  "ubyAltitudeADSValid": 1,
+  "iAltitudeADS": 2590,
+  "unSsrCode": 5,
+  "ubyRadarDataType": 2,
+  "ubySim": 0,
+  "ubyFixTarget": 0,
+  "ubySpiFlag": 0,
+  "ubyEmergencyType": 0,
+  "fSpeedZ": 0,
+  "fSpeed": 302.3819885253906,
+  "fHeading": 0.9228208065032959,
+  "ubyFlyingState": 0,
+  "ubyEmitterCat": 5,
+  "strCallCode": ""
+}>){
+
+  const tmp = d.filter(item=>{
+    for(let plane of setting.人影.监控.注册飞机数据){
+      if(item.unSsrCode == Number(plane.iAddress)){
+        return true
+      }
+    }
+    return false
+  })
+  for(let j=0;j<tmp.length;j++){
+    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
+      const item = setting.人影.监控.需要重点关注的飞机[i]
+      if(item.iAddress == tmp[j].unSsrCode){
+        tmp[j].icon = 'airplaneMock'
+      }
+    }
+  }
+
+
+
+  map.getSource('zydSource')&&d.forEach((item:any)=>{
+    const str = [
+      item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:''),
+      item.iAltitudeADS.toString().padStart(5,'0')+' '+(item.fSpeed * 3.6).toFixed(0).padStart(4,'0'),
+      toDMS(item.fLongitude,item.fLatitude)
+    ]
+    let data = null
+    for(let i=0;i<textData.length;i++){
+      const it = textData[i]
+      if(it.unSsrCode == item.unSsrCode && it.uiTrackNo == item.uiTrackNo){
+        data = textData.splice(i--,1)[0]
+      }
+    }
+    let textColor = [255,255,255,128]
+    zydFeaturesData.features.forEach((feature:any)=>{
+      const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
+      if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
+        const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
+        if(distance<20e3){
+          str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |PAS0'
+          textColor = [255,255,0,255]
+        }
+      }
+    })
+    zydFeaturesData.features.forEach((feature:any)=>{
+      const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
+      if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
+        const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
+        if(distance<10e3){
+          str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |AS'
+          textColor = [255,0,0,255]
+        }
+      }
+    })
+    const trail = data?data.trail:[]
+    trail.push([item.fLongitude,item.fLatitude,item.iAltitudeADS2])
+    while(trail.length>setting.人影.监控.trackCount){
+      trail.shift()
+    }
+    const point = destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)
+    const targetData = {...item,trajectory:[[...point,item.iAltitudeADS2]],trail,lastTime:Date.now(),label:str.join('\n'),textColor}
+    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
+      const item = setting.人影.监控.需要重点关注的飞机[i]
+      if(item.iAddress==targetData.unSsrCode){
+        targetData.商飞 = true
+      }
+    }
+    if(data){
+      textData.push(Object.assign(data,targetData))
+    }else{
+      textData.push(Object.assign({offset:[40,-30],textColor},targetData))
+    }
+  })
+  for(let i=0;i<textData.length;i++){
+    if(Date.now() - textData[i].lastTime > 10e3){
+      textData.splice(i--,1)
+    }
+  }
+  setting.人影.监控.planeCount = textData.length
+  updateTextLayer(textData.slice())
+
+
+
+
+
+
+
+
+
+
+
+
+
+  let data = airplanesData;
+  for(let j=0;j<d.length;j++){
+    // if(d[j].unSsrCode==0)continue;
+
+    d[j].label = d[j].strCallCode
+    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
+      const item = setting.人影.监控.需要重点关注的飞机[i]
+      if(item.iAddress == d[j].unSsrCode){
+        d[j].label = setting.人影.监控.需要重点关注的飞机[i].strCallCode
+      }
+    }
+
+    let has = false,i=0;
+    for(;i<data.features.length;i++){
+      if(d[j]&&d[j].uiTrackNo===data.features[i].properties.uiTrackNo){
+        has = true;
+        break;
+      }
+    }
+    if(has){
+      Object.assign(data.features[i].properties,{time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0')+(d[j].label?'-'+d[j].label:''),opacity:1,lastTime:performance.now()})
+      data.features[i].geometry.coordinates = wgs84togcj02(d[j].fLongitude,d[j].fLatitude)
+    }else{
+      if(d[j]){
+        data.features.push({
+          type: "Feature",
+          properties: {icon:"airplane",time:moment().format('YYYY-MM-DD HH:mm:ss'),...d[j],label:'A'+d[j].unSsrCode.toString(8).padStart(4,'0')+(d[j].label?'-'+d[j].label:''),opacity:1,lastTime:performance.now()},
+          geometry: {
+            type: "Point",
+            coordinates: wgs84togcj02(d[j].fLongitude,d[j].fLatitude),
+          },
+        })
+      }else{
+        console.log(`共${d.length}架，第${j}架飞机数据错误`,d[j])
+      }
+    }
+  }
+  for(let k=0;k<data.features.length;k++){
+    if(performance.now() - data.features[k].properties.lastTime>10*1e3){
+      for(let l=0;l<trackFeatures.length;l++){
+        if(trackFeatures[l].properties.uiTrackNo===data.features[k].properties.uiTrackNo){
+          trackFeatures.splice(l--,1)
+        }
+      }
+      data.features.splice(k--,1)
+    }
+  }
+  setting.人影.监控.飞机数据.splice(0,setting.人影.监控.飞机数据.length,...data.features)
+  // map?.getSource("飞机原数据")?.setData(data);
 }
 function 处理ADSB(d:Array<{
 		"aircraft_code": "B788",
@@ -1570,7 +1886,8 @@ const loop = ()=>{
   textData.forEach(item=>{
     item.fLongitude = position.geometry.coordinates[0]
     item.fLatitude = position.geometry.coordinates[1]
-    item.trajectory = [[lng1,lat1]]
+    item.trajectory = [[lng1,lat1,0]]
+    item.trail = []
     item.orientation = bearing
     item.label = `0001   UAV\n00005 ${(speed*3.6).toString().padStart(4,'0')}\n${toDMS(position.geometry.coordinates[0],position.geometry.coordinates[1])}`
   })
@@ -1601,6 +1918,7 @@ const 经纬度 = ()=>{
 }
 watch(()=>setting.人影.监控.tileOpacity,(opacity)=>{
   map.setPaintProperty('simple-tiles','raster-opacity',opacity)
+  map.setPaintProperty('roadLayer','raster-opacity',opacity)
 })
 watch(()=>setting.获取经纬度,()=>{
   setting.获取经纬度 ? map.getCanvas().style.cursor = "crosshair" : map.getCanvas().style.cursor = "default";
@@ -1713,14 +2031,20 @@ function load(){
 import squareUrl from '~/assets/square.svg?url'
 import { loadImage } from '~/tools/index.js'
 let squareImageData:any = null
+let planeImageData:any = null
 onMounted(async() => {
   squareImageData = await loadImage(squareUrl,8,8,{
     airplane:{
       style: 'opacity:1.0;fill:#fff',
     },
     airplaneMock:{
-      style: 'opacity:1.0;fill:#fff',
+      style: 'opacity:1.0;fill:#ff0',
     },
+  },true)
+  planeImageData = await loadImage(planeUrl,24,24,{
+    airplane:{
+      style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+    }
   },true)
 
   // ElMessage({
@@ -1737,7 +2061,7 @@ onMounted(async() => {
     }
   });
   document.addEventListener("keydown", keydownFunc);
-  aid = requestAnimationFrame(loop)
+  // aid = requestAnimationFrame(loop)
   map = new mapboxgl.Map({
     container: (mapRef.value as unknown) as HTMLCanvasElement,
     projection: "mercator",//mercator|globe|equirectangular
@@ -1768,6 +2092,7 @@ onMounted(async() => {
     bearing: mapStatus.bearing,
   });
   map.addControl(deckOverlay)
+  map.addControl(deckOverlay2)
   map.getCanvas().style.cursor = 'default';
   const GISTYPE={
     GIS_POINT: 1,
@@ -4254,7 +4579,7 @@ onMounted(async() => {
             "icon-rotation-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
-            visibility: props.plane ? "visible" : "none",
+            visibility: "none",
           },
           paint:{
             "icon-opacity":['get','opacity'],
@@ -4286,7 +4611,7 @@ onMounted(async() => {
             'text-offset': [0, -1],
             'text-font': ['simkai'],
             'text-allow-overlap':true,
-            visibility: (setting.人影.监控.planeLabel)?"visible":'none',
+            visibility: 'none',
           },
           paint:{
             'icon-color':'#5272ba',
@@ -5162,6 +5487,9 @@ onMounted(async() => {
       "maxzoom": 22,
       layout:{
         visibility:setting.人影.监控.roadMap ? 'visible' : 'none'
+      },
+      paint:{
+        "raster-opacity":setting.人影.监控.tileOpacity
       }
     })
     map.addLayer(plane)
@@ -5265,7 +5593,7 @@ onMounted(async() => {
     获取净空区().then((res) => {
       let a = {
         type: "FeatureCollection",
-        features: [],
+        features: new Array(),
       };
       // console.log(res.data.results);
       for (let i = 0; i < res.data.results.length; i++) {
@@ -5278,7 +5606,7 @@ onMounted(async() => {
           Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
         ]);
         if (list.length > 2) {
-          a.features.push({
+          const feature = {
             id: v.id,
             type: "Feature",
             properties: {
@@ -5288,7 +5616,8 @@ onMounted(async() => {
               type: "Polygon",
               coordinates: [list],
             },
-          } as never);
+          }
+          a.features.push(feature);
         } else {
           console.error("v.enclosure_type == 02," + "list.length=" + list.length);
         }
