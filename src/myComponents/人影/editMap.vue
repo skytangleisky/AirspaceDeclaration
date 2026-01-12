@@ -6570,17 +6570,17 @@ watch(()=>setting.人影.监控.track,()=>{
   }
 })
 watch(()=>setting.人影.监控.planeLabel,()=>{
-  if(setting.人影.监控.planeLabel){
-    if(setting.人影.监控.plane){
-      map.setLayoutProperty('飞机气泡图层','visibility','visible')
-    }
-    if(setting.人影.监控.adsb){
-      map.setLayoutProperty('adsb气泡图层','visibility','visible')
-    }
-  }else{
-    map.setLayoutProperty('飞机气泡图层','visibility','none')
-    map.setLayoutProperty('adsb气泡图层','visibility','none')
-  }
+  // if(setting.人影.监控.planeLabel){
+  //   if(setting.人影.监控.plane){
+  //     map.setLayoutProperty('飞机气泡图层','visibility','visible')
+  //   }
+  //   if(setting.人影.监控.adsb){
+  //     map.setLayoutProperty('adsb气泡图层','visibility','visible')
+  //   }
+  // }else{
+  //   map.setLayoutProperty('飞机气泡图层','visibility','none')
+  //   map.setLayoutProperty('adsb气泡图层','visibility','none')
+  // }
 })
 watch(()=>setting.人影.监控.trackCount,()=>{
   for(let i=0;i<trackFeatures.length;i++){
