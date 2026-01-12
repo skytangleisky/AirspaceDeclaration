@@ -204,16 +204,19 @@ export default defineConfig({
         secure:false,
       },
       '/maps0':{
+        agent:testAgent,
         target:'http://127.0.0.1:3140',
         changeOrigin:true,
         secure:false,
       },
       '/maps1':{
+        agent:testAgent,
         target:'http://127.0.0.1:3141',
         changeOrigin:true,
         secure:false,
       },
       '/maps2':{
+        agent:testAgent,
         target:'http://127.0.0.1:3142',
         changeOrigin:true,
         secure:false,

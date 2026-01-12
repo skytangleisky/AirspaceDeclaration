@@ -92,6 +92,7 @@
 let enclosureList = new Array<any>();
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
+import extrapolationUrl from '~/assets/extrapolation.svg'
 import SimpleLineLayer from './SimpleLineLayer.js';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TextLayer,PathLayer,IconLayer,ScatterplotLayer } from '@deck.gl/layers';
@@ -407,8 +408,8 @@ function getUavBearing(route, traveled) {
   return turf.bearing(p1, p2)
 }
 
-const dest = destination(115.692733,28.758183,0,5)
-const pos = [dest.lng,dest.lat,0]
+const dest = destination(115.692733,28.758183,110.392822265625,5)
+const pos = [dest[0],dest[1],0]
 const textData = [
   {
     "offset": [
@@ -439,7 +440,7 @@ const textData = [
     "ubyEmitterCat": 5,
     "strCallCode": "",
     "trajectory": [
-      pos
+      pos,pos
     ],
     "trail":[pos],
     "lastTime": 1763036518493,
@@ -464,7 +465,27 @@ function updateTextLayer2(textData:any) {
         getPosition: d => [d.fLongitude, d.fLatitude],
         getAngle: d => 0,
         getLength: d => 10,
-        getColor: d => [255,0,0,255]
+        getColor: d => d==hoverObject?[255,255,0,255]:[255,255,255,255]
+      }),
+      new PathLayer({
+        visible:setting.人影.监控.track,
+        id: 'path-trail',
+        data:textData,
+        getPath: d=>d.trail,
+        getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
+        getWidth: 0.1,
+        widthUnits: 'pixels',
+      }),
+      new ScatterplotLayer({
+        visible:setting.人影.监控.track,
+        id: 'path-trail-points',
+        data:textData.flatMap(d => d.trail),
+        getPosition: d => d,
+        getRadius: 2,        // 米（或像素，见下）
+        radiusUnits: 'pixels',
+        getFillColor: [0, 180, 255, 160],
+
+        pickable: false,
       }),
       new IconLayer({
         id: 'billboard-layer',
@@ -512,7 +533,7 @@ function updateTextLayer2(textData:any) {
         pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d => d.textColor,
+        getColor: d => d==hoverObject?[255,255,0,255]:[255,255,255,255],
         getSize: 12,
         getAngle: 0,
         getTextAnchor: 'start',
@@ -548,26 +569,56 @@ function updateTextLayer2(textData:any) {
         }
       }),
       new PathLayer({
+        visible:setting.人影.监控.速度矢量线,
         id: 'path-layer',
         data:textData,
         getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
-        getColor: [255, 255, 255],
+        getColor: d => d==hoverObject?[255,255,0,255]:[255, 255, 255],
         getWidth: 1,
         widthUnits: 'pixels',
       }),
       new IconLayer({
-        id: 'icon-layer',
+        id: 'icon-layer2',
         data: textData,
         getIcon: d => ({
-          url: squareImageData.airplane,
-          width: 8,
-          height: 8,
+          url: planeImageData.airplane,
+          width: 24,
+          height: 24,
         }),
+        getAngle: d => -d.fHeading,
         getPosition: d => [d.fLongitude, d.fLatitude],
-        getSize: d => 8,
+        getSize: d => 24,
         sizeScale: 1,
-        billboard: false,
+        billboard: false
       }),
+      new ScatterplotLayer({
+        visible: setting.人影.监控.距离环,
+        id: 'circles',
+        data: textData,
+        pickable: false,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getRadius: d => 10e3, // 单位由 radiusUnits 决定
+        radiusUnits: 'meters',          // 可省略（默认 meters）
+        getFillColor: [0, 0, 0, 0],
+        stroked: true,
+        getLineColor: [255, 255, 255, 255],
+        lineWidthUnits: 'pixels',
+        getLineWidth: 1,
+        radiusMinPixels: 2,
+      }),
+      // new IconLayer({
+      //   id: 'icon-layer',
+      //   data: textData,
+      //   getIcon: d => ({
+      //     url: squareImageData.airplane,
+      //     width: 8,
+      //     height: 8,
+      //   }),
+      //   getPosition: d => [d.fLongitude, d.fLatitude],
+      //   getSize: d => 8,
+      //   sizeScale: 1,
+      //   billboard: false,
+      // }),
       // new ScatterplotLayer({
       //   id: 'circles',
       //   data: textData,
@@ -602,14 +653,14 @@ function updateTextLayer(textData:any) {
           getPosition: d => [116.4, 39.9, 0],
           getAngle: d => 0,
           getLength: d => 100,
-          getColor: d => d==hoverObject?[255,255,0,255]:d.textColor
+          getColor: d => d==hoverObject?[255,255,255,255]:d.textColor
         }),
         new PathLayer({
           visible:setting.人影.监控.track,
           id: 'path-trail',
           data:data2,
           getPath: d=>d.trail,
-          getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
+          getColor: d=>d==hoverObject?[255,255,255,255]:[255, 255, 255, 255],
           getWidth: 0.1,
           widthUnits: 'pixels',
         }),
@@ -629,7 +680,7 @@ function updateTextLayer(textData:any) {
           data:data2,
           getPath: d => [[d.fLongitude, d.fLatitude,d.iAltitudeADS2],...d.trajectory],
           visible: setting.人影.监控.速度矢量线,
-          getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
+          getColor: d=>d==hoverObject?[255,255,255,255]:[255, 255, 255,128],
           getWidth: 1,
           widthUnits: 'pixels',
         }),
@@ -651,6 +702,13 @@ function updateTextLayer(textData:any) {
           id: 'icon-layer',
           data: data2,
           getIcon: d => {
+            if(d.ubyTrackState == 2){
+              return {
+                url: extrapolationImageData.extrapolation,
+                width:10,
+                height:10
+              }
+            }
             return d==hoverObject?{
               url: squareImageData.airplaneMock,
               width: 8,
@@ -662,7 +720,7 @@ function updateTextLayer(textData:any) {
             }
           },
           getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
-          getSize: d => 8,
+          getSize: d => 10,
           sizeScale: 1,
           billboard: false
         }),
@@ -673,7 +731,7 @@ function updateTextLayer(textData:any) {
           pickable: true,
           getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
           getText: d => d.label,
-          getColor: d => d==hoverObject?[255,255,0,255]:d.textColor,
+          getColor: d => d==hoverObject?[255,255,255,255]:d.textColor,
           getSize: 12,
           getAngle: 0,
           getTextAnchor: 'start',
@@ -692,7 +750,7 @@ function updateTextLayer(textData:any) {
           background: true,
           getBackgroundColor: [255, 255, 255, 0],
           border: true,
-          getBorderColor: d => d==hoverObject?[255,255,0,255]:[0,0,0,0],
+          getBorderColor: d => d==hoverObject?[255,255,255,255]:[0,0,0,0],
           getBorderWidth: 1,
           backgroundPadding:[4,4],
           backgroundBorderRadius:0,
@@ -1882,7 +1940,7 @@ const loop = ()=>{
   const bearing = getUavBearing(routeData, elapsed * speed)
   plane.position = position.geometry.coordinates
   plane.orientation = bearing
-  const {lng :lng1,lat:lat1} = destination(...plane.position,plane.orientation,speed)
+  const [lng1, lat1] = destination(...plane.position,plane.orientation,speed)
   textData.forEach(item=>{
     item.fLongitude = position.geometry.coordinates[0]
     item.fLatitude = position.geometry.coordinates[1]
@@ -2032,18 +2090,24 @@ import squareUrl from '~/assets/square.svg?url'
 import { loadImage } from '~/tools/index.js'
 let squareImageData:any = null
 let planeImageData:any = null
+let extrapolationImageData:any = null
 onMounted(async() => {
   squareImageData = await loadImage(squareUrl,8,8,{
     airplane:{
-      style: 'opacity:1.0;fill:#fff',
+      style: 'opacity:1.0;fill:#ffffff80',
     },
     airplaneMock:{
-      style: 'opacity:1.0;fill:#ff0',
+      style: 'opacity:1.0;fill:#ffffff',
     },
   },true)
   planeImageData = await loadImage(planeUrl,24,24,{
     airplane:{
       style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+    }
+  },true)
+  extrapolationImageData = await loadImage(extrapolationUrl,10,10,{
+    extrapolation:{
+      style: 'opacity:1.0;fill:none;stroke:#ff0;stroke-width:5px;stroke-linejoin:round;stroke-linecap:round;',
     }
   },true)
 
@@ -4692,7 +4756,7 @@ onMounted(async() => {
             "icon-rotation-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
-            visibility: props.plane ? "visible" : "none",
+            visibility: "none",
           },
         });
         机场().then((res)=>{
@@ -5797,8 +5861,6 @@ onMounted(async() => {
 
   });
   map.on('draw.create',(e)=>{
-    console.log(e)
-    return;
     let a = {
       type: "FeatureCollection",
       features: new Array<any>(),
@@ -6720,33 +6782,33 @@ watch(
     map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)
   }
 );
-watch(
-  () => setting.人影.监控.plane,
-  (newVal) => {
-    if (newVal) {
-      map.setLayoutProperty("飞机", "visibility", "visible");
-      setting.人影.监控.adsb = false
-    } else {
-      map.setLayoutProperty("飞机", "visibility", "none");
-    }
-    if(setting.人影.监控.track){
-      if(newVal){
-        map.setLayoutProperty('track','visibility','visible')
-        map.setLayoutProperty('trackPoint','visibility','visible')
-      }else{
-        map.setLayoutProperty('track','visibility','none')
-        map.setLayoutProperty('trackPoint','visibility','none')
-      }
-    }
-    if(setting.人影.监控.planeLabel){
-      if(newVal){
-        map.setLayoutProperty('飞机气泡图层','visibility','visible')
-      }else{
-        map.setLayoutProperty('飞机气泡图层','visibility','none')
-      }
-    }
-  }
-);
+// watch(
+//   () => setting.人影.监控.plane,
+//   (newVal) => {
+//     if (newVal) {
+//       map.setLayoutProperty("飞机", "visibility", "visible");
+//       setting.人影.监控.adsb = false
+//     } else {
+//       map.setLayoutProperty("飞机", "visibility", "none");
+//     }
+//     if(setting.人影.监控.track){
+//       if(newVal){
+//         map.setLayoutProperty('track','visibility','visible')
+//         map.setLayoutProperty('trackPoint','visibility','visible')
+//       }else{
+//         map.setLayoutProperty('track','visibility','none')
+//         map.setLayoutProperty('trackPoint','visibility','none')
+//       }
+//     }
+//     if(setting.人影.监控.planeLabel){
+//       if(newVal){
+//         map.setLayoutProperty('飞机气泡图层','visibility','visible')
+//       }else{
+//         map.setLayoutProperty('飞机气泡图层','visibility','none')
+//       }
+//     }
+//   }
+// );
 watch(
   () => setting.人影.监控.adsb,
   (newVal) => {

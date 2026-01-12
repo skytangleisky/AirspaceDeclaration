@@ -108,7 +108,7 @@ export default class ScreenLineLayer extends Layer {
       const y = d.offset[1]
       instanceAngles.push(Math.atan2(y, x));
       instanceLengths.push(Math.sqrt(x*x+y*y));
-      instanceColors.push(255,255,255,255);
+      instanceColors.push(...this.props.getColor(d));
     });
 
     const attrs = {
