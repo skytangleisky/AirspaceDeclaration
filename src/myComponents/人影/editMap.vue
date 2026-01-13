@@ -964,7 +964,7 @@ import trackSvg from '~/assets/track.svg?url'
 import axios from 'axios'
 import { eventbus } from "~/eventbus";
 import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed, nextTick } from "vue";
-const plane = new Plane()
+// const plane = new Plane()
 const cache = new Array()
 const 视频列表 = computed(()=>{
   const arr = new Array()
@@ -993,7 +993,7 @@ import PlanPanel from "./planPanel.vue";
 import Dialog from "./dialog.vue";
 import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
 import { getImage } from '~/tools/project.js'
-import CustomLayer from "./webglLayer/CustomLayer.js";
+// import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
 import {getTodayRecords,airspaceApply} from "~/api/人影/index.js"
 import { loadImage2Map } from "~/tools/index.ts";
@@ -2023,7 +2023,7 @@ const loop = ()=>{
   }
   const deltaTime = (performance.now() - lastTime)/1e3
   lastTime = performance.now()
-  aid = requestAnimationFrame(loop)
+  // aid = requestAnimationFrame(loop)
 
   // 简单模拟
   // const speed = 5
@@ -2168,7 +2168,7 @@ function convertMultiPointToLineString(multiPointFeature) {
     throw new Error("Invalid MultiPoint feature");
   }
 }
-import Plane,{PointLayer} from './三维物体/CustomLayer.js'
+// import Plane,{PointLayer} from './三维物体/CustomLayer.js'
 import { ElMessage } from 'element-plus';
 function load(){
   for(let i=0;i<mettingList.length;i++){
@@ -5678,8 +5678,8 @@ onMounted(async() => {
         "raster-opacity":setting.人影.监控.tileOpacity
       }
     })
-    map.addLayer(plane)
-    map.addLayer(CustomLayer)
+    // map.addLayer(plane)
+    // map.addLayer(CustomLayer)
     // map.addLayer(new PointLayer())
     烟炉数据().then((res:any)=>{
       for(let item of res.data.results){
