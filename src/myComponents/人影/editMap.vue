@@ -477,6 +477,7 @@ watch(()=>飞机菜单数据,()=>{
   activeObject.显示经纬度 = 飞机菜单数据.value.显示经纬度
   activeObject.显示历史轨迹 = 飞机菜单数据.value.显示历史轨迹
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+  updateTextLayer(textData.slice())
 },{deep:true})
 const deckOverlay = new MapboxOverlay({
   interleaved: false, // 性能优化
