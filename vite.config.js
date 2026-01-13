@@ -226,6 +226,12 @@ export default defineConfig({
         changeOrigin:true,
         secure:false,
       },
+      '/maps4':{
+        agent:testAgent,
+        target:'http://127.0.0.1:3144',
+        changeOrigin:true,
+        secure:false,
+      },
     }
   }
 });
