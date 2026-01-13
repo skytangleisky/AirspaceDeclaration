@@ -703,7 +703,7 @@ function updateTextLayer(textData:any) {
           id: 'path-trail',
           data:data2.filter(d=>d.显示历史轨迹),
           getPath: d=>d.trail,
-          getColor: d=>d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[255, 255, 255, 255],
+          getColor: d=>[255, 255, 255, 255],
           getWidth: 0.1,
           widthUnits: 'pixels',
         }),
@@ -825,7 +825,7 @@ function updateTextLayer(textData:any) {
           radiusUnits: 'meters',          // 可省略（默认 meters）
           getFillColor: [0, 0, 0, 0],
           stroked: true,
-          getLineColor: d=>d==hoverObject?[255,255,255,255]:d.textColor,
+          getLineColor: d=>d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
           lineWidthUnits: 'pixels',
           getLineWidth: 1,
           radiusMinPixels: 2,
