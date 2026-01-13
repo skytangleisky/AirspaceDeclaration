@@ -72,7 +72,7 @@ import {getMask} from '~/api/天工.ts'
 const mask = getMask()
 
 const data: Tree[] = reactive<Tree[]>([]);
-/*mask=='%%'&&data.push({
+mask=='%%'&&data.push({
   id: "11",
   label: '北京',
   children: (北京 as Item[]).map((item:Item)=>{
@@ -126,7 +126,7 @@ const data: Tree[] = reactive<Tree[]>([]);
       label:item.district,
     }
   })
-});*/
+});
 
 const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfCheckedNodes }) => {
   // console.log("当前点击节点:", data)
@@ -137,19 +137,19 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
 }
 
 onMounted(async()=>{
-  await getSubRegion('110000').then((res:any)=>{
-    (mask=='%%'||mask=='11%')&&data.push({
-      id: "11",
-      label: '北京',
-      children: (res.data.results as any[]).map((item)=>{
-        setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
-        return {
-          id:item.adcode.substring(0,4),
-          label:item.name,
-        }
-      })
-    })
-  })
+  // await getSubRegion('110000').then((res:any)=>{
+  //   (mask=='%%'||mask=='11%')&&data.push({
+  //     id: "11",
+  //     label: '北京',
+  //     children: (res.data.results as any[]).map((item)=>{
+  //       setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
+  //       return {
+  //         id:item.adcode.substring(0,4),
+  //         label:item.name,
+  //       }
+  //     })
+  //   })
+  // })
   treeRef.value!.setCheckedKeys(setting.人影.监控.checkedKeys)
 })
 </script>

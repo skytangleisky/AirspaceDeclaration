@@ -1,5 +1,4 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
-import { c } from "vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf"
 export const useMapStatusStore = defineStore('mapStatus',{
   // state: () => ({ 四川
   //   pitch: 0,
@@ -13,10 +12,17 @@ export const useMapStatusStore = defineStore('mapStatus',{
   state: () => ({
     pitch: 0,
     bearing: 0,
-    zoom: 6.714612,
+    //江西
+    // zoom: 6.714612,
+    // center: [
+    //   115.659096,
+    //   27.286140
+    // ],
+    //天安门
+    zoom: 6,
     center: [
-      115.659096,
-      27.286140
+      116.391330,
+      39.907417
     ],
     currentPos: [0,0]
   }),

@@ -42,12 +42,12 @@
       </el-select> -->
       <div class="menu" ref="stationMenuRef" @mousedown.stop>
         <ul>
-          <li v-if="menuType=='飞机操作'" @click="显示标牌()"><el-checkbox size="small" label="显示标牌" v-model="飞机菜单数据.显示标牌"></el-checkbox></li>
-          <li v-if="menuType=='飞机操作'" @click="显示尾迹()"><el-checkbox size="small" label="显示尾迹" v-model="飞机菜单数据.显示尾迹"></el-checkbox></li>
-          <li v-if="menuType=='飞机操作'" @click="显示速度矢量线()"><el-checkbox size="small" label="显示速度矢量线" v-model="飞机菜单数据.显示速度矢量线"></el-checkbox></li>
-          <li v-if="menuType=='飞机操作'" @click="显示航迹圈()"><el-checkbox size="small" label="显示航迹圈" v-model="飞机菜单数据.显示航迹圈"></el-checkbox></li>
-          <li v-if="menuType=='飞机操作'" @click="显示经纬度()"><el-checkbox size="small" label="显示经纬度" v-model="飞机菜单数据.显示经纬度"></el-checkbox></li>
-          <li v-if="menuType=='飞机操作'" @click="显示历史轨迹()"><el-checkbox size="small" label="显示历史轨迹" v-model="飞机菜单数据.显示历史轨迹"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示标牌" v-model="飞机菜单数据.显示标牌"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示尾迹" v-model="飞机菜单数据.显示尾迹"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示速度矢量线" v-model="飞机菜单数据.显示速度矢量线"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示航迹圈" v-model="飞机菜单数据.显示航迹圈"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示经纬度" v-model="飞机菜单数据.显示经纬度"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示历史轨迹" v-model="飞机菜单数据.显示历史轨迹"></el-checkbox></li>
           <li v-if="menuType=='基础操作'" @click="偏心()">偏心</li>
           <li v-if="menuType=='基础操作'" @click="恢复偏心()">恢复偏心</li>
           <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
@@ -461,7 +461,7 @@ const textData = [
     "显示历史轨迹":true,
   }
 ]
-const 飞机菜单数据 = ref({
+const 飞机菜单数据 = ref<any>({
   "显示标牌":true,
   "显示尾迹":true,
   "显示速度矢量线":true,
@@ -469,6 +469,15 @@ const 飞机菜单数据 = ref({
   "显示经纬度":true,
   "显示历史轨迹":true,
 })
+watch(()=>飞机菜单数据,()=>{
+  activeObject.显示标牌 = 飞机菜单数据.value.显示标牌
+  activeObject.显示尾迹 = 飞机菜单数据.value.显示尾迹
+  activeObject.显示速度矢量线 = 飞机菜单数据.value.显示速度矢量线
+  activeObject.显示航迹圈 = 飞机菜单数据.value.显示航迹圈
+  activeObject.显示经纬度 = 飞机菜单数据.value.显示经纬度
+  activeObject.显示历史轨迹 = 飞机菜单数据.value.显示历史轨迹
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+},{deep:true})
 const deckOverlay = new MapboxOverlay({
   interleaved: false, // 性能优化
   layers: [],
@@ -478,12 +487,14 @@ const deckOverlay2 = new MapboxOverlay({
   layers: [],
 });
 let hoverObject:any;
+let activeObject:any;
 function updateTextLayer2(textData:any) {
   deckOverlay2.setProps({
     layers: [
       new SimpleLineLayer({
+        visible:setting.人影.监控.planeLabel,
         id: 'screen-line',
-        data: textData,
+        data: textData.filter(d => d.显示标牌),
         getPosition: d => [d.fLongitude, d.fLatitude],
         getAngle: d => 0,
         getLength: d => 10,
@@ -492,7 +503,7 @@ function updateTextLayer2(textData:any) {
       new PathLayer({
         visible:setting.人影.监控.track,
         id: 'path-trail',
-        data:textData,
+        data:textData.filter(d=>d.显示历史轨迹),
         getPath: d=>d.trail,
         getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
         getWidth: 0.1,
@@ -501,7 +512,7 @@ function updateTextLayer2(textData:any) {
       new ScatterplotLayer({
         visible:setting.人影.监控.track,
         id: 'path-trail-points',
-        data:textData.flatMap(d => d.trail),
+        data:textData.filter(d=>d.显示尾迹).flatMap(d => d.trail),
         getPosition: d => d,
         getRadius: 2,        // 米（或像素，见下）
         radiusUnits: 'pixels',
@@ -510,9 +521,10 @@ function updateTextLayer2(textData:any) {
         pickable: false,
       }),
       new IconLayer({
+        visible:setting.人影.监控.planeLabel,
         id: 'billboard-layer',
         pickable:true,
-        data: textData,
+        data: textData.filter(item => item.显示标牌),
         iconAtlas:billboardUrl,
         iconMapping:{
           marker: {
@@ -549,9 +561,10 @@ function updateTextLayer2(textData:any) {
         },
       }),
       new TextLayer({
+        visible:setting.人影.监控.planeLabel,
         id: 'text-layer',
         getWidth:500,
-        data:textData,
+        data:textData.filter(item => item.显示标牌),
         pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
@@ -593,7 +606,7 @@ function updateTextLayer2(textData:any) {
       new PathLayer({
         visible:setting.人影.监控.速度矢量线,
         id: 'path-layer',
-        data:textData,
+        data:textData.filter(d=>d.显示速度矢量线),
         getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
         getColor: d => d==hoverObject?[255,255,255,255]:[255,255,255,128],
         getWidth: 1,
@@ -621,16 +634,16 @@ function updateTextLayer2(textData:any) {
         },
       }),
       new ScatterplotLayer({
-        visible: setting.人影.监控.距离环,
+        visible: setting.人影.监控.显示航迹圈,
         id: 'circles',
-        data: textData,
+        data: textData.filter(d=>d.显示航迹圈),
         pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getRadius: d => 10e3, // 单位由 radiusUnits 决定
         radiusUnits: 'meters',          // 可省略（默认 meters）
         getFillColor: [0, 0, 0, 0],
         stroked: true,
-        getLineColor: [255, 255, 255, 255],
+        getLineColor: d=>d==hoverObject?[255, 255, 255, 255]:d.textColor,
         lineWidthUnits: 'pixels',
         getLineWidth: 1,
         radiusMinPixels: 2,
@@ -678,7 +691,7 @@ function updateTextLayer(textData:any) {
           pickable:false,
           visible:setting.人影.监控.planeLabel,
           id: 'screen-line',
-          data: data2,
+          data: data2.filter(d=>d.显示标牌),
           getPosition: d => [116.4, 39.9, 0],
           getAngle: d => 0,
           getLength: d => 100,
@@ -687,7 +700,7 @@ function updateTextLayer(textData:any) {
         new PathLayer({
           visible:setting.人影.监控.track,
           id: 'path-trail',
-          data:data2,
+          data:data2.filter(d=>d.显示历史轨迹),
           getPath: d=>d.trail,
           getColor: d=>d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[255, 255, 255, 255],
           getWidth: 0.1,
@@ -696,7 +709,7 @@ function updateTextLayer(textData:any) {
         new ScatterplotLayer({
           visible:setting.人影.监控.track,
           id: 'path-trail-points',
-          data:data2.flatMap(d => d.trail),
+          data:data2.filter(d=>d.显示尾迹).flatMap(d => d.trail),
           getPosition: d => d,
           getRadius: 2,        // 米（或像素，见下）
           radiusUnits: 'pixels',
@@ -705,7 +718,7 @@ function updateTextLayer(textData:any) {
         }),
         new PathLayer({
           id: 'path-layer',
-          data:data2,
+          data:data2.filter(d=>d.显示速度矢量线),
           getPath: d => [[d.fLongitude, d.fLatitude,d.iAltitudeADS2],...d.trajectory],
           visible: setting.人影.监控.速度矢量线,
           getColor: d=>d==hoverObject?[255,255,255,255]:[255, 255, 255,128],
@@ -762,7 +775,7 @@ function updateTextLayer(textData:any) {
         new TextLayer({
           visible:setting.人影.监控.planeLabel,
           id: 'text-layer',
-          data:data2,
+          data:data2.filter(d=>d.显示标牌),
           pickable: true,
           getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
           getText: d => d.label,
@@ -802,16 +815,16 @@ function updateTextLayer(textData:any) {
           },
         }),
         new ScatterplotLayer({
-          visible: setting.人影.监控.距离环,
+          visible: setting.人影.监控.显示航迹圈,
           id: 'circles',
-          data: data2,
+          data: data2.filter(d=>d.显示航迹圈),
           pickable: false,
           getPosition: d => [d.fLongitude, d.fLatitude],
           getRadius: d => 10e3, // 单位由 radiusUnits 决定
           radiusUnits: 'meters',          // 可省略（默认 meters）
           getFillColor: [0, 0, 0, 0],
           stroked: true,
-          getLineColor: [255, 255, 255, 255],
+          getLineColor: d=>d==hoverObject?[255,255,255,255]:d.textColor,
           lineWidthUnits: 'pixels',
           getLineWidth: 1,
           radiusMinPixels: 2,
@@ -1321,14 +1334,14 @@ function 偏心(){
 }
 function 恢复偏心(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
-  if(偏心数据.length==0){
-    return
-  }
   const position = 偏心数据.shift()
   偏心数据.length = 0
   map.flyTo({
-    center: position, // 新的中心点 [经度, 纬度]
-    zoom: 9, // 目标缩放级别
+    center: [
+      116.391330,
+      39.907417
+    ], // 新的中心点 [经度, 纬度]
+    zoom: 6, // 目标缩放级别
     speed: 1, // 飞行速度，1 为默认速度
     // curve: 1, // 飞行路径的曲率, 1 是直线
     // easing: function (t) {
@@ -1746,8 +1759,7 @@ function 处理飞机实时位置(d:Array<{
   map.getSource('zydSource')&&d.forEach((item:any)=>{
     const str = [
       item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:''),
-      item.iAltitudeADS.toString().padStart(5,'0')+' '+(item.fSpeed * 3.6).toFixed(0).padStart(4,'0'),
-      toDMS(item.fLongitude,item.fLatitude)
+      item.iAltitudeADS.toString().padStart(5,'0')+' '+(item.fSpeed * 3.6).toFixed(0).padStart(4,'0')
     ]
     let data = null
     for(let i=0;i<textData.length;i++){
@@ -1782,6 +1794,13 @@ function 处理飞机实时位置(d:Array<{
     while(trail.length>setting.人影.监控.trackCount){
       trail.shift()
     }
+    if(data){
+      if(data.显示经纬度){
+        str.push(toDMS(item.fLongitude,item.fLatitude))
+      }
+    }else{
+      str.push(toDMS(item.fLongitude,item.fLatitude))
+    }
     const point = destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)
     const targetData = {...item,trajectory:[[...point,item.iAltitudeADS2]],trail,lastTime:Date.now(),label:str.join('\n'),textColor}
     for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
@@ -1793,7 +1812,14 @@ function 处理飞机实时位置(d:Array<{
     if(data){
       textData.push(Object.assign(data,targetData))
     }else{
-      textData.push(Object.assign({offset:[40,-30],textColor},targetData))
+      textData.push(Object.assign({offset:[40,-30],textColor,...{
+        显示标牌:true,
+        显示尾迹:false,
+        显示速度矢量线:true,
+        显示航迹圈:false,
+        显示经纬度:true,
+        显示历史轨迹:false,
+      }},targetData))
     }
   })
   for(let i=0;i<textData.length;i++){
@@ -3782,6 +3808,13 @@ onMounted(async() => {
           marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
           $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
           menuType.value = '飞机操作'
+          activeObject = hoverObject
+          飞机菜单数据.value.显示标牌 = activeObject.显示标牌
+          飞机菜单数据.value.显示尾迹 = activeObject.显示尾迹
+          飞机菜单数据.value.显示速度矢量线 = activeObject.显示速度矢量线
+          飞机菜单数据.value.显示航迹圈 = activeObject.显示航迹圈
+          飞机菜单数据.value.显示经纬度 = activeObject.显示经纬度
+          飞机菜单数据.value.显示历史轨迹 = activeObject.显示历史轨迹
           return
         }
         const layers = map.getStyle().layers.filter(layer => layer.id.startsWith('gl-draw')).map(layer=>layer.id)
