@@ -137,10 +137,10 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
 }
 
 onMounted(async()=>{
-  await getSubRegion('360000').then((res:any)=>{
-    (mask=='%%'||mask=='36%')&&data.push({
-      id: "36",
-      label: '江西',
+  await getSubRegion('110000').then((res:any)=>{
+    (mask=='%%'||mask=='11%')&&data.push({
+      id: "11",
+      label: '北京',
       children: (res.data.results as any[]).map((item)=>{
         setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
         return {

@@ -42,6 +42,14 @@
       </el-select> -->
       <div class="menu" ref="stationMenuRef" @mousedown.stop>
         <ul>
+          <li v-if="menuType=='飞机操作'" @click="显示标牌()"><el-checkbox size="small" label="显示标牌" v-model="飞机菜单数据.显示标牌"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'" @click="显示尾迹()"><el-checkbox size="small" label="显示尾迹" v-model="飞机菜单数据.显示尾迹"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'" @click="显示速度矢量线()"><el-checkbox size="small" label="显示速度矢量线" v-model="飞机菜单数据.显示速度矢量线"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'" @click="显示航迹圈()"><el-checkbox size="small" label="显示航迹圈" v-model="飞机菜单数据.显示航迹圈"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'" @click="显示经纬度()"><el-checkbox size="small" label="显示经纬度" v-model="飞机菜单数据.显示经纬度"></el-checkbox></li>
+          <li v-if="menuType=='飞机操作'" @click="显示历史轨迹()"><el-checkbox size="small" label="显示历史轨迹" v-model="飞机菜单数据.显示历史轨迹"></el-checkbox></li>
+          <li v-if="menuType=='基础操作'" @click="偏心()">偏心</li>
+          <li v-if="menuType=='基础操作'" @click="恢复偏心()">恢复偏心</li>
           <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
@@ -65,11 +73,11 @@
       </div>
       <Tool-Box />
     </div>
-    <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
+    <!-- <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
       <template v-for="item in 视频列表" :key="item.strWorkID">
         <Video :item="item" v-if="item.visible"></Video>
       </template>
-    </div>
+    </div> -->
     <!-- <div v-dragable class="meeting" v-if="metting">
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div> -->
@@ -444,9 +452,23 @@ const textData = [
     ],
     "trail":[pos],
     "lastTime": 1763036518493,
-    "label": "0001\n00005 0018\n120551394E41095547N"
+    "label": "0001\n00005 0018\n120551394E41095547N",
+    "显示标牌":true,
+    "显示尾迹":true,
+    "显示速度矢量线":true,
+    "显示航迹圈":true,
+    "显示经纬度":true,
+    "显示历史轨迹":true,
   }
 ]
+const 飞机菜单数据 = ref({
+  "显示标牌":true,
+  "显示尾迹":true,
+  "显示速度矢量线":true,
+  "显示航迹圈":true,
+  "显示经纬度":true,
+  "显示历史轨迹":true,
+})
 const deckOverlay = new MapboxOverlay({
   interleaved: false, // 性能优化
   layers: [],
@@ -465,7 +487,7 @@ function updateTextLayer2(textData:any) {
         getPosition: d => [d.fLongitude, d.fLatitude],
         getAngle: d => 0,
         getLength: d => 10,
-        getColor: d => d==hoverObject?[255,255,0,255]:[255,255,255,255]
+        getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
       }),
       new PathLayer({
         visible:setting.人影.监控.track,
@@ -533,7 +555,7 @@ function updateTextLayer2(textData:any) {
         pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d => d==hoverObject?[255,255,0,255]:[255,255,255,255],
+        getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
         getSize: 12,
         getAngle: 0,
         getTextAnchor: 'start',
@@ -573,11 +595,12 @@ function updateTextLayer2(textData:any) {
         id: 'path-layer',
         data:textData,
         getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
-        getColor: d => d==hoverObject?[255,255,0,255]:[255, 255, 255],
+        getColor: d => d==hoverObject?[255,255,255,255]:[255,255,255,128],
         getWidth: 1,
         widthUnits: 'pixels',
       }),
       new IconLayer({
+        pickable:true,
         id: 'icon-layer2',
         data: textData,
         getIcon: d => ({
@@ -589,7 +612,13 @@ function updateTextLayer2(textData:any) {
         getPosition: d => [d.fLongitude, d.fLatitude],
         getSize: d => 24,
         sizeScale: 1,
-        billboard: false
+        billboard: false,
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateTextLayer2(textData.slice())
+          }
+        },
       }),
       new ScatterplotLayer({
         visible: setting.人影.监控.距离环,
@@ -646,21 +675,21 @@ function updateTextLayer(textData:any) {
     deckOverlay.setProps({
       layers: [
         new SimpleLineLayer({
-          picking:false,
+          pickable:false,
           visible:setting.人影.监控.planeLabel,
           id: 'screen-line',
           data: data2,
           getPosition: d => [116.4, 39.9, 0],
           getAngle: d => 0,
           getLength: d => 100,
-          getColor: d => d==hoverObject?[255,255,255,255]:d.textColor
+          getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
         }),
         new PathLayer({
           visible:setting.人影.监控.track,
           id: 'path-trail',
           data:data2,
           getPath: d=>d.trail,
-          getColor: d=>d==hoverObject?[255,255,255,255]:[255, 255, 255, 255],
+          getColor: d=>d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[255, 255, 255, 255],
           getWidth: 0.1,
           widthUnits: 'pixels',
         }),
@@ -671,8 +700,7 @@ function updateTextLayer(textData:any) {
           getPosition: d => d,
           getRadius: 2,        // 米（或像素，见下）
           radiusUnits: 'pixels',
-          getFillColor: [0, 180, 255, 160],
-
+          getFillColor: [255, 255, 255, 160],
           pickable: false,
         }),
         new PathLayer({
@@ -700,6 +728,7 @@ function updateTextLayer(textData:any) {
         // }),
         new IconLayer({
           id: 'icon-layer',
+          pickable:true,
           data: data2,
           getIcon: d => {
             if(d.ubyTrackState == 2){
@@ -722,7 +751,13 @@ function updateTextLayer(textData:any) {
           getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
           getSize: d => 10,
           sizeScale: 1,
-          billboard: false
+          billboard: false,
+          onHover(info,evt){
+            if(!mouseDownEvt){
+              hoverObject = info.object
+              updateTextLayer(data2.slice())
+            }
+          },
         }),
         new TextLayer({
           visible:setting.人影.监控.planeLabel,
@@ -731,7 +766,7 @@ function updateTextLayer(textData:any) {
           pickable: true,
           getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
           getText: d => d.label,
-          getColor: d => d==hoverObject?[255,255,255,255]:d.textColor,
+          getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
           getSize: 12,
           getAngle: 0,
           getTextAnchor: 'start',
@@ -750,7 +785,7 @@ function updateTextLayer(textData:any) {
           background: true,
           getBackgroundColor: [255, 255, 255, 0],
           border: true,
-          getBorderColor: d => d==hoverObject?[255,255,255,255]:[0,0,0,0],
+          getBorderColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[0,0,0,0],
           getBorderWidth: 1,
           backgroundPadding:[4,4],
           backgroundBorderRadius:0,
@@ -1265,6 +1300,41 @@ const 手动移除=async () => {
       message: '移除失败',
       type:'error',
     })
+  })
+}
+const 偏心数据 = reactive<any[]>([])
+function 偏心(){
+  偏心数据.push(map.getCenter().toArray())
+  const {lngLat} = $(stationMenuRef.value as HTMLDivElement).data()
+  const position = [lngLat.lng,lngLat.lat]
+  map.flyTo({
+    center: position, // 新的中心点 [经度, 纬度]
+    zoom: 9, // 目标缩放级别
+    speed: 1, // 飞行速度，1 为默认速度
+    // curve: 1, // 飞行路径的曲率, 1 是直线
+    // easing: function (t) {
+    //   return t;
+    // }, // 自定义缓动函数
+    essential: true, // 这个飞行动作对于用户交互是必要的
+  })
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+}
+function 恢复偏心(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+  if(偏心数据.length==0){
+    return
+  }
+  const position = 偏心数据.shift()
+  偏心数据.length = 0
+  map.flyTo({
+    center: position, // 新的中心点 [经度, 纬度]
+    zoom: 9, // 目标缩放级别
+    speed: 1, // 飞行速度，1 为默认速度
+    // curve: 1, // 飞行路径的曲率, 1 是直线
+    // easing: function (t) {
+    //   return t;
+    // }, // 自定义缓动函数
+    essential: true, // 这个飞行动作对于用户交互是必要的
   })
 }
 let 作业申请 = () => {
@@ -3708,6 +3778,12 @@ onMounted(async() => {
       if(!e.handled){
         e.originalEvent.stopPropagation()
         e.originalEvent.preventDefault();
+        if(hoverObject){
+          marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+          $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+          menuType.value = '飞机操作'
+          return
+        }
         const layers = map.getStyle().layers.filter(layer => layer.id.startsWith('gl-draw')).map(layer=>layer.id)
         const fs = map.queryRenderedFeatures(e.point, { layers });
         if(fs.length>0){
@@ -3716,6 +3792,13 @@ onMounted(async() => {
           menuType.value = '批量操作'
           // $(stationMenu).removeData();
           // $(stationMenu).data(feature.properties);
+        }else{
+          marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+          $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+          menuType.value = '基础操作'
+          $(stationMenuRef.value as HTMLDivElement).data({
+            lngLat:e.lngLat
+          })
         }
         fs.forEach((item:any)=>{
           draw.setFeatureProperty(item.properties.id, 'color', '#ff6600')
@@ -4285,13 +4368,15 @@ onMounted(async() => {
         });
       }
       map.on("contextmenu", "stoveLayer", (e: any) => {
+        if(hoverObject){
+          return
+        }
         e.handled = true;
         e.originalEvent.stopPropagation()
         e.originalEvent.preventDefault();
         const fs = map.queryRenderedFeatures(e.point, {
           layers: ["stoveLayer"],
         });
-
         if (!fs.length) {
           return;
         }
@@ -4305,6 +4390,9 @@ onMounted(async() => {
         $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
       });
       map.on("contextmenu", "zydLayer", (e: any) => {
+        if(hoverObject){
+          return
+        }
         e.handled = true;
         e.originalEvent.stopPropagation()
         e.originalEvent.preventDefault();
@@ -7184,9 +7272,10 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   pointer-events:none;
 }
 .menu {
+  z-index:3;
   width:fit-content;
   display: none;
-  background: #ffffff88;
+  background: #ffffffb0;
   border-radius: 10px;
   border-top-left-radius: 4px;
   border: 1px solid var(--el-border-color);
@@ -7221,7 +7310,7 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
 }
 
 .dark .menu {
-  background: #00000088;
+  background: #000000b0;
   ul {
     cursor: default;
     display: flex;

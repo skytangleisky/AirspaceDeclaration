@@ -48,7 +48,6 @@ export default defineConfig({
   ],
   build: {
     sourcemap: false,
-    minify: 'esbuild',
     outDir: "lib",
     lib: {
       // entry: path.resolve(__dirname, "./src/components/index.js"),
@@ -124,7 +123,7 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        target:'http://127.0.0.1:21000',
+        target:'http://192.168.0.135:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
