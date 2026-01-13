@@ -6,7 +6,8 @@ export function fetchList({page,size,range}:{page:number,size:number,range:any})
     method:'post',
     headers:{
       // database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"union","type":"mysql"}),
-      database:JSON.stringify({"host":"10.194.22.240","port":33060,"user":"root","password":"SCRY@ryb1234","database":"union","type":"mysql"}),
+      // database:JSON.stringify({"host":"10.194.22.240","port":33060,"user":"root","password":"SCRY@ryb1234","database":"union","type":"mysql"}),
+      database:JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_scry","type":"mysql"}),
       table:'connection',
     },
     data:{

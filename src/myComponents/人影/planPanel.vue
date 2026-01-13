@@ -24,6 +24,9 @@
                     <div v-show="tabActive == '人影飞机'">
                         <PlaneInfo></PlaneInfo>
                     </div>
+                    <div v-show="tabActive == '历史作业记录'">
+                        <ZydHisData/>
+                    </div>
                 </el-scrollbar>
             </div>
         </div>
@@ -56,6 +59,7 @@
     const Transport = defineAsyncComponent(() => import("./transport.vue"));
     const FinishedInfo = defineAsyncComponent(() => import("./finishedInfo.vue"));
     const PlaneInfo = defineAsyncComponent(() => import("./planeInfo.vue"));
+    const ZydHisData = defineAsyncComponent(()=> import("~/myComponents/人影/lkx/workhisdata/zydhisdata.vue"))
     import {useSettingStore} from "../../stores/setting";
     import SvgIcon from "~/myComponents/SvgIcon.vue";
     
@@ -71,6 +75,12 @@
         icon: "plan-fill",
         type: "PLANFILL",
         total: computed(() => props.今日作业记录.length),
+    }, {
+      label: "历史作业记录",
+      icon: "tasks",
+      type: "历史作业记录",
+      total: 0,
+      hideBadge:true,
     }, {
         label: "空域流转信息",
         icon: "transferInfo",

@@ -113,8 +113,8 @@
                 </div>
             </div>
         </div>
-        <Frame v-model:render="show">
-            <ZydFilter></ZydFilter>
+        <Frame title="作业点筛选" v-model:render="show" once width="1035px" height="800px">
+            <ZydFilter ></ZydFilter>
         </Frame>
     </div>
 </template>
@@ -122,7 +122,6 @@
     import ZydFilter from './zydFilter.vue'
     import Frame from '~/frames/frame.vue'
     import Colormap from './色标.vue'
-    import {Close} from "@element-plus/icons-vue";
     import closeSvg from '~/assets/close.svg?raw'
     import {reactive, onMounted, watch, computed, ref, toRaw} from 'vue';
     

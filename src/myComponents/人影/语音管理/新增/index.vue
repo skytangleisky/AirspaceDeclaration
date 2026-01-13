@@ -1,5 +1,5 @@
 <template>
-  <subFrame v-model:render="render" :width="800" :height="400">
+  <subFrame v-model:render="render" width="800px" height="400px">
     <Add @close="render=false"></Add>
   </subFrame>
 </template>
