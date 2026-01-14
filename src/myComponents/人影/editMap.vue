@@ -81,7 +81,7 @@
     <!-- <div v-dragable class="meeting" v-if="metting">
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div> -->
-    <Frame v-model:render="metting" once>
+    <Frame v-model:render="metting" once width="800px" height="500px">
       <iframe style="width:100%;height:100%;user-select:none;background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);"  ref="iframeRef" src="https://172.18.7.38" frameborder="0" allow="camera; microphone; geolocation" @load="load"></iframe>
     </Frame>
     <ConfigureRegion></ConfigureRegion>
@@ -2950,6 +2950,7 @@ onMounted(async() => {
       // console.log(e)
     })
     if(!draw){
+      setting.绘制模式 = 'no_select'
       draw = new MapboxDraw({
         userProperties: true,
         displayControlsDefault: false,
@@ -5900,7 +5901,7 @@ onMounted(async() => {
         type: "FeatureCollection",
         features: [],
       };
-      console.log(res.data.results);
+      // console.log(res.data.results);
       enclosureList = res.data.results;
       for (let i = 0; i < res.data.results.length; i++) {
         let v = res.data.results[i];
@@ -5953,7 +5954,7 @@ onMounted(async() => {
           }
         } else if (v.enclosure_type == "03") {
           if (v.circle_center) {
-            console.log(v)
+            // console.log(v)
             let center = v.circle_center
               .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
               .split(",")

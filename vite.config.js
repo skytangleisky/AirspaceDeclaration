@@ -10,11 +10,9 @@ import path from "path";
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
-import { timeout } from "d3";
 const option = {
   keepAlive: true
 }
-
 const agent = new HttpsProxyAgent('https://192.168.0.114:1100',option)
 const testAgent = new HttpsProxyAgent('https://192.168.0.141:4444',option)
 // https://vitejs.dev/config/
