@@ -76,11 +76,11 @@
         type: "PLANFILL",
         total: computed(() => props.今日作业记录.length),
     }, {
-      label: "历史作业记录",
-      icon: "tasks",
-      type: "历史作业记录",
-      total: 0,
-      hideBadge:true,
+        label: "历史作业记录",
+        icon: "history",
+        type: "历史作业记录",
+        total: 0,
+        hideBadge:true,
     }, {
         label: "空域流转信息",
         icon: "transferInfo",
