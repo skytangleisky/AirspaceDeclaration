@@ -128,7 +128,7 @@ export function select_getZydHisData(beginTime:string,endTime:string,ZydName:str
         },
         {
           relation:'AND',
-          field:'z.tmApplyRev',//申请结束时间
+          field:'z.tmBeginApply',//申请结束时间
           relationship:'<=',
           condition:endTime
         },
