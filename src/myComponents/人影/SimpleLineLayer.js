@@ -16,48 +16,60 @@ export default class ScreenLineLayer extends Layer {
     // 实例属性
     this.getAttributeManager().addInstanced({
       instancePositions: { size: 2, accessor: 'getPosition' }, // 屏幕空间起点
-      instanceAngle: { size: 1, accessor: 'getAngle', defaultValue: 0 },
-      instanceLength: { size: 1, accessor: 'getLength', defaultValue: 100 },
-      instanceColor: { size: 4, accessor: 'getColor', defaultValue: [255, 0, 0, 255] }
+      instanceColor: { size: 4, accessor: 'getColor', defaultValue: [255, 0, 0, 255] },
+      instanceOffset: { size: 2, accessor: 'getOffset', defaultValue: [0, 0] },
     });
+    // 创建 program
+    const { vs, fs } = this.getShaders();
+    const vsShader = gl.createShader(gl.VERTEX_SHADER);
+    gl.shaderSource(vsShader, vs);
+    gl.compileShader(vsShader);
+    const fsShader = gl.createShader(gl.FRAGMENT_SHADER);
+    gl.shaderSource(fsShader, fs);
+    gl.compileShader(fsShader);
+    const program = gl.createProgram();
+    gl.attachShader(program, vsShader);
+    gl.attachShader(program, fsShader);
+    gl.linkProgram(program);
+    this.state.program = program;
   }
 
   getShaders() {
     return {
-      vs: `
-      attribute vec2 positions;
-      attribute vec2 instancePositions;
-      attribute float instanceAngle;
-      attribute float instanceLength;
-      attribute vec4 instanceColor;
+      vs: `#version 300 es
+      precision highp float;
+
+      in vec2 positions;
+      in vec2 instancePositions;
+      in vec2 instanceOffset;
+      in vec4 instanceColor;
 
       uniform vec2 viewportSize;
-      varying vec4 vColor;
 
-      void main(void) {
-        // 起点屏幕坐标 -> NDC
+      out vec4 vColor;
+
+      void main() {
+        // 起点：屏幕像素 -> NDC
         vec2 startNDC = (instancePositions / viewportSize) * 2.0 - 1.0;
         startNDC.y = -startNDC.y;
 
-        // 方向向量
-        vec2 dir = vec2(cos(instanceAngle), sin(instanceAngle));
+        vec2 pixelOffset = positions.x * instanceOffset;
 
-        // 屏幕像素偏移
-        vec2 pixelOffset = dir * positions.x * instanceLength;
-
-        // 转 NDC
         vec2 offset = pixelOffset / viewportSize * 2.0;
-        offset.y = -offset.y; // y 翻转
+        offset.y = -offset.y;
 
         gl_Position = vec4(startNDC + offset, 0.0, 1.0);
         vColor = instanceColor / 255.0;
       }
       `,
-      fs: `
+      fs: `#version 300 es
       precision highp float;
-      varying vec4 vColor;
-      void main(void) {
-        gl_FragColor = vColor;
+
+      in vec4 vColor;
+      out vec4 fragColor;
+
+      void main() {
+        fragColor = vColor;
       }
       `
     };
@@ -70,21 +82,7 @@ export default class ScreenLineLayer extends Layer {
 
     if (!data || data.length === 0) return;
 
-    // 创建 program
-    if (!this.state.program) {
-      const { vs, fs } = this.getShaders();
-      const vsShader = gl.createShader(gl.VERTEX_SHADER);
-      gl.shaderSource(vsShader, vs);
-      gl.compileShader(vsShader);
-      const fsShader = gl.createShader(gl.FRAGMENT_SHADER);
-      gl.shaderSource(fsShader, fs);
-      gl.compileShader(fsShader);
-      const program = gl.createProgram();
-      gl.attachShader(program, vsShader);
-      gl.attachShader(program, fsShader);
-      gl.linkProgram(program);
-      this.state.program = program;
-    }
+
 
     const program = this.state.program;
     gl.useProgram(program);
@@ -97,25 +95,22 @@ export default class ScreenLineLayer extends Layer {
 
     // 实例属性
     const instancePositions = [];
-    const instanceAngles = [];
-    const instanceLengths = [];
     const instanceColors = [];
+    const instanceOffset = [];
 
     data.forEach(d => {
       const screenPos = viewport.project([d.fLongitude, d.fLatitude, d.iAltitudeADS2]); // 经纬度 -> 屏幕像素
       instancePositions.push(screenPos[0], screenPos[1]);
       const x = d.offset[0] - 4
       const y = d.offset[1]
-      instanceAngles.push(Math.atan2(y, x));
-      instanceLengths.push(Math.sqrt(x*x+y*y));
       instanceColors.push(...this.props.getColor(d));
+      instanceOffset.push(x,y)
     });
 
     const attrs = {
       instancePositions: { value: instancePositions, size: 2 },
-      instanceAngle: { value: instanceAngles, size: 1 },
-      instanceLength: { value: instanceLengths, size: 1 },
-      instanceColor: { value: instanceColors, size: 4 }
+      instanceColor: { value: instanceColors, size: 4 },
+      instanceOffset: { value: instanceOffset, size: 2 },
     };
 
     Object.keys(attrs).forEach(name => {
