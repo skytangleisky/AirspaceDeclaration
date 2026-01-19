@@ -7,7 +7,8 @@ import { Data } from 'ol/DataTile';
 
 const tableName = 'zydhisdata'
 const tableName_join_left = 'zydhisdata z left join units u1 on z.strAnswerUnit=u1.strID left join units u2 on z.strUpApplyUnit=u2.strID'
-const database = {"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_scry","type":"mysql"}
+// const database = {"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_scry","type":"mysql"}
+const database = {"host":"10.194.22.240","port":33060,"user":"root","password":"SCRY@ryb1234","database":"ryplat_scry","type":"mysql"}
 
 export function getSubRegion(adcode = '620000'){
   return request({

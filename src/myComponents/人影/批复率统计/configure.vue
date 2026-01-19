@@ -115,6 +115,7 @@ watch(()=>setting.触发作业状态数据查询,()=>{
 </script>
 <style lang="scss" scoped>
 .configure{
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor:default;

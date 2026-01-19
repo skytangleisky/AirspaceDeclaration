@@ -1,5 +1,5 @@
 <template>
-  <frame v-model:render="setting.火箭架配置" :width="800" :height="600">
+  <frame title="火箭架配置" v-model:render="setting.火箭架配置" width="800px" height="600px">
     <Configure></Configure>
   </frame>
 </template>

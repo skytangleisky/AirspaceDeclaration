@@ -112,11 +112,8 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        // agent,
-        // target:'http://172.18.7.38:3000',
-        target:'http://192.168.0.114:3000',
-        // agent:shanxi_agent,
-        // target:'http://10.194.22.240:3000',
+        agent,
+        target:'http://10.194.22.240:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
@@ -130,7 +127,7 @@ export default defineConfig({
       },
       '/ry_api':{//人影接口
         agent,
-        target:'http://127.0.0.1:21000',
+        target:'http://10.194.22.240:21000',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
