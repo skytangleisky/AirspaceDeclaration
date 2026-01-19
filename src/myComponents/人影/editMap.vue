@@ -1473,13 +1473,17 @@ let active = () => {};
 let mouseDownEvt :any;
 let hoverObjectOffset = [0,0]
 const mousemoveFunc = (e:any)=>{
-  if(hoverObject&&mouseDownEvt){
-    let pt1 = mouseDownEvt.point
-    let pt2 = e.point
-    let offsetX = hoverObjectOffset[0]+pt2.x-pt1.x
-    let offsetY = hoverObjectOffset[1]+pt2.y-pt1.y
-    hoverObject.offset = [offsetX,offsetY]
-    updateTextLayer(textData.slice())
+  if(mouseDownEvt){
+    if(hoverObject){
+      let pt1 = mouseDownEvt.point
+      let pt2 = e.point
+      let offsetX = hoverObjectOffset[0]+pt2.x-pt1.x
+      let offsetY = hoverObjectOffset[1]+pt2.y-pt1.y
+      hoverObject.offset = [offsetX,offsetY]
+      updateTextLayer(textData.slice())
+    }
+  }else if(!hoverObject){
+    hoverObject = null
   }
   mapStatus.currentPos = [e.lngLat.lng,e.lngLat.lat]
   setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
