@@ -86,13 +86,15 @@
         icon: "transferInfo",
         type: "transferInfo",
         total: computed(() => props.今日作业记录.length),
-    }, {
-        label: "完成信息查询",
-        icon: "tasks",
-        type: "完成信息查询",
-        total: 0,
-        hideBadge: true,
-    }, {
+    },
+    // {
+    //     label: "完成信息查询",
+    //     icon: "tasks",
+    //     type: "完成信息查询",
+    //     total: 0,
+    //     hideBadge: true,
+    // },
+    {
         label: "人影飞机",
         icon: "plane",
         total: computed(() => setting.人影.监控.需要重点关注的飞机.length),
