@@ -7,7 +7,7 @@
                     <el-input
                         disabled
                         name="发报单位"
-                        :value="data.发报单位"
+                        :value="data.strRelayUnit"
                         @mousedown.stop
                     />
                 </div>
@@ -29,7 +29,7 @@
                     <el-input
                         disabled
                         name="申请单位"
-                        value="北京气象局"
+                        :value="data.strRelayUnitName"
                         @mousedown.stop
                     />
                 </div>
@@ -40,7 +40,7 @@
                     <el-input
                         disabled
                         name="空管单位"
-                        value="西南空管"
+                        value="福州分区"
                         @mousedown.stop
                     />
                 </div>

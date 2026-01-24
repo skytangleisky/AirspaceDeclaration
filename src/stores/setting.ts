@@ -13,11 +13,6 @@ export const formatUrl = (url: string) => {
 }
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    触发系统菜单数据查询:Date.now(),
-    触发作业状态数据查询:Date.now(),
-    触发完成信息查询:Date.now(),
-    触发注册飞机查询:Date.now(),
-    触发语音记录查询:Date.now(),
     数字时钟:moment().format('YYYY-MM-DD')+'&emsp;'+moment().format('HH:mm:ss'),
     polling:true,
     弹药概况:false,
@@ -28,7 +23,6 @@ export const useSettingStore = defineStore('setting',{
     飞行活动:false,
     电子围栏:false,
     无人机空域:false,
-    触发网络信息查询:Date.now(),
     显示全国行政区划配置:false,
     显示烟炉:false,
     获取经纬度:false,
@@ -56,9 +50,6 @@ export const useSettingStore = defineStore('setting',{
       },
     ],
     绘制模式:'no_select',
-    在线人数:'',
-    网络状态:'',
-    内存占用:'',
     devtoolsOpen:false,
     menus:true,
     canvas:{
@@ -412,7 +403,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
-        selectedRegion:new Array<string>('110000','360000'),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>('360000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
@@ -421,9 +412,9 @@ export const useSettingStore = defineStore('setting',{
         区域站:false,
         准心:false,
         //下面两行用于人影飞机跟踪
-        飞机数据:shallowReactive([]),
-        注册飞机数据:shallowReactive([]),
-        需要重点关注的飞机:shallowReactive([]),
+        飞机数据:shallowReactive<any>([]),
+        注册飞机数据:shallowReactive<any>([]),
+        需要重点关注的飞机:shallowReactive<any>([]),
         注册飞机列表显示:false,
         roadMap:false,
         是否显示分布面板:false,
@@ -460,7 +451,7 @@ export const useSettingStore = defineStore('setting',{
         bearing:0,
         pitch:0,
         routeLine:true,
-        zyd:false,
+        zyd:true,
         synergyZyd:false,
         北京保障圈:false,
         airport:false,
@@ -1008,26 +999,26 @@ export const useSettingStore = defineStore('setting',{
       console.log('编辑')
     },
   },
-  // persist: {
-  //   serializer: {
-  //     // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
-  //     serialize: (state) =>
-  //       JSON.stringify(state, (key, value) => {
-  //         if (value === Infinity) return '__INFINITY__'
-  //         if (value === -Infinity) return '__NEGATIVE_INFINITY__'
-  //         if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
-  //         return value
-  //       }),
-  //     // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
-  //     deserialize: (str) =>
-  //       JSON.parse(str, (key, value) => {
-  //         if (value === '__INFINITY__') return Infinity
-  //         if (value === '__NEGATIVE_INFINITY__') return -Infinity
-  //         if (value === '__NaN__') return NaN
-  //         return value
-  //       })
-  //   }
-  // }
+  persist: {
+    serializer: {
+      // 自定义序列化逻辑：用 JSON.stringify 的 replacer 处理特殊数值
+      serialize: (state) =>
+        JSON.stringify(state, (key, value) => {
+          if (value === Infinity) return '__INFINITY__'
+          if (value === -Infinity) return '__NEGATIVE_INFINITY__'
+          if (typeof value === 'number' && Number.isNaN(value)) return '__NaN__'
+          return value
+        }),
+      // 自定义反序列化逻辑：用 JSON.parse 的 reviver 还原特殊数值
+      deserialize: (str) =>
+        JSON.parse(str, (key, value) => {
+          if (value === '__INFINITY__') return Infinity
+          if (value === '__NEGATIVE_INFINITY__') return -Infinity
+          if (value === '__NaN__') return NaN
+          return value
+        })
+    }
+  }
 })
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useSettingStore, import.meta.hot))

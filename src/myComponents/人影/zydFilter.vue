@@ -72,61 +72,61 @@ import {getMask} from '~/api/天工.ts'
 const mask = getMask()
 
 const data: Tree[] = reactive<Tree[]>([]);
-mask=='%%'&&data.push({
-  id: "11",
-  label: '北京',
-  children: (北京 as Item[]).map((item:Item)=>{
-    setting.人影.监控.checkedKeys.push(item.code)
-    return {
-      id:item.code,
-      label:item.district,
-    }
-  })
-});
-(mask=='%%'||mask=='12%')&&data.push({
-  id: "12",
-  label: '天津',
-  children: (天津 as Item[]).map((item:Item)=>{
-    setting.人影.监控.checkedKeys.push(item.code)
-    return {
-      id:item.code,
-      label:item.district,
-    }
-  })
-});
-(mask=='%%'||mask=='13%')&&data.push({
-  id: "13",
-  label: '河北',
-  children: (河北 as Item[]).map((item:Item)=>{
-    setting.人影.监控.checkedKeys.push(item.code)
-    return {
-      id:item.code,
-      label:item.district,
-    }
-  })
-});
-(mask=='%%'||mask=='14%')&&data.push({
-  id: "14",
-  label: '山西',
-  children: (山西 as Item[]).map((item:Item)=>{
-    setting.人影.监控.checkedKeys.push(item.code)
-    return {
-      id:item.code,
-      label:item.district,
-    }
-  })
-});
-(mask=='%%'||mask=='15%')&&data.push({
-  id: "15",
-  label: '内蒙古',
-  children: (内蒙古 as Item[]).map((item:Item)=>{
-    setting.人影.监控.checkedKeys.push(item.code)
-    return {
-      id:item.code,
-      label:item.district,
-    }
-  })
-});
+// mask=='%%'&&data.push({
+//   id: "11",
+//   label: '北京',
+//   children: (北京 as Item[]).map((item:Item)=>{
+//     setting.人影.监控.checkedKeys.push(item.code)
+//     return {
+//       id:item.code,
+//       label:item.district,
+//     }
+//   })
+// });
+// (mask=='%%'||mask=='12%')&&data.push({
+//   id: "12",
+//   label: '天津',
+//   children: (天津 as Item[]).map((item:Item)=>{
+//     setting.人影.监控.checkedKeys.push(item.code)
+//     return {
+//       id:item.code,
+//       label:item.district,
+//     }
+//   })
+// });
+// (mask=='%%'||mask=='13%')&&data.push({
+//   id: "13",
+//   label: '河北',
+//   children: (河北 as Item[]).map((item:Item)=>{
+//     setting.人影.监控.checkedKeys.push(item.code)
+//     return {
+//       id:item.code,
+//       label:item.district,
+//     }
+//   })
+// });
+// (mask=='%%'||mask=='14%')&&data.push({
+//   id: "14",
+//   label: '山西',
+//   children: (山西 as Item[]).map((item:Item)=>{
+//     setting.人影.监控.checkedKeys.push(item.code)
+//     return {
+//       id:item.code,
+//       label:item.district,
+//     }
+//   })
+// });
+// (mask=='%%'||mask=='15%')&&data.push({
+//   id: "15",
+//   label: '内蒙古',
+//   children: (内蒙古 as Item[]).map((item:Item)=>{
+//     setting.人影.监控.checkedKeys.push(item.code)
+//     return {
+//       id:item.code,
+//       label:item.district,
+//     }
+//   })
+// });
 
 const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfCheckedNodes }) => {
   // console.log("当前点击节点:", data)
@@ -137,19 +137,19 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
 }
 
 onMounted(async()=>{
-  // await getSubRegion('110000').then((res:any)=>{
-  //   (mask=='%%'||mask=='11%')&&data.push({
-  //     id: "11",
-  //     label: '北京',
-  //     children: (res.data.results as any[]).map((item)=>{
-  //       setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
-  //       return {
-  //         id:item.adcode.substring(0,4),
-  //         label:item.name,
-  //       }
-  //     })
-  //   })
-  // })
+  await getSubRegion('360000').then((res:any)=>{
+    (mask=='%%'||mask=='36%')&&data.push({
+      id: "36",
+      label: '江西省',
+      children: (res.data.results as any[]).map((item)=>{
+        setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
+        return {
+          id:item.adcode.substring(0,4),
+          label:item.name,
+        }
+      })
+    })
+  })
   treeRef.value!.setCheckedKeys(setting.人影.监控.checkedKeys)
 })
 </script>

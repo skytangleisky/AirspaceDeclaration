@@ -7,23 +7,17 @@ import droneUrl from "~/assets/aircraft.svg?url";
 import { useSettingStore } from '~/stores/setting';
 import { computed, ComputedRef } from 'vue'
 export const modelRef = (obj: object,fields: string)=>computed({get:()=>new Function('obj', `return obj.${fields}`)(obj),set:(val: any)=>new Function('obj', 'val', `obj.${fields} = val`)(obj, val)})
-export function hasPermission(permissions:Array<String>){
-  let has = false
-  const recurse = (list:any)=>{
-    for(let item of list){
-      if(Array.isArray(item.children)){
-        recurse(item.children)
-      }else{
-        if(permissions.indexOf(item.name)>=0&&item.checked){
-          has = true
-        }
-      }
-    }
-  }
-  const setting = useSettingStore()
-  recurse(setting.permissions)
-  return has
+export function hasPermission(permissions: string[]) {
+  const setting = useSettingStore();
+  const set = new Set(permissions);
+  const recurse = (list: any[]): boolean =>
+    list.some(item =>
+      (item.checked && set.has(item.name)) ||
+      (Array.isArray(item.children) && recurse(item.children))
+    );
+  return recurse(setting.permissions);
 }
+
 export function fromDMS(v:string):[number,number]{
   if(v.indexOf('E')<v.indexOf('N')){
     let lng = v.substring(0, v.indexOf("E")).padStart(7,'0');

@@ -28,6 +28,20 @@ export function fetchList({page,size,range}:{page:number,size:number,range:any})
       ]
     })
   }
+  data.where.push(...[
+    {
+      relation: "and",
+      field:"standby1",
+      relationship:"=",
+      condition:'O'
+    },
+    {
+      relation: "and",
+      field:"enclosure_type",
+      relationship:"=",
+      condition:'02'
+    }
+  ])
   return request({
     url:'/backend/db/enclosure',
     method:'post',

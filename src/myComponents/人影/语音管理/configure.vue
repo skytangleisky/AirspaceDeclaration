@@ -41,8 +41,8 @@
 </template>
 
 <script lang="ts" setup>
-import { useSettingStore } from '~/stores/setting'
-const setting = useSettingStore()
+import { useSysStatusStore } from '~/stores/sysStatus'
+const sys = useSysStatusStore()
 import { useStationStore } from '~/stores/station'
 const station = useStationStore()
 import Add from './新增/index.vue'
@@ -134,10 +134,10 @@ const tableData: Item[] = reactive([
 ])
 const 触发语音记录查询 = computed({
   get(){
-    return setting.触发语音记录查询
+    return sys.触发语音记录查询
   },
   set(val){
-    setting.触发语音记录查询 = val
+    sys.触发语音记录查询 = val
   }
 })
 provide('触发语音记录查询',触发语音记录查询)

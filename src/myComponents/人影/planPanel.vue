@@ -21,34 +21,37 @@
               <div v-show="tabActive == '完成信息查询'">
                   <FinishedInfo></FinishedInfo>
               </div>
-              <div v-show="tabActive == '商飞飞机'">
+              <div v-show="tabActive == '人影飞机'">
                   <PlaneInfo></PlaneInfo>
               </div>
           </el-scrollbar>
       </div>
     </div>
     <div class="top" style="margin-top:10px;margin-bottom:0">
-      <div
-        v-for="(item, index) in tabList"
-        :key="index"
-        class="top-item"
-        style="pointer-events: auto;"
-        @click="tabActive == item.label ? tabActive = '' : tabActive = item.label"
-      >
-        <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
-          <div
-            :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
-            style="user-select: none;cursor:pointer"
-          >
-            <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
-            <span class="label" style="white-space:nowrap;">{{ item.label }}</span>
-          </div>
-        </el-badge>
-      </div>
+      <template v-for="(item, index) in tabList">
+        <div
+          v-if="hasPermission(item.permissions)"
+          :key="index"
+          class="top-item"
+          style="pointer-events: auto;"
+          @click="tabActive == item.label ? tabActive = '' : tabActive = item.label"
+        >
+          <el-badge :value="item.total" type="success" :hidden="item.hideBadge">
+            <div
+              :class="{ active: tabActive == item.label,box:true,'map-btn':true }"
+              style="user-select: none;cursor:pointer"
+            >
+              <svg-icon color="#C1C1C1" :name="item.icon"></svg-icon>
+              <span class="label" style="white-space:nowrap;">{{ item.label }}</span>
+            </div>
+          </el-badge>
+        </div>
+      </template>
     </div>
   </div>
 </template>
 <script lang="ts" setup>
+import { hasPermission } from "~/tools";
 import Work from './work.vue'
 import { defineAsyncComponent, reactive, ref, watch, computed } from "vue";
 import closeSvg from '~/assets/close.svg?raw'
@@ -60,24 +63,28 @@ const setting = useSettingStore()
 // top按钮渲染数据
 const tabList = reactive([
   {
+    permissions: ['04bca30f-14c9-4b4c-a93e-1155b792250e'],
     label: "当前作业进度",
     icon: "progress",
     type: "progress",
     total: computed(() => props.当前作业进度.length),
   },
   {
+    permissions: ['2c50aec7-971a-4dfc-b93a-384738f0c9cf'],
     label: "今日作业记录",
     icon: "plan-fill",
     type: "PLANFILL",
     total: computed(() => props.今日作业记录.length),
   },
   {
+    permissions: ['1cb7188d-4da9-47b9-b694-504d73252609'],
     label: "空域流转信息",
     icon: "transferInfo",
     type: "transferInfo",
     total: computed(() => props.今日作业记录.length),
   },
   {
+    permissions: ['9ab19aac-6926-4667-a749-5dfd09869198'],
     label: "完成信息查询",
     icon: "tasks",
     type: "完成信息查询",
@@ -85,7 +92,8 @@ const tabList = reactive([
     hideBadge:true,
   },
   {
-    label: "商飞飞机",
+    permissions: ['773bffb5-1507-4e8b-a16c-bcb584882f87'],
+    label: "人影飞机",
     icon: "plane",
     total: computed(()=>setting.人影.监控.需要重点关注的飞机.length),
     hideBadge:false,

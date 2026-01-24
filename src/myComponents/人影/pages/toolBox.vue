@@ -1,20 +1,22 @@
 <template>
   <div>
-    <div class="tool-btns" v-if="setting.menus">
-      <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
-      <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
-      <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
-      <div class="btn-box disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
-    </div>
-    <div class="side-box" v-if="setting.menus">
-      <div class="side-box-left">
-        <side-buttons></side-buttons>
+    <template v-if="hasPermission(['12afdacf-0255-46d9-a0ec-7d9b2fc157da'])">
+      <div class="tool-btns" v-if="setting.menus">
+        <div :class="`btn-box ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
+        <div :class="`btn-box ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
+        <div :class="`btn-box ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
+        <div class="btn-box disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
       </div>
-      <el-scrollbar v-if="showPanel">
-        <MenuPanel></MenuPanel>
-      </el-scrollbar>
-    </div>
-    <el-scrollbar class="control-scrollbar">
+      <div class="side-box" v-if="setting.menus">
+        <div class="side-box-left">
+          <side-buttons></side-buttons>
+        </div>
+        <el-scrollbar v-if="showPanel">
+          <MenuPanel></MenuPanel>
+        </el-scrollbar>
+      </div>
+    </template>
+    <el-scrollbar v-if="hasPermission(['78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a'])" class="control-scrollbar">
       <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
     </el-scrollbar>
     <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">
@@ -23,16 +25,19 @@
   </div>
 </template>
 <script lang="ts" setup>
+import {hasPermission} from '~/tools/index'
 import sideButtons from './sideButtons.vue'
 import MenuPanel from './menuPanel.vue'
 import {reactive,computed,defineAsyncComponent,watch} from 'vue'
 import {useSettingStore} from '~/stores/setting'
 import {useMapStatusStore} from '~/stores/mapStatus'
+import {useSysStatusStore} from '~/stores/sysStatus'
 import {getMask} from '~/api/天工'
 import {resetTheme} from '~/theme'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
 const mapStatus = useMapStatusStore()
+const sysStatus = useSysStatusStore()
 const distributionButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
@@ -166,77 +171,77 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       },
     ]
   },
-  {
-    label: '北京行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.beijingOptionsOpened'), children: [
-      {
-        label: '填充',
-        type: 'folder',
-        opened: modelRef(setting, '人影.监控.beijingOptions.districtOpened'),
-        children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.district'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtFillColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.beijingOptions.districtFillOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-        ]
-      },
-      {
-        label: '底线',
-        type: 'folder',
-        opened: modelRef(setting, '人影.监控.beijingOptions.districtBaseOpened'),
-        children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.districtBase'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtBaseColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.beijingOptions.districtBaseOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-          {
-            label: '宽度',
-            value: modelRef(setting, '人影.监控.beijingOptions.districtBaseWidth'),
-            type: 'range',
-            min: 0,
-            max: 5,
-            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
-          },
-        ]
-      },
-      {
-        label: '界线',
-        type: 'folder',
-        opened: modelRef(setting, '人影.监控.beijingOptions.districtLineOpened'),
-        children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.districtLine'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtLineColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.beijingOptions.districtLineOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-          {
-            label: '宽度',
-            value: modelRef(setting, '人影.监控.beijingOptions.districtLineWidth'),
-            type: 'range',
-            min: 0,
-            max: 5,
-            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
-          },
-        ]
-      },
-    ]
-  },
+  // {
+  //   label: '北京行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.beijingOptionsOpened'), children: [
+  //     {
+  //       label: '填充',
+  //       type: 'folder',
+  //       opened: modelRef(setting, '人影.监控.beijingOptions.districtOpened'),
+  //       children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.district'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtFillColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.beijingOptions.districtFillOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '底线',
+  //       type: 'folder',
+  //       opened: modelRef(setting, '人影.监控.beijingOptions.districtBaseOpened'),
+  //       children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.districtBase'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtBaseColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.beijingOptions.districtBaseOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //         {
+  //           label: '宽度',
+  //           value: modelRef(setting, '人影.监控.beijingOptions.districtBaseWidth'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 5,
+  //           arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '界线',
+  //       type: 'folder',
+  //       opened: modelRef(setting, '人影.监控.beijingOptions.districtLineOpened'),
+  //       children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.beijingOptions.districtLine'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.beijingOptions.districtLineColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.beijingOptions.districtLineOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //         {
+  //           label: '宽度',
+  //           value: modelRef(setting, '人影.监控.beijingOptions.districtLineWidth'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 5,
+  //           arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+  //         },
+  //       ]
+  //     },
+  //   ]
+  // },
   {
     label: '江西行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.sichuanOptionsOpened'), children: [
       {
@@ -417,7 +422,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   },
   {
     label: '当前纬度',
-    value:computed(()=>mapStatus.currentPos[1].toFixed(6).padStart(10,'0')),
+    value:computed(()=>mapStatus.currentPos[1].toFixed(6)),
     type:'text'
   },
   {
@@ -434,11 +439,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
 
   {
     label: '系统信息', type: 'folder', opened: modelRef(setting, '人影.监控.systemInfoOpened'), children: [
-      {label: '在线人数', value: modelRef(setting, '在线人数'), type: 'text'},
-      {label: '网络状态', value: modelRef(setting, '网络状态'), type: 'text'},
-      {label: '内存占用', value: modelRef(setting, '内存占用'), type: 'text'},
+      {label: '在线人数', value: modelRef(sysStatus, '在线人数'), type: 'text'},
+      {label: '网络状态', value: modelRef(sysStatus, '网络状态'), type: 'text'},
+      {label: '内存占用', value: modelRef(sysStatus, '内存占用'), type: 'text'},
       {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
-      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6).padStart(10,'0')), type: 'text'},
+      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
       {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},
       {label: '帧率', value: computed(()=>setting.人影.监控.fps), type: 'text'},
       {label: '帧率曲线',value:{

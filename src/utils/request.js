@@ -21,7 +21,7 @@ service.interceptors.request.use(
     //   config.headers['X-Token'] = getToken()
     // }
     config.headers['Authorization'] = localStorage.getItem('access_token')
-    config.headers['database'] = config.headers['database'] || JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_bjry","type":"mysql"})
+    // config.headers['database'] = config.headers['database'] || JSON.stringify({"host":"192.168.0.240","port":3306,"user":"root","password":"mysql","database":"ryplat_bjry","type":"mysql"})
     // config.headers['database'] = config.headers['database'] || JSON.stringify({"host":"192.168.0.135","port":5138,"user":"SYSDBA","password":"mysql","database":"ryplat_bjry","type":"mysql"})
     return config
   },

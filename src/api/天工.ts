@@ -266,6 +266,17 @@ export function 作业状态数据(signal:AbortSignal){
     data:{
       sqls: [
         "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL ORDER BY z.tmBeginApply DESC",
+      ],
+    }
+  })
+}
+export function 历史作业状态数据(signal:AbortSignal){
+  return request({
+    signal,
+    url: '/backend/transaction',
+    method: 'post',
+    data:{
+      sqls: [
         `SELECT z.*,u1.strName AS strATCUnitIDName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' ORDER BY z.tmBeginApply DESC`,//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
@@ -419,9 +430,7 @@ export function 空域申请批准(data){
     data:{
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": "110000000",//北京气象局
-      // "replyUnitID": "510000000",//四川气象局
-      // "replyUnitID": "360000000",//江西气象局
+      "replyUnitID": data.strRelayUnit,
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.workBeginTime),
@@ -463,9 +472,9 @@ export function 空域申请拒绝(data){
     data:{
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": "110000000",//北京气象局
+      // "replyUnitID": "110000000",//北京气象局
       // "replyUnitID": "510000000",//四川气象局
-      // "replyUnitID": "360000000",//江西气象局
+      "replyUnitID": "360000000",//江西气象局
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "delayTimeLen": data.delayTimeLen,

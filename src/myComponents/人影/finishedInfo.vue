@@ -128,8 +128,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import Add from './地面作业完成信息/add.vue'
 import Confirm from './地面作业完成信息/confirm.vue'
 import View from './地面作业完成信息/view.vue'
-import { useSettingStore } from '~/stores/setting'
-const setting = useSettingStore()
+import { useSysStatusStore } from '~/stores/sysStatus'
+const sys = useSysStatusStore()
 import moment from 'moment'
 import {完成信息查询,完成信息查询中一段时间内作业点数据,删除完成信息,删除完成信息确认,通过workID恢复完成信息,修改完成信息,getMask} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,toRaw,computed } from 'vue'
@@ -197,7 +197,7 @@ const zydID = ref(null)
 const globalOptions:any[] = []
 const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
-watch([()=>pageOption.page,()=>pageOption.size,zydID,range,()=>setting.触发完成信息查询],()=>{
+watch([()=>pageOption.page,()=>pageOption.size,zydID,range,()=>sys.触发完成信息查询],()=>{
   if(currentController!=null){
     currentController.abort()
   }

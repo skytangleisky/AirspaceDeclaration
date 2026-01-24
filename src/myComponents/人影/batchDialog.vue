@@ -186,7 +186,11 @@ const handleCheckedPointsChange = (value: CheckboxValueType[]) => {
 const handlePointDialogClose = () => {
   pointDialogVisible.value = false;
 };
+// to do 批量作业申请
 function confirm() {
+  alert('开发中···')
+  console.log('批量作业申请',batchList.value)
+  return
   const data = {
     "workRevID": "990201000",//作业接收单位
     "applyBeginTime": "2025-04-20 14:30:00",//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)

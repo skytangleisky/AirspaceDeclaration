@@ -45,6 +45,8 @@
 import { ElMessage } from 'element-plus';
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
+import {useSysStatusStore} from '~/stores/sysStatus'
+const sys = useSysStatusStore()
 import {注册飞机查询,删除飞机} from "~/api/天工.ts";
 import Add from './add.vue'
 import Edit from './edit.vue'
@@ -65,7 +67,7 @@ const pageOption = reactive({
     size:10,
     total:0,
 })
-watch([()=>pageOption.page,()=>pageOption.size,()=>setting.触发注册飞机查询],([page,size])=>{
+watch([()=>pageOption.page,()=>pageOption.size,()=>sys.触发注册飞机查询],([page,size])=>{
     注册飞机查询({page,size}).then(({data})=>{
         pageOption.total = data.total
         tableData.splice(0,tableData.length,...data.results)

@@ -18,14 +18,16 @@ import Add from './人影飞机/add.vue'
 import Edit from './人影飞机/edit.vue'
 import {注册飞机查询,完成信息查询中一段时间内作业点数据,通过workID删除完成信息和完成信息确认,通过workID恢复完成信息} from '~/api/天工.ts'
 import { watch,reactive,ref,provide,onMounted,onBeforeUnmount,computed,toRaw } from 'vue'
+import {useSysStatusStore} from '~/stores/sysStatus'
+const sys = useSysStatusStore()
 import {useSettingStore} from '~/stores/setting'
+const setting = useSettingStore()
 import { toDMS } from '~/tools'
 const tableRowClassName = ({ row }) => {
   return 'row-selected'
   // return row.selected = true ? 'row-selected' : '';
 };
 import moment from 'moment'
-const setting = useSettingStore()
 const addShow = ref(false)
 const confirmShow = ref(false)
 const viewShow = ref(false)
@@ -40,7 +42,7 @@ const options = reactive<Array<{label:string,value:string,count:number}>>([])
 let currentController: AbortController | null = null;
 import {eventbus} from '~/eventbus'
 // import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
-watch(()=>setting.触发注册飞机查询,()=>{
+watch(()=>sys.触发注册飞机查询,()=>{
   if(currentController!=null){
     currentController.abort()
   }

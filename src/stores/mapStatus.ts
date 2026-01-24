@@ -13,17 +13,17 @@ export const useMapStatusStore = defineStore('mapStatus',{
     pitch: 0,
     bearing: 0,
     //江西
-    // zoom: 6.714612,
-    // center: [
-    //   115.659096,
-    //   27.286140
-    // ],
-    //天安门
-    zoom: 6,
+    zoom: 6.714612,
     center: [
-      116.391330,
-      39.907417
+      115.659096,
+      27.286140
     ],
+    //天安门
+    // zoom: 6,
+    // center: [
+    //   116.391330,
+    //   39.907417
+    // ],
     currentPos: [0,0]
   }),
   persist: true,

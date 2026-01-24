@@ -5,9 +5,9 @@ import { onMounted, onBeforeUnmount } from "vue";
 import { useBus } from "../bus";
 import { eventbus } from "~/eventbus";
 import Sleeper from "../zrender/sleeper";
-import { useSettingStore } from "../../stores/setting";
+import {useSysStatusStore} from '~/stores/sysStatus'
 let countdown = 0
-const setting = useSettingStore();
+const sys = useSysStatusStore();
 let sleeper = new Sleeper();
 let bus = useBus();
 class MyWebSocket extends WebSocket {
@@ -20,13 +20,14 @@ function connect() {
     `${window.location.protocol == "https:" ? "wss:" : "ws:"}//` + window.location.host + "/backend"
   );
   ws.onopen = function () {
-    setting.触发系统菜单数据查询 = Date.now()
-    setting.触发作业状态数据查询 = Date.now()
-    setting.触发语音记录查询 = Date.now()
-    setting.触发注册飞机查询 = Date.now()
-    setting.触发完成信息查询 = Date.now()
-    setting.触发网络信息查询 = Date.now()
-    setting.网络状态 = "已连接"
+    sys.触发系统菜单数据查询 = Date.now()
+    sys.触发作业状态数据查询 = Date.now()
+    sys.触发历史作业状态数据查询 = Date.now()
+    sys.触发语音记录查询 = Date.now()
+    sys.触发注册飞机查询 = Date.now()
+    sys.触发完成信息查询 = Date.now()
+    sys.触发网络信息查询 = Date.now()
+    sys.网络状态 = "已连接"
     ws.send(JSON.stringify({ type: "login", content: Date.now()}));
     const loop = async () => {
       try {
@@ -53,8 +54,8 @@ function connect() {
     switch (obj.type) {
       case "heart2": //客户端延时
         obj.clientTime2 = performance.now();
-        setting.网络状态 = (obj.clientTime2 - obj.clientTime1).toFixed(2) + "ms";
-        setting.内存占用 =
+        sys.网络状态 = (obj.clientTime2 - obj.clientTime1).toFixed(2) + "ms";
+        sys.内存占用 =
           (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2) + "MB";
         break;
       case "heart4": //服务端延时
@@ -62,12 +63,12 @@ function connect() {
         // ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(obj));
         break;
       case "handshake":
-        setting.在线人数 = obj.content;
+        sys.在线人数 = obj.content;
         break;
       case "login":
         break;
       case "logout":
-        setting.在线人数 = obj.content;
+        sys.在线人数 = obj.content;
         break;
       case "目录信息":
         console.log(obj.dirs, obj.files);
@@ -88,18 +89,20 @@ function connect() {
         eventbus.emit('人影-飞机位置',obj.data.aircrafts)
         break;
       case "notify":
-        if(obj.data.tableName=='zyddata'||obj.data.tableName=='zydhisdata'){
-          setting.触发作业状态数据查询 = Date.now()
+        if(obj.data.tableName=='zyddata'){
+          sys.触发作业状态数据查询 = Date.now()
+        }else if(obj.data.tableName=='zydhisdata'){
+          sys.触发历史作业状态数据查询 = Date.now()
         }else if(obj.data.tableName=='audio'){
-          setting.触发语音记录查询 = Date.now()
+          sys.触发语音记录查询 = Date.now()
         }else if(obj.data.tableName=='plane_addr'){
-          setting.触发注册飞机查询 = Date.now()
+          sys.触发注册飞机查询 = Date.now()
         }else if(obj.data.tableName=='overinfo'){
-          setting.触发完成信息查询 = Date.now()
+          sys.触发完成信息查询 = Date.now()
         }else if(obj.data.tableName=='connection'){
-          setting.触发网络信息查询 = Date.now()
+          sys.触发网络信息查询 = Date.now()
         }else if(obj.data.tableName=='subusers'){
-          setting.触发系统菜单数据查询 = Date.now()
+          sys.触发系统菜单数据查询 = Date.now()
         }
         // console.log(obj.data)
         break;
@@ -116,14 +119,14 @@ function connect() {
       ws.immediate = false
       if (!ws.dead) {
         sleeper.abort()
-        setting.在线人数 = "-"
-        setting.网络状态 = "重连中..."
+        sys.在线人数 = "-"
+        sys.网络状态 = "重连中..."
         connect()
       }
     }else{
       countdown = 5
       sleeper.abort()
-      setting.在线人数 = "-"
+      sys.在线人数 = "-"
       if (!ws.dead) {
         reconnect()
       }
@@ -135,10 +138,10 @@ let reconnect = ()=>{
   timer = setTimeout(() => {
     if(countdown<1){
       sleeper = new Sleeper();
-      setting.网络状态 = "重连中..."
+      sys.网络状态 = "重连中..."
       connect();
     }else{
-      setting.网络状态 = `${countdown}秒后重连`
+      sys.网络状态 = `${countdown}秒后重连`
       countdown -= 1;
       reconnect()
     }
@@ -188,9 +191,9 @@ onBeforeUnmount(() => {
   }
   document.removeEventListener('visibilitychange', handler)
   clearInterval(timer)
-  setting.在线人数 = "";
-  setting.网络状态 = "";
-  setting.内存占用 = "";
+  sys.在线人数 = "";
+  sys.网络状态 = "";
+  sys.内存占用 = "";
   dispose();
 });
 function handler(){
@@ -198,7 +201,7 @@ function handler(){
     //页面可见
     if(ws.readyState!==WebSocket.OPEN){
       sleeper = new Sleeper();
-      setting.网络状态 = "重连中..."
+      sys.网络状态 = "重连中..."
       connect();
     }
   }else{

@@ -15,33 +15,10 @@ export function getTodayRecords(){
   })
 }
 export function airspaceApply(data){
-//   {
-//     "strID": "110108091",
-//     "type": "站点",
-//     "strCode": "258",
-//     "strName": "香山",
-//     "strPos": "116114200E39594600N",
-//     "iMaxShotRange": 10000,
-//     "iMaxShotHei": 8000,
-//     "iWeapon": 5,
-//     "iWorkType": 1,
-//     "iShotRangeBegin": 270,
-//     "iShotRangeEnd": 350,
-//     "beginTime": "16:01:42",
-//     "unitName": "北京分区",
-//     "duration": 1,
-//     "iconImage": "projectile-white",
-//     "v-51ca6517": ""
-// }
-// console.log(data)
   let pos = fromDMS(data.strPos)
   let targetData = {
     "zydID": data.strID,
-    "workRevID": "990201000",//北京分区对应的ID
-    // "workRevID": "990302000",//陕西分区对应的ID
-    // "workRevID": "990701000",//西南空管中心对应的ID
-    // "workRevID": "990301000",//福州空管中心对应的ID
-    // "workRevID": "990703000",//甘肃
+    "workRevID": data.strMgrUnit,
     "longitude": pos[0].toString(),
     "latitude": pos[1].toString(),
     "shootRange": data.iMaxShotRange,

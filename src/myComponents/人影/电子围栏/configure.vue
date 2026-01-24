@@ -87,8 +87,8 @@ const form = reactive({
   uploadProgress:0,
 })
 provide('form',form)
-import {useSettingStore} from '~/stores/setting'
-const setting = useSettingStore()
+import { useSysStatusStore } from '~/stores/sysStatus'
+const sys = useSysStatusStore()
 import { computed, ref, reactive, watch, provide, onMounted } from 'vue'
 const getType = computed(()=>{
   return (status:number)=>{
@@ -142,9 +142,9 @@ const filterTableData = computed(() =>
 
 const tableData: Item[] = reactive([])
 watch([currentPage4,pageSize4,range],()=>{
-  setting.触发网络信息查询 = Date.now()
+  sys.触发电子围栏信息查询 = Date.now()
 })
-watch(()=>setting.触发网络信息查询,()=>{
+watch(()=>sys.触发电子围栏信息查询,()=>{
   fetchList({page:currentPage4.value,size:pageSize4.value,range:range.value}).then(res=>{
     total.value = res.data.total
     tableData.splice(0,tableData.length,...res.data.results)

@@ -20,7 +20,7 @@
         <el-form-item label="顶高">
           <el-input v-model="form.name" />
         </el-form-item>
-        <fieldset style="margin-bottom:20px;">
+        <fieldset style="margin-bottom:20px;border-radius:4px;">
           <legend>时间结构</legend>
             <el-form-item label="类型">
               <el-input v-model="form.name" />
@@ -55,7 +55,7 @@
         </el-form-item>
       </div>
     </el-form>
-    <fieldset class="right">
+    <fieldset class="right" style="border-radius:4px;">
       <legend>多边形几何信息</legend>
     </fieldset>
   </div>
