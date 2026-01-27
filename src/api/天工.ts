@@ -1188,28 +1188,73 @@ export function 红外云图(){
   })
 }
 //全国拼图V3.0：组合反射率
+// export function 组合反射率(){
+//   return new Promise((resolve,reject)=>{
+//     const setting = useSettingStore()
+//     setting.人影.监控.组合反射率时间 = '加载时间列表'
+//     request({
+//       url:'/backend/zcgk/api/v1/rada/radarV3Product/findDateList',
+//       method:'get',
+//       params:{
+//         radarType:'ACHN_CREF',
+//         imgType:'RADA_L3_MST_CREF_QC',
+//         order:'desc'
+//       }
+//     }).then(({data})=>{
+//       if(data.data.dateList.length>0){
+//         setting.人影.监控.组合反射率时间 = '加载雷达数据'
+//         request({
+//           url:'/backend/zcgk/api/v1/rada/radarV3Product/getProduct',
+//           method:'get',
+//           params:{
+//             fileName:data.data.dateList[0].fileName,
+//             productType:'RADA_L3_MST_CREF_QC',
+//             smooth:false
+//           }
+//         }).then(({data:tmpData})=>{
+//           setting.人影.监控.组合反射率时间 = data.data.dateList[0].title
+//           resolve(tmpData)
+//         }).catch(e=>{
+//           setting.人影.监控.组合反射率时间 = e.message
+//           reject(e)
+//         })
+//       }else{
+//         setting.人影.监控.组合反射率时间 = '暂无组合反射率数据'
+//         reject('暂无组合反射率')
+//       }
+//     }).catch(e=>{
+//       reject(e)
+//     })
+//   })
+// }
 export function 组合反射率(){
   return new Promise((resolve,reject)=>{
     const setting = useSettingStore()
     setting.人影.监控.组合反射率时间 = '加载时间列表'
     request({
-      url:'/backend/zcgk/api/v1/rada/radarV3Product/findDateList',
+      url:'/cdb/api/v1/rada/radarV3Product/findDateList',
       method:'get',
       params:{
+        date:moment().format('YYYYMMDD'),
         radarType:'ACHN_CREF',
         imgType:'RADA_L3_MST_CREF_QC',
-        order:'desc'
+        elevation:'',
+        order:'desc',
+        sdpTime:1769504147500,
+        dataCode:'RADA_L3_MST_CREF_QC',
       }
     }).then(({data})=>{
       if(data.data.dateList.length>0){
         setting.人影.监控.组合反射率时间 = '加载雷达数据'
         request({
-          url:'/backend/zcgk/api/v1/rada/radarV3Product/getProduct',
+          url:'/cdb/api/v1/rada/radarV3Product/getProduct',
           method:'get',
           params:{
-            fileName:data.data.dateList[0].fileName,
             productType:'RADA_L3_MST_CREF_QC',
-            smooth:false
+            fileName:data.data.dateList[0].fileName,
+            smooth:false,
+            sdpTime:1769504219097,
+            dataCode:'RADA_L3_MST_CREF_QC'
           }
         }).then(({data:tmpData})=>{
           setting.人影.监控.组合反射率时间 = data.data.dateList[0].title

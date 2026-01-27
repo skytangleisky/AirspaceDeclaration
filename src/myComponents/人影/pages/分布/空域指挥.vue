@@ -23,9 +23,9 @@
             <el-checkbox v-model="setting.人影.监控.routeLine">
                 <div style="display: flex;align-items: center;"><svg-icon name="route"></svg-icon>航路航线</div>
             </el-checkbox>
-            <el-checkbox v-model="setting.人影.监控.北京保障圈">
+            <!-- <el-checkbox v-model="setting.人影.监控.北京保障圈">
                 <div style="display: flex;align-items: center;"><div class="北京保障圈"></div>北京保障圈</div>
-            </el-checkbox>
+            </el-checkbox> -->
         </div>
     </div>
 </template>

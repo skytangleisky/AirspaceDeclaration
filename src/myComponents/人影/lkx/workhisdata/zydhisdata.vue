@@ -110,12 +110,12 @@ function handleTimeChange(){
     // }
 }
 
-var apiZydName:string[]=['全部']
+var apiZydName:string[]=reactive(['全部'])
 //获取作业点名称
 onMounted(()=>{
     getZydName()
     .then((response)=>{
-        apiZydName = apiZydName.concat(response.data.results.map((item: ZydItem) => item.strName))
+        apiZydName.splice(0,apiZydName.length,'全部',...response.data.results.map((item: ZydItem) => item.strName))
     })
 })
 

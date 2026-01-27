@@ -161,8 +161,10 @@ export default defineConfig({
         secure:false,
       },
       '/cdb':{
-        agent: bj_agent,
-        target:'http://10.225.6.188:3141',
+        // agent: bj_agent,
+        // target:'http://10.225.6.188:3141',
+        agent,
+        target:'http://10.194.22.142:30141',
         changeOrigin:true,
         secure:false,
       },

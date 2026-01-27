@@ -6,10 +6,10 @@
                 <div class="distributionClass"></div>
                 <div class="triangleClass"></div>
             </div>
-            <div :class="`map-tool-btn ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick">
+            <!-- <div :class="`map-tool-btn ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick">
                 <div class="productsClass"></div>
                 <div class="triangleClass"></div>
-            </div>
+            </div> -->
             <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick">
                 <div class="toolClass"></div>
                 <div class="triangleClass"></div>
@@ -432,27 +432,31 @@
             //     }
             //   ]
             // },
+            // {
+            //     label: '红外云图',
+            //     value: modelRef(setting, '人影.监控.红外云图'),
+            //     type: 'checkbox'
+            // }, {
+            //     label: 'CMPAS降水融合3km',
+            //     value: modelRef(setting, '人影.监控.CMPAS降水融合3km'),
+            //     type: 'checkbox'
+            // },
             {
-                label: '红外云图',
-                value: modelRef(setting, '人影.监控.红外云图'),
-                type: 'checkbox'
-            }, {
-                label: 'CMPAS降水融合3km',
-                value: modelRef(setting, '人影.监控.CMPAS降水融合3km'),
-                type: 'checkbox'
-            }, {
                 label: '组合反射率',
                 value: modelRef(setting, '人影.监控.组合反射率'),
                 type: 'checkbox'
-            }, {
-                label: '睿图雷达产品',
-                value: modelRef(setting, '人影.监控.睿图雷达'),
-                type: 'checkbox'
-            }, {
-                label: '真彩图',
-                value: modelRef(setting, '人影.监控.真彩图'),
-                type: 'checkbox'
-            }, {
+            },
+            // {
+            //     label: '睿图雷达产品',
+            //     value: modelRef(setting, '人影.监控.睿图雷达'),
+            //     type: 'checkbox'
+            // },
+            // {
+            //     label: '真彩图',
+            //     value: modelRef(setting, '人影.监控.真彩图'),
+            //     type: 'checkbox'
+            // },
+            {
                 label: '航路航线',
                 value: modelRef(setting, '人影.监控.routeLine'),
                 type: 'checkbox'
@@ -480,11 +484,13 @@
                 label: '二次雷达信号',
                 value: modelRef(setting, '人影.监控.plane'),
                 type: 'checkbox'
-            }, {
-                label: 'ADS-B信号',
-                value: modelRef(setting, '人影.监控.adsb'),
-                type: 'checkbox'
-            }, {
+            },
+            // {
+            //     label: 'ADS-B信号',
+            //     value: modelRef(setting, '人影.监控.adsb'),
+            //     type: 'checkbox'
+            // },
+            {
                 label: '飞机标牌',
                 value: modelRef(setting, '人影.监控.planeLabel'),
                 type: 'checkbox'
@@ -575,18 +581,20 @@
                 click() {
                     setting.显示全国行政区划配置 = true
                 }
-            }, // {
+            },
+            // {
             //   label: '烟炉控制', type: 'button', click() {
             //     setting.显示烟炉 = true
             //   }
             // },
+            // {
+            //     label: '火箭架配置',
+            //     type: 'button',
+            //     click() {
+            //         setting.火箭架配置 = true
+            //     }
+            // },
             {
-                label: '火箭架配置',
-                type: 'button',
-                click() {
-                    setting.火箭架配置 = true
-                }
-            }, {
                 label: '批复率统计',
                 type: 'button',
                 click() {
