@@ -16,8 +16,8 @@ const option = {
   maxSockets: 256,       // 最大并发 socket 数
   maxFreeSockets: 32     // 空闲 socket 上限
 }
-const agent = new HttpsProxyAgent('http://192.168.0.141:5100',option)
-const bj_agent = new HttpsProxyAgent('http://192.168.0.141:1100',option)
+const agent = new HttpsProxyAgent('http://127.0.0.1:5100',option)
+const bj_agent = new HttpsProxyAgent('http://127.0.0.1:1100',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',

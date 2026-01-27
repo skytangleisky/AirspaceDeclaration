@@ -142,9 +142,9 @@ onMounted(async()=>{
       id: "15",
       label: '四川',
       children: (res.data.results as any[]).map((item)=>{
-        setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
+        const district = item.adcode
         return {
-          id:item.adcode.substring(0,4),
+          id:district,
           label:item.name,
         }
       })

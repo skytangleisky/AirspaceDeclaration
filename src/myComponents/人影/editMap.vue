@@ -96,7 +96,7 @@ import Overview from '~/myComponents/人影/弹药概况/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
-let 作业点原始数据 = new Array()//存放作业点最原始的数据
+let 作业点原始数据 = reactive(new Array())//存放作业点最原始的数据
 import closeUrl from '~/assets/close.svg?raw'
 async function 批量烟炉操作(){
   // setting.显示烟炉 = true
@@ -1646,7 +1646,7 @@ onMounted(async() => {
         console.log(err)
       })
     }, 3*60*1e3)
-    // axios.get('/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{
+    // axios.get('/backend/cdb/api/v1/rada/radarV3Product/getProduct?fileName=Z_RADA_C_BABJ_20250701120620_P_DOR_ACHN_CREF_20250701_120000.bin_EPSG4326_CR.png&productType=RADA_L3_MST_CREF_QC&smooth=false&sdpTime=1751371914550').then(({data})=>{
     //   const extent = data.data.extent.split(',').map(Number)
     //   console.log(data)
     //   map.addLayer({
@@ -2724,7 +2724,7 @@ onMounted(async() => {
     await 作业点().then(async(res) => {
       if(!map)
         return
-      作业点原始数据 = res.data.results;
+      作业点原始数据.splice(0,作业点原始数据.length,...res.data.results);
       dialogOptions.menus = JSON.parse(JSON.stringify(作业点原始数据))
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
@@ -4555,6 +4555,12 @@ onMounted(async() => {
     const holes:any = []
     for(let item of setting.人影.监控.selectedRegion){
       const res = await axios.get(`/backend/region/${item}.json`)
+      if(map.getLayer(`${item}.json`)){
+        map.removeLayer(`${item}.json`)
+      }
+      if(map.getSource(`${item}.json`)){
+        map.removeSource(`${item}.json`)
+      }
       map.addLayer({
         'id': `${item}.json`,
         'type': 'line',
@@ -4573,20 +4579,25 @@ onMounted(async() => {
           'line-opacity':1,
         }
       })
-      res.data.features.forEach((feature:any)=>{
-        feature.geometry.coordinates.forEach((item:any)=>{
-          const points = item[0]
-          points.push(points[0])
-          holes.push(points)
-        })
-      })
+      holes.push(...res.data.features)
     }
-    const holePolygons = holes.map((coords:any) =>
-      turf.polygon([coords])
-    )
-    let mergedHole = holePolygons[0]
-    for (let i = 1; i < holePolygons.length; i++) {
-      mergedHole = turf.union(mergedHole, holePolygons[i])
+    let outer:any = turf.polygon([
+      [
+        [-180, -90],
+        [-180, 90],
+        [180, 90],
+        [180, -90],
+        [-180, -90],
+      ]
+    ])
+    holes.forEach((feature:any)=>{
+      outer = turf.difference(outer, turf.buffer(feature,0))
+    })
+    if(map.getLayer('json_mask')){
+      map.removeLayer('json_mask')
+    }
+    if(map.getSource('json_mask')){
+      map.removeSource('json_mask')
     }
     map.addLayer({
       'id': `json_mask`,
@@ -4595,26 +4606,7 @@ onMounted(async() => {
         "type":"geojson",
         "data": {
           "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                  [
-                    [-180, -90],
-                    [-180, 90],
-                    [180, 90],
-                    [180, -90],
-                    [-180, -90],
-                  ],
-                  ...mergedHole.geometry.coordinates.map((item:any)=>{
-                    return item[0]
-                  })
-                ]
-              }
-            }
-          ]
+          "features": [outer]
         }
       },
       'layout': {
@@ -4815,97 +4807,86 @@ function processTileData(tiles = new Array<string>()) {
     })
   );
 }
-watch(()=>setting.人影.监控.selectedRegion,async()=>{
+
+watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
+  oldValue.forEach(item=>{
+    if(map.getLayer(`${item}.json`)){
+      map.removeLayer(`${item}.json`)
+    }
+    if(map.getSource(`${item}.json`)){
+      map.removeSource(`${item}.json`)
+    }
+  })
   const holes:any = []
-    for(let item of setting.人影.监控.selectedRegion){
-      const res = await axios.get(`/backend/region/${item}.json`)
-      if(map.getLayer(`${item}.json`)){
-        map.removeLayer(`${item}.json`)
-      }
-      if(map.getSource(`${item}.json`)){
-        map.removeSource(`${item}.json`)
-      }
-      map.addLayer({
-        'id': `${item}.json`,
-        'type': 'line',
-        'source': {
-          "type":"geojson",
-          "data": res.data
-        },
-        'layout': {
-          'visibility':'visible',
-          'line-join':'round',
-          'line-cap':'round',
-        },
-        'paint': {
-          'line-color': '#fff',
-          'line-width': 5,
-          'line-opacity':1,
-        }
-      })
-      res.data.features.forEach((feature:any)=>{
-        feature.geometry.coordinates.forEach((item:any)=>{
-          const points = item[0]
-          points.push(points[0])
-          holes.push(points)
-        })
-      })
+  for(let item of setting.人影.监控.selectedRegion){
+    const res = await axios.get(`/backend/region/${item}.json`)
+    if(map.getLayer(`${item}.json`)){
+      map.removeLayer(`${item}.json`)
     }
-    const holePolygons = holes.map((coords:any) =>
-      turf.polygon([coords])
-    )
-    let mergedHole = holePolygons[0]
-    for (let i = 1; i < holePolygons.length; i++) {
-      mergedHole = turf.union(mergedHole, holePolygons[i])
-    }
-    if(map.getLayer('json_mask')){
-      map.removeLayer('json_mask')
-    }
-    if(map.getSource('json_mask')){
-      map.removeSource('json_mask')
+    if(map.getSource(`${item}.json`)){
+      map.removeSource(`${item}.json`)
     }
     map.addLayer({
-      'id': `json_mask`,
-      'type': 'fill',
+      'id': `${item}.json`,
+      'type': 'line',
       'source': {
         "type":"geojson",
-        "data": {
-          "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                  [
-                    [-180, -90],
-                    [-180, 90],
-                    [180, 90],
-                    [180, -90],
-                    [-180, -90],
-                  ],
-                  ...mergedHole.geometry.coordinates.map((item:any)=>{
-                    return item[0]
-                  })
-                ]
-              }
-            }
-          ]
-        }
+        "data": res.data
       },
       'layout': {
         'visibility':'visible',
+        'line-join':'round',
+        'line-cap':'round',
       },
       'paint': {
-        'fill-color':'rgba(0,0,0,0.6)',
-        'fill-outline-color':'transparent'
+        'line-color': '#fff',
+        'line-width': 5,
+        'line-opacity':1,
       }
     })
+    holes.push(...res.data.features)
+  }
+  let outer:any = turf.polygon([
+    [
+      [-180, -90],
+      [-180, 90],
+      [180, 90],
+      [180, -90],
+      [-180, -90],
+    ]
+  ])
+  holes.forEach((feature:any)=>{
+    outer = turf.difference(outer, turf.buffer(feature,0))
+  })
+  if(map.getLayer('json_mask')){
+    map.removeLayer('json_mask')
+  }
+  if(map.getSource('json_mask')){
+    map.removeSource('json_mask')
+  }
+  map.addLayer({
+    'id': `json_mask`,
+    'type': 'fill',
+    'source': {
+      "type":"geojson",
+      "data": {
+        "type": "FeatureCollection",
+        "features": [outer]
+      }
+    },
+    'layout': {
+      'visibility':'visible',
+    },
+    'paint': {
+      'fill-color':'rgba(0,0,0,0.6)',
+      'fill-outline-color':'transparent'
+    }
+  })
 },{deep:true})
-watch(()=>setting.人影.监控.checkedKeys,(val)=>{
+watch([()=>setting.人影.监控.checkedKeys,作业点原始数据],([val])=>{
   dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){
-      if(item.strID.startsWith(val[i])){
+      if(item.strID.startsWith(val[i].substring(0,4))){
         return true
       }
     }
@@ -4913,7 +4894,7 @@ watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   });
   const features = zydFeaturesData.features.filter((feature:any)=>{
     for(let i=0;i<val.length;i++){
-      if(feature.properties.strID.startsWith(val[i])){
+      if(feature.properties.strID.startsWith(val[i].substring(0,4))){
         return true
       }
     }
