@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                             <div class="item-right-top-item">
-                                <template v-if="!item.bAnswerAccept">
+                                <template v-if="!item.bAnswerValid">
                                     <div>申请时间</div>
                                     <div class="top-item-value">
                                         {{
@@ -71,7 +71,7 @@
                                 </template>
                             </div>
                             <div class="item-right-top-item">
-                                <template v-if="!item.bAnswerAccept">
+                                <template v-if="!item.bAnswerValid">
                                     <div>申请时长</div>
                                     <div class="top-item-value">
                                         {{ item.iApplyTimeLen }}秒
@@ -122,7 +122,7 @@
                                 )}`"
                                 class="item-right-bottom-item"
                             >
-                                <template v-if="!item.bAnswerAccept">
+                                <template v-if="!item.bAnswerValid">
                                     批复
                                 </template>
                                 <template v-else>

@@ -42,7 +42,7 @@
       <div class="menu" ref="stationMenuRef" @mousedown.stop>
         <ul>
           <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
-          <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
+          <!-- <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li> -->
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
@@ -54,7 +54,7 @@
           <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
-          <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
+          <!-- <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li> -->
           <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
           <!-- <li>查看作业点信息</li> -->
           <!-- <li>人工批复</li>
