@@ -12,12 +12,11 @@ export function hasPermission(permissions: string[]) {
   const set = new Set(permissions);
   const recurse = (list: any[]): boolean =>
     list.some(item =>
-      (item.checked && set.has(item.name)) ||
+      ((item.checked||item.indeterminate) && set.has(item.name)) ||
       (Array.isArray(item.children) && recurse(item.children))
     );
   return recurse(setting.permissions);
 }
-
 export function fromDMS(v:string):[number,number]{
   if(v.indexOf('E')<v.indexOf('N')){
     let lng = v.substring(0, v.indexOf("E")).padStart(7,'0');
