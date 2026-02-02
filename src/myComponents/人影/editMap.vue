@@ -421,49 +421,49 @@ function getUavBearing(route, traveled) {
 
 const dest = destination(115.692733,28.758183,110.392822265625,5)
 const pos = [dest[0],dest[1],0]
-const textData = [
-  {
-    "offset": [
-      100,
-      0
-    ],
-    "textColor":[255,255,0,255],
-    "uiTrackNo": 593,
-    "uiAdsAddress": 0,
-    "ubyTrackState": 1,
-    "ubyTrackQuality": 0,
-    "fLongitude": 115.692733,
-    "fLatitude": 28.758183,
-    "ubyAltitudeMCValid": 0,
-    "iAltitudeMC": 0,
-    "ubyAltitudeADSValid": 1,
-    "iAltitudeADS": 2000,
-    "unSsrCode": 202,
-    "ubyRadarDataType": 2,
-    "ubySim": 0,
-    "ubyFixTarget": 0,
-    "ubySpiFlag": 0,
-    "ubyEmergencyType": 0,
-    "fSpeedZ": -11.520557403564453,
-    "fSpeed": 5,
-    "fHeading": 110.392822265625,
-    "ubyFlyingState": 0,
-    "ubyEmitterCat": 5,
-    "strCallCode": "",
-    "trajectory": [
-      pos,pos
-    ],
-    "trail":[pos],
-    "lastTime": 1763036518493,
-    "label": "0001\n00005 0018\n120551394E41095547N",
-    "显示标牌":true,
-    "显示尾迹":true,
-    "显示速度矢量线":true,
-    "显示航迹圈":true,
-    "显示经纬度":true,
-    "显示历史轨迹":true,
-  }
-]
+const textData = new Array(
+  // {
+  //   "offset": [
+  //     100,
+  //     0
+  //   ],
+  //   "textColor":[255,255,0,255],
+  //   "uiTrackNo": 593,
+  //   "uiAdsAddress": 0,
+  //   "ubyTrackState": 1,
+  //   "ubyTrackQuality": 0,
+  //   "fLongitude": 115.692733,
+  //   "fLatitude": 28.758183,
+  //   "ubyAltitudeMCValid": 0,
+  //   "iAltitudeMC": 0,
+  //   "ubyAltitudeADSValid": 1,
+  //   "iAltitudeADS": 2000,
+  //   "unSsrCode": 202,
+  //   "ubyRadarDataType": 2,
+  //   "ubySim": 0,
+  //   "ubyFixTarget": 0,
+  //   "ubySpiFlag": 0,
+  //   "ubyEmergencyType": 0,
+  //   "fSpeedZ": -11.520557403564453,
+  //   "fSpeed": 5,
+  //   "fHeading": 110.392822265625,
+  //   "ubyFlyingState": 0,
+  //   "ubyEmitterCat": 5,
+  //   "strCallCode": "",
+  //   "trajectory": [
+  //     pos,pos
+  //   ],
+  //   "trail":[pos],
+  //   "lastTime": 1763036518493,
+  //   "label": "0001\n00005 0018\n120551394E41095547N",
+  //   "显示标牌":true,
+  //   "显示尾迹":true,
+  //   "显示速度矢量线":true,
+  //   "显示航迹圈":true,
+  //   "显示经纬度":true,
+  //   "显示历史轨迹":true,
+  // }
+)
 const 飞机菜单数据 = ref<any>({
   "显示标牌":true,
   "显示尾迹":true,

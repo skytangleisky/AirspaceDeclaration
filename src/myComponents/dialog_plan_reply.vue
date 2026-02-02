@@ -40,7 +40,7 @@
                     <el-input
                         disabled
                         name="空管单位"
-                        value="福州分区"
+                        :value="data.strMgrUnitName"
                         @mousedown.stop
                     />
                 </div>
