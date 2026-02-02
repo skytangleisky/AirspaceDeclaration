@@ -87,7 +87,7 @@ export default defineConfig({
   resolve: {
     alias: {
       "~": fileURLToPath(new URL("./src", import.meta.url)),
-      // pinia: `${__dirname}/packages/pinia/src/index.ts`,
+      pinia: `${__dirname}/packages/pinia/src/index.ts`,
       '@mapbox/mapbox-gl-draw':path.resolve(__dirname, 'packages/mapbox-gl-draw'),
       marchingsquares:path.resolve(__dirname, 'packages/marchingsquares.js/src/main.js'),
     },
