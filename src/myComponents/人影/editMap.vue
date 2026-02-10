@@ -2295,7 +2295,8 @@ onMounted(async() => {
   let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
-    await axios.get(`/backend/region/${user.strUnitID.substring(0,6)}_full.json`).then(res=>{
+    const adcode = user.strUnitID.substring(0,6)
+    await axios.get(`/backend/region/${adcode+(adcode.endsWith('00')?'_full.json':'.json')}`).then(res=>{
       map.addLayer({
         'id': '360000_full.json_fill',
         'type': 'fill',
