@@ -71,7 +71,7 @@ export default defineConfig({
     __DEV__: true,
     __TEST__: true,
     __BROWSER__: true,
-    __USE_DEVTOOLS__: false,
+    __USE_DEVTOOLS__: true,
     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:true,
     process: {
       env: {

@@ -51,6 +51,8 @@
   </div>
 </template>
 <script lang="ts" setup>
+import { useSysStatusStore } from "~/stores/sysStatus";
+const sys = useSysStatusStore()
 import { hasPermission } from "~/tools";
 import Work from './work.vue'
 import { defineAsyncComponent, reactive, ref, watch, computed } from "vue";
@@ -59,7 +61,6 @@ const Transport = defineAsyncComponent(() => import("./transport.vue"));
 const FinishedInfo = defineAsyncComponent(() => import("./finishedInfo.vue"));
 const PlaneInfo = defineAsyncComponent(() => import("./planeInfo.vue"));
 import { useSettingStore } from "../../stores/setting";
-const setting = useSettingStore()
 // top按钮渲染数据
 const tabList = reactive([
   {
@@ -95,7 +96,7 @@ const tabList = reactive([
     permissions: ['773bffb5-1507-4e8b-a16c-bcb584882f87'],
     label: "人影飞机",
     icon: "plane",
-    total: computed(()=>setting.人影.监控.需要重点关注的飞机.length),
+    total: computed(()=>sys.需要重点关注的飞机.length),
     hideBadge:false,
   },
 ]);

@@ -3,7 +3,7 @@ import request from '../utils/request'
 import { useSettingStore } from '~/stores/setting'
 import { wrapKeys } from '~/tools'
 import { v4 as uuidv4 } from 'uuid';
-
+import { useUserStore } from '~/stores/user';
 export function 机场(){
   return request({
     url: '/backend/db/default',
@@ -146,6 +146,15 @@ export function 作业点(){
   //     ]
   //   }
   // })
+  const user = useUserStore()
+  let condition = '%%'
+  if(user.strUnitID.endsWith('0000000')){
+    condition = user.strUnitID.substring(0,2)+'%';
+  }else if(user.strUnitID.endsWith('00000')){
+    condition = user.strUnitID.substring(0,4)+'%';
+  }else if(user.strUnitID.endsWith('000')){
+    condition = user.strUnitID.substring(0,6)+'%';
+  }
   return request({
     url: '/backend/db/default',
     method: 'post',
@@ -159,7 +168,7 @@ export function 作业点(){
           "relation": "AND",
           "field": "z.strID",
           "relationship": "LIKE",
-          "condition": getMask()
+          "condition": condition
         },
         // {
         //   "relation": "AND",
@@ -1800,25 +1809,25 @@ GROUP BY
     }
   })
 }
-
-export function getSubRegion(adcode = '620000'){
+export function getSubRegion(adcode = '62'){
   return request({
     url:'/backend/db/default',
     method:'post',
     headers:{
-      table:'map_border_info',
+      table:`map_border_info m left join zydpara z on left(z.strID, ${adcode.length+2}) = left(m.adcode, ${adcode.length+2})`,
     },
     data:{
-      select:['name','adcode','parent_adcode'],
+      select:['m.name','m.adcode','COUNT(z.strID) AS cnt'],
       where:[
         {
           "relation": "AND",
-          "field": "parent_adcode",
+          "field": "m.parent_adcode",
           "relationship": '=',
-          "condition": adcode
+          "condition": adcode.padEnd(6,'0')
         }
       ],
-      orderby:['adcode asc'],
+      groupby:['m.adcode','m.name'],
+      orderby:['m.adcode asc'],
       "distinct": false,
       "offset": 0,
       "limit": 0

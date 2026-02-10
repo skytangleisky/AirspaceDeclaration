@@ -367,21 +367,22 @@ const cancel = () => {
 // let timer:number;
 onMounted(() => {
     data.value.beginTm = moment().format('YYYY-MM-DD HH:mm:ss')
-    作业点().then((res) => {
-        const results = res.data.results;
-        zydOptions.splice(0, zydOptions.length);
-        results.forEach((item) => {
-            zydOptions.push({label:item.strID,value:item.strID,name:item.strName,strPos:item.strPos});
-        });
-        results[0]&&(data.value.strID = results[0].strID);
-        const item = zydOptions.find((item:any)=>item.value==data.value.strID) as any
-        strName.value = item?.name || ""
-        strPos.value = item?.strPos || ""
-    });
     // timer = setInterval(()=>{
     //   props.data.beginTime = moment().format('HH:mm:ss')
     // },1000)
 });
+import { useSysStatusStore } from '~/stores/sysStatus'
+const sys = useSysStatusStore()
+watch(()=>sys.作业点原始数据,(results)=>{
+    zydOptions.splice(0, zydOptions.length);
+    results.forEach((item) => {
+        zydOptions.push({label:item.strID,value:item.strID,name:item.strName,strPos:item.strPos});
+    });
+    results[0]&&(data.value.strID = results[0].strID);
+    const item = zydOptions.find((item:any)=>item.value==data.value.strID) as any
+    strName.value = item?.name || ""
+    strPos.value = item?.strPos || ""
+},{immediate:true})
 onBeforeUnmount(() => {
     // clearInterval(timer)
 });

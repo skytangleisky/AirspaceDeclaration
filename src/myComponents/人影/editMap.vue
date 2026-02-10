@@ -856,7 +856,6 @@ import Overview from '~/myComponents/人影/弹药概况/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
 const mettingList = csv2list(mettingData)
-let 作业点原始数据 = new Array()//存放作业点最原始的数据
 import closeUrl from '~/assets/close.svg?raw'
 async function 批量烟炉操作(){
   // setting.显示烟炉 = true
@@ -1010,6 +1009,8 @@ function wgs84togcj02(lng,lat){//不做纠偏
 }
 import { useStationStore } from "~/stores/station";
 const station = useStationStore();
+import {useUserStore} from "~/stores/user";
+const user = useUserStore()
 import { useSettingStore,formatUrl } from "~/stores/setting.js";
 import { useSysStatusStore } from "~/stores/sysStatus"
 const sys = useSysStatusStore()
@@ -1431,8 +1432,8 @@ const resize = () => {
   map && map.resize();
 };
 const planProps = reactive({
-  当前作业进度: new Array<planDataType>(),
-  今日作业记录: new Array<planDataType>(),
+  当前作业进度: new Array(),
+  今日作业记录: new Array(),
 });
 const props = withDefaults(
   defineProps<{
@@ -1503,7 +1504,7 @@ const mousemoveFunc = (e:any)=>{
     hoverObject = null
   }
   mapStatus.currentPos = [e.lngLat.lng,e.lngLat.lat]
-  setting.人影.监控.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
+  mapStatus.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
 const zoomFunc = () => {
   mapStatus.zoom = map.getZoom()
@@ -1561,7 +1562,7 @@ function 处理飞机实时位置2(d:Array<{
   "strCallCode": ""
 }>){
   const tmp = d.filter(item=>{
-    for(let plane of setting.人影.监控.注册飞机数据){
+    for(let plane of sys.注册飞机数据){
       if(item.unSsrCode == Number(plane.iAddress)){
         return true
       }
@@ -1570,8 +1571,8 @@ function 处理飞机实时位置2(d:Array<{
   })
 
   for(let j=0;j<tmp.length;j++){
-    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-      const item = setting.人影.监控.需要重点关注的飞机[i]
+    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+      const item = sys.需要重点关注的飞机[i]
       if(item.iAddress == tmp[j].unSsrCode){
         tmp[j].icon = 'airplaneMock'
       }
@@ -1586,8 +1587,8 @@ function 处理飞机实时位置2(d:Array<{
     //   }
     // }
     // if(!has){
-    //   for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-    //     const item = setting.人影.监控.需要重点关注的飞机[i]
+    //   for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+    //     const item = sys.需要重点关注的飞机[i]
     //     if(item.iAddress == tmp[j].unSsrCode){
     //       tmp[j].icon = 'airplaneMock';
     //       console.log(tmp[j].icon)
@@ -1617,8 +1618,8 @@ function 处理飞机实时位置2(d:Array<{
       }
     }
     if(!has){
-      for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-        const item = setting.人影.监控.需要重点关注的飞机[i]
+      for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+        const item = sys.需要重点关注的飞机[i]
         if(item.iAddress == tmp[j].unSsrCode){
           tmp[j].icon = 'airplaneMock';
           console.log(tmp[j].icon)
@@ -1648,8 +1649,8 @@ function 处理飞机实时位置2(d:Array<{
   //飞机航迹开始
   // for(let j=0;j<d.length;j++){
 
-  //   for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-  //     const item = setting.人影.监控.需要重点关注的飞机[i]
+  //   for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+  //     const item = sys.需要重点关注的飞机[i]
   //     if(item.iAddress == d[j].unSsrCode){
   //       d[j].icon = 'airplaneMock'
   //     }
@@ -1688,10 +1689,10 @@ function 处理飞机实时位置2(d:Array<{
     // if(d[j].unSsrCode==0)continue;
 
     d[j].label = d[j].strCallCode
-    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-      const item = setting.人影.监控.需要重点关注的飞机[i]
+    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+      const item = sys.需要重点关注的飞机[i]
       if(item.iAddress == d[j].unSsrCode){
-        d[j].label = setting.人影.监控.需要重点关注的飞机[i].strCallCode
+        d[j].label = sys.需要重点关注的飞机[i].strCallCode
       }
     }
 
@@ -1730,8 +1731,8 @@ function 处理飞机实时位置2(d:Array<{
       data.features.splice(k--,1)
     }
   }
-  setting.人影.监控.飞机数据.splice(0,setting.人影.监控.飞机数据.length,...data.features)
-  setting.人影.监控.planeCount = data.features.length
+  sys.飞机数据.splice(0,sys.飞机数据.length,...data.features)
+  sys.planeCount = data.features.length
   map?.getSource("飞机原数据")?.setData(data);
 }
 function 处理飞机实时位置(d:Array<{
@@ -1758,9 +1759,8 @@ function 处理飞机实时位置(d:Array<{
   "ubyEmitterCat": 5,
   "strCallCode": ""
 }>){
-
   const tmp = d.filter(item=>{
-    for(let plane of setting.人影.监控.注册飞机数据){
+    for(let plane of sys.注册飞机数据){
       if(item.unSsrCode == Number(plane.iAddress)){
         return true
       }
@@ -1768,8 +1768,8 @@ function 处理飞机实时位置(d:Array<{
     return false
   })
   for(let j=0;j<tmp.length;j++){
-    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-      const item = setting.人影.监控.需要重点关注的飞机[i]
+    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+      const item = sys.需要重点关注的飞机[i]
       if(item.iAddress == tmp[j].unSsrCode){
         tmp[j].icon = 'airplaneMock'
       }
@@ -1825,8 +1825,8 @@ function 处理飞机实时位置(d:Array<{
     }
     const point = destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)
     const targetData = {...item,trajectory:[[...point,item.iAltitudeADS2]],trail,lastTime:Date.now(),label:str.join('\n'),textColor}
-    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-      const item = setting.人影.监控.需要重点关注的飞机[i]
+    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+      const item = sys.需要重点关注的飞机[i]
       if(item.iAddress==targetData.unSsrCode){
         targetData.商飞 = true
       }
@@ -1849,7 +1849,7 @@ function 处理飞机实时位置(d:Array<{
       textData.splice(i--,1)
     }
   }
-  setting.人影.监控.planeCount = textData.length
+  sys.planeCount = textData.length
   updateTextLayer(textData.slice())
 
 
@@ -1869,10 +1869,10 @@ function 处理飞机实时位置(d:Array<{
     // if(d[j].unSsrCode==0)continue;
 
     d[j].label = d[j].strCallCode
-    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-      const item = setting.人影.监控.需要重点关注的飞机[i]
+    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+      const item = sys.需要重点关注的飞机[i]
       if(item.iAddress == d[j].unSsrCode){
-        d[j].label = setting.人影.监控.需要重点关注的飞机[i].strCallCode
+        d[j].label = sys.需要重点关注的飞机[i].strCallCode
       }
     }
 
@@ -1911,7 +1911,7 @@ function 处理飞机实时位置(d:Array<{
       data.features.splice(k--,1)
     }
   }
-  setting.人影.监控.飞机数据.splice(0,setting.人影.监控.飞机数据.length,...data.features)
+  sys.飞机数据.splice(0,sys.飞机数据.length,...data.features)
   // map?.getSource("飞机原数据")?.setData(data);
 }
 function 处理ADSB(d:Array<{
@@ -2295,7 +2295,7 @@ onMounted(async() => {
   let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
-    await axios.get(`/backend/region/360000_full.json`).then(res=>{
+    await axios.get(`/backend/region/${user.strUnitID.substring(0,6)}_full.json`).then(res=>{
       map.addLayer({
         'id': '360000_full.json_fill',
         'type': 'fill',
@@ -2398,7 +2398,7 @@ onMounted(async() => {
       }
     })
     fpsTimer = setInterval(()=>{
-      setting.人影.监控.fps = map.painter.frameCounter - lastFrameCounter
+      sys.fps = map.painter.frameCounter - lastFrameCounter
       lastFrameCounter = map.painter.frameCounter
     },1000)
 /*
@@ -3882,13 +3882,20 @@ onMounted(async() => {
     await 作业点().then(async(res) => {
       if(!map)
         return
-      作业点原始数据 = res.data.results;
-      dialogOptions.menus = JSON.parse(JSON.stringify(作业点原始数据))
+      sys.作业点原始数据 = res.data.results;
+      dialogOptions.menus = sys.作业点原始数据.filter((item:any)=>{
+        for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+          if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+            return true
+          }
+        }
+        return false
+      })
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
       circleFeaturesData.features.length = 0;
-      for(let i=0;i<dialogOptions.menus.length;i++){
-        const item = dialogOptions.menus[i] as stationData
+      for(let i=0;i<sys.作业点原始数据.length;i++){
+        const item = sys.作业点原始数据[i] as stationData
         if(!item.tags){
           item.tags = []
         }
@@ -4202,9 +4209,20 @@ onMounted(async() => {
         })
       }
       if(!map.getSource("zydSource")){
+        //注意zydFeaturesData.features中存放的是全量数据
         map.addSource("zydSource", {
           type: "geojson",
-          data: zydFeaturesData,
+          data: {
+            type:'FeatureCollection',
+            features:zydFeaturesData.features.filter((feature:any)=>{
+              for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+                if(feature.properties.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+                  return true
+                }
+              }
+              return false
+            })
+          },
           promoteId:'strID'
         });
       }
@@ -5625,6 +5643,20 @@ onMounted(async() => {
       if(map.getSource(`${item}.json`)){
         map.removeSource(`${item}.json`)
       }
+      // res.data.features.map((item:any)=>{
+      //   const regions = new Array()
+      //   item.geometry.coordinates.forEach((item:any)=>{
+      //     regions.push(turf.buffer(turf.polygon(
+      //       item
+      //     ),0))
+      //   })
+      //   let merged = regions[0];
+      //   for (let i = 1; i < regions.length; i++) {
+      //     merged = turf.union(merged, regions[i]);
+      //   }
+      //   console.log(merged)
+      // })
+      // flyTo([110.43346, 21.171276])
       map.addLayer({
         'id': `${item}.json`,
         'type': 'line',
@@ -6107,8 +6139,8 @@ onMounted(async() => {
 
 
     let ryPlane = null;
-    for(let i=0;i<setting.人影.监控.需要重点关注的飞机.length;i++){
-      const item = setting.人影.监控.需要重点关注的飞机[i]
+    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
+      const item = sys.需要重点关注的飞机[i]
       if(item.iAddress == props.unSsrCode){
         ryPlane = item
       }
@@ -6304,17 +6336,17 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
   })
 },{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
-  dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
+  dialogOptions.menus = sys.作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){
-      if(item.strID.startsWith(val[i])){
+      if(item.strID.startsWith(val[i].replace(/(00)+$/, ''))){
         return true
       }
     }
     return false
-  });
+  })
   const features = zydFeaturesData.features.filter((feature:any)=>{
     for(let i=0;i<val.length;i++){
-      if(feature.properties.strID.startsWith(val[i])){
+      if(feature.properties.strID.startsWith(val[i].replace(/(00)+$/, ''))){
         return true
       }
     }
@@ -6492,7 +6524,7 @@ watch(()=>setting.人影.监控.区域站,(val)=>{
     map.setLayoutProperty('wms-layer3','visibility','none')
   }
 })
-watch(()=>setting.人影.监控.注册飞机数据,(registeredPlane)=>{
+watch(()=>sys.注册飞机数据,(registeredPlane)=>{
   airplanesData.features.map((feature,key)=>{
     registeredPlane.map((item)=>{
       if(feature.properties.unSsrCode == item.address){

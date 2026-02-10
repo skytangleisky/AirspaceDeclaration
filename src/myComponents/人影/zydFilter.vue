@@ -17,26 +17,21 @@
       show-checkbox
       @check="handleCheck"
       node-key="id"
-    />
+    >
+      <template #default="{ node, data }">
+        <span>{{ node.label }}</span><div style="color:cyan">{{data.cnt}}</div>
+      </template>
+    </el-tree>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useSysStatusStore } from '~/stores/sysStatus'
+const sys = useSysStatusStore()
+import { useUserStore } from '~/stores/user'
+const user = useUserStore()
 import { ref, watch, reactive, onMounted } from 'vue'
 import { getSubRegion } from '~/api/天工.ts'
-import 北京raw from '/省市县/北京.csv?url&raw'
-import 天津raw from '/省市县/天津.csv?url&raw'
-import 河北raw from '/省市县/河北.csv?url&raw'
-import 山西raw from '/省市县/山西.csv?url&raw'
-import 内蒙古raw from '/省市县/内蒙古.csv?url&raw'
-import 四川省raw from '/省市县/四川省.csv?url&raw'
-import { csv2list } from '~/tools'
-const 北京 = csv2list(北京raw)
-const 河北 = csv2list(河北raw)
-const 山西 = csv2list(山西raw)
-const 内蒙古 = csv2list(内蒙古raw)
-const 天津 = csv2list(天津raw)
-const 四川 = csv2list(四川省raw)
 import type { FilterNodeMethodFunction, TreeInstance } from 'element-plus'
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
@@ -61,73 +56,7 @@ const filterNode: FilterNodeMethodFunction = (value: string, data: Tree) => {
   if (!value) return true
   return data.label.includes(value)
 }
-type Item = {
-  provice:string,
-  district:string,
-  code:string,
-}
-
-
-import {getMask} from '~/api/天工.ts'
-const mask = getMask()
-
 const data: Tree[] = reactive<Tree[]>([]);
-// mask=='%%'&&data.push({
-//   id: "11",
-//   label: '北京',
-//   children: (北京 as Item[]).map((item:Item)=>{
-//     setting.人影.监控.checkedKeys.push(item.code)
-//     return {
-//       id:item.code,
-//       label:item.district,
-//     }
-//   })
-// });
-// (mask=='%%'||mask=='12%')&&data.push({
-//   id: "12",
-//   label: '天津',
-//   children: (天津 as Item[]).map((item:Item)=>{
-//     setting.人影.监控.checkedKeys.push(item.code)
-//     return {
-//       id:item.code,
-//       label:item.district,
-//     }
-//   })
-// });
-// (mask=='%%'||mask=='13%')&&data.push({
-//   id: "13",
-//   label: '河北',
-//   children: (河北 as Item[]).map((item:Item)=>{
-//     setting.人影.监控.checkedKeys.push(item.code)
-//     return {
-//       id:item.code,
-//       label:item.district,
-//     }
-//   })
-// });
-// (mask=='%%'||mask=='14%')&&data.push({
-//   id: "14",
-//   label: '山西',
-//   children: (山西 as Item[]).map((item:Item)=>{
-//     setting.人影.监控.checkedKeys.push(item.code)
-//     return {
-//       id:item.code,
-//       label:item.district,
-//     }
-//   })
-// });
-// (mask=='%%'||mask=='15%')&&data.push({
-//   id: "15",
-//   label: '内蒙古',
-//   children: (内蒙古 as Item[]).map((item:Item)=>{
-//     setting.人影.监控.checkedKeys.push(item.code)
-//     return {
-//       id:item.code,
-//       label:item.district,
-//     }
-//   })
-// });
-
 const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfCheckedNodes }) => {
   // console.log("当前点击节点:", data)
   // console.log("选中的 keys:", checkedKeys)
@@ -135,23 +64,29 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
   // console.log("半选的 keys:", halfCheckedKeys)
   setting.人影.监控.checkedKeys = checkedKeys
 }
-
-onMounted(async()=>{
-  await getSubRegion('360000').then((res:any)=>{
-    (mask=='%%'||mask=='36%')&&data.push({
-      id: "36",
-      label: '江西省',
-      children: (res.data.results as any[]).map((item)=>{
-        setting.人影.监控.checkedKeys.push(item.adcode.substring(0,4))
-        return {
-          id:item.adcode.substring(0,4),
-          label:item.name,
-        }
+watch(()=>user.strUnitID,async(unitID)=>{
+  let prefix = unitID
+  if(unitID.endsWith('0000000')){
+    prefix = unitID.substring(0,2)
+  }else if(unitID.endsWith('00000')){
+    prefix = unitID.substring(0,4)
+  }else if(unitID.endsWith('000')){
+    prefix = unitID.substring(0,6)
+  }
+  await getSubRegion(prefix).then((res:any)=>{
+    res.data.results.map((item:any)=>{
+      data.push({
+        id: item.adcode,
+        label: item.name,
+        cnt:item.cnt,
       })
+      // if(!setting.人影.监控.checkedKeys.includes(item.adcode)){
+      //   setting.人影.监控.checkedKeys.push(item.adcode)
+      // }
     })
   })
   treeRef.value!.setCheckedKeys(setting.人影.监控.checkedKeys)
-})
+},{immediate:true})
 </script>
 
 <style lang="scss" scoped>

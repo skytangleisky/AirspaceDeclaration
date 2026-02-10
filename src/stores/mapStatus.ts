@@ -24,7 +24,8 @@ export const useMapStatusStore = defineStore('mapStatus',{
     //   116.391330,
     //   39.907417
     // ],
-    currentPos: [0,0]
+    currentPos: [0,0],
+    经纬度:'000000000E\r\n000000000N'
   }),
   persist: true,
 })

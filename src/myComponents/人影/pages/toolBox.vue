@@ -37,7 +37,7 @@ import {resetTheme} from '~/theme'
 const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPane/index.vue"));
 const setting = useSettingStore()
 const mapStatus = useMapStatusStore()
-const sysStatus = useSysStatusStore()
+const sys = useSysStatusStore()
 const distributionButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
@@ -401,7 +401,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
   {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
   ...(mask=='%%'?[
-    {label: computed(()=>'二次雷达信号'+setting.人影.监控.planeCount), value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
+    {label: computed(()=>'二次雷达信号'+sys.planeCount), value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
     {label: '显示航迹圈', value: modelRef(setting, '人影.监控.显示航迹圈'), type: 'checkbox'},
     {label: '速度矢量线', value: modelRef(setting, '人影.监控.速度矢量线'), type: 'checkbox'},
     {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
@@ -428,8 +428,8 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {
     label: '位置',
     value: computed(() => {
-      if(setting.人影.监控.经纬度){
-        return setting.人影.监控.经纬度.substring(0, 10) + '\r\n0' + setting.人影.监控.经纬度.substring(10, 20)
+      if(mapStatus.经纬度){
+        return mapStatus.经纬度.substring(0, 10) + '\r\n0' + mapStatus.经纬度.substring(10, 20)
       }else{
         return '000000000E\r\n000000000N'
       }
@@ -439,16 +439,16 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
 
   {
     label: '系统信息', type: 'folder', opened: modelRef(setting, '人影.监控.systemInfoOpened'), children: [
-      {label: '在线人数', value: modelRef(sysStatus, '在线人数'), type: 'text'},
-      {label: '网络状态', value: modelRef(sysStatus, '网络状态'), type: 'text'},
-      {label: '内存占用', value: modelRef(sysStatus, '内存占用'), type: 'text'},
+      {label: '在线人数', value: modelRef(sys, '在线人数'), type: 'text'},
+      {label: '网络状态', value: modelRef(sys, '网络状态'), type: 'text'},
+      {label: '内存占用', value: modelRef(sys, '内存占用'), type: 'text'},
       {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
       {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
       {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},
-      {label: '帧率', value: computed(()=>setting.人影.监控.fps), type: 'text'},
+      {label: '帧率', value: computed(()=>sys.fps), type: 'text'},
       {label: '帧率曲线',value:{
         fps: {
-          value: computed(()=>setting.人影.监控.fps),
+          value: computed(()=>sys.fps),
           min: 0,
           max: 200,
           strokeStyle: "white",

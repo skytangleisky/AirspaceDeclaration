@@ -2,10 +2,10 @@
   <div style="width: 100%; height: 100%; overflow: hidden; position: absolute;">
     <edit-map
         ref="editMapRef"
-        v-model:prevRequestShow="setting.人影.监控.prevPlanRequestShow"
-        v-model:prevRequestData="setting.人影.监控.prevPlanRequestData"
-        v-model:prevReplyShow="setting.人影.监控.prevPlanReplyShow"
-        v-model:prevReplyData="setting.人影.监控.prevPlanReplyData"
+        v-model:prevRequestShow="sys.prevPlanRequestShow"
+        v-model:prevRequestData="sys.prevPlanRequestData"
+        v-model:prevReplyShow="sys.prevPlanReplyShow"
+        v-model:prevReplyData="sys.prevPlanReplyData"
         style="backdrop-filter: blur(25px)"
         v-model:routeLine="setting.人影.监控.routeLine"
         v-model:zyd="setting.人影.监控.zyd"
@@ -20,14 +20,14 @@
     ></edit-map>
   </div>
   <dialog-plan-request
-      v-model:show="setting.人影.监控.prevPlanRequestShow"
-      v-model:data="setting.人影.监控.prevPlanRequestData"
+      v-model:show="sys.prevPlanRequestShow"
+      v-model:data="sys.prevPlanRequestData"
       @click="confirm"
       style="z-index:2010"
   ></dialog-plan-request>
   <dialog-plan-reply
-      v-model:show="setting.人影.监控.prevPlanReplyShow"
-      v-model:data="setting.人影.监控.prevPlanReplyData"
+      v-model:show="sys.prevPlanReplyShow"
+      v-model:data="sys.prevPlanReplyData"
       style="z-index:2010"
       @accept="accept"
       @reject="reject"
@@ -38,6 +38,8 @@
   <!-- <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane> -->
 </template>
 <script lang="ts" setup>
+import {useSysStatusStore} from "~/stores/sysStatus";
+const sys = useSysStatusStore();
 import {空域申请批准, 空域申请拒绝} from '~/api/天工.ts';
 import {
   watch,
@@ -233,13 +235,13 @@ const confirm = (data: prevRequestDataType) => {
 
 function accept(data) {
   空域申请批准(data).then((res) => {
-    setting.人影.监控.prevPlanReplyShow = false
+    sys.prevPlanReplyShow = false
   })
 }
 
 function reject(data) {
   空域申请拒绝(data).then((res) => {
-    setting.人影.监控.prevPlanReplyShow = false
+    sys.prevPlanReplyShow = false
   })
 }
 

@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="setting.人影.监控.需要重点关注的飞机" style="width: 100%;max-height: 500px;"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
+  <el-table :data="sys.需要重点关注的飞机" style="width: 100%;max-height: 500px;"  @row-click="handleRowClick" :row-class-name="tableRowClassName">
     <el-table-column prop="strProtocol" label="数据类型" />
     <el-table-column prop="strCallCode" label="飞机标识" style="white-space: nowrap;"/>
     <el-table-column prop="iAddress" label="二次码" :formatter="(a,b,val)=>Number(val).toString(8).padStart(4,'0')"/>
@@ -48,16 +48,16 @@ watch(()=>sys.触发注册飞机查询,()=>{
   }
   currentController = new AbortController()
   注册飞机查询({page:0,size:0},currentController.signal).then((res)=>{
-    setting.人影.监控.注册飞机数据.splice(0,setting.人影.监控.注册飞机数据.length,...res.data.results)
+    sys.注册飞机数据.splice(0,sys.注册飞机数据.length,...res.data.results)
   }).catch(e=>{
   })
 },{
   immediate:true
 })
-setting.人影.监控.需要重点关注的飞机 = computed(()=>{
+sys.需要重点关注的飞机 = computed(()=>{
   const results = new Array()
-  setting.人影.监控.飞机数据.forEach(({properties})=>{
-    setting.人影.监控.注册飞机数据.forEach(row=>{
+  sys.飞机数据.forEach(({properties})=>{
+    sys.注册飞机数据.forEach(row=>{
       if(properties.unSsrCode == row.iAddress){
         results.push({
           dtRegTime:row.dtRegTime,

@@ -37,10 +37,12 @@
                             box-sizing: border-box;
                             position: relative;
                             margin-top: 12px;
+                            display: flex;
+                            flex-direction: column;
                             scroll-padding-top: 14px;
                         "
                     >
-                        <table style="height: 100%;">
+                        <table>
                             <thead>
                                 <tr class="z-1">
                                     <th>序号</th>
@@ -53,9 +55,6 @@
                                 </tr>
                             </thead>
                             <tbody style="position: relative">
-                                <td v-if="options.list.length==0" colspan="5">
-                                    <div style="position: relative;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">{{ t('el.table.emptyText') }}</div>
-                                </td>
                                 <tr
                                     :id="'人影-' + v.strID"
                                     :class="`${
@@ -80,6 +79,9 @@
                                 </tr>
                             </tbody>
                         </table>
+                        <div v-if="options.list.length==0" style="width: 100%;flex:1;overflow: hidden;">
+                            <div style="position: relative;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">{{ t('el.table.emptyText') }}</div>
+                        </div>
                     </div>
                     <ul class="menuUl" tabindex="-1">
                         <li @click="click">

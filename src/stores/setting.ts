@@ -1,6 +1,4 @@
 import {defineStore, acceptHMRUpdate} from "pinia"
-import {shallowReactive} from 'vue'
-import moment from 'moment'
 import ry from "./subs/ry.js";
 import jx from "./subs/jx.js";
 import dev from "./subs/dev.js";
@@ -13,7 +11,6 @@ export const formatUrl = (url: string) => {
 }
 export const useSettingStore = defineStore('setting',{
   state:()=>({
-    数字时钟:moment().format('YYYY-MM-DD')+'&emsp;'+moment().format('HH:mm:ss'),
     polling:true,
     弹药概况:false,
     火箭架配置:false,
@@ -337,21 +334,6 @@ export const useSettingStore = defineStore('setting',{
         district:true,
         loadmap:true,
         disappear:false,//右侧菜单
-        prevPlanRequestShow:false,
-        prevPlanRequestData:{
-          strID: "",
-          strCode: "",
-          strName: "",
-          strPos: "",
-          iMaxShotRange: 0,
-          iMaxShotHei: 0,
-          iWeapon: 0,
-          iWorkType:1,
-          iShotRangeBegin: 0,
-          iShotRangeEnd: 0,
-          beginTime: moment().format("HH:mm:ss"),
-          duration: 1,
-        },
         bottom_disappear:true,
         tile:{
           index:0,
@@ -411,10 +393,6 @@ export const useSettingStore = defineStore('setting',{
         一般站:false,
         区域站:false,
         准心:false,
-        //下面两行用于人影飞机跟踪
-        飞机数据:shallowReactive<any>([]),
-        注册飞机数据:shallowReactive<any>([]),
-        需要重点关注的飞机:shallowReactive<any>([]),
         注册飞机列表显示:false,
         roadMap:false,
         是否显示分布面板:false,
@@ -435,7 +413,6 @@ export const useSettingStore = defineStore('setting',{
         plane:true,
         速度矢量线:true,
         显示航迹圈:true,
-        planeCount:0,
         adsb:false,
         planeLabel:true,
         gridValue:false,
@@ -534,41 +511,9 @@ export const useSettingStore = defineStore('setting',{
         红外云图:false,组合反射率:false,CMPAS降水融合3km:false,睿图雷达:false,真彩图:false,
         红外云图时间:'加载中',组合反射率时间:'加载中',CMPAS降水融合3km时间:'加载中',睿图雷达时间:'加载中',真彩图时间:'加载中',
         disappear:false,//右侧菜单
-        prevPlanRequestShow:false,
-        prevPlanRequestData:{
-          strID: "",
-          strCode: "",
-          strName: "",
-          strPos: "",
-          iMaxShotRange: 0,
-          iMaxShotHei: 0,
-          iWeapon: 0,
-          iWorkType: 1,
-          iShotRangeBegin: 0,
-          iShotRangeEnd: 0,
-          beginTime: moment().format("HH:mm:ss"),
-          duration: 1,
-          unitName:"",
-        },
-        prevPlanReplyShow:false,
-        prevPlanReplyData:{
-          strID: "",
-          strCode: "",
-          strName: "",
-          strPos: "",
-          iMaxShotRange: 0,
-          iMaxShotHei: 0,
-          iWeapon: 0,
-          iWorkType:1,
-          iShotRangeBegin: 0,
-          iShotRangeEnd: 0,
-          beginTime: moment().format("HH:mm:ss"),
-          duration: 1,
-        },
         bottom_disappear:true,
         tile: 0,
         tileOpacity:1,
-        fps:0,
       },
       回放:{
         "zoom": 8.882777980661407,
