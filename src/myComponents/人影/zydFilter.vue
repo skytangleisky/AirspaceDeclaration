@@ -65,6 +65,7 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
   setting.人影.监控.checkedKeys = checkedKeys
 }
 watch(()=>user.strUnitID,async(unitID)=>{
+  data.length = 0
   let prefix = unitID
   if(unitID.endsWith('0000000')){
     prefix = unitID.substring(0,2)
