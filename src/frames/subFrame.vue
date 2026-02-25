@@ -77,6 +77,7 @@ import closeUrl from '~/assets/close.svg?raw'
 </script>
 <style lang="scss" scoped>
 .meeting{
+  z-index:0;
   background:darkblue;
   border-radius:4px;
   box-sizing:border-box;
