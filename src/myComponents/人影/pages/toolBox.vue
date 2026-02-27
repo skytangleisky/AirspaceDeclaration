@@ -16,12 +16,12 @@
         </el-scrollbar>
       </div>
     </template>
-    <el-scrollbar style="position: absolute;top:10px;left:10px;bottom:10px;height:auto;pointer-events: none;width:320px;" v-if="hasPermission(['78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a'])" class="control-scrollbar">
-      <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
-    </el-scrollbar>
-    <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">
-      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
-    </div> -->
+      <el-scrollbar v-if="hasPermission(['78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a'])" class="control-scrollbar">
+          <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+      </el-scrollbar>
+    <!--<div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">-->
+    <!--  <control-pane style="position:relative" :list="list" theme="default"></control-pane>-->
+    <!--</div>-->
   </div>
 </template>
 <script lang="ts" setup>
@@ -651,6 +651,27 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
                 height: $btn-icon-size;
                 background-size: 100% 100%;
                 background-repeat: no-repeat;
+            }
+        }
+    }
+    .control-scrollbar{
+        position: absolute;
+        top:10px;
+        right:10px;
+        bottom:10px;
+        height:auto;
+        pointer-events: none;
+        z-index: 2;
+        &::v-deep(.el-scrollbar__wrap){
+            display: flex;
+            flex-direction: column;
+            // border:1px solid red;
+            box-sizing: border-box;
+            .el-scrollbar__view{
+                // border:1px solid #0f0;
+                flex:1;
+                display: flex;
+                flex-flow: column-reverse;
             }
         }
     }
