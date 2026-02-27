@@ -1,9 +1,9 @@
 <template>
     <div class="planPanel wstd-container"
-         style="z-index: 1;height:fit-content;width: fit-content;pointer-events: none;">
+         style="z-index: 1;height:fit-content;width: fit-content;">
         <div class="bottom wstd-content"
              v-show="tabActive !== ''">
-            <div class="close-btn" @click="closeDialog"  style="pointer-events: auto">
+            <div class="close-btn" @click="tabActive = ''">
                 <el-button :icon="Close" type="danger" link></el-button>
             </div>
             <div class="bottom-content">
@@ -103,15 +103,7 @@
         当前作业进度: () => new Array<any>(),
         今日作业记录: () => new Array<any>(),
     })
-    
-    const clickTopBtn = (label: string) => {
-        
-        //console.log("tabActive", tabActive.value)
-    }
-    const closeDialog = () => {
-        tabActive.value = ''
-        console.log('tabActive', tabActive.value)
-    }
+
 </script>
 <style scoped lang="scss">
     .planPanel {
