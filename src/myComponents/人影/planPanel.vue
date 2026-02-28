@@ -17,12 +17,12 @@
                         <Work :v="v"/>
                     </div>
                     <!-- 空域流转信息 -->
-                    <div v-show="tabActive == '空域流转信息'">
-                        <Transport :data="props.今日作业记录"/>
-                    </div>
-                    <div v-show="tabActive == '完成信息查询'">
-                        <FinishedInfo></FinishedInfo>
-                    </div>
+                    <!--<div v-show="tabActive == '空域流转信息'">-->
+                    <!--    <Transport :data="props.今日作业记录"/>-->
+                    <!--</div>-->
+                    <!--<div v-show="tabActive == '完成信息查询'">-->
+                    <!--    <FinishedInfo></FinishedInfo>-->
+                    <!--</div>-->
                     <div v-show="tabActive == '人影飞机'">
                         <PlaneInfo></PlaneInfo>
                     </div>
