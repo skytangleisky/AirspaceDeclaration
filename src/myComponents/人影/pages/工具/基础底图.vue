@@ -2,7 +2,7 @@
     <div class="toolMode">
         <div class="tool-mode-title">
             <div class="title-left">
-                <svg-icon name="layer"></svg-icon>
+                <svg-icon name="layer" width=".2rem" height=".2rem"></svg-icon>
                 <span style="user-select: none;cursor:default;">基础底图</span>
             </div>
             <div class="title-right">

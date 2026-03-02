@@ -560,7 +560,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
                     height: 0;
                     border-left: calc($arrow-size / 2) solid transparent;
                     border-right: calc($arrow-size / 2) solid transparent;
-                    border-bottom: $arrow-size solid var(--el-border-color);
+                    //border-bottom: $arrow-size solid var(--el-border-color);
                     position: absolute;
                     left: .12rem;
                     bottom: - $grid-3 - .02rem;

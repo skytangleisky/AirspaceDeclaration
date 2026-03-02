@@ -53,13 +53,13 @@
         display: flex;
         flex-direction: column;
         box-sizing: border-box;
-        border-radius: $border-radius-2;
+        border-radius: $border-radius-1;
         top: 0;
         left: 0;
-        width: 6rem;
+        width: 3.6rem;
         //height: 5.6rem;
-        border: 1px solid var(--el-border-color);
-        background-color: var(--el-bg-color-opacity-8);
+        //border: 1px solid var(--el-border-color);
+        background-color: var(--bg-color-1);
         padding: $grid-3;
         pointer-events: auto;
         gap: $grid-2;
@@ -91,13 +91,13 @@
                 width: 100%;
                 gap: $grid-1;
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 
                 .tool-mode-item {
                     box-sizing: border-box;
                     height: .32rem;
                     line-height: .32rem;
-                    border: 1px solid var(--el-border-color);
+                    //border: 1px solid var(--el-border-color);
                 }
                 .radio-item {
                     cursor: pointer;

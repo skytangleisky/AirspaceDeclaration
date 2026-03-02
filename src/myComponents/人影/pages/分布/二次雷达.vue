@@ -41,8 +41,7 @@
     .toolMode {
         
         .tool-mode-content {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr) !important;
+            //grid-template-columns: repeat(3, 1fr) !important;
         }
         
     }
