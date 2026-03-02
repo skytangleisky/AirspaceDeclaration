@@ -2,10 +2,18 @@
   <div>
     <template v-if="hasPermission(['12afdacf-0255-46d9-a0ec-7d9b2fc157da'])">
       <div class="tool-btns" v-if="setting.menus">
-        <div :class="`map-tool-btn ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
-        <div :class="`map-tool-btn ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
-        <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
-        <div class="map-tool-btn disabled"><div class="favoritesClass"></div><div class="triangleClass"></div></div>
+        <div :class="`map-tool-btn ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="tool-btn-inside">
+            <svg-icon name="map-location" :width="iconSize" :height="iconSize"></svg-icon>
+        </div></div>
+        <div :class="`map-tool-btn ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="tool-btn-inside">
+            <svg-icon name="radar" :width="iconSize" :height="iconSize"></svg-icon>
+        </div></div>
+        <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="tool-btn-inside">
+            <svg-icon name="tool" :width="iconSize" :height="iconSize"></svg-icon>
+        </div></div>
+        <div class="map-tool-btn disabled"><div class="tool-btn-inside">
+            <svg-icon name="favorite" :width="iconSize" :height="iconSize"></svg-icon>
+        </div></div>
       </div>
       <div class="side-box" v-if="setting.menus">
         <div class="side-box-left">
@@ -38,6 +46,7 @@ const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPan
 const setting = useSettingStore()
 const mapStatus = useMapStatusStore()
 const sys = useSysStatusStore()
+const iconSize = '24px'
 const distributionButtonClick = (e: any) => {
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
@@ -61,6 +70,7 @@ const showPanel = computed(()=>{
 })
 import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
+import SvgIcon from '~/myComponents/SvgIcon.vue'
 watch(()=>setting.devtoolsOpen,(val)=>{
   if(val){
     setting.人影.监控.是否显示分布面板 = false
@@ -614,7 +624,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
         pointer-events: none;
         position: absolute;
         //bottom: 16px;
-        top: calc(#{$page-padding} + .4rem + #{$grid-3});
+        top: calc(#{$page-padding} + .46rem + #{$grid-3});
         right: $page-padding;
         display: flex;
     }

@@ -126,7 +126,6 @@
                 justify-content: center;
                 align-items: center;
                 color: var(--el-color-primary);
-                
                 &:hover {
                     color: #fff;
                     background-color: var(--el-color-primary-light-3);
