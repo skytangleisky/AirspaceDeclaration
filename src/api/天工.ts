@@ -292,6 +292,50 @@ export function 历史作业状态数据(signal:AbortSignal){
     }
   })
 }
+
+// '${tmBeginApply1}' <= z.tmBeginApply AND z.tmBeginApply < '${tmBeginApply2}'`
+
+export function 历史作业数据({range,page,size}:{range?:[string,string]|undefined,page:number,size:number}={range:undefined,page:1,size:10}){
+  console.log(page,size)
+  const where = []
+  where.push({
+    relation:'AND',
+    field:'strApplyUnit',
+    relationship:'IS NOT',
+    condition:null,
+  })
+  if(range){
+    where.push(...[
+      {
+        relation:'AND',
+        field:'z.tmBeginApply',
+        relationship:'>=',
+        condition:range[0],
+      },
+      {
+        relation:'AND',
+        field:'z.tmBeginApply',
+        relationship:'<=',
+        condition:range[1],
+      }
+    ])
+  }
+  return request({
+    url: '/backend/db/default',
+    method: 'post',
+    headers:{
+      table:'zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID'
+    },
+    data:{
+      select:['z.*','u1.strName AS strATCUnitIDName','u2.strName AS strUpApplyUnitName'],
+      orderby:[
+        'z.tmBeginApply DESC'
+      ],
+      offset:(page-1)*size,
+      limit:size,
+    },
+  })
+}
 export function 修改作业状态数据(ubyStatus:number,strWorkID:string){
   return request({
     url: '/backend/transaction',

@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-    import { defineAsyncComponent, ref } from 'vue'
+    import { defineAsyncComponent, onMounted, ref } from 'vue'
     import AirspaceApply from '~/airspaceApply.vue' //空域申请
     import Transport from '~/myComponents/人影/transport.vue'
     import FinishedInfo from '~/myComponents/人影/finishedInfo.vue'
@@ -33,6 +33,15 @@
     }, {
         label: '完成信息查询',
     },]
+    import { 历史作业数据,完成信息查询 } from '~/api/天工'
+    onMounted(()=>{
+        历史作业数据({range:['2023-08-01','2026-08-02'],page:1,size:10}).then(res=>{
+            console.log('历史作业记录|空域流转信息',res.data)
+        })
+        完成信息查询({page:1,size:10}).then(res=>{
+            console.log('完成信息查询',res.data)
+        })
+    })
 </script>
 
 <style scoped lang="scss">
