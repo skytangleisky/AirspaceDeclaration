@@ -5710,16 +5710,12 @@ onMounted(async() => {
         'visibility':'visible',
       },
       'paint': {
-        'fill-color':'rgba(0,0,0,0.6)',
+        'fill-color':'#ADC7EF',
         'fill-outline-color':'transparent'
       }
     })
     updateTextLayer(textData)
-
-
-
-
-
+    
 
     // 形状00线形;01矩形;02多边形;03圆形,04扇形,05椭圆
     获取净空区().then((res) => {
@@ -6331,7 +6327,7 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
       'visibility':'visible',
     },
     'paint': {
-      'fill-color':'rgba(0,0,0,0.6)',
+      'fill-color':'#ADC7EF',
       'fill-outline-color':'transparent'
     }
   })

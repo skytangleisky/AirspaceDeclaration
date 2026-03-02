@@ -11,7 +11,7 @@
 const title = defineModel('title',{
   default:'标题'
 })
-import {nextTick, onMounted, ref, watch} from 'vue'
+import { inject, nextTick, onMounted, ref, watch } from 'vue'
 function close(){
   if(once.value){
     IF.value=false

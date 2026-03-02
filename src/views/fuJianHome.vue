@@ -8,18 +8,10 @@
             </template>
         </div>
         <div class="page-box">
-            <template v-if="activeNav=='指挥实施'">
-                <AirspaceApply></AirspaceApply>
-            </template>
-            <template v-else-if="activeNav=='历史作业记录'">
-                <div>历史作业记录</div>
-            </template>
-            <template v-else-if="activeNav=='空域流转信息'">
-                <Transport></Transport>
-            </template>
-            <template v-else-if="activeNav=='完成信息查询'">
-                <FinishedInfo></FinishedInfo>
-            </template>
+            <AirspaceApply v-show="activeNav=='指挥实施'"></AirspaceApply>
+            <div v-if="activeNav=='历史作业记录'">历史作业记录</div>
+            <Transport v-if="activeNav=='空域流转信息'"></Transport>
+            <FinishedInfo v-if="activeNav=='完成信息查询'"></FinishedInfo>
         </div>
     </div>
 </template>
