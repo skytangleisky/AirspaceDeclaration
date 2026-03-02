@@ -1,14 +1,16 @@
 <template>
     <div class="dragDialog absolute wstd-container" style="width:fit-content;height: fit-content;pointer-events: none;">
-        <div class="top" style="display: flex;align-items: center;">
+        <div class="btns-box" style="display: flex;align-items: center;">
             <div
-                class="map-btn"
+                class="map-tool-btn"
                 style="user-select: none;cursor: pointer;pointer-events: auto;"
                 :class="{ active: tabActive == 1 }"
                 @click="tabActive == 1 ? tabActive = 0 : tabActive = 1"
             >
-                <svg-icon name="table"></svg-icon>
-                <span class="label">作业点列表</span>
+                <div class="tool-btn-inside">
+                
+                <svg-icon name="table" width=".24rem" height=".24rem"></svg-icon>
+                </div>
             </div>
             <div
                 class="top-right">
@@ -16,11 +18,18 @@
                 <div class="time-box">{{ 数据时间 }}</div>
             </div>
         </div>
-        <div class="bottom wstd-content" style="position: relative;pointer-events: auto;" v-if="tabActive">
-            <div class="close-btn" @click="tabActive = 0">
-                <el-button :icon="Close" type="danger" link></el-button>
+        <div class="content-box wstd-content" style="position: relative;pointer-events: auto;" v-if="tabActive">
+            <div class="content-box-top">
+                <div class="content-box-title">作业点列表</div>
+                <div class="close-btn" @click="tabActive = 0">
+                    <el-button size="large" type="primary" link>
+                        <el-icon color="#126Ae1" :size="20">
+                            <Close />
+                        </el-icon>
+                    </el-button>
+                </div>
             </div>
-            <div class="bottom-content">
+            <div class="main-content">
                 <div style="display: flex;flex-direction: row;align-items: center;">
                     <el-input
                         @mousedown.stop

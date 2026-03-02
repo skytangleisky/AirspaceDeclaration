@@ -40,84 +40,67 @@ code {
         border-color: var(--el-color-primary);
         color: var(--el-text-color-primary);
     }
-    .top {
+    .btns-box {
         display: flex;
         gap: $grid-2;
         margin-bottom: $grid-2;
 
-        .map-btn {
-            display: flex;
-            align-items: center;
-            height: $global-button-height;
-            padding: 0 $grid-2;
-            border-radius: $border-radius-1;
-            box-sizing: border-box;
-            border: 0.01rem solid var(--el-border-color);
-            background-color: var(--el-color-primary-light-9);
-
-            .svg-icon {
-                margin-right: 0.04rem;
-                display: flex;
-                align-items: center;
-            }
-
-            &:hover {
-                background-color: var(--el-bg-color-page);
-                box-shadow: 0 0 .2rem var(--el-box-shadow-color);
-                border-color: var(--el-color-primary);
-            }
-
-            &.active {
-                background-color: var(--el-bg-color-page);
-                box-shadow: 0 0 .2rem var(--el-color-primary-light-5);
-                border-color: var(--el-color-primary);
-            }
-
-            &.disabled {
-                background-color: var(--el-text-color-disabled);
-                border-color: transparent;
-                box-shadow: none;
-            }
-        }
+        //.map-btn {
+        //    display: flex;
+        //    align-items: center;
+        //    height: $global-button-height;
+        //    padding: 0 $grid-2;
+        //    border-radius: $border-radius-1;
+        //    box-sizing: border-box;
+        //    border: 0.01rem solid var(--el-border-color);
+        //    background-color: var(--el-color-primary-light-9);
+        //
+        //    .svg-icon {
+        //        margin-right: 0.04rem;
+        //        display: flex;
+        //        align-items: center;
+        //    }
+        //
+        //    &:hover {
+        //        background-color: var(--el-bg-color-page);
+        //        box-shadow: 0 0 .2rem var(--el-box-shadow-color);
+        //        border-color: var(--el-color-primary);
+        //    }
+        //
+        //    &.active {
+        //        background-color: var(--el-bg-color-page);
+        //        box-shadow: 0 0 .2rem var(--el-color-primary-light-5);
+        //        border-color: var(--el-color-primary);
+        //    }
+        //
+        //    &.disabled {
+        //        background-color: var(--el-text-color-disabled);
+        //        border-color: transparent;
+        //        box-shadow: none;
+        //    }
+        //}
     }
 
-    .bottom {
-        max-width: 840px;
-        padding: 0 0.1rem 0.1rem;
-        border-radius: $border-radius-1;
-        background: var(--el-bg-color-opacity-8);
-        box-sizing: border-box;
-
-        // border: .01rem solid $color-bg-light-2;
-        // box-shadow: inset 0rem 0rem .1rem 0rem $color-bg-light-2;
-        .close-btn {
-            position: absolute;
-            right: .08rem;
-            top: .08rem;
-            width: 20px;
-            height: 20px;
+    .content-box {
+        box-shadow:0 4px 4px var(--el-box-shadow-color);
+        .content-box-top{
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 999;
-            //font-size: 0.16rem;
-            //color:white;
-            //&:hover {
-            //    .el-icon {
-            //        color:var(--el-color-danger-dark-2);
-            //    }
-            //}
-            //&:active {
-            //    transform: rotateX(180deg);
-            //    transition: transform 0.3s;
-            //    transition-timing-function: ease-in-out;
-            //    .el-icon {
-            //        color: #d32f2f;
-            //    }
-            //}
+            justify-content: space-between;
+            height: .48rem;
+            font-size: 18px;
+            color:var(--text-blue-1);
+            background: var(--bg-color-3);
+            padding: 0 $grid-3;
+            border-radius: $border-radius-1 $border-radius-1 0 0;
+
+        }
+        .close-btn {
+
         }
 
-        .bottom-content {
+        .main-content {
+            padding:$grid-3;
             max-height: 3.6rem;
             height: fit-content;
             overflow-y: auto;
@@ -127,11 +110,10 @@ code {
     $table-height: .32rem;
 
     .wstd-content {
-        background-color: var(--el-bg-color-opacity-8);
-        padding: $grid-3;
-        padding-top: calc(#{$grid-3} + .2rem);
+        max-width: 8.4rem;
         border-radius: $border-radius-1;
-        border: 1px solid var(--el-border-color);
+        box-sizing: border-box;
+        background: var(--el-bg-color);
         // width: 720px;
         // 表格
         table {
