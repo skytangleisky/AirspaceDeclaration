@@ -111,7 +111,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   // {label:'色相',value:toRefs(setting).hueRotate,type:'range',min:0,max:360,step:1,arr:Array.from({length:361},(_,i:number)=>i)},
   {label: '地面颜色', value: modelRef(setting, '人影.监控.landColor'), type: 'color'},
   {
-    label: '全国行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.districtOptionsOpened'), children: [
+    label: '全国省界', type: 'folder', opened: modelRef(setting, '人影.监控.districtOptionsOpened'), children: [
       {
         label: '填充',
         type: 'folder',

@@ -5713,9 +5713,9 @@ onMounted(async() => {
         'fill-color':'#ADC7EF',
         'fill-outline-color':'transparent'
       }
-    })
+    },'districtLayer')
     updateTextLayer(textData)
-    
+
 
     // 形状00线形;01矩形;02多边形;03圆形,04扇形,05椭圆
     获取净空区().then((res) => {
@@ -6330,7 +6330,7 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
       'fill-color':'#ADC7EF',
       'fill-outline-color':'transparent'
     }
-  })
+  },'districtLayer')
 },{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   dialogOptions.menus = sys.作业点原始数据.filter((item:any)=>{

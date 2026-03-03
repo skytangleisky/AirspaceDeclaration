@@ -1,4 +1,5 @@
-import city from './省界.json?url'
+import province from './省界.json?url'
+import city from './市界.json?url'
 import beijing from './北京市.json?url'
 import beijingBorder from './北京市.geojson?url'
 import { useSettingStore } from '~/stores/setting';
@@ -331,7 +332,11 @@ export default function(){
 					[extent[0], extent[1]],
 				]
 			},
-			"district":{
+			"province":{
+				"type":"geojson",
+				"data": province
+			},
+			"city":{
 				"type":"geojson",
 				"data": city
 			},
@@ -562,7 +567,7 @@ export default function(){
 				{
 					'id': 'districtLayer',
 					'type': 'fill',
-					'source': 'district', // reference the data source
+					'source': 'province', // reference the data source
 					'layout': {
 						visibility:setting.人影.监控.districtOptions.district?'visible':'none'
 					},
@@ -575,7 +580,7 @@ export default function(){
 				{
 					'id': 'districtLineBase',
 					'type': 'line',
-					'source': 'district',
+					'source': 'province',
 					'layout': {
 						'visibility':setting.人影.监控.districtOptions.districtBase?'visible':'none',
 						'line-join':'round',
@@ -590,7 +595,7 @@ export default function(){
 				{
 					'id': 'districtLineOver',
 					'type': 'line',
-					'source': 'district',
+					'source': 'province',
 					'layout': {
 						'visibility':setting.人影.监控.districtOptions.districtLine?'visible':'none',
 						'line-join':'round',
@@ -599,6 +604,22 @@ export default function(){
 					'paint': {
 						'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
 						'line-width': setting.人影.监控.districtOptions.districtLineWidth,
+						'line-opacity': setting.人影.监控.districtOptions.districtLineOpacity,
+						// 'line-dasharray': [1,1],
+					}
+				},
+				{
+					'id': 'cityLineOver',
+					'type': 'line',
+					'source': 'city',
+					'layout': {
+						'visibility':setting.人影.监控.districtOptions.districtLine?'visible':'none',
+						'line-join':'round',
+						'line-cap':'round',
+					},
+					'paint': {
+						'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
+						'line-width': 1,
 						'line-opacity': setting.人影.监控.districtOptions.districtLineOpacity,
 						// 'line-dasharray': [1,1],
 					}
