@@ -92,7 +92,6 @@ watch(()=>user.strUnitID,async(unitID)=>{
 
 <style lang="scss" scoped>
 .zydFilter{
-  padding:10px 20px;
   cursor:default;
   width:100%;
   height: 100%;
@@ -103,8 +102,7 @@ watch(()=>user.strUnitID,async(unitID)=>{
   justify-content: space-around;
   .filter-input{
     width:100%;
-    font-size: 20px;
-    padding:10px 0 10px 10px;
+      padding: $grid-3;
   }
   .filter-tree{
     padding:10px;

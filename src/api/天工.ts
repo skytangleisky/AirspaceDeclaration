@@ -296,7 +296,6 @@ export function 历史作业状态数据(signal:AbortSignal){
 // '${tmBeginApply1}' <= z.tmBeginApply AND z.tmBeginApply < '${tmBeginApply2}'`
 
 export function 历史作业数据({range,page,size}:{range?:[string,string]|undefined,page:number,size:number}={range:undefined,page:1,size:10}){
-  console.log(page,size)
   const where = []
   where.push({
     relation:'AND',

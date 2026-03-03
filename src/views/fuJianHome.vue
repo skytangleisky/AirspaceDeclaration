@@ -9,7 +9,7 @@
         </div>
         <div class="page-box">
             <AirspaceApply v-show="activeNav=='指挥实施'"></AirspaceApply>
-            <div v-if="activeNav=='历史作业记录'">历史作业记录</div>
+            <WorkRecord v-if="activeNav=='历史作业记录'"></WorkRecord>
             <Transport v-if="activeNav=='空域流转信息'"></Transport>
             <FinishedInfo v-if="activeNav=='完成信息查询'"></FinishedInfo>
         </div>
@@ -19,6 +19,7 @@
 <script setup lang="ts">
     import { defineAsyncComponent, onMounted, ref } from 'vue'
     import AirspaceApply from '~/airspaceApply.vue' //空域申请
+    import WorkRecord from '~/views/workRecord.vue'
     import Transport from '~/myComponents/人影/transport.vue'
     import FinishedInfo from '~/myComponents/人影/finishedInfo.vue'
     //const Transport = defineAsyncComponent(() => import('~/myComponents/人影/transport.vue'))
@@ -33,13 +34,14 @@
     }, {
         label: '完成信息查询',
     },]
-    import { 历史作业数据,完成信息查询 } from '~/api/天工'
-    onMounted(()=>{
-        历史作业数据({range:['2023-08-01','2026-08-02'],page:1,size:10}).then(res=>{
-            console.log('历史作业记录|空域流转信息',res.data)
-        })
-        完成信息查询({page:1,size:10}).then(res=>{
-            console.log('完成信息查询',res.data)
+    import { 完成信息查询 } from '~/api/天工'
+    
+    onMounted(() => {
+        完成信息查询({
+            page: 1,
+            size: 10
+        }).then(res => {
+            console.log('完成信息查询', res.data)
         })
     })
 </script>

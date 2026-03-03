@@ -9,7 +9,7 @@
             >
                 <div class="tool-btn-inside">
                 
-                <svg-icon name="table" width=".24rem" height=".24rem"></svg-icon>
+                <svg-icon name="table" width=".22rem" height=".22rem"></svg-icon>
                 </div>
             </div>
             <div
