@@ -103,7 +103,7 @@
         const todayString = `${year+1}-${month}-${day}`
         const oneYearAgoString = `${year}-${month}-${day}`
         searchForm.dateRange.length=0
-        searchForm.dateRange.push(todayString, oneYearAgoString)
+        searchForm.dateRange.push( oneYearAgoString,todayString)
         
     }
     const init = () => {

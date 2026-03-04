@@ -11,19 +11,17 @@
             <AirspaceApply v-show="activeNav=='指挥实施'"></AirspaceApply>
             <WorkRecord v-if="activeNav=='历史作业记录'"></WorkRecord>
             <Transport v-if="activeNav=='空域流转信息'"></Transport>
-            <FinishedInfo v-if="activeNav=='完成信息查询'"></FinishedInfo>
+            <FinishedInfo v-if="activeNav=='完成信息查询'" :isSinglePage ='true'></FinishedInfo>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
     import { defineAsyncComponent, onMounted, ref } from 'vue'
-    import AirspaceApply from '~/airspaceApply.vue' //空域申请
+    import AirspaceApply from '~/airspaceApply.vue'
     import WorkRecord from '~/views/workRecord.vue'
     import Transport from '~/myComponents/人影/transport.vue'
     import FinishedInfo from '~/myComponents/人影/finishedInfo.vue'
-    //const Transport = defineAsyncComponent(() => import('~/myComponents/人影/transport.vue'))
-    //const FinishedInfo = defineAsyncComponent(() => import('~/myComponents/人影/finishedInfo.vue'))
     const activeNav = ref<string>('指挥实施')
     const btnList = [{
         label: '指挥实施',
@@ -34,16 +32,7 @@
     }, {
         label: '完成信息查询',
     },]
-    import { 完成信息查询 } from '~/api/天工'
     
-    onMounted(() => {
-        完成信息查询({
-            page: 1,
-            size: 10
-        }).then(res => {
-            console.log('完成信息查询', res.data)
-        })
-    })
 </script>
 
 <style scoped lang="scss">

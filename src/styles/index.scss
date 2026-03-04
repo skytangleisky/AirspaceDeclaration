@@ -127,7 +127,7 @@ code {
         tr {
             height: $table-height;
             font-weight: 400;
-            border-bottom: 1px solid var(--el-border-color);
+            //border-bottom: 1px solid var(--el-border-color);
             font-size: .14rem;
         }
 
@@ -136,9 +136,9 @@ code {
 
                 th {
                     border-top: none;
-                    background-color: var(--el-color-primary);
+                    background-color: var(--el-bg-color-overlay);
                     font-weight: 400;
-                    color: #fff;
+                    color: var(--el-text-color-regular);
                 }
 
                 th:first-child {
@@ -150,6 +150,16 @@ code {
                 }
             }
         }
+        //:deep(.el-table){
+        //    thead{
+        //        tr{
+        //            th{
+        //                color: var(--el-text-color-primary);
+        //                background-color: var(--el-color-primary);
+        //            }
+        //        }
+        //    }
+        //}
 
         tbody {
             background-color: var(--el-bg-color);
