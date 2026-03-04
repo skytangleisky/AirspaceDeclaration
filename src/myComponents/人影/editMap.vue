@@ -1173,7 +1173,7 @@ function 显示射界(){
   });
   source.setData(zydFeaturesData);
   */
-
+  console.log(draw.getAll().features)
   let list = new Array()
   for(let j=0;j<dialogOptions.menus.length;j++){
     let station = dialogOptions.menus[j];
@@ -2092,6 +2092,10 @@ const 批量操作 = ()=>{
 const 经纬度 = ()=>{
   setting.获取经纬度 = true
 }
+watch(()=>setting.人影.监控.糖果图,()=>{
+  map?.setLayoutProperty('净空区','visibility',setting.人影.监控.糖果图?'visible':'none')
+  map?.setLayoutProperty('净空区_line','visibility',setting.人影.监控.糖果图?'visible':'none')
+})
 watch(()=>setting.人影.监控.tileOpacity,(opacity)=>{
   map.setPaintProperty('simple-tiles','raster-opacity',opacity)
   map.setPaintProperty('roadLayer','raster-opacity',opacity)
@@ -5814,7 +5818,7 @@ onMounted(async() => {
           "data": a
         },
         'layout': {
-          'visibility':'visible',
+          'visibility':setting.人影.监控.糖果图?'visible':'none',
         },
         'paint': {
           'fill-color':'#f00',
@@ -5830,7 +5834,7 @@ onMounted(async() => {
           "data": a
         },
         'layout': {
-          'visibility':'visible',
+          'visibility':setting.人影.监控.糖果图?'visible':'none',
         },
         'paint': {
           'line-color':'#f00',
@@ -6357,6 +6361,8 @@ watch(()=>setting.人影.监控.checkedKeys,(val)=>{
     type:'FeatureCollection',
     features,
   })
+  sys.触发作业状态数据查询 = Date.now()
+  sys.触发历史作业状态数据查询 = Date.now()
 })
 watch(()=>setting.人影.监控.test,(val)=>{
   if(map.getLayer('testLayer')){

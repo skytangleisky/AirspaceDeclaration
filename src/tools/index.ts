@@ -4,6 +4,7 @@ import {v4 as uuid} from 'uuid'
 import imageUrl from "~/assets/feather.svg?url";
 import arrowUrl from "~/assets/arrow.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
+import { useSysStatusStore } from '~/stores/sysStatus';
 import { useSettingStore } from '~/stores/setting';
 import { computed, ComputedRef } from 'vue'
 export const modelRef = (obj: object,fields: string)=>computed({get:()=>new Function('obj', `return obj.${fields}`)(obj),set:(val: any)=>new Function('obj', 'val', `obj.${fields} = val`)(obj, val)})
@@ -780,4 +781,35 @@ export function wrapKeys<T>(obj: any, predicate: (key: string) => boolean):T {
       v
     ])
   ) as T;
+}
+//注意被用于作业点过滤和区划树
+export function buildTree(list: Array<any>, parentId: string | null = null): Array<any> {
+  const sys = useSysStatusStore()
+  if(parentId==null){
+    return buildSubTree(list, parentId)
+  }else{
+    const cnt = sys.作业点原始数据.filter(item => item.strID?.startsWith(parentId.replace(/(00)+$/, ''))).length
+    return [{
+      id:parentId,
+      name:list.filter(item => item.adcode === parentId)[0]?.name,
+      cnt:parentId=='100000'?sys.作业点原始数据.length:cnt,
+      children:list.filter(item => item.parent_adcode === parentId).map(item => ({
+        cnt:sys.作业点原始数据.filter(it => it.strID?.startsWith(item.adcode.replace(/(00)+$/, ''))).length,
+        ...item,
+        leaf: item.childrenNum === 0,
+        id: item.adcode,
+        children: buildSubTree(list, item.adcode)
+      }))
+    }]
+  }
+}
+export function buildSubTree(list: Array<any>, parentId: string | null = null): Array<any> {
+  const sys = useSysStatusStore()
+  return list.filter(item => item.parent_adcode === parentId).map(item => ({
+    ...item,
+    leaf: item.childrenNum === 0,
+    cnt: item.adcode=='100000'?sys.作业点原始数据.length:sys.作业点原始数据.filter(it => it.strID?.startsWith(item.adcode.replace(/(00)+$/, ''))).length,
+    id: item.adcode,
+    children: buildSubTree(list, item.adcode)
+  }))
 }

@@ -1,5 +1,5 @@
 <template>
-  <teleport to="#wstd-container">
+  <teleport  to="#wstd-container" v-if="wstdContainerRendered">
     <div ref="meeting" v-dragable class="meeting" v-show="SHOW" v-if="IF">
       <div class="title" @mousedown.stop>{{ title }}</div>
       <slot></slot>
@@ -8,10 +8,14 @@
   </teleport>
 </template>
 <script setup lang="ts">
+const wstdContainerRendered = inject('wstdContainerRendered',{
+  default:false,
+  type:Boolean
+})
 const title = defineModel('title',{
   default:'标题'
 })
-import {nextTick, onMounted, ref, watch} from 'vue'
+import {inject, nextTick, onMounted, ref, watch} from 'vue'
 function close(){
   if(once.value){
     IF.value=false

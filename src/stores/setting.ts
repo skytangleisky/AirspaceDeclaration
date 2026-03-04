@@ -433,6 +433,7 @@ export const useSettingStore = defineStore('setting',{
         北京保障圈:false,
         airport:false,
         navigationStation:false,
+        糖果图:false,
         systemInfoOpened:false,
         districtOptionsOpened:false,
         districtOptions:{

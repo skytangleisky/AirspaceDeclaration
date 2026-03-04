@@ -148,35 +148,35 @@ export function 作业点(){
   // })
   const user = useUserStore()
   let condition = '%%'
-  if(user.strUnitID.endsWith('0000000')){
-    condition = user.strUnitID.substring(0,2)+'%';
-  }else if(user.strUnitID.endsWith('00000')){
-    condition = user.strUnitID.substring(0,4)+'%';
-  }else if(user.strUnitID.endsWith('000')){
-    condition = user.strUnitID.substring(0,6)+'%';
-  }
+  // if(user.strUnitID.endsWith('0000000')){
+  //   condition = user.strUnitID.substring(0,2)+'%';
+  // }else if(user.strUnitID.endsWith('00000')){
+  //   condition = user.strUnitID.substring(0,4)+'%';
+  // }else if(user.strUnitID.endsWith('000')){
+  //   condition = user.strUnitID.substring(0,6)+'%';
+  // }
+  const where:Array<any> = [{
+      "relation": "AND",
+      "field": "z.strID",
+      "relationship": "LIKE",
+      "condition": condition
+    },
+    // {
+    //   "relation": "AND",
+    //   "field": "z.strWeapon",
+    //   "relationship": "!=",
+    //   "condition": "3"
+    // },
+  ]
   return request({
-    url: '/backend/db/default',
+    url: '/backend/db/defaultZyd',
     method: 'post',
     headers:{
       table:'`zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID',
     },
     data:{
       select:["z.*","u1.strName as `strMgrUnitName`","u2.strName as `strRelayUnitName`"],
-      where:[
-        {
-          "relation": "AND",
-          "field": "z.strID",
-          "relationship": "LIKE",
-          "condition": condition
-        },
-        // {
-        //   "relation": "AND",
-        //   "field": "z.strWeapon",
-        //   "relationship": "!=",
-        //   "condition": "3"
-        // },
-      ],
+      where,
       distinct:false,
       offset:0,
       limit:0,
@@ -268,25 +268,35 @@ export function 历史作业查询(){
 }
 
 export function 作业状态数据(signal:AbortSignal){
+  const setting = useSettingStore()
+  const prefixs = setting.人影.监控.checkedKeys.map(item=>{
+    return item.replace(/(00)+$/, '')
+  })
+  const filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
   return request({
     signal,
     url: '/backend/transaction',
     method: 'post',
     data:{
       sqls: [
-        "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL ORDER BY z.tmBeginApply DESC",
+        "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL "+filter+" ORDER BY z.tmBeginApply DESC",
       ],
     }
   })
 }
 export function 历史作业状态数据(signal:AbortSignal){
+  const setting = useSettingStore()
+  const prefixs = setting.人影.监控.checkedKeys.map(item=>{
+    return item.replace(/(00)+$/, '')
+  })
+  const filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
   return request({
     signal,
     url: '/backend/transaction',
     method: 'post',
     data:{
       sqls: [
-        `SELECT z.*,u1.strName AS strATCUnitIDName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' ORDER BY z.tmBeginApply DESC`,//当天的数据
+        `SELECT z.*,u1.strName AS strATCUnitIDName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' ${filter} ORDER BY z.tmBeginApply DESC`,//当天的数据
         // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
       ],
     }
@@ -1630,57 +1640,6 @@ export function getPlanPath(){
     })
   })
 }
-
-
-
-
-export function getRegion(){
-  return request({
-    url:'/backend/db/default',
-    method:'post',
-    headers:{
-      table:'map_border_info',
-    },
-    data:{
-      select:['adcode','name','childrenNum','parent_adcode'],
-      where:[
-        {
-          "relation": "AND",
-          "field": "adcode",
-          "relationship": '!=',
-          "condition": '100000_JD'
-        }
-      ],
-      "distinct": false,
-      "offset": 0,
-      "limit": 0
-    }
-  })
-}
-export function getAllShouldExpendRegion(){
-  return request({
-    url:'/backend/db/default',
-    method:'post',
-    headers:{
-      table:'map_border_info',
-    },
-    data:{
-      select:['adcode'],
-      where:[
-        {
-          "relation": "AND",
-          "field": "childrenNum",
-          "relationship": ">",
-          "condition": 0
-        }
-      ],
-      "distinct": false,
-      "offset": 0,
-      "limit": 0
-    }
-  })
-}
-
 export function 烟炉历史(paginationOption:any,range:[Date, Date]){
   return request({
     url:'/backend/db/default',
@@ -1828,6 +1787,53 @@ export function getSubRegion(adcode = '62'){
       ],
       groupby:['m.adcode','m.name'],
       orderby:['m.adcode asc'],
+      "distinct": false,
+      "offset": 0,
+      "limit": 0
+    }
+  })
+}
+
+export function getRegion(){
+  return request({
+    url:'/backend/db/default2',
+    method:'post',
+    headers:{
+      table:'map_border_info',
+    },
+    data:{
+      select:['adcode','name','childrenNum','parent_adcode'],
+      where:[
+        // {
+        //   "relation": "AND",
+        //   "field": "adcode",
+        //   "relationship": '!=',
+        //   "condition": '100000_JD'
+        // }
+      ],
+      "distinct": false,
+      "offset": 0,
+      "limit": 0
+    }
+  })
+}
+export function getAllShouldExpendRegion(){
+  return request({
+    url:'/backend/db/default',
+    method:'post',
+    headers:{
+      table:'map_border_info',
+    },
+    data:{
+      select:['adcode'],
+      where:[
+        {
+          "relation": "AND",
+          "field": "childrenNum",
+          "relationship": ">",
+          "condition": 0
+        }
+      ],
       "distinct": false,
       "offset": 0,
       "limit": 0

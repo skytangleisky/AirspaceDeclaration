@@ -17,9 +17,10 @@
       show-checkbox
       @check="handleCheck"
       node-key="id"
+      :check-strictly="false"
     >
       <template #default="{ node, data }">
-        <span>{{ node.label }}</span><div style="color:cyan">{{data.cnt}}</div>
+        <span>{{ data.name }}</span><div style="color:cyan">{{data.cnt}}</div>
       </template>
     </el-tree>
   </div>
@@ -30,8 +31,9 @@ import { useSysStatusStore } from '~/stores/sysStatus'
 const sys = useSysStatusStore()
 import { useUserStore } from '~/stores/user'
 const user = useUserStore()
-import { ref, watch, reactive, onMounted } from 'vue'
-import { getSubRegion } from '~/api/天工.ts'
+import { ref, watch, reactive, onMounted, nextTick } from 'vue'
+import { buildTree } from '~/tools'
+import { getSubRegion,getRegion } from '~/api/天工.ts'
 import type { FilterNodeMethodFunction, TreeInstance } from 'element-plus'
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
@@ -54,7 +56,7 @@ watch(filterText, (val) => {
 
 const filterNode: FilterNodeMethodFunction = (value: string, data: Tree) => {
   if (!value) return true
-  return data.label.includes(value)
+  return data.name.includes(value)
 }
 const data: Tree[] = reactive<Tree[]>([]);
 const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfCheckedNodes }) => {
@@ -64,7 +66,7 @@ const handleCheck = (data, { checkedKeys, checkedNodes, halfCheckedKeys, halfChe
   // console.log("半选的 keys:", halfCheckedKeys)
   setting.人影.监控.checkedKeys = checkedKeys
 }
-watch(()=>user.strUnitID,async(unitID)=>{
+watch([()=>user.strUnitID,()=>sys.作业点原始数据],async([unitID])=>{
   data.length = 0
   let prefix = unitID
   if(unitID.endsWith('0000000')){
@@ -74,19 +76,26 @@ watch(()=>user.strUnitID,async(unitID)=>{
   }else if(unitID.endsWith('000')){
     prefix = unitID.substring(0,6)
   }
-  await getSubRegion(prefix).then((res:any)=>{
-    res.data.results.map((item:any)=>{
-      data.push({
-        id: item.adcode,
-        label: item.name,
-        cnt:item.cnt,
-      })
-      // if(!setting.人影.监控.checkedKeys.includes(item.adcode)){
-      //   setting.人影.监控.checkedKeys.push(item.adcode)
-      // }
+  getRegion().then(res=>{
+    const arr = buildTree(res.data.results,prefix.padEnd(6,'0'))
+    data.splice(0,data.length,...arr)
+    nextTick(()=>{
+      treeRef.value?.setCheckedKeys(setting.人影.监控.checkedKeys)
     })
   })
-  treeRef.value!.setCheckedKeys(setting.人影.监控.checkedKeys)
+  // await getSubRegion(prefix).then((res:any)=>{
+  //   res.data.results.map((item:any)=>{
+  //     data.push({
+  //       id: item.adcode,
+  //       label: item.name,
+  //       cnt:item.cnt,
+  //     })
+  //     // if(!setting.人影.监控.checkedKeys.includes(item.adcode)){
+  //     //   setting.人影.监控.checkedKeys.push(item.adcode)
+  //     // }
+  //   })
+  // })
+  // treeRef.value!.setCheckedKeys(setting.人影.监控.checkedKeys)
 },{immediate:true})
 </script>
 

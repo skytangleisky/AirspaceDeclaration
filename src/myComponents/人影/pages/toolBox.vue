@@ -400,6 +400,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
   {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
   {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
+  {label: '糖果图', value: modelRef(setting, '人影.监控.糖果图'), type: 'checkbox'},
   ...(mask=='%%'?[
     {label: computed(()=>'二次雷达信号'+sys.planeCount), value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
     {label: '显示航迹圈', value: modelRef(setting, '人影.监控.显示航迹圈'), type: 'checkbox'},

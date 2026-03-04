@@ -32,6 +32,7 @@
   </div>
 </template>
 <script lang="ts" setup>
+  import { buildTree } from '~/tools'
   import { useSettingStore } from '~/stores/setting'
   const setting = useSettingStore()
   import { watch, ref, reactive, onMounted, nextTick } from 'vue'
@@ -61,17 +62,6 @@
     // console.log("半选的 keys:", halfCheckedKeys)
     setting.人影.监控.selectedRegion = checkedKeys
   }
-
-
-
-function buildTree(list: Array<any>, parentId: string | null = null): Array<any> {
-  return list.filter(item => item.parent_adcode === parentId).map(item => ({
-    ...item,
-    leaf: item.childrenNum === 0,
-    id: item.adcode,
-    children: buildTree(list, item.adcode)
-  }))
-}
 
   import { getRegion,getAllShouldExpendRegion } from '~/api/天工'
 
