@@ -1,35 +1,36 @@
 <template>
-  <div
-    class="transport"
-  >
-    <table style="width: 100%;">
-      <thead>
-        <tr style="z-index:1">
-          <th style="white-space: nowrap;">站点名称</th>
-          <th style="white-space: nowrap;">站点ID</th>
-          <th style="white-space: nowrap;">申请上报单位</th>
-          <th style="white-space: nowrap;">批复单位</th>
-          <th style="white-space: nowrap;">流转信息</th>
-        </tr>
-      </thead>
-      <tbody style="position: relative">
-        <td v-if="data.length==0" colspan="5">
-          <el-empty/>
-        </td>
-        <tr v-for="(item, key) in data" :key="key">
-          <td style="white-space: nowrap;">{{item.strName}}</td>
-          <td style="white-space: nowrap;">{{ item.strZydID }}</td>
-          <td style="white-space: nowrap;">{{ item.strUpApplyUnitName }}</td>
-          <td style="white-space: nowrap;">{{ item.strATCUnitIDName  }}</td>
-          <td style="white-space: nowrap;">{{ item.vecProcess }}</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="transport" >
+      <div class="box-container">
+          <el-table :data="data">
+              <template v-for="(item,index) in tableColumns" :key="index">
+                  <el-table-column :prop="item.prop" :label="item.label"></el-table-column>
+              </template>
+          </el-table>
+      </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import moment from "moment";
+
+const tableColumns = [
+    {
+        prop: "strName",
+        label: "站点名称",
+    },{
+        prop: "strZydID",
+        label: "站点ID",
+    },{
+        prop: "strUpApplyUnitName",
+        label: "申请上报单位",
+    },{
+        prop: "strATCUnitIDName",
+        label: "批复单位",
+    },{
+        prop: "vecProcess",
+        label: "流转信息",
+    },
+]
 function beginText(item: planDataType) {
   if (工作状态格式化(item.ubyStatus)=='作业批准') {
     let seconds = moment(item.tmBeginAnswer).diff(moment(), 'seconds')
