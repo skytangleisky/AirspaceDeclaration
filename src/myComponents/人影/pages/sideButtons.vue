@@ -55,7 +55,9 @@
         },]
     }, {
         name: '标绘',
-        children: [{
+        children: [
+        {name:'编辑',active:computed(()=>setting.绘制模式 === 'simple_select'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.编辑()},
+        {
             name: '标点',
             active: computed(() => setting.绘制模式 === 'draw_point'),
             click: (parent: any, index: number) => parent.children[index].active ? setting.绘制复原() : setting.标点()
