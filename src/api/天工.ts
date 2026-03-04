@@ -330,6 +330,7 @@ export function 历史作业数据({range,page,size}:{range?:[string,string]|und
       orderby:[
         'z.tmBeginApply DESC'
       ],
+      where,
       offset:(page-1)*size,
       limit:size,
     },

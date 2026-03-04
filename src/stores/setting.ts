@@ -447,7 +447,7 @@ export const useSettingStore = defineStore('setting',{
           districtBaseOpacity:1,
           districtLineOpened:true,
           districtLine:true,
-          districtLineWidth:2,
+          districtLineWidth:3,
           districtLineColor:{r:49,g:142,b:247,a:1},
           districtLineOpacity:1,
         },

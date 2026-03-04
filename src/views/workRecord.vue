@@ -65,7 +65,7 @@
             size: pageData.pageSize
         }
         历史作业数据(params).then(res => {
-            //console.log('历史作业记录',params.range, res.data)
+            console.log('历史作业记录',params, res.data)
             tableData.value = res.data.results
             pageData.total = res.data.total
         })

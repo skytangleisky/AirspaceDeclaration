@@ -620,7 +620,8 @@ export default function(){
 					'paint': {
 						'line-color': `rgba(${setting.人影.监控.districtOptions.districtLineColor.r},${setting.人影.监控.districtOptions.districtLineColor.g},${setting.人影.监控.districtOptions.districtLineColor.b},${setting.人影.监控.districtOptions.districtLineColor.a})`,
 						'line-width': 1,
-						'line-opacity': setting.人影.监控.districtOptions.districtLineOpacity,
+						// 'line-opacity': setting.人影.监控.districtOptions.districtLineOpacity,
+						'line-opacity': 0.5,
 						// 'line-dasharray': [1,1],
 					}
 				},

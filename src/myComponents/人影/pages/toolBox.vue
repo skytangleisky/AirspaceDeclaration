@@ -24,7 +24,7 @@
         </el-scrollbar>
       </div>
     </template>
-      <el-scrollbar v-if="hasPermission(['78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a'])" class="control-scrollbar">
+      <el-scrollbar style="display: none" v-if="hasPermission(['78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a'])" class="control-scrollbar">
           <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
       </el-scrollbar>
     <!--<div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">-->

@@ -5609,7 +5609,7 @@ onMounted(async() => {
       paint:{
         "raster-opacity":setting.人影.监控.tileOpacity
       }
-    })
+    },'wms-layer3')
     // map.addLayer(plane)
     // map.addLayer(CustomLayer)
     // map.addLayer(new PointLayer())
@@ -5673,7 +5673,7 @@ onMounted(async() => {
         'paint': {
           'line-color': '#fff',
           'line-width': 5,
-          'line-opacity':1,
+          'line-opacity':0,
         }
       })
       holes.push(...res.data.features)
@@ -6290,7 +6290,7 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
       'paint': {
         'line-color': '#fff',
         'line-width': 5,
-        'line-opacity':1,
+        'line-opacity':0,
       }
     })
     holes.push(...res.data.features)
