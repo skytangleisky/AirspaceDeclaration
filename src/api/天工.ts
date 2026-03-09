@@ -168,6 +168,14 @@ export function 作业点(){
     //   "condition": "3"
     // },
   ]
+  // if(user.strUnitID.startsWith('99')){
+  //   where.push({
+  //     "relation": "AND",
+  //     "field": "z.strMgrUnit",
+  //     "relationship": "=",
+  //     "condition": user.strUnitID
+  //   })
+  // }
   return request({
     url: '/backend/db/defaultZyd',
     method: 'post',
@@ -272,7 +280,11 @@ export function 作业状态数据(signal:AbortSignal){
   const prefixs = setting.人影.监控.checkedKeys.map(item=>{
     return item.replace(/(00)+$/, '')
   })
-  const filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
+  let filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
+  const user = useUserStore()
+  if(user.strUnitID.startsWith('99')){
+    filter = ""
+  }
   return request({
     signal,
     url: '/backend/transaction',

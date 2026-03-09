@@ -32,7 +32,7 @@
         <div class="top">
             <template v-for="(item, index) in tabList" :key="index">
                 <div
-                    v-if="hasPermission(item.permissions)"
+                    v-if="hasPermission(item.permission)"
                     style="pointer-events: auto;"
                     @click="tabActive ==item.label ? tabActive= '' : tabActive = item.label"
                 >
@@ -65,32 +65,32 @@
     import { useSettingStore } from '../../stores/setting'
     // top按钮渲染数据
     const tabList = reactive([{
-        permissions: ['04bca30f-14c9-4b4c-a93e-1155b792250e'],
+        permission: '04bca30f-14c9-4b4c-a93e-1155b792250e',
         label: '当前作业进度',
         icon: 'progress',
         type: 'progress',
         total: computed(() => props.当前作业进度.length),
     }, {
-        permissions: ['2c50aec7-971a-4dfc-b93a-384738f0c9cf'],
+        permission: '2c50aec7-971a-4dfc-b93a-384738f0c9cf',
         label: '今日作业记录',
         icon: 'plan-fill',
         type: 'PLANFILL',
         total: computed(() => props.今日作业记录.length),
     }, {
-        permissions: ['1cb7188d-4da9-47b9-b694-504d73252609'],
+        permission: '1cb7188d-4da9-47b9-b694-504d73252609',
         label: '空域流转信息',
         icon: 'transferInfo',
         type: 'transferInfo',
         total: computed(() => props.今日作业记录.length),
     }, {
-        permissions: ['9ab19aac-6926-4667-a749-5dfd09869198'],
+        permission: '9ab19aac-6926-4667-a749-5dfd09869198',
         label: '完成信息查询',
         icon: 'tasks',
         type: '完成信息查询',
         total: 0,
         hideBadge: true,
     }, {
-        permissions: ['773bffb5-1507-4e8b-a16c-bcb584882f87'],
+        permission: '773bffb5-1507-4e8b-a16c-bcb584882f87',
         label: '人影飞机',
         icon: 'plane',
         total: computed(() => sys.需要重点关注的飞机.length),

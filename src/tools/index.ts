@@ -5,18 +5,58 @@ import imageUrl from "~/assets/feather.svg?url";
 import arrowUrl from "~/assets/arrow.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
 import { useSysStatusStore } from '~/stores/sysStatus';
+import { useUserStore } from '~/stores/user';
 import { useSettingStore } from '~/stores/setting';
 import { computed, ComputedRef } from 'vue'
 export const modelRef = (obj: object,fields: string)=>computed({get:()=>new Function('obj', `return obj.${fields}`)(obj),set:(val: any)=>new Function('obj', 'val', `obj.${fields} = val`)(obj, val)})
-export function hasPermission(permissions: string[]) {
-  const setting = useSettingStore();
-  const set = new Set(permissions);
-  const recurse = (list: any[]): boolean =>
-    list.some(item =>
-      ((item.checked||item.indeterminate) && set.has(item.name)) ||
-      (Array.isArray(item.children) && recurse(item.children))
-    );
-  return recurse(setting.permissions);
+// export function hasPermission(name: string) {
+//   const user = useUserStore()
+//   const setting = useSettingStore()
+//   const roles = user.roles
+//   const permissions = setting.permissions
+//   function find(nodes: any[]): any | null {
+//     for (const node of nodes) {
+//       if (node.name === name) return node
+//       if (node.children?.length) {
+//         const r = find(node.children)
+//         if (r) return r
+//       }
+//     }
+//     return null
+//   }
+//   const node = find(permissions)
+//   if (!node) return false
+//   const nodeRoles = node.meta?.roles
+//   // 没写 roles 默认允许
+//   if (!nodeRoles || nodeRoles.length === 0) return true
+//   return roles.some((r: string) => nodeRoles.includes(r))
+// }
+export function hasPermission(name: string) {
+  const user = useUserStore()
+  const setting = useSettingStore()
+
+  const roles = user.roles
+  const permissions = setting.permissions
+
+  function find(nodes: any[], result: any[] = []) {
+    for (const node of nodes) {
+      if (node.name === name) result.push(node)
+      if (node.children?.length) {
+        find(node.children, result)
+      }
+    }
+    return result
+  }
+
+  const nodes = find(permissions)
+
+  if (!nodes.length) return false
+
+  return nodes.some((node) => {
+    const nodeRoles = node.meta?.roles
+    if (!nodeRoles || nodeRoles.length === 0) return true
+    return roles.some((r: string) => nodeRoles.includes(r))
+  })
 }
 export function fromDMS(v:string):[number,number]{
   if(v.indexOf('E')<v.indexOf('N')){
@@ -41,48 +81,21 @@ export function toDMS(lng: number, lat: number): string {
   let lngMinFull = (absLng - lngDeg) * 60;
   let lngMin = Math.floor(lngMinFull);
   let lngSec = (lngMinFull - lngMin) * 60;
-  let lngSec100 = Math.round(lngSec * 100); // 秒保留两位小数（乘100）
+  let lngSec100 = Math.floor(lngSec * 100); // 秒保留两位小数（乘100）
 
-  // 修正可能的进位问题
-  if (lngSec100 === 6000) {
-    lngSec100 = 0;
-    lngMin += 1;
-  }
-  if (lngMin === 60) {
-    lngMin = 0;
-    lngDeg += 1;
-  }
 
   // ===== 纬度 =====
   let latDeg = Math.floor(absLat);
   let latMinFull = (absLat - latDeg) * 60;
   let latMin = Math.floor(latMinFull);
   let latSec = (latMinFull - latMin) * 60;
-  let latSec100 = Math.round(latSec * 100);
-
-  if (latSec100 === 6000) {
-    latSec100 = 0;
-    latMin += 1;
-  }
-  if (latMin === 60) {
-    latMin = 0;
-    latDeg += 1;
-  }
+  let latSec100 = Math.floor(latSec * 100);
 
   // 补零并组合字符串
-  const lngStr =
-    String(lngDeg).padStart(3, "0") +
-    String(lngMin).padStart(2, "0") +
-    String(lngSec100).padStart(4, "0");
-
-  const latStr =
-    String(latDeg).padStart(2, "0") +
-    String(latMin).padStart(2, "0") +
-    String(latSec100).padStart(4, "0");
-
+  const lngStr = String(lngDeg).padStart(3, "0") + String(lngMin).padStart(2, "0") + String(lngSec100).padStart(4, "0");
+  const latStr = String(latDeg).padStart(2, "0") + String(latMin).padStart(2, "0") + String(latSec100).padStart(4, "0");
   return `${lngStr}${lngDir}${latStr}${latDir}`;
 }
-
 export const area = (vertices: Array<[number, number]>) => {
   let area = 0;
   for (let i = 0; i < vertices.length; i++) {

@@ -1,5 +1,9 @@
 <template>
     <div class="toolKitBgClass">
+        <Dialog
+            v-if="setting.人影.监控.是否显示作业面板"
+            v-model:menus="sys.符合条件的作业点数据"
+        ></Dialog>
         <template v-if="setting.人影.监控.是否显示分布面板">
             <GroundCommand>
                 <!-- <template v-slot:select>
@@ -29,6 +33,9 @@
     </div>
 </template>
 <script lang="ts" setup>
+    import { useSysStatusStore } from '~/stores/sysStatus';
+    const sys = useSysStatusStore();
+    import Dialog from '../dialog2.vue'
     import {computed} from 'vue'
     import BaseLayer from './工具/基础底图.vue'
     import MapTool from './工具/地图工具.vue'
@@ -56,14 +63,13 @@
         border-radius: $border-radius-2;
         top: 0;
         left: 0;
-        width: 6rem;
-        //height: 5.6rem;
+        width: 7rem;
         border: 1px solid var(--el-border-color);
         background-color: var(--el-bg-color-opacity-8);
         padding: $grid-3;
         pointer-events: auto;
         gap: $grid-2;
-        
+        flex:1;
         :deep(.toolMode) {
             background-color: var(--el-bg-color);
             border-radius: $border-radius-1;

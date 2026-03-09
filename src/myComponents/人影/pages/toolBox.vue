@@ -1,7 +1,10 @@
 <template>
   <div>
-    <template v-if="hasPermission(['12afdacf-0255-46d9-a0ec-7d9b2fc157da'])">
+    <template v-if="hasPermission('12afdacf-0255-46d9-a0ec-7d9b2fc157da')">
       <div class="tool-btns" v-if="setting.menus">
+        <div v-if="hasPermission('d1503195-0daa-3b8b-82f3-da29c156225d')" :class="`map-tool-btn ${setting.人影.监控.是否显示作业面板?'active':''}`" @click="workButtonClick">
+            <el-icon v-html="workSvg"></el-icon>
+        </div>
         <div :class="`map-tool-btn ${setting.人影.监控.是否显示分布面板?'active':''}`" @click="distributionButtonClick"><div class="distributionClass"></div><div class="triangleClass"></div></div>
         <div :class="`map-tool-btn ${setting.人影.监控.是否显示产品面板?'active':''}`" @click="productsButtonClick"><div class="productsClass"></div><div class="triangleClass"></div></div>
         <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick"><div class="toolClass"></div><div class="triangleClass"></div></div>
@@ -11,20 +14,21 @@
         <div class="side-box-left">
           <side-buttons></side-buttons>
         </div>
-        <el-scrollbar v-if="showPanel">
-          <MenuPanel></MenuPanel>
-        </el-scrollbar>
+        <MenuPanel v-if="showPanel"></MenuPanel>
       </div>
     </template>
-      <el-scrollbar v-if="hasPermission(['78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a'])" class="control-scrollbar">
-          <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
-      </el-scrollbar>
-    <!--<div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">-->
-    <!--  <control-pane style="position:relative" :list="list" theme="default"></control-pane>-->
-    <!--</div>-->
+    <el-scrollbar v-if="hasPermission('78e09c3c-bcd2-47b3-b1bc-287ba83b8d0a')"  :class="{'control-scrollbar':true,'top-left':user.roles.includes('分区'),'bottom-right':user.roles.includes('人影')}">
+      <control-pane style="position:relative;pointer-events: auto;" :list="list" theme="default"></control-pane>
+    </el-scrollbar>
+    <!-- <div style="position: absolute;pointer-events: auto;right:0;bottom:0;margin:10px;width:fit-content;box-sizing: border-box;height:auto;max-height:calc(100% - 20px);overflow: auto;border:1px solid red;">
+      <control-pane style="position:relative" :list="list" theme="default"></control-pane>
+    </div> -->
   </div>
 </template>
 <script lang="ts" setup>
+import {useUserStore} from '~/stores/user'
+const user = useUserStore()
+import workSvg from '~/assets/icons/work.svg?raw'
 import {hasPermission} from '~/tools/index'
 import sideButtons from './sideButtons.vue'
 import MenuPanel from './menuPanel.vue'
@@ -38,26 +42,35 @@ const ControlPane = defineAsyncComponent(() => import("~/myComponents/controlPan
 const setting = useSettingStore()
 const mapStatus = useMapStatusStore()
 const sys = useSysStatusStore()
+const workButtonClick = (e: any) => {
+    setting.人影.监控.是否显示作业面板 = !setting.人影.监控.是否显示作业面板
+    setting.人影.监控.是否显示分布面板 = false
+    setting.人影.监控.是否显示产品面板 = false
+    setting.人影.监控.是否显示工具面板 = false
+}
 const distributionButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = false
   setting.人影.监控.是否显示分布面板 = !setting.人影.监控.是否显示分布面板
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
   setting.devtoolsOpen = false
 }
 const productsButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = false
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = !setting.人影.监控.是否显示产品面板
   setting.人影.监控.是否显示工具面板 = false
   setting.devtoolsOpen = false
 }
 const toolkitButtonClick = (e: any) => {
+  setting.人影.监控.是否显示作业面板 = false
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = !setting.人影.监控.是否显示工具面板
   setting.devtoolsOpen = false
 }
 const showPanel = computed(()=>{
-  return setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板
+  return setting.人影.监控.是否显示分布面板 || setting.人影.监控.是否显示产品面板 || setting.人影.监控.是否显示工具面板 || setting.人影.监控.是否显示作业面板
 })
 import {useTheme} from '~/theme';
 import {modelRef} from '~/tools'
@@ -437,7 +450,106 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }),
     type: 'text'
   },
-
+  {
+    label: '固定图层',
+    type: 'folder',
+    opened: modelRef(setting, '人影.监控.fixedLayerOpened'),
+    children: [{
+        label: '铁路',
+        value: modelRef(setting, '铁路'),
+        type: 'checkbox'
+    }, {
+        label: '九段线',
+        value: modelRef(setting, '九段线'),
+        type: 'checkbox'
+    }, {
+        label: '国境线',
+        value: modelRef(setting, '国境线'),
+        type: 'checkbox'
+    }, {
+        label: '岛屿',
+        value: modelRef(setting, '岛屿'),
+        type: 'checkbox'
+    }, {
+        label: '河流',
+        value: modelRef(setting, '河流'),
+        type: 'checkbox'
+    }, {
+        label: '海岸线',
+        value: modelRef(setting, '海岸线'),
+        type: 'checkbox'
+    }, {
+        label: '省界',
+        value: modelRef(setting, '省界'),
+        type: 'checkbox'
+    }, {
+        label: '县界',
+        value: modelRef(setting, '县界'),
+        type: 'checkbox'
+    }, {
+        label: '地标点',
+        value: modelRef(setting, '地标点'),
+        type: 'checkbox'
+    }, {
+        label: '导航台',
+        value: modelRef(setting, '人影.监控.navigationStation'),
+        type: 'checkbox'
+    }, {
+        label: '机场',
+        value: modelRef(setting, '人影.监控.airport'),
+        type: 'checkbox'
+    }, {
+        label: '机场管制区',
+        value: modelRef(setting, '机场管制区'),
+        type: 'checkbox'
+    }, {
+        label: '省名',
+        value: modelRef(setting, '省名'),
+        type: 'checkbox'
+    }, {
+        label: '人影飞行区域',
+        value: computed({
+            get() {
+                return setting.人影.监控.ryAirspaces.base
+            },
+            set(val) {
+                setting.人影.监控.ryAirspaces.fill = val
+                setting.人影.监控.ryAirspaces.base = val
+                setting.人影.监控.ryAirspaces.line = val
+                setting.人影.监控.ryAirspaces.label = val
+            }
+        }),
+        type: 'checkbox'
+    }, {
+        label: '危险区',
+        value: modelRef(setting, '危险区'),
+        type: 'checkbox'
+    }, {
+        label: '禁区',
+        value: modelRef(setting, '禁区'),
+        type: 'checkbox'
+    }, {
+        label: '限制区',
+        value: modelRef(setting, '限制区'),
+        type: 'checkbox'
+    }, {
+        label: '飞行管制分区',
+        value: modelRef(setting, '飞行管制分区'),
+        type: 'checkbox'
+    }, {
+        label: '飞行管制区',
+        value: modelRef(setting, '飞行管制区'),
+        type: 'checkbox'
+    }, {
+        label: '航线',
+        value: modelRef(setting, '人影.监控.routeLine'),
+        type: 'checkbox'
+    }, {
+        label: '障碍物',
+        value: modelRef(setting, '障碍物'),
+        type: 'checkbox'
+    },]
+},
   {
     label: '系统信息', type: 'folder', opened: modelRef(setting, '人影.监控.systemInfoOpened'), children: [
       {label: '在线人数', value: modelRef(sys, '在线人数'), type: 'text'},
@@ -615,7 +727,10 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
         pointer-events: none;
         position: absolute;
         //bottom: 16px;
-        top: calc(#{$page-padding} + .4rem + #{$grid-3});
+        --top: calc(#{$page-padding} + .4rem + #{$grid-3});
+        top:var(--top);
+        max-height: calc(100% - var(--top) - 58px);
+        box-sizing: border-box;
         right: $page-padding;
         display: flex;
     }
@@ -657,13 +772,14 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     }
     .control-scrollbar{
         position: absolute;
-        top:10px;
-        right:10px;
-        bottom:10px;
         height:auto;
         pointer-events: none;
-        z-index: 2;
-        &::v-deep(.el-scrollbar__wrap){
+        z-index: 102;
+        &.bottom-right{
+          top:10px;
+          right:10px;
+          bottom:10px;
+          &::v-deep(.el-scrollbar__wrap){
             display: flex;
             flex-direction: column;
             // border:1px solid red;
@@ -674,6 +790,24 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
                 display: flex;
                 flex-flow: column-reverse;
             }
+          }
+        }
+        &.top-left{
+          left:10px;
+          top:10px;
+          bottom:10px;
+          &::v-deep(.el-scrollbar__wrap){
+            display: flex;
+            flex-direction: column;
+            // border:1px solid red;
+            box-sizing: border-box;
+            .el-scrollbar__view{
+                // border:1px solid #0f0;
+                flex:1;
+                display: flex;
+                flex-flow: column;
+            }
+          }
         }
     }
 </style>

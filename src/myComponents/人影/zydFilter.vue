@@ -77,7 +77,10 @@ watch([()=>user.strUnitID,()=>sys.作业点原始数据],async([unitID])=>{
     prefix = unitID.substring(0,6)
   }
   getRegion().then(res=>{
-    const arr = buildTree(res.data.results,prefix.padEnd(6,'0'))
+    let arr = buildTree(res.data.results,prefix.padEnd(6,'0'))
+    if(user.roles.includes('分区')){
+      arr = buildTree(res.data.results,null)
+    }
     data.splice(0,data.length,...arr)
     nextTick(()=>{
       treeRef.value?.setCheckedKeys(setting.人影.监控.checkedKeys)

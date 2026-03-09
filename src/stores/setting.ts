@@ -11,6 +11,23 @@ export const formatUrl = (url: string) => {
 }
 export const useSettingStore = defineStore('setting',{
   state:()=>({
+    铁路:false,
+    九段线:false,
+    国境线:false,
+    岛屿:false,
+    河流:false,
+    海岸线:false,
+    省界:false,
+    县界:false,
+    地标点:false,
+    机场管制区:false,
+    省名:false,
+    危险区:false,
+    禁区:false,
+    限制区:false,
+    飞行管制分区:false,
+    飞行管制区:false,
+    障碍物:false,
     polling:true,
     弹药概况:false,
     火箭架配置:false,
@@ -385,6 +402,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        tmpZydData:new Array<{name:string,value:string}>(),//作业点数据
         selectedRegion:new Array<string>('360000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),

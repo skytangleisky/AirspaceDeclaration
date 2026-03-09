@@ -15,18 +15,18 @@
         />
       </svg>
       <Dialog
-        v-if="hasPermission(['0a049c31-0648-4821-b598-0777dffbc34e'])"
+        v-if="hasPermission('0a049c31-0648-4821-b598-0777dffbc34e')"
         v-show="setting.menus"
         class="stationDialog"
-        v-model:menus="dialogOptions.menus"
+        v-model:menus="sys.符合条件的作业点数据"
       ></Dialog>
       <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
       <Batch2Dialog v-model:batchList="batchList2" v-model:pointDialogVisible="batch2DialogVisible"></Batch2Dialog>
       <plan-panel
-        v-if="hasPermission(['ff7bb524-5b7b-4343-b1c7-1f4e0070b436'])"
+        v-if="hasPermission('ff7bb524-5b7b-4343-b1c7-1f4e0070b436')"
         v-show="setting.menus"
-        :当前作业进度="planProps.当前作业进度"
-        :今日作业记录="planProps.今日作业记录"
+        :当前作业进度="sys.planProps.当前作业进度"
+        :今日作业记录="sys.planProps.今日作业记录"
       ></plan-panel>
       <!-- <el-select
         class="select"
@@ -73,7 +73,10 @@
           <li>手动发结束报</li> -->
         </ul>
       </div>
-      <Tool-Box />
+      <div v-if="hasPermission('3c87e8aa-60cf-4e69-831d-91970add1bd0')" style="position:absolute;bottom:10px;right:10px;font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;display: flex;align-items: center;"><div style="margin-right:10px;">{{ 数据时间 }}</div><Colormap></Colormap></div>
+      <left-buttons />
+      <Tool-Box/>
+      <BusinessLayer></BusinessLayer>
     </div>
     <!-- <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
       <template v-for="item in 视频列表" :key="item.strWorkID">
@@ -100,6 +103,20 @@
 </template>
 <script lang="ts" setup>
 let enclosureList = new Array<any>();
+const 数据时间 = computed(()=>{
+  if(setting.人影.监控.红外云图){
+      return setting.人影.监控.红外云图时间
+  }else if(setting.人影.监控.CMPAS降水融合3km){
+      return setting.人影.监控.CMPAS降水融合3km时间
+  }else if(setting.人影.监控.组合反射率){
+      return setting.人影.监控.组合反射率时间
+  }else if(setting.人影.监控.睿图雷达){
+      return setting.人影.监控.睿图雷达时间
+  }else if(setting.人影.监控.真彩图){
+      return setting.人影.监控.真彩图时间
+  }
+  return ''
+})
 import {hasPermission} from '~/tools/index'
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
@@ -107,6 +124,8 @@ import extrapolationUrl from '~/assets/extrapolation.svg'
 import SimpleLineLayer from './SimpleLineLayer.js';
 import { MapboxOverlay } from '@deck.gl/mapbox';
 import { TextLayer,PathLayer,IconLayer,ScatterplotLayer } from '@deck.gl/layers';
+
+import { 铁路,九段线,国境线,岛屿,河流,海岸线,省界,县界,地标,机场管制区,省名,危险区,禁区,限制区,飞行管制分区,飞行管制区,障碍物 } from '~/api/layer';
 const lineData = [
   [
     115.68354140757566,
@@ -853,8 +872,10 @@ import ConfigrueFlightActivity from '~/myComponents/人影/飞行活动/index.vu
 import ConfigrueUAVAirspace from '~/myComponents/人影/无人机空域/index.vue'
 import ConfigureEnclosure from '~/myComponents/人影/电子围栏/index.vue'
 import Overview from '~/myComponents/人影/弹药概况/index.vue'
+import LeftButtons from './LeftButtons/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
+import BusinessLayer from './业务图层/index.vue'
 const mettingList = csv2list(mettingData)
 import closeUrl from '~/assets/close.svg?raw'
 async function 批量烟炉操作(){
@@ -930,6 +951,8 @@ import { 辅助力量规划航迹 } from './辅助力量规划航迹.js'
 import { 紧急力量规划航迹 } from './紧急力量规划航迹.js'
 import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
+import upUrl from '~/assets/up.svg?url'
+import 地标Url from '~/assets/地标.svg?url'
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
@@ -970,7 +993,7 @@ import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed, 
 const cache = new Array()
 const 视频列表 = computed(()=>{
   const arr = new Array()
-  planProps.当前作业进度.forEach((item:any)=>{
+  sys.planProps.当前作业进度.forEach((item:any)=>{
     if(item.strZydID.startsWith('110')){
       if(cache.filter(it=>it.strZydID == item.strZydID).length>0){//复用缓冲中的记录，避免窗口被隐藏后，依然会被再次刷新列表展示出来
         arr.push(Object.assign(cache.filter(it=>it.strZydID == item.strZydID)[0],item))
@@ -1003,6 +1026,7 @@ import { loadImage2Map } from "~/tools/index.ts";
 import contour from './testContour'
 import contour2 from './discreteContour'
 import moment from "moment";
+import Colormap from './色标.vue'
 // import { wgs84togcj02 } from "~/myComponents/map/workers/mapUtil";
 function wgs84togcj02(lng,lat){//不做纠偏
   return [lng,lat]
@@ -1018,7 +1042,6 @@ import { useMapStatusStore } from "~/stores/mapStatus"
 const mapStatus = useMapStatusStore()
 const setting = useSettingStore();
 import * as turf from "@turf/turf";
-const dialogOptions = reactive({ menus: new Array() });
 const stationMenuRef = ref<HTMLDivElement>();
 const iframeRef = ref<HTMLIFrameElement>()
 const menuType=ref('地面作业申请');
@@ -1121,8 +1144,8 @@ let 批量申请 = () => {
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
   let list = []
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -1175,8 +1198,8 @@ function 显示射界(){
   */
   console.log(draw.getAll().features)
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -1198,8 +1221,8 @@ let 批量批复 = () => {
   alert('开发中···')
   return;
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -1232,8 +1255,8 @@ let 批量批复 = () => {
 }
 let 批量移除 = () => {
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -1431,10 +1454,6 @@ let map: any;
 const resize = () => {
   map && map.resize();
 };
-const planProps = reactive({
-  当前作业进度: new Array(),
-  今日作业记录: new Array(),
-});
 const props = withDefaults(
   defineProps<{
     prevReplyShow?: boolean;
@@ -2092,6 +2111,66 @@ const 批量操作 = ()=>{
 const 经纬度 = ()=>{
   setting.获取经纬度 = true
 }
+watch(()=>setting.铁路,()=>{
+  map.setLayoutProperty('rail-base','visibility',setting.铁路?'visible':'none')
+  map.setLayoutProperty('rail-inner','visibility',setting.铁路?'visible':'none')
+})
+watch(()=>setting.九段线,()=>{
+  map.setLayoutProperty('九段线图层','visibility',setting.九段线?'visible':'none')
+})
+watch(()=>setting.国境线,()=>{
+  map.setLayoutProperty('国境线-fill','visibility',setting.国境线?'visible':'none')
+  map.setLayoutProperty('国境线-outline','visibility',setting.国境线?'visible':'none')
+})
+watch(()=>setting.岛屿,()=>{
+  map.setLayoutProperty('岛屿-fill','visibility',setting.岛屿?'visible':'none')
+  map.setLayoutProperty('岛屿-outline','visibility',setting.岛屿?'visible':'none')
+})
+watch(()=>setting.河流,()=>{
+  map.setLayoutProperty('河流图层','visibility',setting.河流?'visible':'none')
+})
+watch(()=>setting.海岸线,()=>{
+  map.setLayoutProperty('海岸线图层','visibility',setting.海岸线?'visible':'none')
+})
+watch(()=>setting.省界,()=>{
+  map.setLayoutProperty('省界-fill','visibility',setting.省界?'visible':'none')
+  map.setLayoutProperty('省界-outline','visibility',setting.省界?'visible':'none')
+})
+watch(()=>setting.县界,()=>{
+  map.setLayoutProperty('县界-fill','visibility',setting.县界?'visible':'none')
+  map.setLayoutProperty('县界-outline','visibility',setting.县界?'visible':'none')
+})
+watch(()=>setting.地标点,()=>{
+  map.setLayoutProperty('四级地标图层','visibility',setting.地标点?'visible':'none')
+})
+watch(()=>setting.机场管制区,()=>{
+  map.setLayoutProperty('polygons-fill','visibility',setting.机场管制区?'visible':'none')
+  map.setLayoutProperty('polygons-outline','visibility',setting.机场管制区?'visible':'none')
+})
+watch(()=>setting.省名,()=>{
+  map.setLayoutProperty('省名图层','visibility',setting.省名?'visible':'none')
+})
+watch(()=>setting.危险区,()=>{
+  map.setLayoutProperty('危险区-fill','visibility',setting.危险区?'visible':'none')
+  map.setLayoutProperty('危险区-outline','visibility',setting.危险区?'visible':'none')
+})
+watch(()=>setting.禁区,()=>{
+  map.setLayoutProperty('禁区-fill','visibility',setting.禁区?'visible':'none')
+  map.setLayoutProperty('禁区-outline','visibility',setting.禁区?'visible':'none')
+})
+watch(()=>setting.限制区,()=>{
+  map.setLayoutProperty('限制区-fill','visibility',setting.限制区?'visible':'none')
+  map.setLayoutProperty('限制区-outline','visibility',setting.限制区?'visible':'none')
+})
+watch(()=>setting.飞行管制分区,()=>{
+  map.setLayoutProperty('飞行管制分区图层','visibility',setting.飞行管制分区?'visible':'none')
+})
+watch(()=>setting.飞行管制区,()=>{
+  map.setLayoutProperty('飞行管制区图层','visibility',setting.飞行管制区?'visible':'none')
+})
+watch(()=>setting.障碍物,()=>{
+  map.setLayoutProperty('障碍物图层','visibility',setting.障碍物?'visible':'none')
+})
 watch(()=>setting.人影.监控.糖果图,()=>{
   map?.setLayoutProperty('净空区','visibility',setting.人影.监控.糖果图?'visible':'none')
   map?.setLayoutProperty('净空区_line','visibility',setting.人影.监控.糖果图?'visible':'none')
@@ -2299,109 +2378,111 @@ onMounted(async() => {
   let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
-    const adcode = user.strUnitID.substring(0,6)
-    await axios.get(`/backend/region/${adcode+(adcode.endsWith('00')?'_full.json':'.json')}`).then(res=>{
-      map.addLayer({
-        'id': '360000_full.json_fill',
-        'type': 'fill',
-        'source': {
-          "type":"geojson",
-          "data": res.data
-        },
-        'layout': {
-          visibility:setting.人影.监控.sichuanOptions.district?'visible':'none'
-        },
-        'paint': {
-          'fill-color': `rgba(${setting.人影.监控.sichuanOptions.districtFillColor.r},${setting.人影.监控.sichuanOptions.districtFillColor.g},${setting.人影.监控.sichuanOptions.districtFillColor.b},${setting.人影.监控.sichuanOptions.districtFillColor.a})`,
-          'fill-outline-color':'transparent',
-          'fill-opacity':setting.人影.监控.sichuanOptions.districtFillOpacity,
-        }
-      })
-      map.addLayer({
-        'id': '360000_full.json_line',
-        'type': 'line',
-        'source': {
-          "type":"geojson",
-          "data": res.data
-        },
-        'layout': {
-          'visibility':setting.人影.监控.sichuanOptions.districtBase?'visible':'none',
-          'line-join':'round',
-          'line-cap':'round',
-        },
-        'paint': {
-          'line-color': `rgba(${setting.人影.监控.sichuanOptions.districtBaseColor.r},${setting.人影.监控.sichuanOptions.districtBaseColor.g},${setting.人影.监控.sichuanOptions.districtBaseColor.b},${setting.人影.监控.sichuanOptions.districtBaseColor.a})`,
-          'line-width': setting.人影.监控.sichuanOptions.districtBaseWidth,
-          'line-opacity':setting.人影.监控.sichuanOptions.districtBaseOpacity,
-        }
-      })
-      map.addLayer({
-        'id': '360000_full.json_over',
-        'type': 'line',
-        'source': {
-          "type":"geojson",
-          "data": res.data
-        },
-        'layout': {
-          'visibility':setting.人影.监控.sichuanOptions.districtLine?'visible':'none',
-          'line-join':'round',
-          'line-cap':'round',
-        },
-        'paint': {
-          'line-color': `rgba(${setting.人影.监控.sichuanOptions.districtLineColor.r},${setting.人影.监控.sichuanOptions.districtLineColor.g},${setting.人影.监控.sichuanOptions.districtLineColor.b},${setting.人影.监控.sichuanOptions.districtLineColor.a})`,
-          'line-width': setting.人影.监控.sichuanOptions.districtLineWidth,
-          'line-opacity':setting.人影.监控.sichuanOptions.districtLineOpacity,
-          // 'line-dasharray': [1,1],
-        }
-      })
-      if(!map.getLayer("360000_full.json_label")){
-        const tmp = res.data.features.map((feature:any)=>{
-          feature.geometry.type = 'Point'
-          feature.geometry.coordinates = feature.properties.center
-          return feature
+    if(!user.strUnitID.startsWith('99')){
+      const adcode = user.strUnitID.substring(0,6)
+      await axios.get(`/backend/region/${adcode+(adcode.endsWith('00')?'_full.json':'.json')}`).then(res=>{
+        map.addLayer({
+          'id': '360000_full.json_fill',
+          'type': 'fill',
+          'source': {
+            "type":"geojson",
+            "data": res.data
+          },
+          'layout': {
+            visibility:setting.人影.监控.sichuanOptions.district?'visible':'none'
+          },
+          'paint': {
+            'fill-color': `rgba(${setting.人影.监控.sichuanOptions.districtFillColor.r},${setting.人影.监控.sichuanOptions.districtFillColor.g},${setting.人影.监控.sichuanOptions.districtFillColor.b},${setting.人影.监控.sichuanOptions.districtFillColor.a})`,
+            'fill-outline-color':'transparent',
+            'fill-opacity':setting.人影.监控.sichuanOptions.districtFillOpacity,
+          }
         })
         map.addLayer({
-          id: "360000_full.json_label",
-          type: "symbol",
-          source: {
+          'id': '360000_full.json_line',
+          'type': 'line',
+          'source': {
             "type":"geojson",
-            "data": {
-              type: 'FeatureCollection',
-              features: tmp
-            }
+            "data": res.data
           },
-          layout: {
-            visibility: "visible",
-            "text-field": ["get", "name"],
-            "text-font": ["simkai"],
-            "text-size": 12,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,】,
-            "text-line-height": 1,
-            'text-anchor': 'center', // 水平垂直居中
-            'text-offset': [0, 0], // 调整文本偏移量
-            'text-justify': 'center', // 水平居中对齐
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-pitch-alignment": "map",
-            "text-rotation-alignment": "map",
-            "text-max-width": 400,
+          'layout': {
+            'visibility':setting.人影.监控.sichuanOptions.districtBase?'visible':'none',
+            'line-join':'round',
+            'line-cap':'round',
           },
-          paint: {
-            "text-color": "#fa0",
-            "text-halo-color": "black",
-            "text-halo-width": 1,
-            'text-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              5, 0,   // zoom <= 6 不显示文字
-              8, 1   // zoom >= 10 显示文字
-            ]
+          'paint': {
+            'line-color': `rgba(${setting.人影.监控.sichuanOptions.districtBaseColor.r},${setting.人影.监控.sichuanOptions.districtBaseColor.g},${setting.人影.监控.sichuanOptions.districtBaseColor.b},${setting.人影.监控.sichuanOptions.districtBaseColor.a})`,
+            'line-width': setting.人影.监控.sichuanOptions.districtBaseWidth,
+            'line-opacity':setting.人影.监控.sichuanOptions.districtBaseOpacity,
           }
-        });
-      }
-    })
+        })
+        map.addLayer({
+          'id': '360000_full.json_over',
+          'type': 'line',
+          'source': {
+            "type":"geojson",
+            "data": res.data
+          },
+          'layout': {
+            'visibility':setting.人影.监控.sichuanOptions.districtLine?'visible':'none',
+            'line-join':'round',
+            'line-cap':'round',
+          },
+          'paint': {
+            'line-color': `rgba(${setting.人影.监控.sichuanOptions.districtLineColor.r},${setting.人影.监控.sichuanOptions.districtLineColor.g},${setting.人影.监控.sichuanOptions.districtLineColor.b},${setting.人影.监控.sichuanOptions.districtLineColor.a})`,
+            'line-width': setting.人影.监控.sichuanOptions.districtLineWidth,
+            'line-opacity':setting.人影.监控.sichuanOptions.districtLineOpacity,
+            // 'line-dasharray': [1,1],
+          }
+        })
+        if(!map.getLayer("360000_full.json_label")){
+          const tmp = res.data.features.map((feature:any)=>{
+            feature.geometry.type = 'Point'
+            feature.geometry.coordinates = feature.properties.center
+            return feature
+          })
+          map.addLayer({
+            id: "360000_full.json_label",
+            type: "symbol",
+            source: {
+              "type":"geojson",
+              "data": {
+                type: 'FeatureCollection',
+                features: tmp
+              }
+            },
+            layout: {
+              visibility: "visible",
+              "text-field": ["get", "name"],
+              "text-font": ["simkai"],
+              "text-size": 12,
+              "text-transform": "uppercase",
+              // "text-letter-spacing": 0.05,】,
+              "text-line-height": 1,
+              'text-anchor': 'center', // 水平垂直居中
+              'text-offset': [0, 0], // 调整文本偏移量
+              'text-justify': 'center', // 水平居中对齐
+              "text-ignore-placement": true,
+              "text-allow-overlap": true,
+              "text-pitch-alignment": "map",
+              "text-rotation-alignment": "map",
+              "text-max-width": 400,
+            },
+            paint: {
+              "text-color": "#fa0",
+              "text-halo-color": "black",
+              "text-halo-width": 1,
+              'text-opacity': [
+                'interpolate',
+                ['linear'],
+                ['zoom'],
+                5, 0,   // zoom <= 6 不显示文字
+                8, 1   // zoom >= 10 显示文字
+              ]
+            }
+          });
+        }
+      })
+    }
     fpsTimer = setInterval(()=>{
       sys.fps = map.painter.frameCounter - lastFrameCounter
       lastFrameCounter = map.painter.frameCounter
@@ -3110,6 +3191,21 @@ onMounted(async() => {
       高炮图标:{style:"fill:white;stroke:black;stroke-width:20px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;"}
     })
     await addFeatherImages(map);
+    await loadImage2Map(map,upUrl,16,16,{
+      up:{
+        style: 'fill:yellow;stroke:black;stroke-width:20px;',
+      }
+    })
+    await loadImage2Map(map,地标Url,4,4,{
+      地标:{
+        style: 'fill:#f40;stroke:black;stroke-width:20px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
+    await loadImage2Map(map,地标Url,8,8,{
+      地标_white:{
+        style: 'fill:#fff;stroke:black;stroke-width:20px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+      }
+    })
     /*
     axios({
       method: 'get',
@@ -3867,7 +3963,7 @@ onMounted(async() => {
       }
     }
     // getTodayRecords().then((res:any)=>{
-    //   planProps.今日作业记录 = res.data.data;
+    //   sys.planProps.今日作业记录 = res.data.data;
     // })
     if(!map.getSource("最大射程source")){
       map.addSource("最大射程source", {
@@ -3888,7 +3984,7 @@ onMounted(async() => {
       if(!map)
         return
       sys.作业点原始数据 = res.data.results;
-      dialogOptions.menus = sys.作业点原始数据.filter((item:any)=>{
+      sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
         for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
           if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
             return true
@@ -5025,9 +5121,9 @@ onMounted(async() => {
             }
           }
         }
-        planProps.当前作业进度.splice(0,planProps.当前作业进度.length,...res.data[0]);
-        for(let i=planProps.当前作业进度.length-1;i>=0;i--){
-          let row = planProps.当前作业进度[i]
+        sys.planProps.当前作业进度.splice(0,sys.planProps.当前作业进度.length,...res.data[0]);
+        for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
+          let row = sys.planProps.当前作业进度[i]
           row.ubySendStatus = 3//发送成功
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
@@ -5122,9 +5218,9 @@ onMounted(async() => {
       abortController2?.abort()
       abortController2 = new AbortController()
       历史作业状态数据(abortController2.signal).then(res=>{
-        planProps.今日作业记录.splice(0,planProps.今日作业记录.length,...res.data[0]);
-        for(let i=planProps.今日作业记录.length-1;i>=0;i--){
-          let row = planProps.今日作业记录[i]
+        sys.planProps.今日作业记录.splice(0,sys.planProps.今日作业记录.length,...res.data[0]);
+        for(let i=sys.planProps.今日作业记录.length-1;i>=0;i--){
+          let row = sys.planProps.今日作业记录[i]
           row.ubySendStatus = 3//发送成功
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
@@ -5149,9 +5245,9 @@ onMounted(async() => {
     work1()
     work2()
     // getDevice().then((res) => {
-    //   dialogOptions.menus = res.data;
+    //   sys.符合条件的作业点数据 = res.data;
     //   let features: any = [];
-    //   dialogOptions.menus.map((item: any) => {
+    //   sys.符合条件的作业点数据.map((item: any) => {
     //     let position: [number, number] = (wgs84togcj02(...fromDMS(item.lngLat)) as unknown) as [
     //       number,
     //       number
@@ -5614,6 +5710,864 @@ onMounted(async() => {
         "raster-opacity":setting.人影.监控.tileOpacity
       }
     })
+    铁路().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              type: 'Feature',
+              properties: { type: 'solid' },
+              geometry: {
+                type: 'MultiLineString',
+                coordinates: new Array()
+              }
+            },
+            {
+              type: 'Feature',
+              properties: { type: 'dashed' },
+              geometry: {
+                type: 'MultiLineString',
+                coordinates: new Array()
+              }
+            }
+          ]
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        item.points = item.points.split(' ').map((item:string)=>fromDMS(item))
+        lineFeaturesData.data.features[0].geometry.coordinates.push(item.points)
+        lineFeaturesData.data.features[1].geometry.coordinates.push(item.points)
+      })
+      map.addSource('lines', lineFeaturesData);
+
+      map.addLayer({
+        id: 'rail-base',
+        type: 'line',
+        source: 'lines',
+        filter: ['==', ['get', 'type'], 'solid'],
+        layout:{
+          visibility:setting.铁路?'visible':'none'
+        },
+        paint: {
+          'line-color': '#444',
+          'line-width': 2
+        }
+      });
+
+      map.addLayer({
+        id: 'rail-inner',
+        type: 'line',
+        source: 'lines',
+        layout:{
+          visibility:setting.铁路?'visible':'none'
+        },
+        paint: {
+          'line-color': '#fff',
+          'line-width': 1,
+          'line-dasharray': [4, 4]
+        }
+      });
+    })
+    九段线().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature =             {
+          type: 'Feature',
+          properties: { type: 'solid' },
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.split(/\s+/g).map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      })
+      map.addSource('九段线', lineFeaturesData);
+      map.addLayer({
+        id: '九段线图层',
+        type: 'line',
+        source: '九段线',
+        layout: {
+          visibility: setting.九段线?'visible':'none',
+        },
+        paint: {
+          'line-color': 'white',
+          'line-width': 2
+        }
+      });
+    })
+    国境线().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.trim().split(/\s+/g)
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('国境线', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '国境线-fill',
+        type: 'fill',
+        source: '国境线',
+        layout:{
+          visibility:setting.国境线?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.2
+        }
+      });
+      map.addLayer({
+        id: '国境线-outline',
+        type: 'line',
+        source: '国境线',
+        layout:{
+          visibility:setting.国境线?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+    })
+    岛屿().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.trim().split(/\s+/g)
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('岛屿', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '岛屿-fill',
+        type: 'fill',
+        source: '岛屿',
+        layout:{
+          visibility:setting.岛屿?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.2
+        }
+      });
+      map.addLayer({
+        id: '岛屿-outline',
+        type: 'line',
+        source: '岛屿',
+        layout:{
+          visibility:setting.岛屿?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+    })
+    河流().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature =             {
+          type: 'Feature',
+          properties: { type: 'solid' },
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.split(/\s+/g).map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      })
+      map.addSource('河流', lineFeaturesData);
+      map.addLayer({
+        id: '河流图层',
+        type: 'line',
+        source: '河流',
+        layout: {
+          visibility: setting.河流?'visible':'none',
+        },
+        paint: {
+          'line-color': 'green',
+          'line-width': 2
+        }
+      });
+    })
+    海岸线().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature =             {
+          type: 'Feature',
+          properties: { type: 'solid' },
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.split(/\s+/g).map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      })
+      map.addSource('海岸线', lineFeaturesData);
+      map.addLayer({
+        id: '海岸线图层',
+        type: 'line',
+        source: '海岸线',
+        layout: {
+          visibility: setting.海岸线?'visible':'none',
+        },
+        paint: {
+          'line-color': 'white',
+          'line-width': 2
+        }
+      });
+    })
+    省界().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('省界', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '省界-fill',
+        type: 'fill',
+        source: '省界',
+        layout:{
+          visibility:setting.省界?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.2
+        }
+      });
+      map.addLayer({
+        id: '省界-outline',
+        type: 'line',
+        source: '省界',
+        layout:{
+          visibility:setting.省界?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    县界().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('县界', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '县界-fill',
+        type: 'fill',
+        source: '县界',
+        layout:{
+          visibility:setting.县界?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.2
+        }
+      });
+      map.addLayer({
+        id: '县界-outline',
+        type: 'line',
+        source: '县界',
+        layout:{
+          visibility:setting.县界?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    地标('四级地标').then(res=>{
+      const features = res.data.results.map((item:any)=>{
+        return {
+          type: 'Feature',
+          properties: { color: '#888',name:item.name },
+          geometry: {
+            type: 'Point',
+            coordinates: fromDMS(item.pos)
+          }
+        }
+      })
+      map.addSource("四级地标", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features,
+        },
+      });
+      map.addLayer({
+        id: "四级地标图层",
+        type: "symbol",
+        source: "四级地标",
+        minzoom:7,
+        layout: {
+          "visibility":setting.地标点?'visible':'none',
+          "icon-image": "地标",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-size":10,
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "text-color": "gray",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+          'text-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7, 0,   // zoom <= 9 不显示文字
+            10, 1   // zoom >= 10 显示文字
+          ],
+          'icon-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            7, 0,   // zoom <= 9 不显示文字
+            10, 1   // zoom >= 10 显示文字
+          ],
+        },
+      });
+    })
+    机场管制区().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#888' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('polygons', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: 'polygons-fill',
+        type: 'fill',
+        source: 'polygons',
+        layout:{
+          visibility:setting.机场管制区?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.2
+        }
+      });
+      map.addLayer({
+        id: 'polygons-outline',
+        type: 'line',
+        source: 'polygons',
+        layout:{
+          visibility:setting.机场管制区?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    省名().then(res=>{
+      const features = res.data.results.map((item:any)=>{
+        return {
+          type: 'Feature',
+          properties: { color: '#888',name:item.name },
+          geometry: {
+            type: 'Point',
+            coordinates: fromDMS(item.pos)
+          }
+        }
+      })
+      map.addSource("省名", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features,
+        },
+      });
+      map.addLayer({
+        id: "省名图层",
+        type: "symbol",
+        source: "省名",
+        minzoom:3,
+        layout: {
+          "visibility":setting.省名?'visible':'none',
+          "icon-image": "地标_white",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-size":14,
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "text-color": "gray",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+          // 'text-opacity': [
+          //   'interpolate',
+          //   ['linear'],
+          //   ['zoom'],
+          //   7, 0,   // zoom <= 9 不显示文字
+          //   10, 1   // zoom >= 10 显示文字
+          // ],
+          // 'icon-opacity': [
+          //   'interpolate',
+          //   ['linear'],
+          //   ['zoom'],
+          //   7, 0,   // zoom <= 9 不显示文字
+          //   10, 1   // zoom >= 10 显示文字
+          // ],
+        },
+      });
+    })
+    危险区().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#faf' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('危险区', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '危险区-fill',
+        type: 'fill',
+        source: '危险区',
+        layout:{
+          visibility:setting.危险区?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.5
+        }
+      });
+      map.addLayer({
+        id: '危险区-outline',
+        type: 'line',
+        source: '危险区',
+        layout:{
+          visibility:setting.危险区?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    禁区().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#f00' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('禁区', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '禁区-fill',
+        type: 'fill',
+        source: '禁区',
+        layout:{
+          visibility:setting.禁区?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.5
+        }
+      });
+      map.addLayer({
+        id: '禁区-outline',
+        type: 'line',
+        source: '禁区',
+        layout:{
+          visibility:setting.禁区?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    限制区().then(res=>{
+      const featureCollectionData = {
+        type: 'FeatureCollection',
+        features: new Array()
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature = {
+          type: 'Feature',
+          properties: { color: '#ff0' },
+          geometry: {
+            type: 'Polygon',
+            coordinates: new Array()
+          }
+        }
+        const arr = item.points.split(' ')
+        const points = arr.map((item:string)=>fromDMS(item))
+        if(arr[0]!==arr[arr.length - 1]){
+          points.push(points[0])
+        }
+        feature.geometry.coordinates.push(points)
+        featureCollectionData.features.push(feature)
+      })
+      map.addSource('限制区', {
+        type: 'geojson',
+        data: featureCollectionData
+      });
+
+      map.addLayer({
+        id: '限制区-fill',
+        type: 'fill',
+        source: '限制区',
+        layout:{
+          visibility:setting.限制区?'visible':'none'
+        },
+        paint: {
+          'fill-color': ['get', 'color'],
+          'fill-opacity': 0.5
+        }
+      });
+      map.addLayer({
+        id: '限制区-outline',
+        type: 'line',
+        source: '限制区',
+        layout:{
+          visibility:setting.限制区?'visible':'none'
+        },
+        paint: {
+          'line-color': ['get', 'color'],
+          'line-width': 2
+        }
+      });
+
+    })
+    飞行管制分区().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      for(let i=0;i<res.data.results.length;i++){
+        const item = res.data.results[i]
+        const feature = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.trim().split(/\s+/).map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      }
+      map.addSource('飞行管制分区', lineFeaturesData);
+      map.addLayer({
+        id: '飞行管制分区图层',
+        type: 'line',
+        source: '飞行管制分区',
+        layout:{
+          visibility:setting.飞行管制分区?'visible':'none'
+        },
+        paint: {
+          'line-color': '#fff',
+          'line-width': 2
+        }
+      });
+    })
+    飞行管制区().then(res=>{
+      const lineFeaturesData = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+      }
+      res.data.results.forEach((item:any)=>{
+        const feature =             {
+          type: 'Feature',
+          properties: { type: 'solid' },
+          geometry: {
+            type: 'LineString',
+            coordinates: item.points.split(' ').map((item:string)=>fromDMS(item))
+          }
+        }
+        lineFeaturesData.data.features.push(feature)
+      })
+      map.addSource('飞行管制区', lineFeaturesData);
+      map.addLayer({
+        id: '飞行管制区图层',
+        type: 'line',
+        source: '飞行管制区',
+        layout:{
+          visibility:setting.飞行管制区?'visible':'none'
+        },
+        paint: {
+          'line-color': '#fff',
+          'line-width': 2
+        }
+      });
+    })
+    障碍物().then((res:any)=>{
+      const features = res.data.results.map((item:any)=>{
+        return {
+          type: 'Feature',
+          properties: { color: '#888',name:item.name },
+          geometry: {
+            type: 'Point',
+            coordinates: fromDMS(item.pos)
+          }
+        }
+      })
+      map.addSource("障碍物", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features,
+        },
+      });
+      map.addLayer({
+        id: "障碍物图层",
+        type: "symbol",
+        source: "障碍物",
+        layout: {
+          "icon-image": "up",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: setting.障碍物 ? 'visible' : 'none',
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          'icon-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            4, 0.25,
+            5, 0.25,
+            8, 0.6,
+            15, 1.0
+          ],
+          'text-size':10,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "left",
+          "text-line-height": 1,
+          "text-justify": "left",
+          "text-offset": [1, 0],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "icon-opacity": 1,
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
+      });
+    })
     // map.addLayer(plane)
     // map.addLayer(CustomLayer)
     // map.addLayer(new PointLayer())
@@ -5638,7 +6592,6 @@ onMounted(async() => {
       }
       map.getSource('stoveSource').setData(stoveFeaturesData)
     })
-
     const holes:any = []
     for(let item of setting.人影.监控.selectedRegion){
       const res = await axios.get(`/backend/region/${item}.json`)
@@ -6341,7 +7294,7 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
   })
 },{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
-  dialogOptions.menus = sys.作业点原始数据.filter((item:any)=>{
+  sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
     for(let i=0;i<val.length;i++){
       if(item.strID.startsWith(val[i].replace(/(00)+$/, ''))){
         return true

@@ -30,8 +30,7 @@
                         v-model="options.value"
                         clearable
                     />
-                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;"
-                               @click="()=>show=true"/>
+                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="()=>show=true"/>
                 </div>
                 <div class="contain" @mousedown.stop>
                     <div

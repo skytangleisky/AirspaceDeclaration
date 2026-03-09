@@ -55,6 +55,11 @@ export const useSysStatusStore = defineStore('sysStatus',{
       duration: 1,
     },
     作业点原始数据:shallowReactive<any[]>([]),
+    符合条件的作业点数据:shallowReactive<any[]>([]),
+    planProps: {
+      当前作业进度: shallowReactive(new Array()),
+      今日作业记录: shallowReactive(new Array()),
+    }
   }),
   persist: false,
 })
