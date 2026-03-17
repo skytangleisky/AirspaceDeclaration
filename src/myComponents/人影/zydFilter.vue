@@ -20,7 +20,7 @@
       :check-strictly="false"
     >
       <template #default="{ node, data }">
-        <span>{{ data.name }}</span><div style="color:cyan">{{data.cnt}}</div>
+        <span>{{ data.name }}</span><div :style="{color:data.cnt>0?'var(--el-color-success)':'var(--el-text-color-secondary)'}">{{data.cnt}}</div>
       </template>
     </el-tree>
   </div>

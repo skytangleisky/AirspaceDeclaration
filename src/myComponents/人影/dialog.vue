@@ -134,7 +134,6 @@
     import { useStationStore } from '~/stores/station'
     import { eventbus } from '~/eventbus'
     import { useSettingStore } from '~/stores/setting'
-    
     const show = ref(false)
     const setting = useSettingStore()
     const 数据时间 = computed(() => {

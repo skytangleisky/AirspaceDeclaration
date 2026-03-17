@@ -117,7 +117,7 @@ const 数据时间 = computed(()=>{
   }
   return ''
 })
-import {hasPermission} from '~/tools/index'
+import {hasPermission,debounce} from '~/tools/index'
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
 import extrapolationUrl from '~/assets/extrapolation.svg'
@@ -511,32 +511,180 @@ const deckOverlay2 = new MapboxOverlay({
 });
 let hoverObject:any;
 let activeObject:any;
-function updateTextLayer2(textData:any) {
-  deckOverlay2.setProps({
+function aircraft01(textData:any){
+  deckOverlay.setProps({
     layers: [
       new SimpleLineLayer({
+        pickable:false,
         visible:setting.人影.监控.planeLabel,
         id: 'screen-line',
-        data: textData.filter(d => d.显示标牌),
-        getPosition: d => [d.fLongitude, d.fLatitude],
-        getAngle: d => 0,
-        getLength: d => 10,
-        getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
+        data: textData.filter((d:any)=>d.显示标牌),
+        getPosition: (d:any) => [116.4, 39.9, 0],
+        getAngle: (d:any) => 0,
+        getLength: (d:any) => 100,
+        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
       }),
       new PathLayer({
         visible:setting.人影.监控.track,
         id: 'path-trail',
-        data:textData.filter(d=>d.显示历史轨迹),
-        getPath: d=>d.trail,
-        getColor: d=>d==hoverObject?[255,255,0,255]:[255, 255, 255],
+        data:textData.filter((d:any)=>d.显示历史轨迹),
+        getPath: (d:any) => d.trail,
+        getColor: (d:any) => [255, 255, 255, 255],
         getWidth: 0.1,
         widthUnits: 'pixels',
       }),
       new ScatterplotLayer({
         visible:setting.人影.监控.track,
         id: 'path-trail-points',
-        data:textData.filter(d=>d.显示尾迹).flatMap(d => d.trail),
-        getPosition: d => d,
+        data:textData.filter((d:any)=>d.显示尾迹).flatMap((d:any) => d.trail),
+        getPosition: (d:any) => d,
+        getRadius: 2,        // 米（或像素，见下）
+        radiusUnits: 'pixels',
+        getFillColor: [255, 255, 255, 160],
+        pickable: false,
+      }),
+      new PathLayer({
+        id: 'path-layer',
+        data:textData.filter((d:any)=>d.显示速度矢量线),
+        getPath: (d:any) => [[d.fLongitude, d.fLatitude,d.iAltitudeADS2],...d.trajectory],
+        visible: setting.人影.监控.速度矢量线,
+        getColor: (d:any) => d==hoverObject?[255,255,255,255]:[255, 255, 255,255],
+        getWidth: 1,
+        widthUnits: 'pixels',
+      }),
+      // new IconLayer({
+      //   id: 'icon-layer2',
+      //   data: textData,
+      //   getIcon: d => ({
+      //     url: planeImageData.airplane,
+      //     width: 24,
+      //     height: 24,
+      //   }),
+      //   getAngle: d => -d.fHeading,
+      //   getPosition: d => [d.fLongitude, d.fLatitude],
+      //   getSize: d => 24,
+      //   sizeScale: 1,
+      //   billboard: false
+      // }),
+      new IconLayer({
+        id: 'icon-layer',
+        pickable:true,
+        data: textData,
+        getIcon: d => {
+          if(d.ubyTrackState == 2){
+            return {
+              url: extrapolationImageData.extrapolation,
+              width:10,
+              height:10
+            }
+          }
+          return d==hoverObject?{
+            url: squareImageData.airplaneMock,
+            width: 8,
+            height: 8,
+          }:{
+            url: squareImageData.airplane,
+            width: 8,
+            height: 8,
+          }
+        },
+        getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
+        getSize: d => 10,
+        sizeScale: 1,
+        billboard: false,
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            aircraft01(textData.slice())
+          }
+        },
+      }),
+      new TextLayer({
+        visible:setting.人影.监控.planeLabel,
+        id: 'text-layer',
+        data:textData.filter((d:any)=>d.显示标牌),
+        pickable: true,
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
+        getText: (d:any) => d.label,
+        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
+        getSize: 12,
+        getAngle: 0,
+        getTextAnchor: 'start',
+        getAlignmentBaseline: 'center',
+        // fontFamily: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
+        // fontSettings: {
+        //   sdf: false,
+        //   // 防止生成 atlas 过慢，可限制生成大小
+        //   buffer: 3,
+        //   size: 6400,
+        // },
+        fontSettings: {
+          characterSet: 'auto', // ✅ 自动扫描数据中的字符
+        },
+        billboard: true,  // 始终朝向屏幕
+        background: true,
+        getBackgroundColor: [255, 255, 255, 0],
+        border: true,
+        getBorderColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[0,0,0,0],
+        getBorderWidth: 1,
+        backgroundPadding:[4,4],
+        backgroundBorderRadius:0,
+        getPixelOffset: (d:any) => [d.offset[0],d.offset[1]],
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            aircraft01(textData.slice())
+          }
+        },
+        updateTriggers:{
+          getPixelOffset: (d:any) => d.offset,
+          getBorderColor: hoverObject,
+        },
+      }),
+      new ScatterplotLayer({
+        visible: setting.人影.监控.显示航迹圈,
+        id: 'circles',
+        data: textData.filter((d:any)=>d.显示航迹圈),
+        pickable: false,
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude],
+        getRadius: (d:any) => 10e3, // 单位由 radiusUnits 决定
+        radiusUnits: 'meters',          // 可省略（默认 meters）
+        getFillColor: [0, 0, 0, 0],
+        stroked: true,
+        getLineColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
+        lineWidthUnits: 'pixels',
+        getLineWidth: 1,
+        radiusMinPixels: 2,
+      }),
+    ]
+  })
+}
+function aircraft02(textData:any) {
+  deckOverlay2.setProps({
+    layers: [
+      new SimpleLineLayer({
+        visible:setting.人影.监控.planeLabel,
+        id: 'screen-line',
+        data: textData.filter((d:any) => d.显示标牌),
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude],
+        getAngle: (d:any) => 0,
+        getLength: (d:any) => 10,
+        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
+      }),
+      new PathLayer({
+        visible:setting.人影.监控.track,
+        id: 'path-trail',
+        data:textData.filter((d:any) => d.显示历史轨迹),
+        getPath: (d:any) => d.trail,
+        getColor: (d:any) => d==hoverObject?[255,255,0,255]:[255, 255, 255],
+        getWidth: 0.1,
+        widthUnits: 'pixels',
+      }),
+      new ScatterplotLayer({
+        visible:setting.人影.监控.track,
+        id: 'path-trail-points',
+        data:textData.filter((d:any) => d.显示尾迹).flatMap((d:any) => d.trail),
+        getPosition: (d:any) => d,
         getRadius: 2,        // 米（或像素，见下）
         radiusUnits: 'pixels',
         getFillColor: [0, 180, 255, 160],
@@ -547,7 +695,7 @@ function updateTextLayer2(textData:any) {
         visible:setting.人影.监控.planeLabel,
         id: 'billboard-layer',
         pickable:true,
-        data: textData.filter(item => item.显示标牌),
+        data: textData.filter((item:any) => item.显示标牌),
         iconAtlas:billboardUrl,
         iconMapping:{
           marker: {
@@ -565,9 +713,9 @@ function updateTextLayer2(textData:any) {
             mask: false,
           }
         },
-        getPixelOffset: d => [d.offset[0]+80,d.offset[1]],
-        getIcon: d => d==hoverObject?'active':'marker',
-        getPosition: d => [d.fLongitude, d.fLatitude],
+        getPixelOffset: (d:any) => [d.offset[0]+80,d.offset[1]],
+        getIcon: (d:any) => d==hoverObject?'active':'marker',
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude],
         getSize: 152,
         sizeScale: 0.45,
         billboard: true,
@@ -575,11 +723,11 @@ function updateTextLayer2(textData:any) {
         onHover(info,evt){
           if(!mouseDownEvt){
             hoverObject = info.object
-            updateTextLayer2(textData.slice())
+            aircraft02(textData.slice())
           }
         },
         updateTriggers:{
-          getPixelOffset: textData.map(d => d.offset),
+          getPixelOffset: textData.map((d:any) => d.offset),
           getBorderColor: hoverObject,
         },
       }),
@@ -587,7 +735,7 @@ function updateTextLayer2(textData:any) {
         visible:setting.人影.监控.planeLabel,
         id: 'text-layer',
         getWidth:500,
-        data:textData.filter(item => item.显示标牌),
+        data:textData.filter((item:any) => item.显示标牌),
         pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
@@ -610,11 +758,11 @@ function updateTextLayer2(textData:any) {
         background: false,
         getBackgroundColor: [255,255,255,0.1],
         border: true,
-        getBorderColor: d => d==hoverObject?d.textColor:[0,0,0,0],
+        getBorderColor: (d:any) => d==hoverObject?d.textColor:[0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
-        getPixelOffset:d => [d.offset[0]+10,d.offset[1]],
+        getPixelOffset:(d:any) => [d.offset[0]+10,d.offset[1]],
         parameters: {
           // 关闭深度测试
           depthTest: false,
@@ -629,9 +777,9 @@ function updateTextLayer2(textData:any) {
       new PathLayer({
         visible:setting.人影.监控.速度矢量线,
         id: 'path-layer',
-        data:textData.filter(d=>d.显示速度矢量线),
-        getPath: d => [[d.fLongitude, d.fLatitude],...d.trajectory],
-        getColor: d => d==hoverObject?[255,255,255,255]:[255,255,255,255],
+        data:textData.filter((d:any) => d.显示速度矢量线),
+        getPath: (d:any) => [[d.fLongitude, d.fLatitude],...d.trajectory],
+        getColor: (d:any) => d==hoverObject?[255,255,255,255]:[255,255,255,255],
         getWidth: 1,
         widthUnits: 'pixels',
       }),
@@ -639,30 +787,30 @@ function updateTextLayer2(textData:any) {
         pickable:true,
         id: 'icon-layer2',
         data: textData,
-        getIcon: d => ({
+        getIcon: (d:any) => ({
           url: planeImageData.airplane,
           width: 24,
           height: 24,
         }),
-        getAngle: d => -d.fHeading,
-        getPosition: d => [d.fLongitude, d.fLatitude],
-        getSize: d => 24,
+        getAngle: (d:any) => -d.fHeading,
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude],
+        getSize: (d:any) => 24,
         sizeScale: 1,
         billboard: false,
         onHover(info,evt){
           if(!mouseDownEvt){
             hoverObject = info.object
-            updateTextLayer2(textData.slice())
+            aircraft02(textData.slice())
           }
         },
       }),
       new ScatterplotLayer({
         visible: setting.人影.监控.显示航迹圈,
         id: 'circles',
-        data: textData.filter(d=>d.显示航迹圈),
+        data: textData.filter((d:any) => d.显示航迹圈),
         pickable: false,
-        getPosition: d => [d.fLongitude, d.fLatitude],
-        getRadius: d => 10e3, // 单位由 radiusUnits 决定
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude],
+        getRadius: (d:any) => 10e3, // 单位由 radiusUnits 决定
         radiusUnits: 'meters',          // 可省略（默认 meters）
         getFillColor: [0, 0, 0, 0],
         stroked: true,
@@ -702,162 +850,18 @@ function updateTextLayer2(textData:any) {
   })
 }
 function updateTextLayer(textData:any) {
-  const data1 = textData.filter(item=>item.商飞)
-  if(data1.length>0){
-    updateTextLayer2(data1)
-  }
-  const data2 = textData.filter(item=>!item.商飞)
+  const data1 = textData.filter((item:any)=>!item.特殊飞机)
+  const data2 = textData.filter((item:any)=>item.特殊飞机)
   if(setting.人影.监控.plane){
-    deckOverlay.setProps({
-      layers: [
-        new SimpleLineLayer({
-          pickable:false,
-          visible:setting.人影.监控.planeLabel,
-          id: 'screen-line',
-          data: data2.filter(d=>d.显示标牌),
-          getPosition: d => [116.4, 39.9, 0],
-          getAngle: d => 0,
-          getLength: d => 100,
-          getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
-        }),
-        new PathLayer({
-          visible:setting.人影.监控.track,
-          id: 'path-trail',
-          data:data2.filter(d=>d.显示历史轨迹),
-          getPath: d=>d.trail,
-          getColor: d=>[255, 255, 255, 255],
-          getWidth: 0.1,
-          widthUnits: 'pixels',
-        }),
-        new ScatterplotLayer({
-          visible:setting.人影.监控.track,
-          id: 'path-trail-points',
-          data:data2.filter(d=>d.显示尾迹).flatMap(d => d.trail),
-          getPosition: d => d,
-          getRadius: 2,        // 米（或像素，见下）
-          radiusUnits: 'pixels',
-          getFillColor: [255, 255, 255, 160],
-          pickable: false,
-        }),
-        new PathLayer({
-          id: 'path-layer',
-          data:data2.filter(d=>d.显示速度矢量线),
-          getPath: d => [[d.fLongitude, d.fLatitude,d.iAltitudeADS2],...d.trajectory],
-          visible: setting.人影.监控.速度矢量线,
-          getColor: d=>d==hoverObject?[255,255,255,255]:[255, 255, 255,255],
-          getWidth: 1,
-          widthUnits: 'pixels',
-        }),
-        // new IconLayer({
-        //   id: 'icon-layer2',
-        //   data: data2,
-        //   getIcon: d => ({
-        //     url: planeImageData.airplane,
-        //     width: 24,
-        //     height: 24,
-        //   }),
-        //   getAngle: d => -d.fHeading,
-        //   getPosition: d => [d.fLongitude, d.fLatitude],
-        //   getSize: d => 24,
-        //   sizeScale: 1,
-        //   billboard: false
-        // }),
-        new IconLayer({
-          id: 'icon-layer',
-          pickable:true,
-          data: data2,
-          getIcon: d => {
-            if(d.ubyTrackState == 2){
-              return {
-                url: extrapolationImageData.extrapolation,
-                width:10,
-                height:10
-              }
-            }
-            return d==hoverObject?{
-              url: squareImageData.airplaneMock,
-              width: 8,
-              height: 8,
-            }:{
-              url: squareImageData.airplane,
-              width: 8,
-              height: 8,
-            }
-          },
-          getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
-          getSize: d => 10,
-          sizeScale: 1,
-          billboard: false,
-          onHover(info,evt){
-            if(!mouseDownEvt){
-              hoverObject = info.object
-              updateTextLayer(data2.slice())
-            }
-          },
-        }),
-        new TextLayer({
-          visible:setting.人影.监控.planeLabel,
-          id: 'text-layer',
-          data:data2.filter(d=>d.显示标牌),
-          pickable: true,
-          getPosition: d => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
-          getText: d => d.label,
-          getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
-          getSize: 12,
-          getAngle: 0,
-          getTextAnchor: 'start',
-          getAlignmentBaseline: 'center',
-          // fontFamily: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
-          // fontSettings: {
-          //   sdf: false,
-          //   // 防止生成 atlas 过慢，可限制生成大小
-          //   buffer: 3,
-          //   size: 6400,
-          // },
-          fontSettings: {
-            characterSet: 'auto', // ✅ 自动扫描数据中的字符
-          },
-          billboard: true,  // 始终朝向屏幕
-          background: true,
-          getBackgroundColor: [255, 255, 255, 0],
-          border: true,
-          getBorderColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[0,0,0,0],
-          getBorderWidth: 1,
-          backgroundPadding:[4,4],
-          backgroundBorderRadius:0,
-          getPixelOffset:d => [d.offset[0],d.offset[1]],
-          onHover(info,evt){
-            if(!mouseDownEvt){
-              hoverObject = info.object
-              updateTextLayer(data2.slice())
-            }
-          },
-          updateTriggers:{
-            getPixelOffset: data2.map(d => d.offset),
-            getBorderColor: hoverObject,
-          },
-        }),
-        new ScatterplotLayer({
-          visible: setting.人影.监控.显示航迹圈,
-          id: 'circles',
-          data: data2.filter(d=>d.显示航迹圈),
-          pickable: false,
-          getPosition: d => [d.fLongitude, d.fLatitude],
-          getRadius: d => 10e3, // 单位由 radiusUnits 决定
-          radiusUnits: 'meters',          // 可省略（默认 meters）
-          getFillColor: [0, 0, 0, 0],
-          stroked: true,
-          getLineColor: d=>d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
-          lineWidthUnits: 'pixels',
-          getLineWidth: 1,
-          radiusMinPixels: 2,
-        }),
-      ]
-    })
+    if(setting.人影.监控.ryPlane){
+      aircraft01([])
+    }else{
+      aircraft01(data1)
+    }
+    aircraft02(data2)
   }else{
-    deckOverlay.setProps({
-      layers: []
-    })
+    aircraft01([])
+    aircraft02([])
   }
 }
 import Frame from '~/frames/frame.vue'
@@ -883,7 +887,6 @@ async function 批量烟炉操作(){
   // $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
 
 
-console.log('aaaa')
 let list = []
 for(let j=0;j<stoveFeaturesData.features.length;j++){
   const targetPos = point(stoveFeaturesData.features[j].geometry.coordinates)
@@ -1214,8 +1217,8 @@ function 显示射界(){
       list.push(station)
     }
   }
-  list.forEach((item:any)=>map.setFeatureState({source:'最大射程source',id:item.strID},{opacity:0.5}))
-  list.forEach((item:any)=>map.setFeatureState({source:'警戒圈source',id:item.strID},{opacity:0.5}))
+  list.forEach((item:any)=>map.setFeatureState({source:'最大射程source',id:item.strID},{opacity:0.5,ubyStatus:'显示'}))
+  list.forEach((item:any)=>map.setFeatureState({source:'警戒圈source',id:item.strID},{opacity:0.5,ubyStatus:'显示'}))
 }
 let 批量批复 = () => {
   alert('开发中···')
@@ -1847,7 +1850,7 @@ function 处理飞机实时位置(d:Array<{
     for(let i=0;i<sys.需要重点关注的飞机.length;i++){
       const item = sys.需要重点关注的飞机[i]
       if(item.iAddress==targetData.unSsrCode){
-        targetData.商飞 = true
+        targetData.特殊飞机 = true
       }
     }
     if(data){
@@ -4021,7 +4024,7 @@ onMounted(async() => {
               strID: item.strID,
               type: "站点",
               strCode: item.strCode,
-              strName: item.strName,
+              strName: item.strName.replaceAll('作业点',''),
               strPos: item.strPos,
               iMaxShotRange: item.iMaxShotRange||10000,
               iMaxShotHei: item.iMaxShotHei,
@@ -4167,6 +4170,7 @@ onMounted(async() => {
               '作业结束','#888',
               '作业不批准','#888',
               '空闲','#888',
+              '显示','#888',
               '#fff'
             ],
             "fill-opacity": ['coalesce',['feature-state','opacity'],0],
@@ -4188,9 +4192,10 @@ onMounted(async() => {
               '作业申请待批复','#fa0',
               '作业批准','#00f',
               '作业开始','#f00',
-              '作业结束','#82a9f5',
-              '作业不批准','#82a9f5',
-              '空闲','#82a9f5',
+              '作业结束','#888',
+              '作业不批准','#888',
+              '空闲','#888',
+              '显示','#888',
               '#fff'
             ],
             "line-width": 1,
@@ -4638,12 +4643,12 @@ onMounted(async() => {
       active = () => {
         circleFeaturesData.features.forEach((item:any)=>{
           const state = map.getFeatureState({source:'最大射程source',id:item.properties.strID})
-          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'?0.5:0
+          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'||state.ubyStatus == '显示'?0.5:0
           map.setFeatureState({source:'最大射程source',id:item.properties.strID},{opacity})
         })
         forewarningFeaturesData.features.forEach((item:any)=>{
           const state = map.getFeatureState({source:'警戒圈source',id:item.properties.strID})
-          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'?0.5:0
+          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'||state.ubyStatus == '显示'?0.5:0
           map.setFeatureState({source:'警戒圈source',id:item.properties.strID},{opacity})
         })
       }
@@ -6795,7 +6800,6 @@ onMounted(async() => {
           'line-width':2,
         }
       })
-      // draw.add(a as never);
     });
 
     获取飞行区().then((res) => {
@@ -7690,6 +7694,14 @@ watch(()=>setting.人影.监控.trackCount,()=>{
     type: "FeatureCollection",
     features: adsbTrackFeatures,
   })
+})
+const fn = debounce(()=>{
+  let s = map ? map.getStyle() : style;
+  s.sources["raster-route"].tiles = [`/backend/image?x={x}&y={y}&z={z}&strokeColor=rgba(${setting.人影.监控.routeLineColor.r},${setting.人影.监控.routeLineColor.g},${setting.人影.监控.routeLineColor.b},${setting.人影.监控.routeLineColor.a})&fillColor=rgba(${setting.人影.监控.routeLineColor.r},${setting.人影.监控.routeLineColor.g},${setting.人影.监控.routeLineColor.b},0.2)&textColor=rgba(${setting.人影.监控.routeLineColor.r},${setting.人影.监控.routeLineColor.g},${setting.人影.监控.routeLineColor.b},${setting.人影.监控.routeLineColor.a})`]
+  map && map.setStyle(s);
+},1000)
+watch(()=>setting.人影.监控.routeLineColor,()=>{
+  fn()
 })
 watch(()=>setting.人影.监控.landColor,()=>{
   map.setPaintProperty("land","background-color",

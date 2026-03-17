@@ -70,6 +70,7 @@
         pointer-events: auto;
         gap: $grid-2;
         flex:1;
+        max-height: fit-content;
         :deep(.toolMode) {
             background-color: var(--el-bg-color);
             border-radius: $border-radius-1;

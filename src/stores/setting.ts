@@ -403,7 +403,7 @@ export const useSettingStore = defineStore('setting',{
     人影:{
       监控:{
         tmpZydData:new Array<{name:string,value:string}>(),//作业点数据
-        selectedRegion:new Array<string>('360000'),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>('350000','360000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,
@@ -422,6 +422,7 @@ export const useSettingStore = defineStore('setting',{
           b:36,
           a:0
         },
+        ryPlane:false,
         飞机高度下限:-Infinity,
         飞机高度上限:Infinity,
         二次码下限:-Infinity,
@@ -446,6 +447,12 @@ export const useSettingStore = defineStore('setting',{
         bearing:0,
         pitch:0,
         routeLine:true,
+        routeLineColor:{
+          r:0,
+          g:255,
+          b:255,
+          a:1
+        },
         zyd:true,
         synergyZyd:false,
         北京保障圈:false,

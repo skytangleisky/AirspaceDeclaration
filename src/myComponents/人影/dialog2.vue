@@ -55,6 +55,11 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div v-if="options.list.length==0" style="width: 100%;flex:1;overflow: hidden;">
+                        <div style="position: relative;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">
+                            <el-empty></el-empty>
+                        </div>
+                    </div>
                 </div>
                 <ul class="menuUl" tabindex="-1">
                     <li @click="click">
@@ -82,7 +87,7 @@
                         />查看详细数据
                     </li>
                 </ul>
-                <Frame v-model:render="show" width="500px" height="400px">
+                <Frame title="作业点过滤" v-model:render="show" width="500px" height="400px">
                     <ZydFilter></ZydFilter>
                 </Frame>
             </el-tab-pane>
@@ -92,7 +97,9 @@
             <el-tab-pane label="今日作业记录" style="width: 100%;height: 100%;">
                 <Work :v="sys.planProps.今日作业记录"></Work>
             </el-tab-pane>
-            <el-tab-pane label="飞行计划"></el-tab-pane>
+            <el-tab-pane label="飞行计划">
+                <el-empty></el-empty>
+            </el-tab-pane>
         </el-tabs>
     </div>
 </template>

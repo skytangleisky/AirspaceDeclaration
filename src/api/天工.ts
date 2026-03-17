@@ -180,6 +180,7 @@ export function 作业点(){
     url: '/backend/db/defaultZyd',
     method: 'post',
     headers:{
+      // database:JSON.stringify({"host":"127.0.0.1","port":3306,"user":"root","password":"mysql","database":"ryplat_fjry","type":"mysql"}),
       table:'`zydpara` z left join `units` u1 on z.strMgrUnit = u1.strID left join `units` u2 on z.strRelayUnit = u2.strID',
     },
     data:{

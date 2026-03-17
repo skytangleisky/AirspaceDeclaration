@@ -1,9 +1,10 @@
 <template>
   <teleport  to="#wstd-container" v-if="wstdContainerRendered">
     <div ref="meeting" v-dragable class="meeting" v-show="SHOW" v-if="IF">
-      <div class="title" @mousedown.stop>{{ title }}</div>
+      <div class="title" @mousedown.stop>{{ title }}
+        <div class="close-btn" @click="close" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
+      </div>
       <slot></slot>
-      <div class="close-btn" @click="close" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div>
   </teleport>
 </template>
@@ -85,7 +86,8 @@ import closeUrl from '~/assets/close.svg?raw'
 .meeting{
   z-index:0;
   background:darkblue;
-  border-radius:4px;
+  border-radius:var(--el-border-radius-base);
+  overflow: hidden;
   box-sizing:border-box;
   display: flex;
   flex-direction: column;
@@ -93,13 +95,12 @@ import closeUrl from '~/assets/close.svg?raw'
   --height:100%;
   width:var(--width);
   height:var(--height);
-  background:var(--el-bg-color-opacity-8);
-  border:1px solid var(--el-border-color);
+  background:var(--el-bg-color-overlay);
+  border:1px solid var(--el-border-color-light);
   position:absolute;
   left:calc(50% - var(--width)/2);
   top:calc(50% - var(--height)/2);
-  padding:4px;
-  cursor:move;
+  padding:0px;
   // background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);
   &:hover {
     .close-btn {
@@ -107,25 +108,29 @@ import closeUrl from '~/assets/close.svg?raw'
     }
   }
   .title{
+    pointer-events: none;
     width:100%;
     box-sizing: border-box;
     cursor:default;
-    background-color: var(--el-bg-color);
+    background-color: var(--el-fill-color-light);
+    color:var(--el-text-color-primary);
+    border-bottom: 1px solid var(--el-border-color-light);
     position: relative;
     white-space: nowrap;
     font-size: 0.2rem;
     font-weight: bold;
     padding-left: 4px;
-    text-align: left;
+    display: flex;
+    justify-content: space-between;
   }
 
   .close-btn {
-    right: 0px;
-    top:0px;
-    position: absolute;
+    box-sizing: border-box;
+    // border:1px solid red;
+    pointer-events: auto;
     justify-content: center;
     align-items:center;
-    font-size: 0.16rem;
+    font-size: 20px;
     z-index:999;
     color:white;
     display: flex;

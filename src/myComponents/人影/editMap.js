@@ -364,8 +364,8 @@ export default function(){
 				"type": "raster",
 				// url:url2,
 				"tiles": [
-					"/backend/image?x={x}&y={y}&z={z}&strokeColor=rgba(0,255,255,1)&fillColor=rgba(0,255,255,0.2)&textColor=rgba(0,255,255,1)"
-					// "/maps4?x={x}&y={y}&z={z}"
+					// "/backend/image?x={x}&y={y}&z={z}&strokeColor=rgba(0,255,255,1)&fillColor=rgba(0,255,255,0.2)&textColor=rgba(0,255,255,1)",
+					`/backend/image?x={x}&y={y}&z={z}&strokeColor=rgba(${setting.人影.监控.routeLineColor.r},${setting.人影.监控.routeLineColor.g},${setting.人影.监控.routeLineColor.b},${setting.人影.监控.routeLineColor.a})&fillColor=rgba(${setting.人影.监控.routeLineColor.r},${setting.人影.监控.routeLineColor.g},${setting.人影.监控.routeLineColor.b},0.2)&textColor=rgba(${setting.人影.监控.routeLineColor.r},${setting.人影.监控.routeLineColor.g},${setting.人影.监控.routeLineColor.b},${setting.人影.监控.routeLineColor.a})`
 				],
 				"tileSize": 256
 			},

@@ -408,6 +408,7 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   {label: '睿图雷达产品', value: modelRef(setting, '人影.监控.睿图雷达'), type: 'checkbox'},
   {label: '真彩图', value: modelRef(setting, '人影.监控.真彩图'), type: 'checkbox'},
   {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
+  {label: '航路航线颜色', value: modelRef(setting, '人影.监控.routeLineColor'), type: 'color'},
   {label: '规划航线', value: modelRef(setting, '人影.监控.规划航线'), type: 'checkbox'},
   {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
   {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
