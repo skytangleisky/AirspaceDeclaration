@@ -256,7 +256,6 @@ onBeforeUnmount(() => {
 </script>
 <style scoped lang="scss">
 .modal {
-    position: absolute;
     width:100%;
     height:100%;
     left:0;
@@ -268,8 +267,8 @@ onBeforeUnmount(() => {
         position: absolute;
         width: 600px;
         background-color: var(--el-bg-color);
-        padding: $grid-3;
-        border-radius: $border-radius-3;
+        padding: $grid-5;
+        border-radius: $border-radius-2;
         box-shadow: var(--el-box-shadow);
         top: 50%;
         left: 50%;
@@ -278,10 +277,10 @@ onBeforeUnmount(() => {
         flex-wrap: wrap;
         .item-box {
             display: flex;
-            width: calc((100% - $grid-3) / 2);
+            width: calc((100% - $grid-5) / 2);
             margin-bottom: $grid-2;
             &:nth-child(2n) {
-                margin-left: $grid-3;
+                margin-left: $grid-5;
             }
             .item-label {
                 width: 100px;
@@ -289,7 +288,7 @@ onBeforeUnmount(() => {
             }
             .item-value {
                 width: calc(100% - 100px);
-                margin-left: $grid-2;
+                margin-left: $grid-1;
                 .el-input-number {
                     width: 100%;
                 }

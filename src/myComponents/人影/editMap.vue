@@ -7252,8 +7252,7 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   width:fit-content;
   display: none;
   background: #ffffffb0;
-  border-radius: 10px;
-  border-top-left-radius: 4px;
+  border-radius:$border-radius-1;
   border: 1px solid var(--el-border-color);
   opacity: 1 !important;
   ul {
@@ -7267,13 +7266,14 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
     margin-bottom: 0;
     li {
       cursor: pointer;
-      border-radius: 4px;
+      //border-radius: 4px;
       position: relative;
       font-size: 16px;
       list-style: none;
-      padding: 2px;
+      padding: 4px;
       &:hover {
-        background: rgba(62, 110, 197, 1);
+          background-color: var(--el-color-primary);
+          color:#fff;
       }
       &:active {
         background: inherit;
