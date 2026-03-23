@@ -24,7 +24,7 @@
         <div v-if="setting.人影.监控.是否显示工具面板">
             <BaseLayer v-model="setting.人影.监控.tile"></BaseLayer>
             <MapTool style="margin-top:10px;"></MapTool>
-            <!-- <DrawTool style="margin-top:10px;"></DrawTool> -->
+            <DrawTool style="margin-top:10px;"></DrawTool>
         </div>
     </div>
 </template>

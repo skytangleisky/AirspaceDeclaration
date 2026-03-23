@@ -186,7 +186,7 @@ export function 历史作业记录(ZydName:string,range?:any,page:number=1,size:
     {
       relation:'AND',
       field:'z.tmApplyRev',//申请结束时间
-      relationship:'<=',
+      relationship:'<',
       condition:moment(range[1]).format('YYYY-MM-DD HH:mm:ss')
     })
   }

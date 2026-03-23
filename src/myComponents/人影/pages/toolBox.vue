@@ -10,14 +10,14 @@
                 <div class="productsClass"></div>
                 <div class="triangleClass"></div>
             </div> -->
-            <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick">
+            <!-- <div :class="`map-tool-btn ${setting.人影.监控.是否显示工具面板?'active':''}`" @click="toolkitButtonClick">
                 <div class="toolClass"></div>
                 <div class="triangleClass"></div>
-            </div>
-            <div class="map-tool-btn disabled">
+            </div> -->
+            <!-- <div class="map-tool-btn disabled">
                 <div class="favoritesClass"></div>
                 <div class="triangleClass"></div>
-            </div>
+            </div> -->
         </div>
         <div class="side-box" v-if="setting.menus">
             <div class="side-box-left">
@@ -98,16 +98,19 @@
                 value: 'auto',
                 label: '自动'
             }]
-        }, {
-            label: '道路',
-            value: modelRef(setting, '人影.监控.roadMap'),
-            type: 'checkbox',
-        }, {
-            label: '地图',
-            value: modelRef(setting, '人影.监控.tile'),
-            type: 'select',
-            options: setting.地图列表
-        }, {
+        },
+        // {
+        //     label: '道路',
+        //     value: modelRef(setting, '人影.监控.roadMap'),
+        //     type: 'checkbox',
+        // },
+        // {
+        //     label: '地图',
+        //     value: modelRef(setting, '人影.监控.tile'),
+        //     type: 'select',
+        //     options: setting.地图列表
+        // },
+        {
             label: '地图透明度',
             value: modelRef(setting, '人影.监控.tileOpacity'),
             type: 'range',
@@ -460,11 +463,13 @@
                 label: '航路航线',
                 value: modelRef(setting, '人影.监控.routeLine'),
                 type: 'checkbox'
-            }, {
-                label: '规划航线',
-                value: modelRef(setting, '人影.监控.规划航线'),
-                type: 'checkbox'
-            }, {
+            },
+            // {
+            //     label: '规划航线',
+            //     value: modelRef(setting, '人影.监控.规划航线'),
+            //     type: 'checkbox'
+            // },
+            {
                 label: '机场',
                 value: modelRef(setting, '人影.监控.airport'),
                 type: 'checkbox'
@@ -472,11 +477,13 @@
                 label: '作业点',
                 value: modelRef(setting, '人影.监控.zyd'),
                 type: 'checkbox'
-            }, {
-                label: '协同作业点',
-                value: modelRef(setting, '人影.监控.synergyZyd'),
-                type: 'checkbox'
-            }, {
+            },
+            // {
+            //     label: '协同作业点',
+            //     value: modelRef(setting, '人影.监控.synergyZyd'),
+            //     type: 'checkbox'
+            // },
+            {
                 label: '导航台',
                 value: modelRef(setting, '人影.监控.navigationStation'),
                 type: 'checkbox'
@@ -494,18 +501,21 @@
                 label: '飞机标牌',
                 value: modelRef(setting, '人影.监控.planeLabel'),
                 type: 'checkbox'
-            }, {
-                label: '航迹',
-                value: modelRef(setting, '人影.监控.track'),
-                type: 'checkbox'
-            }, {
-                label: '航迹数量',
-                value: modelRef(setting, '人影.监控.trackCount'),
-                type: 'range',
-                min: 0,
-                max: 3000,
-                arr: Array.from({length: 3001}, (_, i: number) => i)
-            }] : []), {
+            },
+            // {
+            //     label: '航迹',
+            //     value: modelRef(setting, '人影.监控.track'),
+            //     type: 'checkbox'
+            // },
+            // {
+            //     label: '航迹数量',
+            //     value: modelRef(setting, '人影.监控.trackCount'),
+            //     type: 'range',
+            //     min: 0,
+            //     max: 3000,
+            //     arr: Array.from({length: 3001}, (_, i: number) => i)
+            // }
+                ] : []), {
                 label: '位置',
                 value: computed(() => {
                     if (setting.人影.监控.经纬度) {
@@ -600,13 +610,15 @@
                 click() {
                     setting.批复率统计 = true
                 }
-            }, {
-                label: '网络信息',
-                type: 'button',
-                click() {
-                    setting.网络信息 = true
-                }
-            }, // {
+            },
+            // {
+            //     label: '网络信息',
+            //     type: 'button',
+            //     click() {
+            //         setting.网络信息 = true
+            //     }
+            // },
+            // {
             //   label: '弹药概况', type: 'button', click() {
             //     setting.弹药概况 = true
             //   }

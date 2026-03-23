@@ -93,7 +93,8 @@ import closeUrl from '~/assets/close.svg?raw'
   position:absolute;
   left:calc(50% - var(--width)/2);
   top:calc(50% - var(--height)/2);
-  padding:4px;
+  padding:0px;
+  overflow: hidden;
   z-index:2000;
   cursor:move;
   // background: linear-gradient(135deg, #5a5a71 0%, #33354a 100%);

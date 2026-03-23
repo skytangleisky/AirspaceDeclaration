@@ -72,8 +72,8 @@ import moment from 'moment'
 
 
 
-const lastMonth = moment().add(-40, 'day')
-const nextday = moment().add(0, 'day')
+const lastMonth = moment().add(0, 'day')
+const nextday = moment().add(1, 'day')
 const Timedata = ref<[Date, Date]>([
     new Date(lastMonth.year(), lastMonth.month(), lastMonth.date(), 0, 0),
     new Date(nextday.year(), nextday.month(), nextday.date(), 0, 0),

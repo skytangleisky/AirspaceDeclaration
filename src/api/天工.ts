@@ -179,7 +179,7 @@ export function 作业点(){
           "relation": "AND",
           "field": "z.strID",
           "relationship": "LIKE",
-          "condition": getMask()
+          "condition": '%%'
         },
         {
           "relation": "AND",

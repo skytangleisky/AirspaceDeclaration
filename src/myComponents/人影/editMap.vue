@@ -16,7 +16,7 @@
       <Dialog
         v-show="setting.menus"
         class="stationDialog"
-        v-model:menus="dialogOptions.menus"
+        v-model:menus="sys.符合条件的作业点数据"
       ></Dialog>
       <BatchDialog v-model:batchList="batchList" v-model:pointDialogVisible="batchDialogVisible"></BatchDialog>
       <Batch2Dialog v-model:batchList="batchList2" v-model:pointDialogVisible="batch2DialogVisible"></Batch2Dialog>
@@ -95,8 +95,11 @@ import ConfigrueNetwork from '~/myComponents/人影/网络信息/index.vue'
 import Overview from '~/myComponents/人影/弹药概况/index.vue'
 import { csv2list } from '~/tools'
 import mettingData from '/空域申请会议号和终端列表.csv?url&raw'
+import { useSysStatusStore } from '~/stores/sysStatus.js'
+const sys = useSysStatusStore()
+import { useUserStore } from '~/stores/user.js'
+const user = useUserStore()
 const mettingList = csv2list(mettingData)
-let 作业点原始数据 = reactive(new Array())//存放作业点最原始的数据
 import closeUrl from '~/assets/close.svg?raw'
 async function 批量烟炉操作(){
   // setting.显示烟炉 = true
@@ -254,7 +257,6 @@ import { useMapStatusStore } from "~/stores/mapStatus"
 const mapStatus = useMapStatusStore()
 const setting = useSettingStore();
 import * as turf from "@turf/turf";
-const dialogOptions = reactive({ menus: new Array() });
 const stationMenuRef = ref<HTMLDivElement>();
 const iframeRef = ref<HTMLIFrameElement>()
 const menuType=ref('地面作业申请');
@@ -355,8 +357,8 @@ let 批量申请 = () => {
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
   let list = []
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -402,8 +404,8 @@ function 显示射界(){
   */
 
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -423,8 +425,8 @@ function 显示射界(){
 }
 let 批量批复 = () => {
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -457,8 +459,8 @@ let 批量批复 = () => {
 }
 let 批量移除 = () => {
   let list = new Array()
-  for(let j=0;j<dialogOptions.menus.length;j++){
-    let station = dialogOptions.menus[j];
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
     let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
@@ -2724,13 +2726,24 @@ onMounted(async() => {
     await 作业点().then(async(res) => {
       if(!map)
         return
-      作业点原始数据.splice(0,作业点原始数据.length,...res.data.results);
-      dialogOptions.menus = JSON.parse(JSON.stringify(作业点原始数据))
+      sys.作业点原始数据.splice(0,sys.作业点原始数据.length,...res.data.results);
+      sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
+        if(user.strUnitID.startsWith('99')){
+          return true
+        }else{
+          for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+            if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+              return true
+            }
+          }
+          return false
+        }
+      })
       zydFeaturesData.features.length = 0
       forewarningFeaturesData.features.length = 0;
       circleFeaturesData.features.length = 0;
-      for(let i=0;i<dialogOptions.menus.length;i++){
-        const item = dialogOptions.menus[i] as stationData
+      for(let i=0;i<sys.符合条件的作业点数据.length;i++){
+        const item = sys.符合条件的作业点数据[i] as stationData
         if(!item.tags){
           item.tags = []
         }
@@ -4066,9 +4079,9 @@ onMounted(async() => {
     })
     work()
     // getDevice().then((res) => {
-    //   dialogOptions.menus = res.data;
+    //   sys.符合条件的作业点数据 = res.data;
     //   let features: any = [];
-    //   dialogOptions.menus.map((item: any) => {
+    //   sys.符合条件的作业点数据.map((item: any) => {
     //     let position: [number, number] = (wgs84togcj02(...fromDMS(item.lngLat)) as unknown) as [
     //       number,
     //       number
@@ -4883,22 +4896,30 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
     }
   })
 },{deep:true})
-watch([()=>setting.人影.监控.checkedKeys,作业点原始数据],([val])=>{
-  dialogOptions.menus = 作业点原始数据.filter((item:any)=>{
-    for(let i=0;i<val.length;i++){
-      if(item.strID.startsWith(val[i].substring(0,4))){
-        return true
+watch([()=>setting.人影.监控.checkedKeys,sys.作业点原始数据],([val])=>{
+  sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
+    if(user.strUnitID.startsWith('99')){
+      return true
+    }else{
+      for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+        if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+          return true
+        }
       }
+      return false
     }
-    return false
-  });
+  })
   const features = zydFeaturesData.features.filter((feature:any)=>{
-    for(let i=0;i<val.length;i++){
-      if(feature.properties.strID.startsWith(val[i].substring(0,4))){
-        return true
+    if(user.strUnitID.startsWith('99')){
+      return true
+    }else{
+      for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+        if(feature.properties.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+          return true
+        }
       }
+      return false
     }
-    return false
   })
   map?.getSource('zydSource')?.setData({
     type:'FeatureCollection',

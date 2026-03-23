@@ -18,12 +18,12 @@ import arrowDownSvg from '~/assets/arrowDown.svg?raw'
 import { useSettingStore } from '~/stores/setting'
 const setting = useSettingStore()
 const groups = reactive([
-  {name:'地图',expend:false,children:[
-    {name:'白板地图',active:computed(()=>setting.人影.监控.tile === 0),click:(parent:any,index:number)=>setting.人影.监控.tile = 0},
-    {name:'矢量地图',active:computed(()=>setting.人影.监控.tile === 1),click:(parent:any,index:number)=>setting.人影.监控.tile = 1},
-    {name:'影像地图',active:computed(()=>setting.人影.监控.tile === 2),click:(parent:any,index:number)=>setting.人影.监控.tile = 2},
-    {name:'地形地图',active:computed(()=>setting.人影.监控.tile === 3),click:(parent:any,index:number)=>setting.人影.监控.tile = 3},
-  ]},
+  // {name:'地图',expend:false,children:[
+  //   {name:'白板地图',active:computed(()=>setting.人影.监控.tile === 0),click:(parent:any,index:number)=>setting.人影.监控.tile = 0},
+  //   {name:'矢量地图',active:computed(()=>setting.人影.监控.tile === 1),click:(parent:any,index:number)=>setting.人影.监控.tile = 1},
+  //   {name:'影像地图',active:computed(()=>setting.人影.监控.tile === 2),click:(parent:any,index:number)=>setting.人影.监控.tile = 2},
+  //   {name:'地形地图',active:computed(()=>setting.人影.监控.tile === 3),click:(parent:any,index:number)=>setting.人影.监控.tile = 3},
+  // ]},
   {name:'操作',expend:true,children:[
     {name:'批量操作',active:computed(()=>setting.绘制模式 === 'draw_polygon'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.批量操作()},
     {name:'注册飞机',click:(parent:any,index:number)=>setting.人影.监控.注册飞机列表显示 = true},
@@ -37,9 +37,9 @@ const groups = reactive([
   {name:'工具',children:[
     {name:'获取经纬度',active:computed(()=>setting.获取经纬度),click:(parent:any,index:number)=>setting.获取经纬度 = !parent.children[index].active},
     {name:'测距',active:computed(()=>setting.绘制模式==='custom_draw_line_with_distance'),click:(parent:any,index:number)=>parent.children[index].active ? setting.绘制复原() : setting.测距()},
-    {name:'测面',click(parent:any, index:number) {
-      // setting.测面()
-    }},
+    // {name:'测面',click(parent:any, index:number) {
+    //   // setting.测面()
+    // }},
     {name:'清除',click:(parent:any, index:number)=>setting.清除()},
   ]},
 ])
