@@ -402,6 +402,7 @@ export const useSettingStore = defineStore('setting',{
     },
     人影:{
       监控:{
+        warningCircle:20,//预警圈范围(km)
         tmpZydData:new Array<{name:string,value:string}>(),//作业点数据
         selectedRegion:new Array<string>('350000','360000'),//需要在地图上显示的行政区,陕西610000
         checkedKeys:new Array<string>(),//用于作业点过滤

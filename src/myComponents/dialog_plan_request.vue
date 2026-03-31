@@ -52,7 +52,7 @@
                 <div class="item-value">
                     <el-input-number
                         :min="0"
-                        :max="10000"
+                        :max="30000"
                         v-model="data.iMaxShotRange"
                         size="default"
                         @mousedown.stop
@@ -113,7 +113,7 @@
                     <el-input-number
                         :min="0"
                         :max="360"
-                        v-model="data.iShotRangeBegin"
+                        v-model="data.iShortAngelBegin"
                         size="default"
                         @mousedown.stop
                     />
@@ -125,7 +125,7 @@
                     <el-input-number
                         :min="0"
                         :max="360"
-                        v-model="data.iShotRangeEnd"
+                        v-model="data.iShortAngelEnd"
                         size="default"
                         @mousedown.stop
                     />
@@ -145,11 +145,11 @@
                 </div>
             </div>
             <div class="item-box">
-                <div class="item-label">作业时长(分钟)</div>
+                <div class="item-label">作业时长(秒)</div>
                 <div class="item-value">
                     <el-input-number
-                        :min="1"
-                        :max="5"
+                        :min="10"
+                        :max="600"
                         v-model="data.duration"
                         size="default"
                         @mousedown.stop
@@ -192,7 +192,7 @@ const workOptions = reactive([
     { value: 4, label: "其他" },
 ]);
 const click = (data: prevRequestDataType) => {
-    emit("click", data);
+    emit("click", JSON.parse(JSON.stringify(data)));
 };
 const beginTimeClear = ()=>{
     props.data.beginTime = moment().format('HH:mm:ss')
@@ -202,12 +202,12 @@ type zyddataType = {
     strCode: string;
     strName: string;
     strPos: string;
-    iMaxShotRange: number;
+    iRange: number;
     iMaxShotHei: number;
     iWeapon: number;
     iWorkType: number;
-    iShotRangeBegin: number;
-    iShotRangeEnd: number;
+    iShortAngelBegin: number;
+    iShortAngelEnd: number;
     beginTime: string;
     duration: number;
 };
@@ -226,14 +226,14 @@ const props = withDefaults(
             strCode: "",
             strName: "",
             strPos: "",
-            iMaxShotRange: 10,
+            iRange: 10,
             iMaxShotHei: 8000,
             iWeapon: 0,
             iWorkType: 1,
-            iShotRangeBegin: 0,
-            iShotRangeEnd: 1000,
+            iShortAngelBegin: 0,
+            iShortAngelEnd: 1000,
             beginTime: moment().format('HH:mm:ss'),
-            duration: 1,
+            duration: 60,
             unitName: "",
         }),
     }

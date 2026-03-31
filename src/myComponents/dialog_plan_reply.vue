@@ -84,7 +84,7 @@
                     <el-input
                         disabled
                         name="标高"
-                        value="0米"
+                        :model-value="data.iAltitude+'米'"
                         @mousedown.stop
                     />
                 </div>
@@ -92,7 +92,7 @@
             <div class="item-box">
                 <div class="item-label">最大射程</div>
                 <div class="item-value">
-                    <el-input disabled :model-value="(data.iMaxShotRange/1000).toFixed()+'公里'"></el-input>
+                    <el-input disabled :model-value="data.iRange+'米'"></el-input>
                 </div>
             </div>
             <div class="item-box">
@@ -104,11 +104,11 @@
             <div class="item-box">
                 <div class="item-label">射向开始角</div>
                 <div class="item-value">
-                    <el-input disabled :model-value="data.iShotRangeBegin+'度'"></el-input>
+                    <el-input disabled :model-value="data.iAngleBegin2+'度'"></el-input>
                     <!-- <el-input-number
                         :min="0"
                         :max="360"
-                        v-model="data.iShotRangeBegin"
+                        v-model="data.iShortAngelBegin"
                         size="default"
                         @mousedown.stop
                     /> -->
@@ -117,7 +117,7 @@
             <div class="item-box">
                 <div class="item-label">射向终止角</div>
                 <div class="item-value">
-                    <el-input disabled :model-value="data.iShotRangeEnd+'度'"></el-input>
+                    <el-input disabled :model-value="data.iAngleEnd2+'度'"></el-input>
                 </div>
             </div>
             <div class="item-box">
@@ -177,7 +177,7 @@
             <div class="item-box">
                 <div class="item-label">申请作业时长</div>
                 <div class="item-value">
-                    <el-input disabled :model-value="data.duration*60+'秒'"></el-input>
+                    <el-input disabled :model-value="data.duration+'秒'"></el-input>
                 </div>
             </div>
 
@@ -209,7 +209,7 @@
                     <el-select
                         v-model="data.denyCode"
                         :teleported="false"
-                        placeholder="作业目的"
+                        placeholder="不批准原因"
                     >
                         <el-option
                             v-for="(item, k) in rejectOptions"
@@ -225,7 +225,7 @@
                 <div class="item-value">
                     <el-input-number
                         :min="0"
-                        :max="360"
+                        :max="10"
                         v-model="data.delayTimeLen"
                         size="default"
                         @mousedown.stop
@@ -242,7 +242,7 @@
                     <el-input-number
                         :min="0"
                         :max="360"
-                        v-model="data.beginDirection"
+                        v-model="data.iAngleBegin"
                         size="default"
                         @mousedown.stop
                     >
@@ -258,7 +258,7 @@
                     <el-input-number
                         :min="0"
                         :max="360"
-                        v-model="data.endDirection"
+                        v-model="data.iAngleEnd"
                         size="default"
                         @mousedown.stop
                     >
@@ -275,7 +275,7 @@
                         :teleported="false"
                         value-format="HH:mm:ss"
                         format="HH:mm:ss"
-                        v-model="data.workBeginTime"
+                        v-model="data.beginTime"
                         placeholder="请输入开始时间"
                     />
                 </div>
@@ -284,14 +284,14 @@
                 <div class="item-label">作业时长</div>
                 <div class="item-value">
                     <el-input-number
-                        :min="1"
-                        :max="5"
+                        :min="10"
+                        :max="600"
                         v-model="data.workTimeLen"
                         size="default"
                         @mousedown.stop
                     >
                     <template #suffix>
-                        <span>分钟</span>
+                        <span>秒</span>
                     </template>
                 </el-input-number>
                 </div>
@@ -340,12 +340,12 @@ type zyddataType = {
     strCode: string;
     strName: string;
     strPos: string;
-    iMaxShotRange: number;
+    iRange: number;
     iMaxShotHei: number;
     iWeapon: number;
     iWorkType: number;
-    iShotRangeBegin: number;
-    iShotRangeEnd: number;
+    iShortAngelBegin: number;
+    iShortAngelEnd: number;
     beginTime: string;
     duration: number;
 };
@@ -361,16 +361,16 @@ const data = defineModel<any>('data',{
         strCode: "",
         strName: "",
         strPos: "",
-        iMaxShotRange: 10,
+        iRange: 10000,
         iMaxShotHei: 8000,
         iWeapon: 0,
         iWorkType: 1,
-        iShotRangeBegin: 0,
-        iShotRangeEnd: 1000,
-        beginTime: "",
-        duration: 1,
+        iShortAngelBegin: 0,
+        iShortAngelEnd: 1000,
+        duration: 60,
         unitName: "",
-        workBeginTime: moment().format('HH:mm:ss')
+        beginTime: moment().format('HH:mm:ss'),
+        workTimeLen: 60,
     }
 })
 const emit = defineEmits(["update:show", "accept", "reject"]);
@@ -380,8 +380,8 @@ const cancel = () => {
 let timer;
 onMounted(() => {
     timer = setInterval(()=>{
-        if(moment(moment().format('YYYY-MM-DD ') + data.value.workBeginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
-            data.value.workBeginTime = moment().format('HH:mm:ss')
+        if(moment(moment().format('YYYY-MM-DD ') + data.value.beginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
+            data.value.beginTime = moment().format('HH:mm:ss')
         }
     },1000)
 });

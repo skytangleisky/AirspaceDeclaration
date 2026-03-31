@@ -1,7 +1,7 @@
 import { Layer } from '@deck.gl/core';
 import { GL } from '@luma.gl/constants';
 
-export default class ScreenLineLayer extends Layer {
+export class ScreenLineLayer extends Layer {
   static layerName = 'ScreenLineLayer';
 
   initializeState() {
@@ -15,7 +15,7 @@ export default class ScreenLineLayer extends Layer {
 
     // 实例属性
     this.getAttributeManager().addInstanced({
-      instancePositions: { size: 2, accessor: 'getPosition' }, // 屏幕空间起点
+      instancePositions: { size: 3, accessor: 'getPosition' }, // 屏幕空间起点
       instanceColor: { size: 4, accessor: 'getColor', defaultValue: [255, 0, 0, 255] },
       instanceOffset: { size: 2, accessor: 'getOffset', defaultValue: [0, 0] },
     });
@@ -40,7 +40,7 @@ export default class ScreenLineLayer extends Layer {
       precision highp float;
 
       in vec2 positions;
-      in vec2 instancePositions;
+      in vec3 instancePositions;
       in vec2 instanceOffset;
       in vec4 instanceColor;
 
@@ -50,15 +50,15 @@ export default class ScreenLineLayer extends Layer {
 
       void main() {
         // 起点：屏幕像素 -> NDC
-        vec2 startNDC = (instancePositions / viewportSize) * 2.0 - 1.0;
+        vec2 startNDC = (instancePositions.xy / viewportSize) * 2.0 - 1.0;
         startNDC.y = -startNDC.y;
 
         vec2 pixelOffset = positions.x * instanceOffset;
-
+        float z = instancePositions.z * 2.0 - 1.0; // depth 转 NDC
         vec2 offset = pixelOffset / viewportSize * 2.0;
         offset.y = -offset.y;
 
-        gl_Position = vec4(startNDC + offset, 0.0, 1.0);
+        gl_Position = vec4(startNDC + offset, z, 1.0);
         vColor = instanceColor / 255.0;
       }
       `,
@@ -100,7 +100,7 @@ export default class ScreenLineLayer extends Layer {
 
     data.forEach(d => {
       const screenPos = viewport.project([d.fLongitude, d.fLatitude, d.iAltitudeADS2]); // 经纬度 -> 屏幕像素
-      instancePositions.push(screenPos[0], screenPos[1]);
+      instancePositions.push(screenPos[0], screenPos[1], screenPos[2]);
       const x = d.offset[0] - 4
       const y = d.offset[1]
       instanceColors.push(...this.props.getColor(d));
@@ -108,7 +108,7 @@ export default class ScreenLineLayer extends Layer {
     });
 
     const attrs = {
-      instancePositions: { value: instancePositions, size: 2 },
+      instancePositions: { value: instancePositions, size: 3 },
       instanceColor: { value: instanceColors, size: 4 },
       instanceOffset: { value: instanceOffset, size: 2 },
     };
@@ -138,5 +138,93 @@ export default class ScreenLineLayer extends Layer {
     const { gl } = this.context;
     if (this.state.vertexBuffer) gl.deleteBuffer(this.state.vertexBuffer);
     if (this.state.program) gl.deleteProgram(this.state.program);
+  }
+}
+
+
+
+// import {LineLayer} from '@deck.gl/layers';
+
+// export class OffsetPathLayer extends LineLayer {
+//   static layerName = 'OffsetPathLayer';
+//   initializeState() {
+//     super.initializeState();
+
+//     const attributeManager = this.getAttributeManager();
+
+//     attributeManager.addInstanced({
+//       instanceTargetPositions: {
+//         size: 3,
+//         accessor: 'getTargetPosition',
+//         update: this.calculateTargetPositions
+//       }
+//     });
+//   }
+
+//   calculateTargetPositions(attribute) {
+//     const {data, getTargetPosition, getPixelOffset} = this.props;
+//     const {viewport} = this.context;
+
+//     const {value} = attribute;
+//     let i = 0;
+
+//     for (const object of data) {
+//       const [lng, lat, z = 0] = getTargetPosition(object);
+
+//       // 👉 经纬度 → 屏幕
+//       const [x, y,h] = viewport.project([lng, lat, z]);
+
+//       // 👉 像素偏移
+//       const [dx, dy] = getPixelOffset
+//         ? getPixelOffset(object)
+//         : [0, 0];
+
+//       const x2 = x + dx;
+//       const y2 = y + dy;
+
+//       // 👉 屏幕 → 经纬度
+//       const [lng2, lat2, z2] = viewport.unproject([x2, y2, h]);
+
+//       value[i++] = lng2;
+//       value[i++] = lat2;
+//       value[i++] = z2;
+//     }
+//   }
+// }
+
+import {LineLayer} from '@deck.gl/layers';
+
+export class OffsetPathLayer extends LineLayer {
+  static layerName = 'OffsetPathLayer';
+
+  getShaders() {
+    const shaders = super.getShaders();
+
+    shaders.inject = {
+      'vs:#decl': `
+        in vec2 instancePixelOffset;
+      `,
+
+      'vs:#main-end': `
+        if (positions.x > 0.5) {
+          gl_Position.x += instancePixelOffset.x/project.viewportSize.x*gl_Position.w*2.0;
+          gl_Position.y -= instancePixelOffset.y/project.viewportSize.y*gl_Position.w*2.0;
+        }
+      `
+    };
+
+    return shaders;
+  }
+
+  initializeState() {
+    super.initializeState();
+
+    this.getAttributeManager().addInstanced({
+      instancePixelOffset: {
+        size: 2,
+        accessor: 'getPixelOffset',
+        defaultValue: [0, 0]
+      }
+    });
   }
 }

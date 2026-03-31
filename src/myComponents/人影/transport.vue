@@ -20,7 +20,7 @@
           <td style="white-space: nowrap;">{{item.strName}}</td>
           <td style="white-space: nowrap;">{{ item.strZydID }}</td>
           <td style="white-space: nowrap;">{{ item.strUpApplyUnitName }}</td>
-          <td style="white-space: nowrap;">{{ item.strATCUnitIDName  }}</td>
+          <td style="white-space: nowrap;">{{ item.strAnswerUnitName }}</td>
           <td style="white-space: nowrap;">{{ item.vecProcess }}</td>
         </tr>
       </tbody>

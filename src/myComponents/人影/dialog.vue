@@ -44,6 +44,7 @@
                             display: flex;
                             flex-direction: column;
                             scroll-padding-top: 14px;
+                            box-sizing: border-box;
                         "
                     >
                         <table>
@@ -83,6 +84,16 @@
                             </tr>
                             </tbody>
                         </table>
+                        <div class="menu2" @mousedown.stop style="position:absolute;left:0px;top:0px;">
+                            <ul>
+                            <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
+                            <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
+                            <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
+                            <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
+                            <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
+                            <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
+                            </ul>
+                        </div>
                         <div v-if="options.list.length==0" style="width: 100%;flex:1;overflow: hidden;">
                             <div
                                 style="position: relative;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">
@@ -125,6 +136,10 @@
     </div>
 </template>
 <script lang="ts" setup>
+import {useSysStatusStore} from '~/stores/sysStatus'
+const sys = useSysStatusStore()
+
+    const menuType = ref('地面作业申请')
     import ZydFilter from './zydFilter.vue'
     import Frame from '~/frames/frame.vue'
     import Colormap from './色标.vue'
@@ -134,6 +149,11 @@
     import { useStationStore } from '~/stores/station'
     import { eventbus } from '~/eventbus'
     import { useSettingStore } from '~/stores/setting'
+    const 作业申请 = () => {
+        console.log(currentStation)
+        sys.prevPlanReplyShow = true
+        sys.prevPlanReplyData = currentStation.value
+    }
     const show = ref(false)
     const setting = useSettingStore()
     const 数据时间 = computed(() => {
@@ -151,7 +171,6 @@
         return ''
     })
     import { getMask } from '~/api/天工.ts'
-    
     const mask = getMask()
     const 计算权限 = computed(() => {
         if (['%%', '12%', '13%', '14%', '15%'].includes(mask as string)) {
@@ -159,11 +178,8 @@
         }
         return false
     })
-    
     import moment from 'moment'
-    
     let tabActive = ref(0)
-    
     const formatWeapon = (weapon: number) => ['火箭', '高炮', '火箭+高炮', '烟炉', '火箭+烟炉', '高炮+烟炉', '火箭+高炮+烟炉',][weapon]
     const props = withDefaults(defineProps<{ menus?: Array<any> }>(), {
         menus: () => [{
@@ -179,7 +195,6 @@
     import { useBus } from '~/myComponents/bus'
     import { Filter } from '@element-plus/icons-vue'
     import { useLocale } from 'element-plus'
-    
     const { t } = useLocale()
     const bus = useBus()
     // const menus = reactive([
@@ -210,14 +225,15 @@
     let currentStation: any
     const contextmenu = (event: MouseEvent, v: any) => {
         currentStation = v
-        // let offset = $(".menuUl").prev().offset() || { left: 0, top: 0 };
-        // $(".menuUl")
-        //   .css({
-        //     display: "flex",
-        //     left: event.clientX - offset.left + "px",
-        //     top: event.clientY - offset.top + "px",
-        //   })
-        //   .trigger("focus");
+        let offset = $(".menu2").prev().offset() || { left: 0, top: 0 };
+        console.log(event)
+        $(".menu2")
+            .css({
+                display: "block",
+                left: event.clientX - offset.left + "px",
+                top: event.clientY - offset.top + "px",
+            })
+            .trigger("focus");
     }
     const click = (event: MouseEvent) => {
         eventbus.emit('站点列表菜单点击', currentStation, (event.target as HTMLElement).innerText)
@@ -302,5 +318,59 @@
             }
         }
     }
+.menu2 {
+    position: absolute;
+  z-index:3;
+  width:fit-content;
+  display: none;
+  background: #ffffffb0;
+  border-radius: 10px;
+  border-top-left-radius: 4px;
+  border: 1px solid var(--el-border-color);
+  ul {
+    cursor: default;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
+    li {
+        white-space: nowrap;
+      cursor: pointer;
+      border-radius: 4px;
+      position: relative;
+      font-size: 16px;
+      list-style: none;
+      padding: 2px;
+      &:hover {
+        background: rgba(62, 110, 197, 1);
+      }
+      &:active {
+        background: inherit;
+      }
+      &:not(:first-child) {
+        margin-top: 2px;
+      }
+    }
+  }
+}
 
+.dark .menu2 {
+  background: #000000b0;
+  ul {
+    cursor: default;
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    padding: 5px;
+    box-sizing: border-box;
+    margin-top: 0;
+    margin-bottom: 0;
+    li:hover {
+      background: rgba(62, 110, 197, 1);
+    }
+  }
+}
 </style>

@@ -402,54 +402,52 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   //     }
   //   ]
   // },
-  {label: '红外云图', value: modelRef(setting, '人影.监控.红外云图'), type: 'checkbox'},
-  {label: 'CMPAS降水融合3km', value: modelRef(setting, '人影.监控.CMPAS降水融合3km'), type: 'checkbox'},
-  {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
-  {label: '睿图雷达产品', value: modelRef(setting, '人影.监控.睿图雷达'), type: 'checkbox'},
-  {label: '真彩图', value: modelRef(setting, '人影.监控.真彩图'), type: 'checkbox'},
-  {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
-  {label: '航路航线颜色', value: modelRef(setting, '人影.监控.routeLineColor'), type: 'color'},
-  {label: '规划航线', value: modelRef(setting, '人影.监控.规划航线'), type: 'checkbox'},
-  {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
-  {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
-  {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
-  {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
-  {label: '糖果图', value: modelRef(setting, '人影.监控.糖果图'), type: 'checkbox'},
-  ...(mask=='%%'?[
-    {label: computed(()=>'二次雷达信号'+sys.planeCount), value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
-    {label: '显示航迹圈', value: modelRef(setting, '人影.监控.显示航迹圈'), type: 'checkbox'},
-    {label: '速度矢量线', value: modelRef(setting, '人影.监控.速度矢量线'), type: 'checkbox'},
-    {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
-  {label: '飞机标牌', value: modelRef(setting, '人影.监控.planeLabel'), type: 'checkbox'},
-  {label: '航迹', value: modelRef(setting, '人影.监控.track'), type: 'checkbox'},
   {
-    label: '航迹数量',
-    value: modelRef(setting, '人影.监控.trackCount'),
-    type: 'range',
-    min: 0,
-    max: 3000,
-    arr: Array.from({length: 3001}, (_, i: number) => i)
-  }]:[]),
-  {
-    label: '当前经度',
-    value:computed(()=>mapStatus.currentPos[0].toFixed(6)),
-    type:'text'
+    label: '气象图层', type: 'folder', children: [
+      {label: '红外云图', value: modelRef(setting, '人影.监控.红外云图'), type: 'checkbox'},
+      {label: 'CMPAS降水融合3km', value: modelRef(setting, '人影.监控.CMPAS降水融合3km'), type: 'checkbox'},
+      {label: '组合反射率', value: modelRef(setting, '人影.监控.组合反射率'), type: 'checkbox'},
+      {label: '睿图雷达产品', value: modelRef(setting, '人影.监控.睿图雷达'), type: 'checkbox'},
+      {label: '真彩图', value: modelRef(setting, '人影.监控.真彩图'), type: 'checkbox'},
+    ]
   },
   {
-    label: '当前纬度',
-    value:computed(()=>mapStatus.currentPos[1].toFixed(6)),
-    type:'text'
+    label: '基础图层', type: 'folder', children: [
+      {label: '航路航线', value: modelRef(setting, '人影.监控.routeLine'), type: 'checkbox'},
+      {label: '航路航线颜色', value: modelRef(setting, '人影.监控.routeLineColor'), type: 'color'},
+      {label: '规划航线', value: modelRef(setting, '人影.监控.规划航线'), type: 'checkbox'},
+      {label: '机场', value: modelRef(setting, '人影.监控.airport'), type: 'checkbox'},
+      {label: '作业点', value: modelRef(setting, '人影.监控.zyd'), type: 'checkbox'},
+      {
+        label: '预警圈范围(km)',
+        value: modelRef(setting, '人影.监控.warningCircle'),
+        type: 'range',
+        min: 10,
+        max: 100,
+        arr: Array.from({length: 91}, (_, i: number) => 10 + i)
+      },
+      // {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
+      {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},
+      {label: '糖果图', value: modelRef(setting, '人影.监控.糖果图'), type: 'checkbox'},
+    ]
   },
   {
-    label: '位置',
-    value: computed(() => {
-      if(mapStatus.经纬度){
-        return mapStatus.经纬度.substring(0, 10) + '\r\n0' + mapStatus.经纬度.substring(10, 20)
-      }else{
-        return '000000000E\r\n000000000N'
-      }
-    }),
-    type: 'text'
+    label: '飞机图层', type: 'folder', children: [
+      {label: computed(()=>'二次雷达信号'+sys.planeCount), value: modelRef(setting, '人影.监控.plane'), type: 'checkbox'},
+      {label: '显示航迹圈', value: modelRef(setting, '人影.监控.显示航迹圈'), type: 'checkbox'},
+      {label: '速度矢量线', value: modelRef(setting, '人影.监控.速度矢量线'), type: 'checkbox'},
+      {label: 'ADS-B信号', value: modelRef(setting, '人影.监控.adsb'), type: 'checkbox'},
+      {label: '飞机标牌', value: modelRef(setting, '人影.监控.planeLabel'), type: 'checkbox'},
+      {label: '航迹', value: modelRef(setting, '人影.监控.track'), type: 'checkbox'},
+      {
+        label: '航迹数量',
+        value: modelRef(setting, '人影.监控.trackCount'),
+        type: 'range',
+        min: 0,
+        max: 3000,
+        arr: Array.from({length: 3001}, (_, i: number) => i)
+      },
+    ]
   },
   {
     label: '固定图层',
@@ -556,6 +554,27 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       {label: '在线人数', value: modelRef(sys, '在线人数'), type: 'text'},
       {label: '网络状态', value: modelRef(sys, '网络状态'), type: 'text'},
       {label: '内存占用', value: modelRef(sys, '内存占用'), type: 'text'},
+      {
+        label: '当前经度',
+        value:computed(()=>mapStatus.currentPos[0].toFixed(6)),
+        type:'text'
+      },
+      {
+        label: '当前纬度',
+        value:computed(()=>mapStatus.currentPos[1].toFixed(6)),
+        type:'text'
+      },
+      {
+        label: '位置',
+        value: computed(() => {
+          if(mapStatus.经纬度){
+            return mapStatus.经纬度.substring(0, 10) + '\r\n0' + mapStatus.经纬度.substring(10, 20)
+          }else{
+            return '000000000E\r\n000000000N'
+          }
+        }),
+        type: 'text'
+      },
       {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
       {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
       {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},

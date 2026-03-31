@@ -278,42 +278,67 @@ export function 历史作业查询(){
 
 export function 作业状态数据(signal:AbortSignal){
   const setting = useSettingStore()
-  const prefixs = setting.人影.监控.checkedKeys.map(item=>{
-    return item.replace(/(00)+$/, '')
-  })
-  let filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
   const user = useUserStore()
   if(user.strUnitID.startsWith('99')){
-    filter = ""
+    return request({
+      signal,
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          "SELECT z.*,u1.strName as `strAnswerUnitName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strAnswerUnit = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL and z.strATCUnitID = '"+user.strUnitID+"' ORDER BY z.tmBeginApply DESC",
+        ],
+      }
+    })
+  }else{
+    const prefixs = setting.人影.监控.checkedKeys.map(item=>{
+      return item.replace(/(00)+$/, '')
+    })
+    let filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
+    return request({
+      signal,
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          "SELECT z.*,u1.strName as `strAnswerUnitName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strAnswerUnit = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL "+filter+" ORDER BY z.tmBeginApply DESC",
+        ],
+      }
+    })
   }
-  return request({
-    signal,
-    url: '/backend/transaction',
-    method: 'post',
-    data:{
-      sqls: [
-        "SELECT z.*,u1.strName as `strATCUnitIDName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strATCUnitID = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL "+filter+" ORDER BY z.tmBeginApply DESC",
-      ],
-    }
-  })
 }
 export function 历史作业状态数据(signal:AbortSignal){
   const setting = useSettingStore()
-  const prefixs = setting.人影.监控.checkedKeys.map(item=>{
-    return item.replace(/(00)+$/, '')
-  })
-  const filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
-  return request({
-    signal,
-    url: '/backend/transaction',
-    method: 'post',
-    data:{
-      sqls: [
-        `SELECT z.*,u1.strName AS strATCUnitIDName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strATCUnitID = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' ${filter} ORDER BY z.tmBeginApply DESC`,//当天的数据
-        // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
-      ],
-    }
-  })
+  const user = useUserStore()
+  if(user.strUnitID.startsWith('99')){
+    return request({
+      signal,
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          `SELECT z.*,u1.strName AS strAnswerUnitName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strAnswerUnit = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' and z.strATCUnitID='${user.strUnitID}' ORDER BY z.tmBeginApply DESC`,//当天的数据
+          // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strAnswerUnit=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
+        ],
+      }
+    })
+  }else{
+    const prefixs = setting.人影.监控.checkedKeys.map(item=>{
+      return item.replace(/(00)+$/, '')
+    })
+    const filter = prefixs.length>0?`AND z.strZydID REGEXP '^(${prefixs.join('|')})'`:"AND 1=0"
+    return request({
+      signal,
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          `SELECT z.*,u1.strName AS strAnswerUnitName,u2.strName AS strUpApplyUnitName FROM zydhisdata z LEFT JOIN units u1 ON z.strAnswerUnit = u1.strID LEFT JOIN units u2 ON z.strUpApplyUnit = u2.strID WHERE strApplyUnit IS NOT NULL AND '${moment().format('YYYY-MM-DD 00:00:00')}' <= z.tmBeginApply AND z.tmBeginApply < '${moment().add(1,'day').format('YYYY-MM-DD 00:00:00')}' ${filter} ORDER BY z.tmBeginApply DESC`,//当天的数据
+          // "SELECT z.*,u.strName as unitName FROM `zydhisdata` z left join `units` u on z.strATCUnitID=u.strID where DATE_FORMAT(z.tmBeginApply,'%Y-%m-%d') = DATE_FORMAT((select MAX(DATE(tmBeginApply)) from zydhisdata),'%Y-%m-%d')",//最后一天的数据
+        ],
+      }
+    })
+  }
 }
 export function 修改作业状态数据(ubyStatus:number,strWorkID:string){
   return request({
@@ -455,20 +480,22 @@ export function 查询天气情况(stoveID:string){
   })
 }
 /*烟炉接口end*/
-export function 空域申请批准(data){
+export function 空域申请批准(data:any){
+  const user = useUserStore()
+  console.log(data)
   return request({
     url:'ry_api/api/work/send/accept',
     method:'post',
-    data:{
+    data: {
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": data.strRelayUnit,
+      "replyUnitID": user.strUnitID,
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
-      "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.workBeginTime),
-      "workTimeLen": data.workTimeLen*60,
-      "beginDirection": data.beginDirection,
-      "endDirection": data.endDirection,
+      "workBeginTime": moment().format('YYYY-MM-DD'+' '+data.beginTime),
+      "workTimeLen": data.workTimeLen,
+      "beginDirection": data.iAngleBegin,
+      "endDirection": data.iAngleEnd,
     }
   })
 }
@@ -497,14 +524,15 @@ export function 空域申请移除(data:Array<{strWorkID:string}>) {
   //   }
   // })
 }
-export function 空域申请拒绝(data){
+export function 空域申请拒绝(data:any){
+  const user = useUserStore()
   return request({
     url: 'ry_api/api/work/send/reject',
     method: 'post',
     data:{
       "workID": data.strWorkID,
       "zydID": data.strID,
-      "replyUnitID": data.strRelayUnit,
+      "replyUnitID": user.strUnitID,
       "workReceiveUnit": data.strID,
       "workReceiveUser": "",
       "delayTimeLen": data.delayTimeLen,
@@ -512,7 +540,6 @@ export function 空域申请拒绝(data){
     }
   })
 }
-
 export function 完成信息查询({page,size,range,zydID}:{page:number,size:number,range?:any,zydID?:string}={page:1,size:10},signal?:AbortSignal){
   const data = {
     select:['o.*','z.strName as `strZydIDName`'],

@@ -30,8 +30,8 @@
       </el-form-item>
         <el-form-item label="作业时长">
           <el-input-number
-            :min="1"
-            :max="5"
+            :min="10"
+            :max="300"
             v-model="applyPointForm.workTimeLen"
           >
             <template #suffix>
@@ -84,6 +84,7 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
+//该组件用于批量批复
 import {reactive,ref,watch,onMounted, onBeforeUnmount} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
@@ -93,8 +94,8 @@ import { eventbus } from '~/eventbus'
 const applyPointForm = reactive({
   date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
-  workTimeLen: 3,
-  workCat: 2,
+  workTimeLen: 60,
+  workCat: 1,
 });
 
 let timer
@@ -185,102 +186,10 @@ function accept() {
   batchList.value.forEach(async(item:any) => {
     const lngLat = fromDMS(item.strPos)
     if(checkedPoints.value.includes(item.strID)){
-// item = {
-//     "bAutoDownSend": true,
-//     "bAutoUpSend": true,
-//     "connectType": 0,
-//     "dataver": 393,
-//     "iAltitude": 0,
-//     "iMaxShotHei": 8000,
-//     "iMaxShotRange": 10000,
-//     "iShortAngelBegin": 300,
-//     "iShortAngelEnd": 25,
-//     "iType": 0,
-//     "iVersion": 2,
-//     "listenPort": 15,
-//     "strCode": "801",
-//     "strID": "110117001",
-//     "strIP": "",
-//     "strMgrUnit": "990201000",
-//     "strMgrUnitName": "北京分区",
-//     "strName": "黑豆峪",
-//     "strPos": "117135900E40122000N",
-//     "strRelayUnit": "110117000",
-//     "strRelayUnitName": "北京平谷区",
-//     "strShotAngle": "0090",
-//     "strShotSector": "300025",
-//     "strSimNo": "",
-//     "strWeapon": 2,
-//     "properties": {
-//         "strID": "110117001",
-//         "opacity": 0.5,
-//         "ubyStatus": "作业申请待批复",
-//         "bAnswerAccept": false,
-//         "bAnswerValid": true,
-//         "bApplyValid": false,
-//         "bEndValid": false,
-//         "bRevOver": false,
-//         "iActingTimeLen": 0,
-//         "iAngleBegin": 300,
-//         "iAngleEnd": 25,
-//         "iAnswerTimeLen": 0,
-//         "iApplyTimeLen": 180,
-//         "iEndType": 0,
-//         "iMaxShotHei": 8000,
-//         "iRange": 10000,
-//         "strATCUnitID": "990201000",
-//         "strATCUnitIDName": "北京分区",
-//         "strAnswerMark": "",
-//         "strAnswerUnit": "",
-//         "strApplyMark": "",
-//         "strApplyUnit": "110000000PYCLIENT",
-//         "strCode": "801",
-//         "strCurPos": "117135900E40122000N",
-//         "strEndMark": "",
-//         "strEndUnit": "",
-//         "strName": "黑豆峪",
-//         "strUpApplyUnit": "110000000",
-//         "strUpApplyUnitName": "北京气象局",
-//         "strWeapon": "火箭+高炮",
-//         "strWorkID": "RY1101170012025-07-09-1449540",
-//         "strZydID": "110117001",
-//         "tmAnswerCreate": "",
-//         "tmAnswerRev": "",
-//         "tmAnswerSend": "",
-//         "tmApplyCreate": "1970-01-01 08:00:00",
-//         "tmApplyRev": "2025-07-09 14:49:55",
-//         "tmApplySend": "",
-//         "tmBeginActing": "",
-//         "tmBeginAnswer": "",
-//         "tmBeginApply": "2025-07-09 14:49:42",
-//         "tmEnd": "",
-//         "tmEndCreate": "",
-//         "tmEndRev": "",
-//         "tmEndSend": "",
-//         "tmUpdate": "2025-07-09 14:49:55",
-//         "ubyProcStatus": 3,
-//         "ubySendStatus": 3,
-//         "ubyWorkCat": 2,
-//         "vecProcess": ";14:49:55,收到批量申请",
-//         "fillColor": "#000"
-//     }
-// }
-
-      const data = {
-        "strWorkID": item.properties.strWorkID,
-        "strID": item.strID,
-        "replyUnitID": item.strRelayUnit,
-        "workReceiveUnit": item.strID,
-        "workReceiveUser": "",
-        "workBeginTime": applyPointForm.time,
-        "workTimeLen": applyPointForm.workTimeLen,
-        "beginDirection": 20,
-        "endDirection": 80,
-      }
-
-
-
-      await 空域申请批准(data).then(res=>{
+      item.beginTime = applyPointForm.time
+      item.workTimeLen = applyPointForm.workTimeLen
+      item.iworkType = applyPointForm.workCat
+      await 空域申请批准(item).then(res=>{
         pointDialogVisible.value = false
         eventbus.emit('移除draw绘制的所有图形')
       })

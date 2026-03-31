@@ -8,6 +8,7 @@ import { useSysStatusStore } from '~/stores/sysStatus';
 import { useUserStore } from '~/stores/user';
 import { useSettingStore } from '~/stores/setting';
 import { computed, ComputedRef } from 'vue'
+import { destination } from '~/myComponents/map/js/core.js'
 type Debounced<T extends (...args: any[]) => any> = {
   (...args: Parameters<T>): void;
   cancel: () => void;
@@ -683,49 +684,50 @@ export const getRandomPointBetweenR1R2 = (r1:number, r2:number) => {
   let y = R * Math.sin(Ⳡ);
   return [x, y];
 };
-export function calculateSectorPoints(
+export function calculateFireArea(
   center: [number, number],
   radius: number,
   startAngle: number,
   endAngle: number,
-  steps: number,
-  units: turf.Units
+  steps: number = 60,
 ): [number, number][] {
-  const points: [number, number][] = [center];
-  const angleStep = 360 / steps;
-  let angle = startAngle;
-  for (; angle < endAngle; angle += angleStep) {
-    const point = turf.destination(center, radius, angle, {
-      units: units,
-    }) as any;
-    points.push(point.geometry.coordinates);
+  const points: [number, number][] = [];
+
+  let totalAngle = endAngle - startAngle;
+  if (totalAngle <= 0) totalAngle += 360;
+  if (totalAngle >= 360) totalAngle = 360;
+
+  const angleStep = totalAngle / steps;
+
+  for (let i = 0; i <= steps; i++) {
+    const angle = startAngle + i * angleStep;
+    const pt = destination(center[0], center[1], angle, radius) as [number, number];
+    points.push(pt);
   }
-  const point = turf.destination(center, radius, endAngle, {
-    units: units,
-  }) as any;
-  points.push(point.geometry.coordinates);
-  points.push(center); // 返回到圆心以关闭多边形
+
+  if (totalAngle < 360) {
+    points.unshift(center);
+    points.push(center);
+  } else {
+    points.push(points[0]);
+  }
+
   return points;
 }
 export function calculateCirclePoints(
   center: [number, number],
   radius: number,
-  steps: number,
-  units: turf.Units
+  steps: number = 360,
 ): [number, number][] {
   const points: [number, number][] = [];
   const angleStep = 360 / steps;
   let angle = 0;
   for (; angle < 360; angle += angleStep) {
-    const point = turf.destination(center, radius, angle, {
-      units: units,
-    }) as any;
-    points.push(point.geometry.coordinates);
+    const point = destination(center[0],center[1], angle, radius) as [number,number];
+    points.push(point);
   }
-  const point = turf.destination(center, radius, 360, {
-    units: units,
-  }) as any;
-  points.push(point.geometry.coordinates);
+  const point = destination(center[0],center[1], 360,radius) as [number,number];
+  points.push(point);
   return points;
 }
 export function calculateBlockPoints(
@@ -851,4 +853,111 @@ export function buildSubTree(list: Array<any>, parentId: string | null = null): 
     id: item.adcode,
     children: buildSubTree(list, item.adcode)
   }))
+}
+
+const COLOR_CACHE = new Map();
+// 可选：命名颜色（常用的，够用了）
+const NAMED_COLORS:any = {
+  red: [255, 0, 0, 255],
+  green: [0, 128, 0, 255],
+  blue: [0, 0, 255, 255],
+  white: [255, 255, 255, 255],
+  black: [0, 0, 0, 255],
+  transparent: [0, 0, 0, 0]
+};
+
+export function parseColor(color:string) {
+  if (!color) throw new Error('Invalid color');
+
+  let c = color.toLowerCase().trim();
+
+  // cache
+  if (COLOR_CACHE.has(c)) return COLOR_CACHE.get(c);
+
+  let r, g, b, a = 255;
+
+  // ---------------- HEX ----------------
+
+  // #RGB
+  if (/^#([0-9a-f]{3})$/.test(c)) {
+    const h = c.slice(1);
+    r = parseInt(h[0] + h[0], 16);
+    g = parseInt(h[1] + h[1], 16);
+    b = parseInt(h[2] + h[2], 16);
+  }
+
+  // #RGBA
+  else if (/^#([0-9a-f]{4})$/.test(c)) {
+    const h = c.slice(1);
+    r = parseInt(h[0] + h[0], 16);
+    g = parseInt(h[1] + h[1], 16);
+    b = parseInt(h[2] + h[2], 16);
+    a = parseInt(h[3] + h[3], 16);
+  }
+
+  // #RRGGBB
+  else if (/^#([0-9a-f]{6})$/.test(c)) {
+    const h = c.slice(1);
+    r = parseInt(h.slice(0, 2), 16);
+    g = parseInt(h.slice(2, 4), 16);
+    b = parseInt(h.slice(4, 6), 16);
+  }
+
+  // #RRGGBBAA
+  else if (/^#([0-9a-f]{8})$/.test(c)) {
+    const h = c.slice(1);
+    r = parseInt(h.slice(0, 2), 16);
+    g = parseInt(h.slice(2, 4), 16);
+    b = parseInt(h.slice(4, 6), 16);
+    a = parseInt(h.slice(6, 8), 16);
+  }
+
+  // ---------------- RGB(A) ----------------
+
+  else if (c.startsWith('rgb')) {
+    const match = c.match(/rgba?\(([^)]+)\)/);
+    if (!match) throw new Error('Invalid rgb format');
+
+    const parts = match[1]
+      .split(',')
+      .map(v => v.trim());
+
+    r = parseFloat(parts[0]);
+    g = parseFloat(parts[1]);
+    b = parseFloat(parts[2]);
+
+    if (parts[3] !== undefined) {
+      const alpha = parseFloat(parts[3]);
+      a = alpha <= 1 ? Math.round(alpha * 255) : alpha;
+    }
+  }
+
+  // ---------------- 命名颜色 ----------------
+
+  else if (NAMED_COLORS[c]) {
+    const result = NAMED_COLORS[c];
+    COLOR_CACHE.set(c, result);
+    return result;
+  }
+
+  else {
+    throw new Error('Unsupported color: ' + color);
+  }
+
+  const result = [r, g, b, a];
+
+  COLOR_CACHE.set(c, result);
+  return result;
+}
+const lerp = (a:number, b:number, u:number) => a + (b - a) * u;
+
+export function interpolateColor(A:number[], B:number[], t:number):[number,number,number,number] {
+  const u = (t + 1) / 2;
+
+  return [
+    lerp(A[0], B[0], u),
+    lerp(A[1], B[1], u),
+    lerp(A[2], B[2], u),
+    lerp(A[3], B[3], u),
+  ];
 }

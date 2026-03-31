@@ -62,6 +62,7 @@
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
           <li v-if="menuType=='批量操作'" @click="批量移除()">批量移除</li>
           <li v-if="menuType=='批量操作'" @click="显示射界()">显示射界</li>
+          <li v-if="menuType=='批量操作'" @click="隐藏射界()">隐藏射界</li>
           <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
@@ -102,6 +103,9 @@
   </div>
 </template>
 <script lang="ts" setup>
+
+let aid = 0;
+const setting = useSettingStore();
 let enclosureList = new Array<any>();
 const 数据时间 = computed(()=>{
   if(setting.人影.监控.红外云图){
@@ -117,13 +121,14 @@ const 数据时间 = computed(()=>{
   }
   return ''
 })
-import {hasPermission,debounce} from '~/tools/index'
+import {hasPermission,debounce,parseColor,interpolateColor} from '~/tools/index'
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
 import extrapolationUrl from '~/assets/extrapolation.svg'
-import SimpleLineLayer from './SimpleLineLayer.js';
+import {ScreenLineLayer,OffsetPathLayer} from './SimpleLineLayer.js';
 import { MapboxOverlay } from '@deck.gl/mapbox';
-import { TextLayer,PathLayer,IconLayer,ScatterplotLayer } from '@deck.gl/layers';
+import { TextLayer,PathLayer,IconLayer,ScatterplotLayer,PolygonLayer,LineLayer } from '@deck.gl/layers';
+import { PathStyleExtension } from '@deck.gl/extensions';
 
 import { 铁路,九段线,国境线,岛屿,河流,海岸线,省界,县界,地标,机场管制区,省名,危险区,禁区,限制区,飞行管制分区,飞行管制区,障碍物 } from '~/api/layer';
 const lineData = [
@@ -483,6 +488,200 @@ const textData = new Array(
   //   "显示历史轨迹":true,
   // }
 )
+let position1:[number,number] = [116.692733,29.5]
+let position2:[number,number] = [116.692733,29]
+let position3:[number,number] = [116.692733,28.5]
+let position4:[number,number] = [116.692733,28]
+const zydData = new Array(
+  // {
+  //   "offset": [
+  //     20,
+  //     -10
+  //   ],
+  //   "type":"作业点",
+  //   "strName":"辛庄炮站",
+  //   "uiTrackNo": 593,
+  //   "uiAdsAddress": 0,
+  //   "ubyTrackState": 1,
+  //   "ubyTrackQuality": 0,
+  //   "fLongitude": position1[0],
+  //   "fLatitude": position1[1],
+  //   "ubyAltitudeMCValid": 0,
+  //   "iAltitudeMC": 0,
+  //   "ubyAltitudeADSValid": 1,
+  //   "iAltitudeADS": 2000,
+  //   "unSsrCode": 202,
+  //   "ubyRadarDataType": 2,
+  //   "ubySim": 0,
+  //   "ubyFixTarget": 0,
+  //   "ubySpiFlag": 0,
+  //   "ubyEmergencyType": 0,
+  //   "fSpeedZ": -11.520557403564453,
+  //   "fSpeed": 5,
+  //   "fHeading": 110.392822265625,
+  //   "ubyFlyingState": 0,
+  //   "ubyEmitterCat": 5,
+  //   "strCallCode": "",
+  //   "trajectory": [
+  //     pos,pos
+  //   ],
+  //   "trail":[pos],
+  //   "lastTime": 1763036518493,
+  //   "显示标牌":true,
+  //   "显示尾迹":true,
+  //   "显示速度矢量线":true,
+  //   "显示航迹圈":true,
+  //   "显示经纬度":true,
+  //   "显示历史轨迹":true,
+  //   "ubyStatus":'空闲',
+  //   "strID":'0001',
+  //   "polygon": calculateFireArea(position1,10000,0,100),
+  //   "polygon2": calculateFireArea(position1,20000,0,360),
+  //   "now": Date.now(),
+  //   properties:new Object(),
+  // },
+  // {
+  //   "offset": [
+  //     20,
+  //     -10
+  //   ],
+  //   "type":"作业点",
+  //   "strName":"辛庄炮站",
+  //   "uiTrackNo": 593,
+  //   "uiAdsAddress": 0,
+  //   "ubyTrackState": 1,
+  //   "ubyTrackQuality": 0,
+  //   "fLongitude": position2[0],
+  //   "fLatitude": position2[1],
+  //   "ubyAltitudeMCValid": 0,
+  //   "iAltitudeMC": 0,
+  //   "ubyAltitudeADSValid": 1,
+  //   "iAltitudeADS": 2000,
+  //   "unSsrCode": 202,
+  //   "ubyRadarDataType": 2,
+  //   "ubySim": 0,
+  //   "ubyFixTarget": 0,
+  //   "ubySpiFlag": 0,
+  //   "ubyEmergencyType": 0,
+  //   "fSpeedZ": -11.520557403564453,
+  //   "fSpeed": 5,
+  //   "fHeading": 110.392822265625,
+  //   "ubyFlyingState": 0,
+  //   "ubyEmitterCat": 5,
+  //   "strCallCode": "",
+  //   "trajectory": [
+  //     pos,pos
+  //   ],
+  //   "trail":[pos],
+  //   "lastTime": 1763036518493,
+  //   "显示标牌":true,
+  //   "显示尾迹":true,
+  //   "显示速度矢量线":true,
+  //   "显示航迹圈":true,
+  //   "显示经纬度":true,
+  //   "显示历史轨迹":true,
+  //   "ubyStatus":'作业申请待批复',
+  //   "strID":'0001',
+  //   "polygon": calculateFireArea(position2,10000,0,100),
+  //   "polygon2": calculateFireArea(position2,20000,0,360),
+  //   "now": Date.now(),
+  //   properties:new Object(),
+  // },
+  // {
+  //   "offset": [
+  //     20,
+  //     -10
+  //   ],
+  //   "type":"作业点",
+  //   "strName":"辛庄炮站",
+  //   "uiTrackNo": 593,
+  //   "uiAdsAddress": 0,
+  //   "ubyTrackState": 1,
+  //   "ubyTrackQuality": 0,
+  //   "fLongitude": position3[0],
+  //   "fLatitude": position3[1],
+  //   "ubyAltitudeMCValid": 0,
+  //   "iAltitudeMC": 0,
+  //   "ubyAltitudeADSValid": 1,
+  //   "iAltitudeADS": 2000,
+  //   "unSsrCode": 202,
+  //   "ubyRadarDataType": 2,
+  //   "ubySim": 0,
+  //   "ubyFixTarget": 0,
+  //   "ubySpiFlag": 0,
+  //   "ubyEmergencyType": 0,
+  //   "fSpeedZ": -11.520557403564453,
+  //   "fSpeed": 5,
+  //   "fHeading": 110.392822265625,
+  //   "ubyFlyingState": 0,
+  //   "ubyEmitterCat": 5,
+  //   "strCallCode": "",
+  //   "trajectory": [
+  //     pos,pos
+  //   ],
+  //   "trail":[pos],
+  //   "lastTime": 1763036518493,
+  //   "显示标牌":true,
+  //   "显示尾迹":true,
+  //   "显示速度矢量线":true,
+  //   "显示航迹圈":true,
+  //   "显示经纬度":true,
+  //   "显示历史轨迹":true,
+  //   "ubyStatus":'作业批准',
+  //   "strID":'0001',
+  //   "polygon": calculateFireArea(position3,10000,0,100),
+  //   "polygon2": calculateFireArea(position3,20000,0,360),
+  //   "now": Date.now(),
+  //   properties:new Object(),
+  // },
+  // {
+  //   "offset": [
+  //     20,
+  //     -10
+  //   ],
+  //   "type":"作业点",
+  //   "strName":"辛庄炮站",
+  //   "uiTrackNo": 593,
+  //   "uiAdsAddress": 0,
+  //   "ubyTrackState": 1,
+  //   "ubyTrackQuality": 0,
+  //   "fLongitude": position4[0],
+  //   "fLatitude": position4[1],
+  //   "ubyAltitudeMCValid": 0,
+  //   "iAltitudeMC": 0,
+  //   "ubyAltitudeADSValid": 1,
+  //   "iAltitudeADS": 2000,
+  //   "unSsrCode": 202,
+  //   "ubyRadarDataType": 2,
+  //   "ubySim": 0,
+  //   "ubyFixTarget": 0,
+  //   "ubySpiFlag": 0,
+  //   "ubyEmergencyType": 0,
+  //   "fSpeedZ": -11.520557403564453,
+  //   "fSpeed": 5,
+  //   "fHeading": 110.392822265625,
+  //   "ubyFlyingState": 0,
+  //   "ubyEmitterCat": 5,
+  //   "strCallCode": "",
+  //   "trajectory": [
+  //     pos,pos
+  //   ],
+  //   "trail":[pos],
+  //   "lastTime": 1763036518493,
+  //   "显示标牌":true,
+  //   "显示尾迹":true,
+  //   "显示速度矢量线":true,
+  //   "显示航迹圈":true,
+  //   "显示经纬度":true,
+  //   "显示历史轨迹":true,
+  //   "ubyStatus":'作业开始',
+  //   "strID":'0001',
+  //   "polygon": calculateFireArea(position4,10000,0,100),
+  //   "polygon2": calculateFireArea(position4,20000,0,360),
+  //   "now": Date.now(),
+  //   properties:new Object(),
+  // },
+)
 const 飞机菜单数据 = ref<any>({
   "显示标牌":true,
   "显示尾迹":true,
@@ -509,21 +708,36 @@ const deckOverlay2 = new MapboxOverlay({
   interleaved: false, // 性能优化
   layers: [],
 });
+// 用于作业点标牌显示控制
+const deckOverlay3 = new MapboxOverlay({
+  interleaved: false, // 性能优化
+  layers: [],
+});
 let hoverObject:any;
 let activeObject:any;
 function aircraft01(textData:any){
   deckOverlay.setProps({
     layers: [
-      new SimpleLineLayer({
-        pickable:false,
+      new OffsetPathLayer({
         visible:setting.人影.监控.planeLabel,
-        id: 'screen-line',
-        data: textData.filter((d:any)=>d.显示标牌),
-        getPosition: (d:any) => [116.4, 39.9, 0],
-        getAngle: (d:any) => 0,
-        getLength: (d:any) => 100,
-        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
+        data:textData.filter((d:any)=>d.显示标牌),
+        getSourcePosition: d => [d.fLongitude, d.fLatitude,0],
+        getTargetPosition: d => [d.fLongitude+1e-4, d.fLatitude,0],
+        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
+        getPixelOffset:(d)=>[d.offset[0],d.offset[1]],
+        getWidth: 1,
+        widthUnits: 'pixels',
       }),
+      // new ScreenLineLayer({
+      //   pickable:false,
+      //   visible:setting.人影.监控.planeLabel,
+      //   id: 'screen-line',
+      //   data: textData.filter((d:any)=>d.显示标牌),
+      //   getPosition: (d:any) => [116.4, 39.9, 0],
+      //   getAngle: (d:any) => 0,
+      //   getLength: (d:any) => 100,
+      //   getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
+      // }),
       new PathLayer({
         visible:setting.人影.监控.track,
         id: 'path-trail',
@@ -600,12 +814,22 @@ function aircraft01(textData:any){
         },
       }),
       new TextLayer({
+        parameters: {
+          depthTest: false
+        },
         visible:setting.人影.监控.planeLabel,
         id: 'text-layer',
         data:textData.filter((d:any)=>d.显示标牌),
         pickable: true,
         getPosition: (d:any) => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
-        getText: (d:any) => d.label,
+        getText: (d:any) => {
+          if(d.显示经纬度){
+            return d.label
+          }else{
+            const [first,second] = d.label.split('\n')
+            return first+'\n'+second
+          }
+        },
         getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
         getSize: 12,
         getAngle: 0,
@@ -627,7 +851,7 @@ function aircraft01(textData:any){
         border: true,
         getBorderColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[0,0,0,0],
         getBorderWidth: 1,
-        backgroundPadding:[4,4],
+        backgroundPadding:[0,0],
         backgroundBorderRadius:0,
         getPixelOffset: (d:any) => [d.offset[0],d.offset[1]],
         onHover(info,evt){
@@ -662,7 +886,7 @@ function aircraft01(textData:any){
 function aircraft02(textData:any) {
   deckOverlay2.setProps({
     layers: [
-      new SimpleLineLayer({
+      new ScreenLineLayer({
         visible:setting.人影.监控.planeLabel,
         id: 'screen-line',
         data: textData.filter((d:any) => d.显示标牌),
@@ -864,6 +1088,253 @@ function updateTextLayer(textData:any) {
     aircraft02([])
   }
 }
+function renderZydLayer(zydData:any){
+  const data = zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||setting.人影.监控.zyd)
+  deckOverlay3.setProps({
+    layers: [
+      new PathLayer({
+        visible:true,
+        id: 'dashed-path',
+        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界),
+        getPath: d => {
+          return calculateFireArea([d.fLongitude, d.fLatitude],setting.人影.监控.warningCircle*1000,0,360)
+        },
+        getColor: (d:any) => {
+          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
+            d.ubyStatus=='作业批准'?parseColor('#00f'):
+            d.ubyStatus=='作业开始'?parseColor('#f00'):
+            d.ubyStatus=='作业结束'?parseColor('#BBB'):
+            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
+            d.ubyStatus=='空闲'?parseColor('#BBB'):
+            d.ubyStatus=='显示'?parseColor('#BBB'):
+            parseColor('#fff')
+        },
+        getWidth: 1,
+        widthUnits: 'pixels',
+        extensions: [new PathStyleExtension({ dash: true })],
+        getDashArray: [10, 10],   // 实线10px，空白5px
+        dashJustified: false,
+      }),
+      new PolygonLayer(
+        {
+          visible:true,
+        id: 'polygon-layer',
+        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界),
+        getPolygon: d => {
+          return calculateFireArea([d.fLongitude, d.fLatitude],d.properties.iRange,d.properties.iAngleBegin,d.properties.iAngleEnd)
+        },
+        getFillColor: (d:any) => {
+          return d.ubyStatus=='作业申请待批复'?parseColor('#ffa00040'):
+            d.ubyStatus=='作业批准'?parseColor('#0000ff40'):
+            d.ubyStatus=='作业开始'?parseColor('#ff000040'):
+            d.ubyStatus=='作业结束'?parseColor('#80808040'):
+            d.ubyStatus=='作业不批准'?parseColor('#80808040'):
+            d.ubyStatus=='空闲'?parseColor('#BBB88840'):
+            d.ubyStatus=='显示'?parseColor('#80808040'):
+            parseColor('#fff')
+          // return interpolateColor(parseColor('#ff00ff40'),parseColor('#00ffff40'),Math.sin(d.now/500))
+        },
+        getLineColor: (d:any) => {
+          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
+            d.ubyStatus=='作业批准'?parseColor('#00f'):
+            d.ubyStatus=='作业开始'?parseColor('#f00'):
+            d.ubyStatus=='作业结束'?parseColor('#BBB'):
+            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
+            d.ubyStatus=='空闲'?parseColor('#BBB'):
+            d.ubyStatus=='显示'?parseColor('#BBB'):
+            parseColor('#fff')
+        },
+        getLineWidth: 1,
+        lineWidthUnits: 'pixels',
+        stroked: true,
+        filled: true,
+        parameters: {
+          // 关闭深度测试
+          depthTest: false,
+        }
+      }),
+      //简单绘制标牌引导线
+      // new ScreenLineLayer({
+      //   pickable:false,
+      //   visible:setting.人影.监控.zyd,
+      //   id: 'screen-line2',
+      //   data: zydData.filter((d:any)=>d.显示标牌),
+      //   getPosition: (d:any) => [116.4, 39.9, 0],
+      //   getAngle: (d:any) => 0,
+      //   getLength: (d:any) => 100,
+      //   getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
+      // }),
+      //采用deckgl的机制绘制引导线
+      new OffsetPathLayer({
+        data,
+        getSourcePosition: d => [d.fLongitude, d.fLatitude,0],
+        getTargetPosition: d => [d.fLongitude+1e-4, d.fLatitude,0],
+        getColor: (d:any) => {
+          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
+            d.ubyStatus=='作业批准'?parseColor('#00f'):
+            d.ubyStatus=='作业开始'?parseColor('#f00'):
+            d.ubyStatus=='作业结束'?parseColor('#BBB'):
+            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
+            d.ubyStatus=='空闲'?parseColor('#BBB88880'):
+            d.ubyStatus=='显示'?parseColor('#BBB'):
+            parseColor('#fff')
+        },
+        getPixelOffset:(d)=>[d.offset[0],d.offset[1]],
+        getWidth: 1,
+        widthUnits: 'pixels',
+      }),
+      new TextLayer({
+        id: 'text-layer2',
+        data,
+        pickable: true,
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude,d.iAltitudeADS2],
+        getSize: d => 16,
+        sizeUnits: 'pixels',
+        getText: (d:any) => {
+          if(d.ubyStatus=='空闲'){
+            return d.strName
+          }else if(d.ubyStatus=='作业申请待批复'){
+            return `${d.strName}--作业申请\n${moment(d.properties.tmBeginApply,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iApplyTimeLen}秒\n${d.properties.iRange}米\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+          }else if(d.ubyStatus=='作业批准'){
+            return `${d.strName}--已批准\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iRange}米\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+          }else if(d.ubyStatus=='作业开始'){
+            const seconds = d.properties.iAnswerTimeLen - moment().diff(moment(d.properties.tmBeginAnswer),'second')
+            const map = {
+              0:'未定义',
+              1:'增雨',
+              2:'防雹',
+              3:'大气污染治理',
+              4:'其他',
+            }
+            return `${d.strName}--已开始\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n剩余${seconds}秒\n${map[d.properties.iWorkType]}${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+          }else if(d.ubyStatus=='作业结束'){
+            const isAnswer = d.properties.tmBeginAnswer
+            if(isAnswer){
+              return `${d.strName}--已结束\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iRange}米\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+            }else{
+              return `${d.strName}--未批复\n${moment(d.properties.tmBeginApply,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')}\n${d.properties.iRange}米\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+            }
+          }else if(d.ubyStatus=='作业不批准'){
+            const time = d.properties.tmBeginAnswer?moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss'):moment(d.properties.tmBeginApply,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')
+            return `${d.strName}--不批准\n${time}\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+          }else if(d.ubyStatus=='作业完成'){
+            return `${d.strName}--已完成\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+          }else if(d.ubyStatus=='已撤销'){
+            return `${d.strName}--已撤销\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+          }else{
+            return `unknown ${d.ubyStatus}`
+          }
+        },
+        getColor: (d:any) => {
+          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
+            d.ubyStatus=='作业批准'?parseColor('#00f'):
+            d.ubyStatus=='作业开始'?parseColor('#f00'):
+            d.ubyStatus=='作业结束'?parseColor('#BBB'):
+            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
+            d.ubyStatus=='空闲'?parseColor('#BBB'):
+            d.ubyStatus=='显示'?parseColor('#BBB'):
+            parseColor('#fff')
+        },
+        getAngle: 0,
+        getTextAnchor: 'start',
+        getAlignmentBaseline: 'center',
+        // fontFamily: 'PingFang SC, Microsoft YaHei, Noto Sans CJK SC, sans-serif',
+        characterSet:'auto',
+        // fontSettings: {
+        //   sdf: true,
+        //   // 防止生成 atlas 过慢，可限制生成大小
+        //   buffer: 3,
+        //   size: 6400,
+        // },
+        // fontSettings: {
+        //   characterSet: 'auto', // ✅ 自动扫描数据中的字符
+        // },
+        billboard: true,  // 始终朝向屏幕
+        background: true,
+        getBackgroundColor: [255, 255, 255, 0],
+        border: true,
+        getBorderColor: (d:any) => {
+          if(d==hoverObject){
+            return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
+            d.ubyStatus=='作业批准'?parseColor('#00f'):
+            d.ubyStatus=='作业开始'?parseColor('#f00'):
+            d.ubyStatus=='作业结束'?parseColor('#BBB'):
+            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
+            d.ubyStatus=='空闲'?parseColor('#BBB'):
+            d.ubyStatus=='显示'?parseColor('#BBB'):
+            parseColor('#fff')
+          }else{
+            return [0,0,0,0]
+          }
+        },
+        getBorderWidth: 1,
+        backgroundPadding:[0,0],
+        backgroundBorderRadius:0,
+        getPixelOffset: (d:any) => [d.offset[0],d.offset[1]],
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            renderZydLayer(zydData.slice())
+          }
+        },
+        updateTriggers:{
+          getPixelOffset: (d:any) => d.offset,
+          getBorderColor: hoverObject,
+        },
+        parameters: {
+          // 关闭深度测试
+          depthTest: false,
+        }
+      }),
+      new IconLayer({
+        pickable: true,
+        id: 'icon-layer2',
+        data,
+        getIcon: d => ({
+          url: rocketImageData.rocket,
+          width: 48,
+          height: 48,
+        }),
+        getAngle: d => 0,
+        getPosition: d => [d.fLongitude, d.fLatitude],
+        getSize: d => 48,
+        sizeScale: 1,
+        billboard: false,
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            renderZydLayer(zydData.slice())
+          }
+        },
+      }),
+      // new ScatterplotLayer({
+      //   visible: true,
+      //   id: '点位',
+      //   data: zydData,
+      //   pickable: false,
+      //   getPosition: (d:any) => [d.fLongitude, d.fLatitude],
+      //   getRadius: (d:any) => 1, // 单位由 radiusUnits 决定
+      //   radiusUnits: 'pixels',          // 可省略（默认 meters）
+      //   getFillColor:(d:any) => {
+      //     return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
+      //       d.ubyStatus=='作业批准'?parseColor('#00f'):
+      //       d.ubyStatus=='作业开始'?parseColor('#f00'):
+      //       d.ubyStatus=='作业结束'?parseColor('#BBB'):
+      //       d.ubyStatus=='作业不批准'?parseColor('#BBB'):
+      //       d.ubyStatus=='空闲'?parseColor('#BBB'):
+      //       d.ubyStatus=='显示'?parseColor('#BBB'):
+      //       parseColor('#fff')
+      //   },
+      //   stroked: true,
+      //   getLineColor: [255, 255, 255, 255],
+      //   lineWidthUnits: 'pixels',
+      //   getLineWidth: d=>d==hoverObject?2:1,
+      //   radiusMinPixels: 2,
+      // }),
+    ]
+  })
+}
+renderZydLayer(zydData)
 import Frame from '~/frames/frame.vue'
 import { destination,getDistance } from '~/myComponents/map/js/core.js'
 import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
@@ -991,7 +1462,7 @@ import popSvg from '~/assets/pop.svg?url'
 import trackSvg from '~/assets/track.svg?url'
 import axios from 'axios'
 import { eventbus } from "~/eventbus";
-import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed, nextTick } from "vue";
+import { reactive, onMounted, onBeforeUnmount, ref, watch, shallowRef,computed, nextTick, render } from "vue";
 // const plane = new Plane()
 const cache = new Array()
 const 视频列表 = computed(()=>{
@@ -1023,7 +1494,7 @@ import { addFeatherImages,View,fromDMS,toDMS } from "~/tools";
 import { getImage } from '~/tools/project.js'
 // import CustomLayer from "./webglLayer/CustomLayer.js";
 import airstrip from "./airstrip.js";
-import {getTodayRecords,airspaceApply} from "~/api/人影/index.js"
+import {airspaceApply} from "~/api/人影/index.js"
 import { loadImage2Map } from "~/tools/index.ts";
 // import contour from './gridContour'
 import contour from './testContour'
@@ -1043,19 +1514,10 @@ import { useSysStatusStore } from "~/stores/sysStatus"
 const sys = useSysStatusStore()
 import { useMapStatusStore } from "~/stores/mapStatus"
 const mapStatus = useMapStatusStore()
-const setting = useSettingStore();
 import * as turf from "@turf/turf";
 const stationMenuRef = ref<HTMLDivElement>();
 const iframeRef = ref<HTMLIFrameElement>()
 const menuType=ref('地面作业申请');
-let circleFeaturesData: any = {
-  type: "FeatureCollection",
-  features: [],
-};
-let forewarningFeaturesData: any = {
-  type: "FeatureCollection",
-  features: [],
-};
 let trackFeatures: any = [];//存放飞机尾迹
 let adsbTrackFeatures: any = []//存放ADSB尾迹
 const batchDialogVisible = ref(false)
@@ -1106,11 +1568,7 @@ let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
 };
-let synergyFeaturesData:any = {
-  type: "FeatureCollection",
-  features: [],
-};
-import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据} from '~/api/天工'
+import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -1141,8 +1599,6 @@ const emits = defineEmits([
   'update:prevReplyData',
 ]);
 let 批量申请 = () => {
-  alert('开发中···')
-  return;
   setting.人影.监控.是否显示分布面板 = false
   setting.人影.监控.是否显示产品面板 = false
   setting.人影.监控.是否显示工具面板 = false
@@ -1159,7 +1615,6 @@ let 批量申请 = () => {
           points.push(points[0])
         }
       })
-      console.log(coordinates)
       const poly = polygon(coordinates)
       if(booleanPointInPolygon(targetPos,poly)){
         isInf = true
@@ -1172,34 +1627,21 @@ let 批量申请 = () => {
   }
   //过滤掉处于['作业申请待批复','作业批准','作业开始']状态作业点
   list = list.filter((item:any)=>{
-    for(let i=0;i<circleFeaturesData.features.length;i++){
-      if(item.strID==circleFeaturesData.features[i].properties.strID){
-        if(['作业申请待批复','作业批准','作业开始'].includes(circleFeaturesData.features[i].properties.ubyStatus)){
+    for(let i=0;i<zydData.length;i++){
+      if(item.strID==zydData[i].properties.strID){
+        if(['作业申请待批复','作业批准','作业开始'].includes(zydData[i].properties.ubyStatus)){
           return false
         }
       }
     }
     return true
   })
-  batchList.splice(0,batchList.length,...list)
+  batchList.splice(0,batchList.length,...(list as never[]))
   batchDialogVisible.value = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
 function 显示射界(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
-  let source = map.getSource("zydSource");
-  /*
-  zydFeaturesData.features = zydFeaturesData.features.map((item: any) => {
-    // if (item.properties.id == station.人影界面被选中的设备) {
-    //   item.properties["icon-image"] = "projectile-orange";
-    // } else {
-    //   item.properties["icon-image"] = "projectile-orange";
-    // }
-    return item;
-  });
-  source.setData(zydFeaturesData);
-  */
-  console.log(draw.getAll().features)
   let list = new Array()
   for(let j=0;j<sys.符合条件的作业点数据.length;j++){
     let station = sys.符合条件的作业点数据[j];
@@ -1217,12 +1659,46 @@ function 显示射界(){
       list.push(station)
     }
   }
-  list.forEach((item:any)=>map.setFeatureState({source:'最大射程source',id:item.strID},{opacity:0.5,ubyStatus:'显示'}))
-  list.forEach((item:any)=>map.setFeatureState({source:'警戒圈source',id:item.strID},{opacity:0.5,ubyStatus:'显示'}))
+  list.forEach((item:any)=>{
+    for(let i=0;i<zydData.length;i++){
+      if(zydData[i].strID == item.strID){
+        zydData[i].显示射界 = true
+        break
+      }
+    }
+  })
+  移除draw绘制的所有图形()
+}
+function 隐藏射界(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  let list = new Array()
+  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
+    let station = sys.符合条件的作业点数据[j];
+    let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
+    let isInf = false
+    for(let i=0;i<draw.getAll().features.length;i++){
+      const feature = draw.getAll().features[i];
+      const poly = polygon((feature.geometry as any).coordinates)
+      if(booleanPointInPolygon(targetPos,poly)){
+        isInf = true
+        break
+      }
+    }
+    if(isInf){
+      list.push(station)
+    }
+  }
+  list.forEach((item:any)=>{
+    for(let i=0;i<zydData.length;i++){
+      if(zydData[i].strID == item.strID){
+        zydData[i].显示射界 = false
+        break
+      }
+    }
+  })
+  移除draw绘制的所有图形()
 }
 let 批量批复 = () => {
-  alert('开发中···')
-  return;
   let list = new Array()
   for(let j=0;j<sys.符合条件的作业点数据.length;j++){
     let station = sys.符合条件的作业点数据[j];
@@ -1242,17 +1718,17 @@ let 批量批复 = () => {
   }
   //过滤掉处于['作业申请待批复']以外状态的作业点
   list = list.filter((item:any)=>{
-    for(let i=0;i<circleFeaturesData.features.length;i++){
-      if(item.strID==circleFeaturesData.features[i].properties.strID){
-        if(['作业申请待批复'].includes(circleFeaturesData.features[i].properties.ubyStatus)){
-          item.properties = circleFeaturesData.features[i].properties
+    for(let i=0;i<zydData.length;i++){
+      if(item.strID==zydData[i].properties.strID){
+        if(['作业申请待批复'].includes(zydData[i].properties.ubyStatus)){
+          item.properties = zydData[i].properties
           return true
         }
       }
     }
     return false
   })
-  batchList2.splice(0,batchList2.length,...list)
+  batchList2.splice(0,batchList2.length,...(list as never[]))
   batch2DialogVisible.value = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
 }
@@ -1276,10 +1752,10 @@ let 批量移除 = () => {
   }
   //过滤掉处于['作业申请待批复']以外状态的作业点
   list = list.filter((item:any)=>{
-    for(let i=0;i<circleFeaturesData.features.length;i++){
-      if(item.strID==circleFeaturesData.features[i].properties.strID){
-        if(['作业申请待批复','作业批准','作业开始'].includes(circleFeaturesData.features[i].properties.ubyStatus)){
-          item.properties = circleFeaturesData.features[i].properties
+    for(let i=0;i<zydData.length;i++){
+      if(item.strID==zydData[i].strID){
+        if(['作业申请待批复','作业批准','作业开始'].includes(zydData[i].properties.ubyStatus)){
+          item.properties = zydData[i].properties
           return true
         }
       }
@@ -1303,17 +1779,10 @@ let 批量移除 = () => {
       type: 'success',
     })
     data.map(item=>{
-      map.setFeatureState({source:'最大射程source',id:item.strWorkID},{
-        ubyStatus:'空闲',
-        opacity:0
-      })
-      map.setFeatureState({source:'警戒圈source',id:item.strWorkID},{
-        ubyStatus:'空闲',
-        opacity:0
-      })
-      map.setFeatureState({source:'zydSource',id:item.strWorkID},{
-        ubyStatus:'空闲',
-        opacity:0
+      zydData.map(d=>{
+        if(d.strWorkID == item.strWorkID){
+          d.ubyStatus = '空闲'
+        }
       })
     })
     station.人影界面被选中的设备 = ''
@@ -1339,18 +1808,13 @@ const 手动移除=async () => {
       message: '移除成功',
       type: 'success',
     })
-    map.setFeatureState({source:'最大射程source',id:properties.strID},{
-      ubyStatus:'空闲',
-      opacity:0
-    })
-    map.setFeatureState({source:'警戒圈source',id:properties.strID},{
-      ubyStatus:'空闲',
-      opacity:0
-    })
-    map.setFeatureState({source:'zydSource',id:properties.strID},{
-      ubyStatus:'空闲',
-      opacity:0
-    })
+    for(let i=0;i<zydData.length;i++){
+      if(zydData[i].strID == properties.strID){
+        zydData[i].ubyStatus = '空闲'
+        break;
+      }
+    }
+    renderZydLayer(zydData.slice())
     station.人影界面被选中的设备 = ''
   }).catch(e=>{
     ElMessage({
@@ -1404,10 +1868,7 @@ let 作业申请 = () => {
   properties.beginTime = moment().format('HH:mm:ss')
   emits("update:prevRequestData", properties);
 };
-import {
-  calculateSectorPoints,
-  calculateCirclePoints,
-} from "~/tools/index.ts";
+import { calculateFireArea } from "~/tools/index.ts";
 import { prevRequestDataType } from "../dialog_plan_request.vue";
 mapboxgl.accessToken = "pk.eyJ1IjoidGFuZ2xlaTIwMTMxNCIsImEiOiJjbGtmOTdyNWoxY2F1M3Jqczk4cGllYXp3In0.9N-H_79ehy4dJeuykZa0xA";
 const Marker = mapboxgl.Marker;
@@ -1443,7 +1904,7 @@ type zydparaType = {
   iVersion: 2;
   listenPort: 15;
   iShortAngelBegin: number;
-  iShortAngelEnd: 360;
+  iShotAngelEnd: 360;
   iType: null;
   connectType: 0;
   dataver: 50;
@@ -1452,6 +1913,8 @@ type zydparaType = {
 };
 type stationData = {
   unitName: string;
+  strMgrUnit: string;
+  strMgrUnitName: string;
 } & zydparaType;
 let map: any;
 const resize = () => {
@@ -1512,19 +1975,31 @@ let active = () => {};
 
 let mouseDownEvt :any;
 let hoverObjectOffset = [0,0]
-const mousemoveFunc = (e:any)=>{
+const updateLabelPosittion = (e:MouseEvent)=>{
   if(mouseDownEvt){
     if(hoverObject){
+      const rect = map.getCanvas().getBoundingClientRect();
+      const R = 100
       let pt1 = mouseDownEvt.point
-      let pt2 = e.point
+      let pt2 = {x:e.clientX-rect.left,y:e.clientY-rect.top}
       let offsetX = hoverObjectOffset[0]+pt2.x-pt1.x
       let offsetY = hoverObjectOffset[1]+pt2.y-pt1.y
+      const angle = Math.atan2(offsetY, offsetX)
+      if(offsetX**2+offsetY**2>R**2){
+        offsetX = Math.cos(angle)*R
+        offsetY = Math.sin(angle)*R
+      }
       hoverObject.offset = [offsetX,offsetY]
       updateTextLayer(textData.slice())
+      renderZydLayer(zydData.slice())
     }
   }else if(!hoverObject){
     hoverObject = null
   }
+}
+const cancelUpdateLabelPosition = () => {
+}
+const mousemoveFunc = (e:any)=>{
   mapStatus.currentPos = [e.lngLat.lng,e.lngLat.lat]
   mapStatus.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
@@ -1557,7 +2032,31 @@ function 过滤({altitude,ssrCode}){
   }
 }
 function 移除draw绘制的所有图形(){
-  draw&&draw.deleteAll()
+  const utterance = new SpeechSynthesisUtterance('收到作业申请');
+  speechSynthesis.speak(utterance);
+  if(draw){
+    let data = new Array<any>();
+    draw.getAll().features.map((v: any) => {
+      data.push({ id: v.id });
+    });
+    console.log(data)
+    if (data.length > 0) {
+      deleteData(data)
+        .then((res) => {
+          data.map((item) => {
+            for (let i = 0; i < enclosureList.length; i++) {
+              if (enclosureList[i].id == item.id) {
+                enclosureList.splice(i--, 1);
+              }
+            }
+          });
+          draw.deleteAll()
+          console.log("删除空域完成");
+        }).catch((e) => {
+          throw Error("删除空域失败");
+        });
+    }
+  }
 }
 function 处理飞机实时位置2(d:Array<{
   "uiTrackNo": 7,
@@ -1800,7 +2299,7 @@ function 处理飞机实时位置(d:Array<{
 
 
 
-  map.getSource('zydSource')&&d.forEach((item:any)=>{
+  d.forEach((item:any)=>{
     const str = [
       item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:''),
       item.iAltitudeADS.toString().padStart(5,'0')+' '+(item.fSpeed * 3.6).toFixed(0).padStart(4,'0')
@@ -1812,22 +2311,22 @@ function 处理飞机实时位置(d:Array<{
         data = textData.splice(i--,1)[0]
       }
     }
-    let textColor = [255,255,255,250]
-    zydFeaturesData.features.forEach((feature:any)=>{
-      const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
-      if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
-        const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
-        if(distance<20e3){
+    let textColor = [255,255,255,255]
+    zydData.forEach((it:any)=>{
+      const state = it.properties
+      if(it.ubyStatus == '作业申请待批复'||it.ubyStatus == '作业批准'||it.ubyStatus == '作业开始'){
+        const distance = getDistance(it.fLongitude,it.fLatitude,item.fLongitude,item.fLatitude)
+        if(distance<setting.人影.监控.warningCircle*1000){
           str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |PAS0'
           textColor = [255,255,0,255]
         }
       }
     })
-    zydFeaturesData.features.forEach((feature:any)=>{
-      const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
-      if(state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'){
-        const distance = getDistance(...feature.geometry.coordinates,item.fLongitude,item.fLatitude)
-        if(distance<10e3){
+    zydData.forEach((feature:any)=>{
+      const state = feature.properties
+      if(feature.ubyStatus == '作业申请待批复'||feature.ubyStatus == '作业批准'||feature.ubyStatus == '作业开始'){
+        const tmp = polygon([calculateFireArea([feature.fLongitude, feature.fLatitude],feature.properties.iRange,feature.properties.iAngleBegin,feature.properties.iAngleEnd)])
+        if(booleanPointInPolygon([item.fLongitude,item.fLatitude],tmp)){
           str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |AS'
           textColor = [255,0,0,255]
         }
@@ -1838,13 +2337,7 @@ function 处理飞机实时位置(d:Array<{
     while(trail.length>setting.人影.监控.trackCount){
       trail.shift()
     }
-    if(data){
-      if(data.显示经纬度){
-        str.push(toDMS(item.fLongitude,item.fLatitude))
-      }
-    }else{
-      str.push(toDMS(item.fLongitude,item.fLatitude))
-    }
+    str.push(toDMS(item.fLongitude,item.fLatitude))
     const point = destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)
     const targetData = {...item,trajectory:[[...point,item.iAltitudeADS2]],trail,lastTime:Date.now(),label:str.join('\n'),textColor}
     for(let i=0;i<sys.需要重点关注的飞机.length;i++){
@@ -1866,6 +2359,11 @@ function 处理飞机实时位置(d:Array<{
       }},targetData))
     }
   })
+
+
+
+
+
   for(let i=0;i<textData.length;i++){
     if(Date.now() - textData[i].lastTime > 10e3){
       textData.splice(i--,1)
@@ -2060,13 +2558,36 @@ const flyTo = (item: any) => {
 };
 let lastTime = 0
 const startTime = Date.now()
-const loop = ()=>{
+const interval = 1000/30
+let then = 0
+const loop = (timestamp:number)=>{
+  if (timestamp - then > interval) {
+    interval > 0 && (then = timestamp - ((timestamp - then) % interval));
+    if(lastTime === 0){
+      lastTime = performance.now()
+    }
+    const deltaTime = performance.now() - lastTime
+    if(deltaTime>1000){
+      zydData.map((item:any)=>{
+        item.now = Date.now()
+      })
+      renderZydLayer(zydData.slice())
+      lastTime = performance.now()
+    }
+  }
+  aid = requestAnimationFrame(loop)
+}
+loop(performance.now())
+
+
+
+const loop2 = ()=>{
   if(lastTime === 0){
     lastTime = performance.now()
   }
   const deltaTime = (performance.now() - lastTime)/1e3
   lastTime = performance.now()
-  // aid = requestAnimationFrame(loop)
+  // aid = requestAnimationFrame(loop2)
 
   // 简单模拟
   // const speed = 5
@@ -2114,6 +2635,9 @@ const 批量操作 = ()=>{
 const 经纬度 = ()=>{
   setting.获取经纬度 = true
 }
+watch(()=>setting.人影.监控.warningCircle,()=>{
+  renderZydLayer(zydData.slice())
+})
 watch(()=>setting.铁路,()=>{
   map.setLayoutProperty('rail-base','visibility',setting.铁路?'visible':'none')
   map.setLayoutProperty('rail-inner','visibility',setting.铁路?'visible':'none')
@@ -2229,7 +2753,6 @@ defineExpose({
   批量操作,
   经纬度,
 })
-let aid = 0;
 import getStyle from './editMap.js'
 let style = getStyle()
 const keydownFunc = (event) => {
@@ -2292,8 +2815,10 @@ function load(){
 }
 import squareUrl from '~/assets/square.svg?url'
 import { loadImage } from '~/tools/index.js'
+import { parse } from 'ol/expr/expression.js';
 let squareImageData:any = null
 let planeImageData:any = null
+let rocketImageData:any = null
 let extrapolationImageData:any = null
 onMounted(async() => {
   squareImageData = await loadImage(squareUrl,8,8,{
@@ -2307,6 +2832,11 @@ onMounted(async() => {
   planeImageData = await loadImage(planeUrl,24,24,{
     airplane:{
       style: 'opacity:1.0;fill:yellow;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+    }
+  },true)
+  rocketImageData = await loadImage(rocketUrl,48,48,{
+    rocket:{
+      style:"fill:#fff;stroke:black;stroke-width:0.3px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
     }
   },true)
   extrapolationImageData = await loadImage(extrapolationUrl,10,10,{
@@ -2361,6 +2891,7 @@ onMounted(async() => {
   });
   map.addControl(deckOverlay)
   map.addControl(deckOverlay2)
+  map.addControl(deckOverlay3)
   map.getCanvas().style.cursor = 'default';
   const GISTYPE={
     GIS_POINT: 1,
@@ -2471,7 +3002,7 @@ onMounted(async() => {
               "text-max-width": 400,
             },
             paint: {
-              "text-color": "#fa0",
+              "text-color": "#ffb31a",
               "text-halo-color": "black",
               "text-halo-width": 1,
               'text-opacity': [
@@ -2531,7 +3062,123 @@ onMounted(async() => {
       };
 */
 
-
+    作业点().then(async(res) => {
+      if(!map)
+        return
+      sys.作业点原始数据 = res.data.results.filter((item:any)=>{
+        if(user.strUnitID.startsWith('99')){
+          return item.strMgrUnit == user.strUnitID
+        }else{
+          return true
+        }
+      });
+      sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
+        if(user.strUnitID.startsWith('99')){
+          return true
+        }else{
+          for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+            if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+              return true
+            }
+          }
+          return false
+        }
+      })
+      zydFeaturesData.features.length = 0
+      for(let i=0;i<sys.符合条件的作业点数据.length;i++){
+        const item = sys.符合条件的作业点数据[i] as stationData
+        if(!item.tags){
+          item.tags = []
+        }
+        if(item.iType){
+          if(!item.tags.includes('移动作业点')){
+            item.tags.push('移动作业点')
+          }
+        }else{
+          if(!item.tags.includes('固定作业点')){
+            item.tags.push('固定作业点')
+          }
+        }
+        if(item.iShortAngelBegin==null){
+          item.iShortAngelBegin = 0
+        }
+        if (item.strPos) {
+          let position = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [number, number]
+          zydData.push({
+            strID: item.strID,
+            strName: item.strName,
+            "offset": [20,-10],
+            type:'作业点',
+            "uiTrackNo": 593,
+            "uiAdsAddress": 0,
+            "ubyTrackState": 1,
+            "ubyTrackQuality": 0,
+            "fLongitude": position[0],
+            "fLatitude": position[1],
+            "ubyAltitudeMCValid": 0,
+            "iAltitudeMC": 0,
+            "ubyAltitudeADSValid": 1,
+            "iAltitudeADS": 2000,
+            "unSsrCode": 202,
+            "ubyRadarDataType": 2,
+            "ubySim": 0,
+            "ubyFixTarget": 0,
+            "ubySpiFlag": 0,
+            "ubyEmergencyType": 0,
+            "fSpeedZ": -11.520557403564453,
+            "fSpeed": 5,
+            "fHeading": 110.392822265625,
+            "ubyFlyingState": 0,
+            "ubyEmitterCat": 5,
+            "strCallCode": "",
+            "trajectory": [
+              pos,pos
+            ],
+            "trail":[pos],
+            "lastTime": 1763036518493,
+            "显示标牌":true,
+            "显示尾迹":true,
+            "显示速度矢量线":true,
+            "显示航迹圈":true,
+            "显示经纬度":true,
+            "显示历史轨迹":true,
+            "ubyStatus":'空闲',
+            polygon:calculateFireArea(position,10e3,0,360,144),//射界
+            polygon2:calculateFireArea(position,20e3,0,360,144),//警戒圈
+            properties:Object.assign(item,{
+              strID: item.strID,
+              type: "站点",
+              strCode: item.strCode,
+              strName: item.strName.replaceAll('作业点','').replaceAll('火箭','').replaceAll('人工影响天气',''),
+              strPos: item.strPos,
+              iMaxShotRange: item.iMaxShotRange,
+              iMaxShotHei: item.iMaxShotHei,
+              iWeapon: Number(item.strWeapon),
+              iWorkType: 1,
+              beginTime: moment().format("HH:mm:ss"),
+              unitName: item.unitName,
+              duration: 60,
+              "icon-image": item.iType == 1 ? "my-rocket" : "my-rocket",
+              // "icon-image": "火箭弹图标",
+              strRelayUnit:item.strRelayUnit,
+              strRelayUnitName:item.strRelayUnitName,
+              delayTimeLen:10,
+              workTimeLen:60,//批复界面会用到
+              workBeginTime:moment().format('HH:mm:ss'),
+              denyCode:0,
+              strMgrUnit:item.strMgrUnit,
+              strMgrUnitName:item.strMgrUnitName,
+              tags:[],
+              tag:setting.人影.监控.zydTag,
+            }),
+            now:Date.now(),
+          })
+        }
+      }
+      renderZydLayer(zydData.slice())
+      sys.触发作业状态数据查询 = Date.now()
+      sys.触发历史作业状态数据查询 = Date.now()
+    })
 
     map.addLayer({
       "id": "routeLineLayer",
@@ -2882,13 +3529,11 @@ onMounted(async() => {
       number
     ]; // 圆心点的经纬
     let radius: number = 60*1000; // 半径（单位：米
-    let steps: number = 360; // 用于生成圆弧的步数，越大越平滑
     let units: turf.Units = "meters"; // 半径的单位
-    let sectorPoints: [number, number][] = calculateCirclePoints(
+    let sectorPoints: [number, number][] = calculateFireArea(
       center,
       radius,
-      steps,
-      units
+      0,360
     );
     let sectorPolygon = turf.polygon([sectorPoints], {});
     map.addLayer({
@@ -2912,13 +3557,11 @@ onMounted(async() => {
     });
 
     radius = 120*1000; // 半径（单位：米
-    steps = 360; // 用于生成圆弧的步数，越大越平滑
     units = "meters"; // 半径的单位
-    sectorPoints = calculateCirclePoints(
+    sectorPoints = calculateFireArea(
       center,
       radius,
-      steps,
-      units
+      0,360
     );
     sectorPolygon = turf.polygon([sectorPoints], {});
     map.addLayer({
@@ -2942,13 +3585,11 @@ onMounted(async() => {
     });
 
     radius = 180*1000; // 半径（单位：米
-    steps = 360; // 用于生成圆弧的步数，越大越平滑
     units = "meters"; // 半径的单位
-    sectorPoints = calculateCirclePoints(
+    sectorPoints = calculateFireArea(
       center,
       radius,
-      steps,
-      units
+      0,360
     );
     sectorPolygon = turf.polygon([sectorPoints], {});
     map.addLayer({
@@ -2972,13 +3613,11 @@ onMounted(async() => {
     });
 
     radius = 360*1000; // 半径（单位：米
-    steps = 360; // 用于生成圆弧的步数，越大越平滑
     units = "meters"; // 半径的单位
-    sectorPoints = calculateCirclePoints(
+    sectorPoints = calculateFireArea(
       center,
       radius,
-      steps,
-      units
+      0,360
     );
     sectorPolygon = turf.polygon([sectorPoints], {});
     map.addLayer({
@@ -3118,7 +3757,7 @@ onMounted(async() => {
     map.removeImage('airport');
     await loadImage2Map(map,stoveUrl,36,36,{
       stove:{
-        style: 'fill:#fa0;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
+        style: 'fill:#ffb31a;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
       },
       stoveBurning:{
         style: 'fill:#f00;stroke:black;stroke-width:30px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;',
@@ -3932,16 +4571,44 @@ onMounted(async() => {
         e.originalEvent.stopPropagation()
         e.originalEvent.preventDefault();
         if(hoverObject){
-          marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-          $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
-          menuType.value = '飞机操作'
-          activeObject = hoverObject
-          飞机菜单数据.value.显示标牌 = activeObject.显示标牌
-          飞机菜单数据.value.显示尾迹 = activeObject.显示尾迹
-          飞机菜单数据.value.显示速度矢量线 = activeObject.显示速度矢量线
-          飞机菜单数据.value.显示航迹圈 = activeObject.显示航迹圈
-          飞机菜单数据.value.显示经纬度 = activeObject.显示经纬度
-          飞机菜单数据.value.显示历史轨迹 = activeObject.显示历史轨迹
+          if(hoverObject.type=='作业点'){
+            // menuType.value = '地面作业申请'
+            // marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+            // $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+            // $(stationMenuRef.value as HTMLDivElement).removeData();
+            // $(stationMenuRef.value as HTMLDivElement).data(hoverObject.properties);
+
+
+
+            activeObject = hoverObject
+            station.人影界面被选中的设备 = hoverObject.strID;
+            marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+            const item = zydData.filter(item=>item.strID==hoverObject.strID)[0]
+            if(item.ubyStatus=='作业申请待批复'){
+              menuType.value = '人工批复'
+            }else if(item.ubyStatus=='作业开始'||item.ubyStatus=='作业批准'||item.ubyStatus=='作业结束'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'||item.ubyStatus=='已撤销'){
+              menuType.value = '默认'
+            }else if(item.ubyStatus=='空闲'||item.ubyStatus==undefined){
+              menuType.value = '地面作业申请'
+            }else{
+              console.log('未处理状态',item.ubyStatus)
+              return
+            }
+            $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+            $(stationMenuRef.value as HTMLDivElement).removeData();
+            $(stationMenuRef.value as HTMLDivElement).data(item.properties);
+          }else{
+            marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+            $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+            menuType.value = '飞机操作'
+            activeObject = hoverObject
+            飞机菜单数据.value.显示标牌 = activeObject.显示标牌
+            飞机菜单数据.value.显示尾迹 = activeObject.显示尾迹
+            飞机菜单数据.value.显示速度矢量线 = activeObject.显示速度矢量线
+            飞机菜单数据.value.显示航迹圈 = activeObject.显示航迹圈
+            飞机菜单数据.value.显示经纬度 = activeObject.显示经纬度
+            飞机菜单数据.value.显示历史轨迹 = activeObject.显示历史轨迹
+          }
           return
         }
         const layers = map.getStyle().layers.filter(layer => layer.id.startsWith('gl-draw')).map(layer=>layer.id)
@@ -3965,906 +4632,379 @@ onMounted(async() => {
         })
       }
     }
-    // getTodayRecords().then((res:any)=>{
-    //   sys.planProps.今日作业记录 = res.data.data;
-    // })
-    if(!map.getSource("最大射程source")){
-      map.addSource("最大射程source", {
+    // if(!map.getLayer("textLayer")){
+    //   map.addLayer({
+    //     id: "textLayer",
+    //     type: "symbol",
+    //     source: "zydSource",
+    //     layout: {
+    //       visibility: props.zyd ? "visible" : "none",
+    //       "text-field": ["get", "strName"],
+    //       "text-font": ["simkai"],
+    //       "text-size": 12,
+    //       "text-transform": "uppercase",
+    //       // "text-letter-spacing": 0.05,】,
+    //       "text-line-height": 1,
+    //       'text-anchor': 'bottom', // 水平垂直居中
+    //       'text-offset': [0, -2], // 调整文本偏移量
+    //       'text-justify': 'center', // 水平居中对齐
+    //       "text-ignore-placement": true,
+    //       "text-allow-overlap": true,
+    //       "text-pitch-alignment": "map",
+    //       "text-rotation-alignment": "map",
+    //       "text-max-width": 400,
+    //     },
+    //     paint: {
+    //       "text-color": "white",
+    //       "text-halo-color": "black",
+    //       "text-halo-width": 1,
+    //       'text-opacity': [
+    //         'interpolate',
+    //         ['linear'],
+    //         ['zoom'],
+    //         6, 0,   // zoom <= 9 不显示文字
+    //         10, 1   // zoom >= 10 显示文字
+    //       ]
+    //     },
+    //     filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
+    //   });
+    // }
+    if(!map.getSource("stoveSource")){
+      map.addSource("stoveSource", {
         type: "geojson",
-        data: circleFeaturesData,
-        promoteId:'strID'
+        data: stoveFeaturesData,
+        promoteId:'strStoveID'
+      });
+    }
+    if(!map.getLayer("stoveLayer")){
+      map.addLayer({
+        id: "stoveLayer",
+        type: "symbol",
+        source: "stoveSource",
+        layout: {
+          visibility: setting.人影.监控.zyd?'visible':'none',
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "icon-anchor": "center",
+          "icon-image": ["get", "icon-image"],
+          'icon-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            4, 0.25,
+            5, 0.25,
+            8, 0.6,
+            15, 1.0
+          ],
+          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+          "icon-rotate": 0,
+          // "icon-offset": [10, 0],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "text-field": ["get", "name"],
+          "text-font": ["simkai"],
+          "text-size": 12,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,】,
+          "text-line-height": 1,
+          'text-anchor': 'bottom', // 水平垂直居中
+          'text-offset': [0, -1], // 调整文本偏移量
+          'text-justify': 'center', // 水平居中对齐
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-pitch-alignment": "map",
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "icon-opacity": 1,
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+          'text-opacity': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            9, 0,   // zoom <= 9 不显示文字
+            10, 1   // zoom >= 10 显示文字
+          ]
+        },
+        filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
       });
     }
 
-    if(!map.getSource("警戒圈source")){
-      map.addSource("警戒圈source", {
+    if(!map.getSource("testSource")){
+      map.addSource("testSource", {
         type: "geojson",
-        data: forewarningFeaturesData,
-        promoteId:'strID'
+        data: testFeaturesData,
       });
     }
-    await 作业点().then(async(res) => {
-      if(!map)
+    if(!map.getLayer("testLayer")){
+      map.addLayer({
+        id: "testLayer",
+        type: "symbol",
+        source: "testSource",
+        layout: {
+          visibility: setting.人影.监控.test ? "visible" : "none",
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "icon-anchor": "center",
+          "icon-image": ["get", "icon-image"],
+          'icon-size': [
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            4, 0.25,
+            5, 0.25,
+            8, 0.6,
+            15, 1.0
+          ],
+          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+          "icon-rotate": 0,
+          // "icon-offset": [10, 0],
+          "icon-rotation-alignment": "map",
+          "text-pitch-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+        },
+        paint: {
+          "icon-opacity": 1,
+        }
+      });
+    }
+    if(!map.getLayer("testLabelLayer")){
+      map.addLayer({
+        id: "testLabelLayer",
+        type: "symbol",
+        source: "testSource",
+        layout: {
+          visibility: setting.人影.监控.test ? "visible" : "none",
+          // This icon is a part of the Mapbox Streets style.
+          // To view all images available in a Mapbox style, open
+          // the style in Mapbox Studio and click the "Images" tab.
+          // To add a new image to the style at runtime see
+          // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+          "text-pitch-alignment": "map",
+          "text-field": ["get", "strName"],
+          "text-font": ["simkai"],
+          "text-size": 16,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "bottom",
+          "text-line-height": 1,
+          "text-justify": "center",
+          "text-offset": [0, -1],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        paint: {
+          "text-color": "white",
+          "text-halo-color": "black",
+          "text-halo-width": 1,
+        },
+        "minzoom":9,
+      });
+    }
+    map.on("contextmenu", "stoveLayer", (e: any) => {
+      if(hoverObject){
         return
-      sys.作业点原始数据 = res.data.results;
-      sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
-        for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
-          if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
-            return true
-          }
-        }
-        return false
-      })
-      zydFeaturesData.features.length = 0
-      forewarningFeaturesData.features.length = 0;
-      circleFeaturesData.features.length = 0;
-      for(let i=0;i<sys.作业点原始数据.length;i++){
-        const item = sys.作业点原始数据[i] as stationData
-        if(!item.tags){
-          item.tags = []
-        }
-        if(item.iType){
-          if(!item.tags.includes('移动作业点')){
-            item.tags.push('移动作业点')
-          }
-        }else{
-          if(!item.tags.includes('固定作业点')){
-            item.tags.push('固定作业点')
-          }
-        }
-        if(item.iShortAngelBegin==null){
-          item.iShortAngelBegin = 0
-        }
-        if (item.strPos) {
-          // let position = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [number, number]
-          let position = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [number, number]
-          zydFeaturesData.features.push({
-            type: "Feature",
-            properties: {
-              strID: item.strID,
-              type: "站点",
-              strCode: item.strCode,
-              strName: item.strName.replaceAll('作业点',''),
-              strPos: item.strPos,
-              iMaxShotRange: item.iMaxShotRange||10000,
-              iMaxShotHei: item.iMaxShotHei,
-              iWeapon: Number(item.strWeapon),
-              iWorkType: 1,
-              iShotRangeBegin: item.iShortAngelBegin,
-              iShotRangeEnd: item.iShortAngelEnd,
-              beginTime: moment().format("HH:mm:ss"),
-              unitName: item.unitName,
-              duration: 1,
-              "icon-image": item.iType == 1 ? "my-rocket" : "my-rocket",
-              // "icon-image": "火箭弹图标",
-              strRelayUnit:item.strRelayUnit,
-              strRelayUnitName:item.strRelayUnitName,
-              delayTimeLen:10,
-              beginDirection:270,
-              endDirection:80,
-              workTimeLen:1,
-              workBeginTime:moment().format('HH:mm:ss'),
-              denyCode:0,
-              strMgrUnit:item.strMgrUnit,
-              strMgrUnitName:item.strMgrUnitName,
-              tags:item.tags,
-              tag:setting.人影.监控.zydTag
-            },
-            geometry: {
-              type: "Point",
-              coordinates: position,
-            },
-          });
-          // 有问题
-          // let circle: any = Circle(wgs84togcj02(...fromDMS(item.strPos)), item.iMaxShotRange, {
-          //   steps: 360,
-          //   units: "meters",
-          //   properties: {
-          //     id: item.strID,
-          //     color: "white",
-          //   },
-          // });
-          // circleFeaturesData.features.push(circle);
-          if (item.iShortAngelEnd - item.iShortAngelBegin >= 360 || item.iShortAngelEnd == item.iShortAngelBegin) {
-            const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
-              number,
-              number
-            ]; // 圆心点的经纬度
-            const radius: number = item.iMaxShotRange||10000; // 半径（单位：米
-            const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-            const units: turf.Units = "meters"; // 半径的单位
-            const sectorPoints: [number, number][] = calculateCirclePoints(
-              center,
-              radius,
-              steps,
-              units
-            );
-            const sectorPolygon = turf.polygon([sectorPoints], {
-              strID: item.strID,
-              tags:item.tags,
-              tag:setting.人影.监控.zydTag,
-            });
-            map.setFeatureState({source:'最大射程source',id:item.strID},{
-              ubyStatus:'空闲',
-              opacity:0,
-            })
-            circleFeaturesData.features.push(sectorPolygon);
-          } else {
-            const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
-              number,
-              number
-            ]; // 圆心点的经纬度
-            const radius: number = item.iMaxShotRange||10000; // 半径（单位：米
-            const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-            const startAngle: number = item.iShortAngelBegin; // 起始角度（单位：度）
-            const endAngle: number =
-              item.iShortAngelEnd > startAngle
-                ? item.iShortAngelEnd
-                : item.iShortAngelEnd + 360; // 终止角度（单位：度）
-            const units: turf.Units = "meters"; // 半径的单位
-            const sectorPoints: [number, number][] = calculateSectorPoints(
-              center,
-              radius,
-              startAngle,
-              endAngle,
-              steps,
-              units
-            );
-            const sectorPolygon = turf.polygon([sectorPoints], {
-              strID: item.strID,
-              tags:item.tags,
-              tag:setting.人影.监控.zydTag,
-            });
-            map.setFeatureState({source:'最大射程source',id:item.strID},{
-              ubyStatus:'空闲',
-              opacity:0,
-            })
-            sectorPolygon.id = '空域'+item.strID
-            circleFeaturesData.features.push(sectorPolygon);
-          }
-          //加入警戒圈
-          const center: [number, number] = wgs84togcj02(...fromDMS(item.strPos)) as [
-            number,
-            number
-          ]; // 圆心点的经纬度
-          const radius: number = 20e3; // 半径（单位：米
-          const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-          const units: turf.Units = "meters"; // 半径的单位
-          const sectorPoints: [number, number][] = calculateCirclePoints(
-            center,
-            radius,
-            steps,
-            units
-          );
-          const sectorPolygon = turf.polygon([sectorPoints], {
-            strID: item.strID,
-            ubyStatus:'空闲',
-            tags:item.tags,
-            tag:setting.人影.监控.zydTag,
-          });
-          map.setFeatureState({source:'警戒圈source',id:item.strID},{
-            ubyStatus:'空闲',
-            opacity:0,
-          })
-          sectorPolygon.id = '警戒圈' + item.strID
-          forewarningFeaturesData.features.push(sectorPolygon);
-        }
       }
-      map.getSource('警戒圈source').setData(forewarningFeaturesData)
-      map.getSource('最大射程source').setData(circleFeaturesData)
-      if(!map.getLayer('最大射程-fill')){
-        map.addLayer({
-          id: "最大射程-fill",
-          type: "fill",
-          source: "最大射程source",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-          },
-          paint: {
-            "fill-color": [
-              "match",
-              ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#fa0',
-              '作业批准','#00f',
-              '作业开始','#f00',
-              '作业结束','#888',
-              '作业不批准','#888',
-              '空闲','#888',
-              '显示','#888',
-              '#fff'
-            ],
-            "fill-opacity": ['coalesce',['feature-state','opacity'],0],
-          },
-        });
+      e.handled = true;
+      e.originalEvent.stopPropagation()
+      e.originalEvent.preventDefault();
+      const fs = map.queryRenderedFeatures(e.point, {
+        layers: ["stoveLayer"],
+      });
+      if (!fs.length) {
+        return;
       }
-      if(!map.getLayer("最大射程-line")){
-        map.addLayer({
-          id: "最大射程-line",
-          type: "line",
-          source: "最大射程source",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-          },
-          paint: {
-            "line-color": [
-              "match",
-              ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#fa0',
-              '作业批准','#00f',
-              '作业开始','#f00',
-              '作业结束','#888',
-              '作业不批准','#888',
-              '空闲','#888',
-              '显示','#888',
-              '#fff'
-            ],
-            "line-width": 1,
-            "line-opacity": ['coalesce',['feature-state','opacity'],0]
-            // "line-dasharray": [1, 1],
-          },
-        });
+      const feature = fs[0];
+      station.人影界面被选中的烟炉 = feature.properties.strStoveID;
+      marker.setLngLat(feature.geometry.coordinates);
+      const state = map.getFeatureState({source:'stoveSource',id:feature.properties.strStoveID})
+      menuType.value = '烟炉操作'
+      $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+      $(stationMenuRef.value as HTMLDivElement).removeData();
+      $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
+    });
+    // map.on("contextmenu", "zydLayer", (e: any) => {
+    //   if(hoverObject){
+    //     return
+    //   }
+    //   e.handled = true;
+    //   e.originalEvent.stopPropagation()
+    //   e.originalEvent.preventDefault();
+    //   const fs = map.queryRenderedFeatures(e.point, {
+    //     layers: ["zydLayer"],
+    //   });
+
+    //   if (!fs.length) {
+    //     return;
+    //   }
+    //   const feature = fs[0];
+    //   station.人影界面被选中的设备 = feature.properties.strID;
+    //   marker.setLngLat(feature.geometry.coordinates);
+    //   const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
+    //   if(state.ubyStatus=='作业申请待批复'){
+    //     menuType.value = '人工批复'
+    //   }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'||state.ubyStatus=='作业结束'){
+    //     menuType.value = '默认'
+    //   }else if(state.ubyStatus=='空闲'||state.ubyStatus=='作业不批准'||state.ubyStatus=='作业完成'||state.ubyStatus==undefined){
+    //     menuType.value = '地面作业申请'
+    //   }else{
+    //     console.log('未处理状态',state.ubyStatus)
+    //     return
+    //   }
+    //   $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+    //   $(stationMenuRef.value as HTMLDivElement).removeData();
+    //   $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
+    // });
+    map.on("contextmenu", contextmenuFunc);
+    // map.on("mousedown", "zydLayer", (e: any) => {
+    //   const fs = map.queryRenderedFeatures(e.point, {
+    //     layers: ["zydLayer"],
+    //   });
+    //   if (!fs.length) {
+    //     return;
+    //   }
+    //   const feature = fs[0];
+    //   station.人影界面被选中的设备 = feature.properties.strID;
+    // });
+    map.on("mousedown", (e:any) => {
+      mouseDownEvt = e
+      if(hoverObject){
+        hoverObjectOffset = JSON.parse(JSON.stringify(hoverObject.offset))
+        station.人影界面被选中的设备 = hoverObject.strID || ''
+        e.preventDefault()
       }
-      if(!map.getLayer("预警圈-line")){
-        map.addLayer({
-          id: "预警圈-line",
-          type: "line",
-          source: "警戒圈source",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-          },
-          paint: {
-            "line-color": [
-              "match",
-              ['coalesce',["feature-state", "ubyStatus"],'空闲'],
-              '作业申请待批复','#fa0',
-              '作业批准','#00f',
-              '作业开始','#f00',
-              '作业结束','#82a9f5',
-              '作业不批准','#82a9f5',
-              '空闲','#82a9f5',
-              '#fff'
-            ],
-            "line-opacity": ['coalesce',['feature-state','opacity'],0],
-            "line-width": 2,
-            "line-dasharray": [4, 2],
-          },
-        });
-      }
-      if(!map.getLayer("synergyLayer")){
-        map.addLayer({
-          id: "synergyLayer",
-          type: "symbol",
-          source: {
-            type:'geojson',
-            data:synergyFeaturesData
-          },
-          layout: {
-            visibility: setting.人影.监控.synergyZyd ? "visible" : "none",
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "icon-anchor": "center",
-            "icon-image": ["get", "icon-image"],
-            'icon-size': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              4, 0.25,
-              5, 0.25,
-              8, 0.6,
-              15, 1.0
-            ],
-            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-            "icon-rotate": 0,
-            // "icon-offset": [10, 0],
-            "icon-rotation-alignment": "map",
-            "text-pitch-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-          },
-          paint: {
-            "icon-opacity": 1,
-          },
-        });
-        协同作业点().then(res=>{
-          if(!map)return
-          res.data.results.forEach(item=>{
-            if(item.strPos){
-              let position = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [number, number]
-              synergyFeaturesData.features.push({
-                type: "Feature",
-                properties: {
-                  strID: item.strID,
-                  type: "站点",
-                  strCode: item.strCode,
-                  strName: item.strName,
-                  strPos: item.strPos,
-                  iMaxShotRange: item.iMaxShotRange,
-                  iMaxShotHei: item.iMaxShotHei,
-                  iWeapon: Number(item.strWeapon),
-                  iWorkType: 1,
-                  iShotRangeBegin: item.iShortAngelBegin,
-                  iShotRangeEnd: item.iShortAngelEnd,
-                  beginTime: moment().format("HH:mm:ss"),
-                  unitName: item.unitName,
-                  duration: 1,
-                  "icon-image": item.iType == 1 ? "projectile-red" : "projectile-blue",
-                  // "icon-image": "火箭弹图标",
-                  strRelayUnit:item.strRelayUnit,
-                  strRelayUnitName:item.strRelayUnitName,
-                  delayTimeLen:10,
-                  beginDirection:270,
-                  endDirection:80,
-                  workTimeLen:1,
-                  workBeginTime:moment().format('HH:mm:ss'),
-                  denyCode:0,
-                  strMgrUnitName:item.strMgrUnitName,
-                  tags:item.tags,
-                  tag:setting.人影.监控.zydTag,
-                },
-                geometry: {
-                  type: "Point",
-                  coordinates: position,
-                }
-              })
-            }
-          })
-          map.getSource('synergyLayer').setData(synergyFeaturesData)
-        })
-      }
-      if(!map.getSource("zydSource")){
-        //注意zydFeaturesData.features中存放的是全量数据
-        map.addSource("zydSource", {
+      // console.log([e.lngLat.lng,e.lngLat.lat])
+      $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+      // const fs = map.queryRenderedFeatures(e.point, {
+      //   layers: ["zydLayer"],
+      // });
+      // if(fs.length){
+      //   return;
+      // }
+      // if(e.originalEvent.button==0){
+      //   if(station.人影界面被选中的设备 != ''){
+      //     station.人影界面被选中的设备 = ''
+      //   }else{
+      //     active()
+      //   }
+      // }
+    });
+    map.on("mouseup",()=>{
+      mouseDownEvt = null
+    })
+    active = () => {
+      //激活
+    }
+    /*规划航线*/
+    // await getPlanPath().then(async(data)=>{
+    //   if(!map)return
+
+    //   // 辅助力量站点
+    //   if(data.standby_station){
+    //     await axios({
+    //       url:data.standby_station.replace('http://10.225.3.150:8091','/planPath'),
+    //       method:'get',
+    //     }).then(res=>{
+    //       res.data.forEach(item=>{
+    //         zydFeaturesData.features.forEach(feature=>{
+    //           if(feature.properties.strID == item.stationid){
+    //             if(!feature.properties.tags.includes('正西辅助力量')){
+    //               feature.properties.tags.push('正西辅助力量')
+    //             }
+    //           }
+    //         })
+    //       })
+    //       map.getSource('zydSource').setData(zydFeaturesData)
+    //     })
+    //   }
+
+    //   // 主力量站点
+    //   if(data.main_station){
+    //     await axios({
+    //       url:data.main_station.replace('http://10.225.3.150:8091','/planPath'),
+    //       method:'get',
+    //     }).then(res=>{
+    //       res.data.forEach(item=>{
+    //         zydFeaturesData.features.forEach(feature=>{
+    //           if(feature.properties.strID == item.stationid){
+    //             if(!feature.properties.tags.includes('西南主力量')){
+    //               feature.properties.tags.push('西南主力量')
+    //             }
+    //           }
+    //         })
+    //       })
+    //       map.getSource('zydSource').setData(zydFeaturesData)
+    //     })
+    //   }
+    //   // 主力量轨迹
+    //   if(data.main_plan){
+    //     await axios({
+    //       url:data.main_plan.replace('http://10.225.3.150:8091','/planPath'),
+    //       method:'get',
+    //     }).then(res=>{
+    //       绘制主力量规划轨迹(map,res.data,setting,wgs84togcj02)
+    //     })
+    //   }
+
+    //   // 辅助力量轨迹
+    //   if(data.standby_plan){
+    //     const url = data.standby_plan.replace('http://10.225.3.150:8091','/planPath')
+    //     axios({
+    //       url,
+    //       method:'get',
+    //     }).then(res=>{
+    //       辅助力量规划航迹(map,res.data,setting,wgs84togcj02)
+    //     })
+    //   }
+
+    //   // 消云
+    //   if(data.three_plan){
+    //     const url = data.three_plan.replace('http://10.225.3.150:8091','/planPath')
+    //     axios({
+    //       url,
+    //       method:'get',
+    //     }).then(res=>{
+    //       紧急力量规划航迹(map,res.data,setting,wgs84togcj02)
+    //     })
+    //   }
+    // }).catch(err=>{
+    //   console.log(err)
+    // })
+    {
+      if(map&&!map.getSource("trackSource")){
+        map.addSource("trackSource", {
           type: "geojson",
           data: {
-            type:'FeatureCollection',
-            features:zydFeaturesData.features.filter((feature:any)=>{
-              for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
-                if(feature.properties.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
-                  return true
-                }
-              }
-              return false
-            })
+            type: "FeatureCollection",
+            features: trackFeatures,
           },
-          promoteId:'strID'
         });
       }
-      if(!map.getLayer("zydLayer")){
+      if(map&&!map.getLayer("trackLayer")){
         map.addLayer({
-          id: "zydLayer",
+          id: "trackLayer",
           type: "symbol",
-          source: "zydSource",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "icon-anchor": "center",
-            "icon-image": ["get", "icon-image"],
-            'icon-size': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              4, 0.25,
-              5, 0.25,
-              8, 0.6,
-              15, 1.0
-            ],
-            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-            "icon-rotate": 0,
-            // "icon-offset": [10, 0],
-            "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-          },
-          paint: {
-            "icon-opacity": 1,
-          },
-          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
-        });
-      }
-      if(!map.getLayer("textLayer")){
-        map.addLayer({
-          id: "textLayer",
-          type: "symbol",
-          source: "zydSource",
-          layout: {
-            visibility: props.zyd ? "visible" : "none",
-            "text-field": ["get", "strName"],
-            "text-font": ["simkai"],
-            "text-size": 12,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,】,
-            "text-line-height": 1,
-            'text-anchor': 'bottom', // 水平垂直居中
-            'text-offset': [0, -2], // 调整文本偏移量
-            'text-justify': 'center', // 水平居中对齐
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-pitch-alignment": "map",
-            "text-rotation-alignment": "map",
-            "text-max-width": 400,
-          },
-          paint: {
-            "text-color": "white",
-            "text-halo-color": "black",
-            "text-halo-width": 1,
-            'text-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              6, 0,   // zoom <= 9 不显示文字
-              10, 1   // zoom >= 10 显示文字
-            ]
-          },
-          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
-        });
-      }
-      if(!map.getSource("stoveSource")){
-        map.addSource("stoveSource", {
-          type: "geojson",
-          data: stoveFeaturesData,
-          promoteId:'strStoveID'
-        });
-      }
-      if(!map.getLayer("stoveLayer")){
-        map.addLayer({
-          id: "stoveLayer",
-          type: "symbol",
-          source: "stoveSource",
-          layout: {
-            visibility: setting.人影.监控.zyd?'visible':'none',
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "icon-anchor": "center",
-            "icon-image": ["get", "icon-image"],
-            'icon-size': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              4, 0.25,
-              5, 0.25,
-              8, 0.6,
-              15, 1.0
-            ],
-            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-            "icon-rotate": 0,
-            // "icon-offset": [10, 0],
-            "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            "text-field": ["get", "name"],
-            "text-font": ["simkai"],
-            "text-size": 12,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,】,
-            "text-line-height": 1,
-            'text-anchor': 'bottom', // 水平垂直居中
-            'text-offset': [0, -1], // 调整文本偏移量
-            'text-justify': 'center', // 水平居中对齐
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-pitch-alignment": "map",
-            "text-rotation-alignment": "map",
-            "text-max-width": 400,
-          },
-          paint: {
-            "icon-opacity": 1,
-            "text-color": "white",
-            "text-halo-color": "black",
-            "text-halo-width": 1,
-            'text-opacity': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              9, 0,   // zoom <= 9 不显示文字
-              10, 1   // zoom >= 10 显示文字
-            ]
-          },
-          filter: ['any',...setting.人影.监控.zydTag.map(tag=>['in', tag, ['get', 'tags']])]
-        });
-      }
-
-      if(!map.getSource("testSource")){
-        map.addSource("testSource", {
-          type: "geojson",
-          data: testFeaturesData,
-        });
-      }
-      if(!map.getLayer("testLayer")){
-        map.addLayer({
-          id: "testLayer",
-          type: "symbol",
-          source: "testSource",
-          layout: {
-            visibility: setting.人影.监控.test ? "visible" : "none",
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "icon-anchor": "center",
-            "icon-image": ["get", "icon-image"],
-            'icon-size': [
-              'interpolate',
-              ['linear'],
-              ['zoom'],
-              4, 0.25,
-              5, 0.25,
-              8, 0.6,
-              15, 1.0
-            ],
-            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-            "icon-rotate": 0,
-            // "icon-offset": [10, 0],
-            "icon-rotation-alignment": "map",
-            "text-pitch-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-          },
-          paint: {
-            "icon-opacity": 1,
-          }
-        });
-      }
-      if(!map.getLayer("testLabelLayer")){
-        map.addLayer({
-          id: "testLabelLayer",
-          type: "symbol",
-          source: "testSource",
-          layout: {
-            visibility: setting.人影.监控.test ? "visible" : "none",
-            // This icon is a part of the Mapbox Streets style.
-            // To view all images available in a Mapbox style, open
-            // the style in Mapbox Studio and click the "Images" tab.
-            // To add a new image to the style at runtime see
-            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-            "text-pitch-alignment": "map",
-            "text-field": ["get", "strName"],
-            "text-font": ["simkai"],
-            "text-size": 16,
-            "text-transform": "uppercase",
-            // "text-letter-spacing": 0.05,
-            "text-anchor": "bottom",
-            "text-line-height": 1,
-            "text-justify": "center",
-            "text-offset": [0, -1],
-            "text-ignore-placement": true,
-            "text-allow-overlap": true,
-            "text-rotation-alignment": "map",
-            "text-max-width": 400,
-          },
-          paint: {
-            "text-color": "white",
-            "text-halo-color": "black",
-            "text-halo-width": 1,
-          },
-          "minzoom":9,
-        });
-      }
-      map.on("contextmenu", "stoveLayer", (e: any) => {
-        if(hoverObject){
-          return
-        }
-        e.handled = true;
-        e.originalEvent.stopPropagation()
-        e.originalEvent.preventDefault();
-        const fs = map.queryRenderedFeatures(e.point, {
-          layers: ["stoveLayer"],
-        });
-        if (!fs.length) {
-          return;
-        }
-        const feature = fs[0];
-        station.人影界面被选中的烟炉 = feature.properties.strStoveID;
-        marker.setLngLat(feature.geometry.coordinates);
-        const state = map.getFeatureState({source:'stoveSource',id:feature.properties.strStoveID})
-        menuType.value = '烟炉操作'
-        $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
-        $(stationMenuRef.value as HTMLDivElement).removeData();
-        $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
-      });
-      map.on("contextmenu", "zydLayer", (e: any) => {
-        if(hoverObject){
-          return
-        }
-        e.handled = true;
-        e.originalEvent.stopPropagation()
-        e.originalEvent.preventDefault();
-        const fs = map.queryRenderedFeatures(e.point, {
-          layers: ["zydLayer"],
-        });
-
-        if (!fs.length) {
-          return;
-        }
-        const feature = fs[0];
-        station.人影界面被选中的设备 = feature.properties.strID;
-        marker.setLngLat(feature.geometry.coordinates);
-        const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
-        if(state.ubyStatus=='作业申请待批复'){
-          menuType.value = '人工批复'
-        }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'||state.ubyStatus=='作业结束'){
-          menuType.value = '默认'
-        }else if(state.ubyStatus=='空闲'||state.ubyStatus=='作业不批准'||state.ubyStatus=='作业完成'||state.ubyStatus==undefined){
-          menuType.value = '地面作业申请'
-        }else{
-          console.log('未处理状态',state.ubyStatus)
-          return
-        }
-        $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
-        $(stationMenuRef.value as HTMLDivElement).removeData();
-        $(stationMenuRef.value as HTMLDivElement).data(Object.assign(feature.properties,state));
-      });
-      map.on("contextmenu", contextmenuFunc);
-      map.on("mousedown", "zydLayer", (e: any) => {
-        const fs = map.queryRenderedFeatures(e.point, {
-          layers: ["zydLayer"],
-        });
-        if (!fs.length) {
-          return;
-        }
-        const feature = fs[0];
-        station.人影界面被选中的设备 = feature.properties.strID;
-      });
-      map.on("mousedown", (e) => {
-        mouseDownEvt = e
-        if(hoverObject){
-          hoverObjectOffset = JSON.parse(JSON.stringify(hoverObject.offset))
-          e.preventDefault()
-        }
-        // console.log([e.lngLat.lng,e.lngLat.lat])
-        $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
-        const fs = map.queryRenderedFeatures(e.point, {
-          layers: ["zydLayer"],
-        });
-        if(fs.length){
-          return;
-        }
-        if(e.originalEvent.button==0){
-          if(station.人影界面被选中的设备 != ''){
-            station.人影界面被选中的设备 = ''
-          }else{
-            active()
-          }
-        }
-      });
-      map.on("mouseup",()=>{
-        mouseDownEvt = null
-      })
-      active = () => {
-        circleFeaturesData.features.forEach((item:any)=>{
-          const state = map.getFeatureState({source:'最大射程source',id:item.properties.strID})
-          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'||state.ubyStatus == '显示'?0.5:0
-          map.setFeatureState({source:'最大射程source',id:item.properties.strID},{opacity})
-        })
-        forewarningFeaturesData.features.forEach((item:any)=>{
-          const state = map.getFeatureState({source:'警戒圈source',id:item.properties.strID})
-          const opacity = item.properties.strID == station.人影界面被选中的设备||state.ubyStatus == '作业申请待批复'||state.ubyStatus == '作业批准'||state.ubyStatus == '作业开始'||state.ubyStatus == '作业结束'||state.ubyStatus == '显示'?0.5:0
-          map.setFeatureState({source:'警戒圈source',id:item.properties.strID},{opacity})
-        })
-      }
-      /*规划航线*/
-      // await getPlanPath().then(async(data)=>{
-      //   if(!map)return
-
-      //   // 辅助力量站点
-      //   if(data.standby_station){
-      //     await axios({
-      //       url:data.standby_station.replace('http://10.225.3.150:8091','/planPath'),
-      //       method:'get',
-      //     }).then(res=>{
-      //       res.data.forEach(item=>{
-      //         zydFeaturesData.features.forEach(feature=>{
-      //           if(feature.properties.strID == item.stationid){
-      //             if(!feature.properties.tags.includes('正西辅助力量')){
-      //               feature.properties.tags.push('正西辅助力量')
-      //             }
-      //           }
-      //         })
-      //       })
-      //       map.getSource('zydSource').setData(zydFeaturesData)
-      //     })
-      //   }
-
-      //   // 主力量站点
-      //   if(data.main_station){
-      //     await axios({
-      //       url:data.main_station.replace('http://10.225.3.150:8091','/planPath'),
-      //       method:'get',
-      //     }).then(res=>{
-      //       res.data.forEach(item=>{
-      //         zydFeaturesData.features.forEach(feature=>{
-      //           if(feature.properties.strID == item.stationid){
-      //             if(!feature.properties.tags.includes('西南主力量')){
-      //               feature.properties.tags.push('西南主力量')
-      //             }
-      //           }
-      //         })
-      //       })
-      //       map.getSource('zydSource').setData(zydFeaturesData)
-      //     })
-      //   }
-      //   // 主力量轨迹
-      //   if(data.main_plan){
-      //     await axios({
-      //       url:data.main_plan.replace('http://10.225.3.150:8091','/planPath'),
-      //       method:'get',
-      //     }).then(res=>{
-      //       绘制主力量规划轨迹(map,res.data,setting,wgs84togcj02)
-      //     })
-      //   }
-
-      //   // 辅助力量轨迹
-      //   if(data.standby_plan){
-      //     const url = data.standby_plan.replace('http://10.225.3.150:8091','/planPath')
-      //     axios({
-      //       url,
-      //       method:'get',
-      //     }).then(res=>{
-      //       辅助力量规划航迹(map,res.data,setting,wgs84togcj02)
-      //     })
-      //   }
-
-      //   // 消云
-      //   if(data.three_plan){
-      //     const url = data.three_plan.replace('http://10.225.3.150:8091','/planPath')
-      //     axios({
-      //       url,
-      //       method:'get',
-      //     }).then(res=>{
-      //       紧急力量规划航迹(map,res.data,setting,wgs84togcj02)
-      //     })
-      //   }
-      // }).catch(err=>{
-      //   console.log(err)
-      // })
-      {
-        if(map&&!map.getSource("trackSource")){
-          map.addSource("trackSource", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: trackFeatures,
-            },
-          });
-        }
-        if(map&&!map.getLayer("trackLayer")){
-          map.addLayer({
-            id: "trackLayer",
-            type: "symbol",
-            source: "trackSource",
-            layout: {
-              visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
-              // This icon is a part of the Mapbox Streets style.
-              // To view all images available in a Mapbox style, open
-              // the style in Mapbox Studio and click the "Images" tab.
-              // To add a new image to the style at runtime see
-              // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-              "icon-anchor": "center",
-              "icon-image": "trackSvg",
-              // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-              "icon-rotate": 0,
-              // "icon-offset": [10, 0],
-              "icon-rotation-alignment": "map",
-              "text-pitch-alignment": "map",
-              "icon-allow-overlap": true,
-              "icon-ignore-placement": true,
-              "text-field": ["get", "strName"],
-              "text-font": ["simkai"],
-              "text-size": 16,
-              "text-transform": "uppercase",
-              // "text-letter-spacing": 0.05,
-              "text-anchor": "bottom",
-              "text-line-height": 1,
-              "text-justify": "center",
-              "text-offset": [0, -1],
-              "text-ignore-placement": true,
-              "text-allow-overlap": true,
-              "text-rotation-alignment": "map",
-              "text-max-width": 400,
-            },
-            paint: {
-              "icon-opacity": ['get','opacity'],
-              "text-color": "white",
-              "text-halo-color": "black",
-              "text-halo-width": 1,
-            },
-            // filter:['==', ['get', 'icon'], 'airplaneMock']
-          });
-        }
-        if(map&&!map.getSource("adsbTrackSource")){
-          map.addSource("adsbTrackSource", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: adsbTrackFeatures,
-            },
-          });
-        }
-        if(map&&!map.getLayer("adsbTrackLayer")){
-          map.addLayer({
-            id: "adsbTrackLayer",
-            type: "symbol",
-            source: "adsbTrackSource",
-            layout: {
-              visibility: (setting.人影.监控.track&&setting.人影.监控.adsb) ? "visible" : "none",
-              // This icon is a part of the Mapbox Streets style.
-              // To view all images available in a Mapbox style, open
-              // the style in Mapbox Studio and click the "Images" tab.
-              // To add a new image to the style at runtime see
-              // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
-              "icon-anchor": "center",
-              "icon-image": "trackSvg",
-              // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
-              "icon-rotate": 0,
-              // "icon-offset": [10, 0],
-              "icon-rotation-alignment": "map",
-              "text-pitch-alignment": "map",
-              "icon-allow-overlap": true,
-              "icon-ignore-placement": true,
-              "text-field": ["get", "strName"],
-              "text-font": ["simkai"],
-              "text-size": 16,
-              "text-transform": "uppercase",
-              // "text-letter-spacing": 0.05,
-              "text-anchor": "bottom",
-              "text-line-height": 1,
-              "text-justify": "center",
-              "text-offset": [0, -1],
-              "text-ignore-placement": true,
-              "text-allow-overlap": true,
-              "text-rotation-alignment": "map",
-              "text-max-width": 400,
-            },
-            paint: {
-              "icon-opacity": 1,
-              "text-color": "white",
-              "text-halo-color": "black",
-              "text-halo-width": 1,
-            },
-          });
-        }
-        map.addLayer({
-          id: 'track',
-          type: 'line',
-          source: {
-            type:'geojson',
-            data:trackLinesFeaturesData
-          },
+          source: "trackSource",
           layout: {
             visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
-            'line-join': 'round',
-            'line-cap': 'round'
-          },
-          paint: {
-            'line-color': '#0f0',
-            'line-width': 1
-          },
-          filter:
-          [
-            'all',
-            ['==', ['get', 'icon'], 'airplaneMock'],
-            ['==', ['get', 'active'], true]
-          ]
-        });
-        map.addLayer({
-          id: 'trackPoint',
-          type: 'symbol',
-          source: {
-            type:'geojson',
-            data:trackPointsFeaturesData
-          },
-          layout: {
-            visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
             "icon-anchor": "center",
             "icon-image": "trackSvg",
             // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
@@ -4874,7 +5014,7 @@ onMounted(async() => {
             "text-pitch-alignment": "map",
             "icon-allow-overlap": true,
             "icon-ignore-placement": true,
-            "text-field": '',
+            "text-field": ["get", "strName"],
             "text-font": ["simkai"],
             "text-size": 16,
             "text-transform": "uppercase",
@@ -4888,227 +5028,337 @@ onMounted(async() => {
             "text-rotation-alignment": "map",
             "text-max-width": 400,
           },
-          filter:[
-            'all',
-            ['==', ['get', 'icon'], 'airplaneMock'],
-            ['==', ['get', 'active'], true],
-          ]
+          paint: {
+            "icon-opacity": ['get','opacity'],
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+          },
+          // filter:['==', ['get', 'icon'], 'airplaneMock']
         });
-        map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
-        map.addSource("adsb原数据", {type:'geojson',data:adsbData});
-        map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
-        map.addLayer({
-          id: "飞机",
-          type: "symbol",
-          source: "飞机原数据",
-          layout: {
-            "icon-image": ['get','icon'],
-            // "icon-size": {
-            //   base: 1,
-            //   stops: [
-            //     [0, 0.5],
-            //     [22, 1],
-            //   ],
-            // },
-            "icon-rotate": ["get", "fHeading"],
-            "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            visibility: "none",
-          },
-          paint:{
-            "icon-opacity":['get','opacity'],
-          },
-          filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
-        });
-        map.addLayer({
-          id: "飞机气泡图层",
-          type: "symbol",
-          source: "飞机原数据",
-          layout: {
-            "icon-image": "pop",
-            // "icon-size": {
-            //   base: 1,
-            //   stops: [
-            //     [0, 0.5],
-            //     [22, 1],
-            //   ],
-            // },
-            // "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
-            'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
-            'text-field': ['get', 'label'],
-            // 'text-pitch-alignment':'map',
-            'icon-anchor': 'bottom',
-            'text-anchor': 'bottom',
-            'text-offset': [0, -1],
-            'text-font': ['simkai'],
-            'text-allow-overlap':true,
-            visibility: 'none',
-          },
-          paint:{
-            'icon-color':'#5272ba',
-            "icon-opacity":1,
-            'text-color':'white'
-          },
-          filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
-        });
-        map.addLayer({
-          id: "adsb气泡图层",
-          type: "symbol",
-          source: "adsb原数据",
-          layout: {
-            "icon-image": "pop",
-            // "icon-size": {
-            //   base: 1,
-            //   stops: [
-            //     [0, 0.5],
-            //     [22, 1],
-            //   ],
-            // },
-            // "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
-            'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
-            'text-field': ['get', 'label'],
-            // 'text-pitch-alignment':'map',
-            'icon-anchor': 'bottom',
-            'text-anchor': 'bottom',
-            'text-offset': [0, -1],
-            'text-font': ['simkai'],
-            'text-allow-overlap':true,
-            visibility: (setting.人影.监控.planeLabel&&setting.人影.监控.adsb)?"visible":'none',
-          },
-          paint:{
-            'icon-color':'white',
-            "icon-opacity":1,
-          }
-        });
-        map.addLayer({
-          id: "adsb图层",
-          type: "symbol",
-          source: "adsb原数据",
-          layout: {
-            "icon-image": "adsb",
-            // "icon-size": {
-            //   base: 1,
-            //   stops: [
-            //     [0, 0.5],
-            //     [22, 1],
-            //   ],
-            // },
-            "icon-rotate": ["get", "heading"],
-            "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            visibility: setting.人影.监控.adsb?"visible":"none",
-          },
-          paint:{
-            "icon-opacity":1,
-          }
-        });
-        map.addLayer({
-          id: "模拟飞机图层",
-          type: "symbol",
-          source: "模拟飞机",
-          layout: {
-            "icon-image": "airplaneMock",
-            // "icon-size": {
-            //   base: 1,
-            //   stops: [
-            //     [0, 0.5],
-            //     [22, 1],
-            //   ],
-            // },
-            "icon-rotate": ["get", "fHeading"],
-            "icon-rotation-alignment": "map",
-            "icon-allow-overlap": true,
-            "icon-ignore-placement": true,
-            visibility: "none",
-          },
-        });
-        机场().then((res)=>{
-          if(!map)return
-          let data = res.data.results
-          let airports:any[] = [];
-          for (let i = 0; i < data.length; i++) {
-            airports.push({
-              type: "Feature",
-              properties: {
-                name: data[i].name,
-                code:data[i].code,
-                deg: 0,
-              },
-              geometry: {
-                type: "Point",
-                coordinates: wgs84togcj02(...fromDMS(data[i].strLonLat)),
-                // coordinates: [0, 0],
-              },
-            });
-          }
-          map.addSource("机场数据", {
-            type: "geojson",
-            data: {
-              type: "FeatureCollection",
-              features: airports,
-            },
-          });
-          map.addLayer({
-            id: "机场图层",
-            type: "symbol",
-            source: "机场数据",
-            layout: {
-              "icon-image": "airport",
-              // "icon-size": {
-              //   base: 1,
-              //   stops: [
-              //     [0, 0.5],
-              //     [22, 1],
-              //   ],
-              // },
-              "icon-rotate": ["get", "deg"],
-              "icon-rotation-alignment": "map",
-              "icon-allow-overlap": true,
-              "icon-ignore-placement": true,
-              visibility: props.airport?"visible":'none',
-              "text-pitch-alignment": "map",
-              "text-field": ["get", "name"],
-              "text-font": ["simkai"],
-              "text-size": 16,
-              "text-transform": "uppercase",
-              // "text-letter-spacing": 0.05,
-              "text-anchor": "left",
-              "text-line-height": 1,
-              "text-justify": "left",
-              "text-offset": [1, 0],
-              "text-ignore-placement": true,
-              "text-allow-overlap": true,
-              "text-rotation-alignment": "map",
-              "text-max-width": 400,
-            },
-            paint: {
-              "icon-opacity": 1,
-              "text-color": "white",
-              "text-halo-color": "black",
-              "text-halo-width": 1,
-            },
-          });
-        })
       }
-    }).catch(e=>{
-      console.log(e)
-    })
+      if(map&&!map.getSource("adsbTrackSource")){
+        map.addSource("adsbTrackSource", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: adsbTrackFeatures,
+          },
+        });
+      }
+      if(map&&!map.getLayer("adsbTrackLayer")){
+        map.addLayer({
+          id: "adsbTrackLayer",
+          type: "symbol",
+          source: "adsbTrackSource",
+          layout: {
+            visibility: (setting.人影.监控.track&&setting.人影.监控.adsb) ? "visible" : "none",
+            // This icon is a part of the Mapbox Streets style.
+            // To view all images available in a Mapbox style, open
+            // the style in Mapbox Studio and click the "Images" tab.
+            // To add a new image to the style at runtime see
+            // https://docs.mapbox.com/mapbox-gl-js/example/add-image/
+            "icon-anchor": "center",
+            "icon-image": "trackSvg",
+            // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+            "icon-rotate": 0,
+            // "icon-offset": [10, 0],
+            "icon-rotation-alignment": "map",
+            "text-pitch-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-field": ["get", "strName"],
+            "text-font": ["simkai"],
+            "text-size": 16,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "bottom",
+            "text-line-height": 1,
+            "text-justify": "center",
+            "text-offset": [0, -1],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+          },
+        });
+      }
+      map.addLayer({
+        id: 'track',
+        type: 'line',
+        source: {
+          type:'geojson',
+          data:trackLinesFeaturesData
+        },
+        layout: {
+          visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#0f0',
+          'line-width': 1
+        },
+        filter:
+        [
+          'all',
+          ['==', ['get', 'icon'], 'airplaneMock'],
+          ['==', ['get', 'active'], true]
+        ]
+      });
+      map.addLayer({
+        id: 'trackPoint',
+        type: 'symbol',
+        source: {
+          type:'geojson',
+          data:trackPointsFeaturesData
+        },
+        layout: {
+          visibility: (setting.人影.监控.track&&setting.人影.监控.plane) ? "visible" : "none",
+          "icon-anchor": "center",
+          "icon-image": "trackSvg",
+          // "icon-size": ["interpolate", ["linear"], ["zoom"], 5, 0.5, 20, 1],
+          "icon-rotate": 0,
+          // "icon-offset": [10, 0],
+          "icon-rotation-alignment": "map",
+          "text-pitch-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          "text-field": '',
+          "text-font": ["simkai"],
+          "text-size": 16,
+          "text-transform": "uppercase",
+          // "text-letter-spacing": 0.05,
+          "text-anchor": "bottom",
+          "text-line-height": 1,
+          "text-justify": "center",
+          "text-offset": [0, -1],
+          "text-ignore-placement": true,
+          "text-allow-overlap": true,
+          "text-rotation-alignment": "map",
+          "text-max-width": 400,
+        },
+        filter:[
+          'all',
+          ['==', ['get', 'icon'], 'airplaneMock'],
+          ['==', ['get', 'active'], true],
+        ]
+      });
+      map.addSource("飞机原数据", {type:'geojson',data:airplanesData});
+      map.addSource("adsb原数据", {type:'geojson',data:adsbData});
+      map.addSource("模拟飞机", {type:'geojson',data:airplanesMockData});
+      map.addLayer({
+        id: "飞机",
+        type: "symbol",
+        source: "飞机原数据",
+        layout: {
+          "icon-image": ['get','icon'],
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotate": ["get", "fHeading"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: "none",
+        },
+        paint:{
+          "icon-opacity":['get','opacity'],
+        },
+        filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
+      });
+      map.addLayer({
+        id: "飞机气泡图层",
+        type: "symbol",
+        source: "飞机原数据",
+        layout: {
+          "icon-image": "pop",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          // "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
+          'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
+          'text-field': ['get', 'label'],
+          // 'text-pitch-alignment':'map',
+          'icon-anchor': 'bottom',
+          'text-anchor': 'bottom',
+          'text-offset': [0, -1],
+          'text-font': ['simkai'],
+          'text-allow-overlap':true,
+          visibility: 'none',
+        },
+        paint:{
+          'icon-color':'#5272ba',
+          "icon-opacity":1,
+          'text-color':'white'
+        },
+        filter:setting.人影.监控.ryPlane?['==', ['get', 'icon'], 'airplaneMock']:['all']
+      });
+      map.addLayer({
+        id: "adsb气泡图层",
+        type: "symbol",
+        source: "adsb原数据",
+        layout: {
+          "icon-image": "pop",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          // "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          'icon-text-fit': 'both', // 核心配置，让背景跟文字自适应
+          'icon-text-fit-padding': [4, 4, 4, 4], // 上右下左，像 padding
+          'text-field': ['get', 'label'],
+          // 'text-pitch-alignment':'map',
+          'icon-anchor': 'bottom',
+          'text-anchor': 'bottom',
+          'text-offset': [0, -1],
+          'text-font': ['simkai'],
+          'text-allow-overlap':true,
+          visibility: (setting.人影.监控.planeLabel&&setting.人影.监控.adsb)?"visible":'none',
+        },
+        paint:{
+          'icon-color':'white',
+          "icon-opacity":1,
+        }
+      });
+      map.addLayer({
+        id: "adsb图层",
+        type: "symbol",
+        source: "adsb原数据",
+        layout: {
+          "icon-image": "adsb",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotate": ["get", "heading"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: setting.人影.监控.adsb?"visible":"none",
+        },
+        paint:{
+          "icon-opacity":1,
+        }
+      });
+      map.addLayer({
+        id: "模拟飞机图层",
+        type: "symbol",
+        source: "模拟飞机",
+        layout: {
+          "icon-image": "airplaneMock",
+          // "icon-size": {
+          //   base: 1,
+          //   stops: [
+          //     [0, 0.5],
+          //     [22, 1],
+          //   ],
+          // },
+          "icon-rotate": ["get", "fHeading"],
+          "icon-rotation-alignment": "map",
+          "icon-allow-overlap": true,
+          "icon-ignore-placement": true,
+          visibility: "none",
+        },
+      });
+      机场().then((res)=>{
+        if(!map)return
+        let data = res.data.results
+        let airports:any[] = [];
+        for (let i = 0; i < data.length; i++) {
+          airports.push({
+            type: "Feature",
+            properties: {
+              name: data[i].name,
+              code:data[i].code,
+              deg: 0,
+            },
+            geometry: {
+              type: "Point",
+              coordinates: wgs84togcj02(...fromDMS(data[i].strLonLat)),
+              // coordinates: [0, 0],
+            },
+          });
+        }
+        map.addSource("机场数据", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: airports,
+          },
+        });
+        map.addLayer({
+          id: "机场图层",
+          type: "symbol",
+          source: "机场数据",
+          layout: {
+            "icon-image": "airport",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            "icon-rotate": ["get", "deg"],
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            visibility: props.airport?"visible":'none',
+            "text-pitch-alignment": "map",
+            "text-field": ["get", "name"],
+            "text-font": ["simkai"],
+            "text-size": 16,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "left",
+            "text-line-height": 1,
+            "text-justify": "left",
+            "text-offset": [1, 0],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+          },
+        });
+      })
+    }
     let abortController1:AbortController|null = null;
     function work1(){
       abortController1?.abort()
       abortController1 = new AbortController()
       作业状态数据(abortController1.signal).then(res=>{
-        // zydFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，能做空域申请
-        // circleFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'最大射程source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，射界恢复默认颜色
-        // forewarningFeaturesData.features.forEach((feature:any)=>map.setFeatureState({source:'警戒圈source',id:feature.properties.strID},{ubyStatus:'空闲'}))//确保手动移除后，警戒圈恢复默认颜色
         //实现空域闪烁效果
         function star(feature:any,row:any){
           if(row.ubyStatus == 75){
@@ -5139,81 +5389,23 @@ onMounted(async() => {
           if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
             row.ubyStatus = 100
           }
-          //传入workID
-          map.setFeatureState({source:'zydSource',id:row.strZydID},{
-            ubyStatus:status2value(row.ubyStatus),
-            workBeginTime:moment().format('HH:mm:ss'),
-            strWorkID:row.strWorkID,
-            tmBeginApply:row.tmBeginApply,
-            tmUpdate:row.tmUpdate,
-          })
-          for (let i = 0; i < circleFeaturesData.features.length; i++) {
-            if (circleFeaturesData.features[i].properties.strID == row.strZydID) {
-              Object.assign(circleFeaturesData.features[i].properties,row)
-              circleFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
-              const state = map.getFeatureState({source:'最大射程source',id:row.strZydID})
-              if(status2value(row.ubyStatus)!='作业空闲'){
-                state.opacity = 0.5;
-              }
-              // star(circleFeaturesData.features[i],row)
-              map.setFeatureState({source:'最大射程source',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),opacity:state.opacity})
-              const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
-                number,
-                number
-              ]; // 圆心点的经纬度
-              const radius: number = row.iRange; // 半径（单位：米）
-              const startAngle: number = row.iAngleBegin; // 起始角度（单位：度）
-              const endAngle: number = row.iAngleEnd; // 终止角度（单位：度）
-              const steps: number = 3600; // 用于生成圆弧的步数，越大越平滑
-              const units: turf.Units = "meters"; // 半径的单位
-              if (endAngle - startAngle >= 360) {
-                const center: [number, number] = wgs84togcj02(...fromDMS(row.strCurPos)) as [
-                  number,
-                  number
-                ]; // 圆心点的经纬度
-                const radius: number = row.iRange; // 半径（单位：米
-                const steps: number = 360; // 用于生成圆弧的步数，越大越平滑
-                const units: turf.Units = "meters"; // 半径的单位
-                const sectorPoints: [number, number][] = calculateCirclePoints(
-                  center,
-                  radius,
-                  steps,
-                  units
-                );
-                const sectorPolygon = turf.polygon([sectorPoints], {
-                  strID: row.strZydID,
-                  opacity:0
-                });
-                circleFeaturesData.features[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
-              } else {
-                // const sectorPoints: [number, number][] = calculateSectorPoints(
-                //   center,
-                //   radius,
-                //   startAngle,
-                //   endAngle,
-                //   steps,
-                //   units
-                // );
-                // const sectorPolygon = turf.polygon([sectorPoints], {
-                //   strID: row.strZydID,
-                //   opacity:0
-                // });
-                // circleFeaturesData.features[i].geometry.coordinates = sectorPolygon.geometry?.coordinates;
-              }
+        }
+        for(let j=0;j<zydData.length;j++){
+          let has = false
+          for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
+            let row = sys.planProps.当前作业进度[i]
+            if(zydData[j].strID == row.strZydID){
+              zydData[j].ubyStatus = status2value(row.ubyStatus)
+              Object.assign(zydData[j].properties,row,{ubyStatus:status2value(row.ubyStatus),workBeginTime:moment().format('HH:mm:ss'),iAngleBegin2:row.iAngleBegin,iAngleEnd2:row.iAngleEnd,iWorkType:row.ubyWorkCat})//iAngleBegin2:row.iAngleBegin,iAngleEnd2:row.iAngleEnd用于记录原始的射向
+              has = true
+              break;
             }
           }
-          for(let i=0;i<forewarningFeaturesData.features.length;i++){
-            if(forewarningFeaturesData.features[i].properties.strID == row.strZydID){
-              forewarningFeaturesData.features[i].properties.ubyStatus = status2value(row.ubyStatus);
-              const state = map.getFeatureState({source:'警戒圈source',id:row.strZydID})
-              if(status2value(row.ubyStatus)!='作业空闲'){
-                state.opacity = 0.5;
-              }
-              // star(forewarningFeaturesData.features[i],row)
-              map.setFeatureState({source:'警戒圈source',id:row.strZydID},{ubyStatus:status2value(row.ubyStatus),opacity:state.opacity})
-            }
+          if(!has){
+            zydData[j].ubyStatus = '空闲'
           }
         }
+        renderZydLayer(zydData.slice())
       }).catch(()=>{
         console.log('当前作业查询被终止')
       })
@@ -5241,14 +5433,18 @@ onMounted(async() => {
         console.log('当前作业查询被终止')
       })
     }
+    watch(()=>setting.人影.监控.zyd,()=>{
+      renderZydLayer(zydData.slice())
+    })
+    watch(()=>setting.人影.监控.速度矢量线,()=>{
+      aircraft01(textData)
+    })
     watch(()=>sys.触发作业状态数据查询,()=>{
       work1()
-    })
+    },{immediate:true})
     watch(()=>sys.触发历史作业状态数据查询,()=>{
       work2()
-    })
-    work1()
-    work2()
+    },{immediate:true})
     // getDevice().then((res) => {
     //   sys.符合条件的作业点数据 = res.data;
     //   let features: any = [];
@@ -5816,7 +6012,7 @@ onMounted(async() => {
       res.data.results.forEach((item:any)=>{
         const feature = {
           type: 'Feature',
-          properties: { color: '#888' },
+          properties: { color: '#BBB' },
           geometry: {
             type: 'Polygon',
             coordinates: new Array()
@@ -5868,7 +6064,7 @@ onMounted(async() => {
       res.data.results.forEach((item:any)=>{
         const feature = {
           type: 'Feature',
-          properties: { color: '#888' },
+          properties: { color: '#BBB' },
           geometry: {
             type: 'Polygon',
             coordinates: new Array()
@@ -5986,7 +6182,7 @@ onMounted(async() => {
       res.data.results.forEach((item:any)=>{
         const feature = {
           type: 'Feature',
-          properties: { color: '#888' },
+          properties: { color: '#BBB' },
           geometry: {
             type: 'Polygon',
             coordinates: new Array()
@@ -6039,7 +6235,7 @@ onMounted(async() => {
       res.data.results.forEach((item:any)=>{
         const feature = {
           type: 'Feature',
-          properties: { color: '#888' },
+          properties: { color: '#BBB' },
           geometry: {
             type: 'Polygon',
             coordinates: new Array()
@@ -6088,7 +6284,7 @@ onMounted(async() => {
       const features = res.data.results.map((item:any)=>{
         return {
           type: 'Feature',
-          properties: { color: '#888',name:item.name },
+          properties: { color: '#BBB',name:item.name },
           geometry: {
             type: 'Point',
             coordinates: fromDMS(item.pos)
@@ -6164,7 +6360,7 @@ onMounted(async() => {
       res.data.results.forEach((item:any)=>{
         const feature = {
           type: 'Feature',
-          properties: { color: '#888' },
+          properties: { color: '#BBB' },
           geometry: {
             type: 'Polygon',
             coordinates: new Array()
@@ -6213,7 +6409,7 @@ onMounted(async() => {
       const features = res.data.results.map((item:any)=>{
         return {
           type: 'Feature',
-          properties: { color: '#888',name:item.name },
+          properties: { color: '#BBB',name:item.name },
           geometry: {
             type: 'Point',
             coordinates: fromDMS(item.pos)
@@ -6510,7 +6706,7 @@ onMounted(async() => {
       const features = res.data.results.map((item:any)=>{
         return {
           type: 'Feature',
-          properties: { color: '#888',name:item.name },
+          properties: { color: '#BBB',name:item.name },
           geometry: {
             type: 'Point',
             coordinates: fromDMS(item.pos)
@@ -6595,7 +6791,7 @@ onMounted(async() => {
         });
         map.setFeatureState({source:'stoveSource',id:item.strStoveID},item)
       }
-      map.getSource('stoveSource').setData(stoveFeaturesData)
+      // map.getSource('stoveSource').setData(stoveFeaturesData)
     })
     const holes:any = []
     for(let item of setting.人影.监控.selectedRegion){
@@ -6625,7 +6821,7 @@ onMounted(async() => {
         'type': 'line',
         'source': {
           "type":"geojson",
-          "data": res.data
+          "data": res.data,
         },
         'layout': {
           'visibility':'visible',
@@ -6666,7 +6862,8 @@ onMounted(async() => {
         "data": {
           "type": "FeatureCollection",
           "features": [outer]
-        }
+        },
+        "tolerance":0
       },
       'layout': {
         'visibility':'visible',
@@ -7084,14 +7281,14 @@ onMounted(async() => {
   });
 
   let 原来的鼠标样式 = 'default'
-  map.on('mouseenter', 'zydLayer', () => {
-    原来的鼠标样式 = map.getCanvas().style.cursor
-    map.getCanvas().style.cursor = 'pointer';
-  });
+  // map.on('mouseenter', 'zydLayer', () => {
+  //   原来的鼠标样式 = map.getCanvas().style.cursor
+  //   map.getCanvas().style.cursor = 'pointer';
+  // });
 
-  map.on('mouseleave', 'zydLayer', () => {
-    map.getCanvas().style.cursor = 原来的鼠标样式
-  });
+  // map.on('mouseleave', 'zydLayer', () => {
+  //   map.getCanvas().style.cursor = 原来的鼠标样式
+  // });
   map.on('click','飞机',function(e){
     const features = e.features;
     if (!features || features.length === 0) return;
@@ -7163,6 +7360,8 @@ onMounted(async() => {
   map.on("move", moveFunc);
   map.on("bearing", bearingFunc);
   map.on("mousemove", mousemoveFunc)
+  document.addEventListener('mousemove',updateLabelPosittion)
+  document.addEventListener('mouseup',cancelUpdateLabelPosition)
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
@@ -7188,6 +7387,8 @@ onBeforeUnmount(() => {
     map.off("pitch", pitchFunc);
     map.off("bearing", bearingFunc);
     map.off("mousemove", mousemoveFunc)
+    document.removeEventListener('mousemove',updateLabelPosittion)
+    document.removeEventListener('mouseup',cancelUpdateLabelPosition)
     map.remove();
     map = undefined
   }
@@ -7245,7 +7446,7 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
       'type': 'line',
       'source': {
         "type":"geojson",
-        "data": res.data
+        "data": res.data,
       },
       'layout': {
         'visibility':'visible',
@@ -7286,7 +7487,8 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
       "data": {
         "type": "FeatureCollection",
         "features": [outer]
-      }
+      },
+      "tolerance":0
     },
     'layout': {
       'visibility':'visible',
@@ -7299,25 +7501,110 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
 },{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
-    for(let i=0;i<val.length;i++){
-      if(item.strID.startsWith(val[i].replace(/(00)+$/, ''))){
-        return true
+    if(user.strUnitID.startsWith('99')){
+      return true
+    }else{
+      for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+        if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+          return true
+        }
+      }
+      return false
+    }
+  })
+  zydFeaturesData.features.length = 0
+  zydData.length = 0
+  for(let i=0;i<sys.符合条件的作业点数据.length;i++){
+    const item = sys.符合条件的作业点数据[i] as stationData
+    if(!item.tags){
+      item.tags = []
+    }
+    if(item.iType){
+      if(!item.tags.includes('移动作业点')){
+        item.tags.push('移动作业点')
+      }
+    }else{
+      if(!item.tags.includes('固定作业点')){
+        item.tags.push('固定作业点')
       }
     }
-    return false
-  })
-  const features = zydFeaturesData.features.filter((feature:any)=>{
-    for(let i=0;i<val.length;i++){
-      if(feature.properties.strID.startsWith(val[i].replace(/(00)+$/, ''))){
-        return true
-      }
+    if(item.iShortAngelBegin==null){
+      item.iShortAngelBegin = 0
     }
-    return false
-  })
-  map?.getSource('zydSource')?.setData({
-    type:'FeatureCollection',
-    features,
-  })
+    if (item.strPos) {
+      let position = (wgs84togcj02(...fromDMS(item.strPos)) as unknown) as [number, number]
+      zydData.push({
+        strID: item.strID,
+        strName: item.strName,
+        "offset": [20,-10],
+        type:'作业点',
+        "uiTrackNo": 593,
+        "uiAdsAddress": 0,
+        "ubyTrackState": 1,
+        "ubyTrackQuality": 0,
+        "fLongitude": position[0],
+        "fLatitude": position[1],
+        "ubyAltitudeMCValid": 0,
+        "iAltitudeMC": 0,
+        "ubyAltitudeADSValid": 1,
+        "iAltitudeADS": 2000,
+        "unSsrCode": 202,
+        "ubyRadarDataType": 2,
+        "ubySim": 0,
+        "ubyFixTarget": 0,
+        "ubySpiFlag": 0,
+        "ubyEmergencyType": 0,
+        "fSpeedZ": -11.520557403564453,
+        "fSpeed": 5,
+        "fHeading": 110.392822265625,
+        "ubyFlyingState": 0,
+        "ubyEmitterCat": 5,
+        "strCallCode": "",
+        "trajectory": [
+          pos,pos
+        ],
+        "trail":[pos],
+        "lastTime": 1763036518493,
+        "显示标牌":true,
+        "显示尾迹":true,
+        "显示速度矢量线":true,
+        "显示航迹圈":true,
+        "显示经纬度":true,
+        "显示历史轨迹":true,
+        "ubyStatus":'空闲',
+        polygon:calculateFireArea(position,10e3,0,360,144),//射界
+        polygon2:calculateFireArea(position,20e3,0,360,144),//警戒圈
+        properties:Object.assign(item,{
+          strID: item.strID,
+          type: "站点",
+          strCode: item.strCode,
+          strName: item.strName.replaceAll('作业点','').replaceAll('火箭','').replaceAll('人工影响天气',''),
+          strPos: item.strPos,
+          iMaxShotRange: item.iMaxShotRange,
+          iMaxShotHei: item.iMaxShotHei,
+          iWeapon: Number(item.strWeapon),
+          iWorkType: 1,
+          beginTime: moment().format("HH:mm:ss"),
+          unitName: item.unitName,
+          duration: 60,
+          "icon-image": item.iType == 1 ? "my-rocket" : "my-rocket",
+          // "icon-image": "火箭弹图标",
+          strRelayUnit:item.strRelayUnit,
+          strRelayUnitName:item.strRelayUnitName,
+          delayTimeLen:10,
+          workTimeLen:60,//批复界面会用到
+          workBeginTime:moment().format('HH:mm:ss'),
+          denyCode:0,
+          strMgrUnit:item.strMgrUnit,
+          strMgrUnitName:item.strMgrUnitName,
+          tags:[],
+          tag:setting.人影.监控.zydTag,
+        }),
+        now:Date.now(),
+      })
+    }
+  }
+  renderZydLayer(zydData.slice())
   sys.触发作业状态数据查询 = Date.now()
   sys.触发历史作业状态数据查询 = Date.now()
 })
@@ -7346,9 +7633,9 @@ watch(()=>setting.人影.监控.ryPlane,(val)=>{
   map.setFilter('飞机气泡图层',val?['==', ['get', 'icon'], 'airplaneMock']:['all'])
 })
 watch(()=>setting.人影.监控.zydTag,(zydTag)=>{
-  map.setFilter('zydLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
-  map.setFilter('textLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
-  map.setFilter('stoveLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  // map.setFilter('zydLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  // map.setFilter('textLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
+  // map.setFilter('stoveLayer', ['any',...zydTag.map(tag=>['in', tag, ['get', 'tags']])]);
 },{deep:true})
 watch(()=>setting.人影.监控.正西,(val)=>{
   const layers = map.getStyle().layers
@@ -7465,7 +7752,7 @@ watch(()=>setting.人影.监控.基本站,(val)=>{
   }
 })
 watch(()=>setting.人影.监控.一般站,(val)=>{
-  setting.人影.监控.一般站 && 一般站().then(({data})=>{
+  setting.人影.监控.一般站 && 一般站().then(({data}:any)=>{
     map.getSource('wms-source2').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
   }).catch(e=>{
     console.log(e)
@@ -7477,7 +7764,7 @@ watch(()=>setting.人影.监控.一般站,(val)=>{
   }
 })
 watch(()=>setting.人影.监控.区域站,(val)=>{
-  setting.人影.监控.区域站 && 区域站().then(({data})=>{
+  setting.人影.监控.区域站 && 区域站().then(({data}:any)=>{
     map.getSource('wms-source3').setTiles([`/geoserver/wms?service=WMS&request=GetMap&version=1.3.0&layers=${data.layerName}&styles=rain_shape&format=image/png&transparent=true&data=1753148119386&width=256&height=256&crs=EPSG:3857&bbox={bbox-epsg-3857}`])
   }).catch(e=>{
     console.log(e)
@@ -7663,17 +7950,10 @@ watch(()=>setting.人影.监控.track,()=>{
   }
 })
 watch(()=>setting.人影.监控.planeLabel,()=>{
-  // if(setting.人影.监控.planeLabel){
-  //   if(setting.人影.监控.plane){
-  //     map.setLayoutProperty('飞机气泡图层','visibility','visible')
-  //   }
-  //   if(setting.人影.监控.adsb){
-  //     map.setLayoutProperty('adsb气泡图层','visibility','visible')
-  //   }
-  // }else{
-  //   map.setLayoutProperty('飞机气泡图层','visibility','none')
-  //   map.setLayoutProperty('adsb气泡图层','visibility','none')
-  // }
+  aircraft01(textData)
+})
+watch(()=>setting.人影.监控.plane,()=>{
+  updateTextLayer(textData)
 })
 watch(()=>setting.人影.监控.trackCount,()=>{
   for(let i=0;i<trackFeatures.length;i++){
@@ -7804,11 +8084,6 @@ watch(
     }
   }
 );
-watch(()=>setting.人影.监控.synergyZyd,(newVal)=>{
-  if(map.getLayer('synergyLayer')){
-    map.setLayoutProperty('synergyLayer','visibility',newVal?'visible':'none')
-  }
-})
 watch(
   () => props.zyd,
   () => {
@@ -7816,9 +8091,6 @@ watch(
     map.getLayer('stoveLayer')&&map.setLayoutProperty("stoveLayer", "visibility", visibility)
     map.getLayer("zydLayer")&&map.setLayoutProperty("zydLayer", "visibility", visibility)
     map.getLayer("textLayer")&&map.setLayoutProperty("textLayer", "visibility", visibility)
-    map.getLayer("最大射程-line")&&map.setLayoutProperty("最大射程-line", "visibility", visibility)
-    map.getLayer("最大射程-fill")&&map.setLayoutProperty("最大射程-fill", "visibility", visibility)
-    map.getLayer("预警圈-line")&&map.setLayoutProperty("预警圈-line", "visibility", visibility)
   }
 );
 // watch(
@@ -8230,7 +8502,6 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   border-radius: 10px;
   border-top-left-radius: 4px;
   border: 1px solid var(--el-border-color);
-  opacity: 1 !important;
   ul {
     cursor: default;
     display: flex;

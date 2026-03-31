@@ -42,7 +42,7 @@
                 <el-row :gutter="rowGutter">
                     <el-col :span="12" style="display: flex;white-space: nowrap;">
                         <span class="label">作业时长</span>
-                        <el-input-number v-model="data.duration" :min="1" :max="600" style="width:100%">
+                        <el-input-number v-model="data.duration" :min="10" :max="600" style="width:100%">
                             <template #suffix>
                                 <span>秒</span>
                             </template>
@@ -336,8 +336,8 @@ const data = defineModel('data',{
         iMaxShotHei: 8000,
         iWeapon: 0,
         iWorkType: 1,
-        iShotRangeBegin: 0,
-        iShotRangeEnd: 1000,
+        iShortAngelBegin: 0,
+        iShortAngelEnd: 1000,
         beginTm:moment().format('YYYY-MM-DD HH:mm:ss'),
         duration: 60,
         unitName: "",
@@ -412,8 +412,6 @@ onBeforeUnmount(() => {
         box-sizing: border-box;
         max-width: 100%;
         max-height: 100%;
-        overflow: auto;
-
         .item-box {
             display: flex;
             width: calc((100% - $grid-3) / 2);

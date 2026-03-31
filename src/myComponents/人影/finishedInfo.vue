@@ -80,7 +80,7 @@
     <el-table-column prop="strZydIDName" label="作业点名称" width="120" />
     <!-- <el-table-column prop="tagPos" label="经纬度" width="200" /> -->
     <el-table-column prop="beginTm" label="作业时间" width="160" />
-    <el-table-column prop="timeLen" label="作业时长（秒）" width="120" />
+    <el-table-column prop="timeLen" label="作业时长（秒）" width="140" />
     <el-table-column label="作业类型" width="150">
       <template #default="{row}">
         {{ workType[row.workType] }}

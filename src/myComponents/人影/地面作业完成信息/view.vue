@@ -25,7 +25,7 @@
                 <el-row>
                     <el-col :span="12" style="display: flex;white-space: nowrap;">
                         <span class="label">作业时长</span>
-                        <el-input-number v-model="data.timeLen" :min="1" :max="600" style="width:100%">
+                        <el-input-number v-model="data.timeLen" :min="10" :max="600" style="width:100%">
                             <template #suffix>
                                 <span>秒</span>
                             </template>
