@@ -54,6 +54,8 @@
           <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
+          <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
+          <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
           <!-- <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li> -->
           <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
           <!-- <li>查看作业点信息</li> -->
@@ -322,7 +324,7 @@ let synergyFeaturesData:any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据} from '~/api/天工'
+import {华北飞行区域,作业点,协同作业点,机场,当前作业查询,作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,修改作业状态数据} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -531,6 +533,11 @@ const 人工批复 = () => {
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   emits("update:prevReplyShow", true);
   emits("update:prevReplyData", properties);
+}
+function 手动结束(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  let properties = $(stationMenuRef.value as HTMLDivElement).data();
+  修改作业状态数据(100,properties.strWorkID)
 }
 const 手动移除=async () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
@@ -3317,7 +3324,9 @@ onMounted(async() => {
         const state = map.getFeatureState({source:'zydSource',id:feature.properties.strID})
         if(state.ubyStatus=='作业申请待批复'){
           menuType.value = '人工批复'
-        }else if(state.ubyStatus=='作业开始'||state.ubyStatus=='作业批准'||state.ubyStatus=='作业结束'){
+        }else if(state.ubyStatus=='作业开始'){
+          menuType.value = '手动结束'
+        }else if(state.ubyStatus=='作业批准'||state.ubyStatus=='作业结束'){
           menuType.value = '默认'
         }else if(state.ubyStatus=='空闲'||state.ubyStatus=='作业不批准'||state.ubyStatus=='作业完成'||state.ubyStatus==undefined){
           menuType.value = '地面作业申请'
@@ -3850,12 +3859,13 @@ onMounted(async() => {
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
           }
+          /*去掉作业自动结束
           if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
             row.ubyStatus = 100
           }
           if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
             row.ubyStatus = 100
-          }
+          }*/
           //传入workID
           map.setFeatureState({source:'zydSource',id:row.strZydID},{
             ubyStatus:status2value(row.ubyStatus),
@@ -3939,12 +3949,13 @@ onMounted(async() => {
           if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
             row.ubyStatus = 91
           }
+          /*去掉作业自动结束
           if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
             row.ubyStatus = 100
           }
           if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
             row.ubyStatus = 100
-          }
+          }*/
         }
       }).catch(()=>{
         console.log('当前作业查询被终止')

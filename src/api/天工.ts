@@ -293,16 +293,29 @@ export function 作业状态数据(signal:AbortSignal){
   })
 }
 export function 修改作业状态数据(ubyStatus:number,strWorkID:string){
-  return request({
-    url: '/backend/transaction',
-    method: 'post',
-    data:{
-      sqls: [
-        `UPDATE zyddata SET ubyStatus = ${ubyStatus} WHERE strWorkID = '${strWorkID}'`,
-        `UPDATE zydhisdata SET ubyStatus = ${ubyStatus} where strWorkID = '${strWorkID}'`
-      ],
-    }
-  })
+  if(ubyStatus==100){
+    return request({
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          `UPDATE zyddata SET ubyStatus = ${ubyStatus},tmEnd='${moment().format('YYYY-MM-DD HH:mm:ss')}' WHERE strWorkID = '${strWorkID}'`,
+          `UPDATE zydhisdata SET ubyStatus = ${ubyStatus},tmEnd='${moment().format('YYYY-MM-DD HH:mm:ss')}' where strWorkID = '${strWorkID}'`
+        ],
+      }
+    })
+  }else{
+    return request({
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          `UPDATE zyddata SET ubyStatus = ${ubyStatus} WHERE strWorkID = '${strWorkID}'`,
+          `UPDATE zydhisdata SET ubyStatus = ${ubyStatus} where strWorkID = '${strWorkID}'`
+        ],
+      }
+    })
+  }
 }
 export function ADSB(){
   return request({

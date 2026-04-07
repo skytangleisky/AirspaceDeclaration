@@ -14,12 +14,12 @@
             <el-checkbox v-model="setting.人影.监控.airport">
                 <div style="display: flex;align-items: center;"><div class="飞机"></div>机场</div>
             </el-checkbox>
-            <el-checkbox v-model="flyArea">
+            <!-- <el-checkbox v-model="flyArea">
                 <div style="display: flex;align-items: center;"><div class="空域分布"></div>空域分布</div>
-            </el-checkbox>
-            <el-checkbox v-model="setting.人影.监控.规划航线">
+            </el-checkbox> -->
+            <!-- <el-checkbox v-model="setting.人影.监控.规划航线">
                 <div style="display: flex;align-items: center;"><svg-icon name="规划航线"></svg-icon>规划航线</div>
-            </el-checkbox>
+            </el-checkbox> -->
             <el-checkbox v-model="setting.人影.监控.routeLine">
                 <div style="display: flex;align-items: center;"><svg-icon name="route"></svg-icon>航路航线</div>
             </el-checkbox>

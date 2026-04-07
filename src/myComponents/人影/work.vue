@@ -154,6 +154,7 @@
               ) == '作业开始'
             "
           >
+          <div v-if="k=='当前作业进度'" style="display: flex;">
             (
             <div
               class="item-right-bottom-item"
@@ -163,30 +164,27 @@
                   : 'color:inherit'
               }`"
             >
-              {{
-                Math.floor(
-                  endSeconds(item) / 60
-                ) +
-                ":" +
-                (endSeconds(item) % 60)
-              }}
+              {{ `${endSeconds(item)<0 ? "超时":""}${Math.floor(Math.abs(endSeconds(item)) / 60)}:${(Math.abs(endSeconds(item)) % 60)}` }}
             </div>
-            )结束
+            )
+          </div>
+          结束
           </template>
-          <template v-else>
+          <template v-else-if="item.ubyStatus==100">
             {{
-              "结束" +
+              (moment(item.tmBeginAnswer).add(
+                item.iAnswerTimeLen,
+                "s"
+              ).isBefore(moment(item.tmEnd)) ? '超时结束' : '提前结束') +
               (item.tmBeginAnswer
                 ? "(" +
-                  moment(item.tmBeginAnswer)
-                    .add(
-                      item.iAnswerTimeLen,
-                      "s"
-                    )
-                    .format("HH:mm:ss") +
+                  moment(item.tmEnd).format("HH:mm:ss") +
                   ")"
                 : "")
             }}
+          </template>
+          <template v-else>
+            结束
           </template>
         </div>
         <div
@@ -208,6 +206,10 @@
   import moment from 'moment';
   import { useStationStore } from '~/stores/station';
   import { 修改作业状态数据 } from '~/api/天工';
+  // iEndType 0 正常结束 1 强制终止结束 2 提前结束 3 超时自动结束 4 超时人工结束
+  const k = defineModel<'当前作业进度'|'今日作业记录'>('k',{
+    default:'当前作业进度'
+  })
   let timer:any
   const now = ref(moment())
   const v = defineModel<{[key:string]:any}>('v',{
@@ -231,9 +233,8 @@
   })
   const endSeconds = computed(()=>(item: any)=>{
     let seconds = moment(item.tmBeginAnswer).add(item.iAnswerTimeLen, "s").diff(now.value, "seconds");
-    if(seconds<=0){
-      seconds = 0
-      修改作业状态数据(100,item.strWorkID)
+    if(seconds<0){
+      // 修改作业状态数据(100,item.strWorkID)
     }
     return seconds;
   })
@@ -342,9 +343,11 @@ const 完成 = (item: any) => {
   }
 }
 onMounted(()=>{
-  timer = setInterval(()=>{
-    now.value = moment()
-  },1000)
+  if(k.value == '当前作业进度'){
+    timer = setInterval(()=>{
+      now.value = moment()
+    },1000)
+  }
 })
 onUnmounted(()=>{
   clearInterval(timer)
