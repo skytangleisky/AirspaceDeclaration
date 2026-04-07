@@ -620,17 +620,17 @@ export function 完成信息查询中一段时间内作业点数据(range,signal
   const data = {
     select:['o.strZydID as `strZydID`','z.strName as `strZydIDName`','count(*) `count`','max(o.beginTm) `maxBeginTm`'],
     where:[
-      {
-        relation:'AND',
-        field:'isquxianconfirmed',
-        relationship:'=',
-        condition:'1'
-      },
+      // {
+      //   relation:'AND',
+      //   field:'isquxianconfirmed',
+      //   relationship:'=',
+      //   condition:'1'
+      // },
       {
         "relation": "AND",
         "field": "o.strZydID",
         "relationship": "like",
-        "condition": getMask()
+        "condition": '%%'
       },
       {
         relation:'AND',

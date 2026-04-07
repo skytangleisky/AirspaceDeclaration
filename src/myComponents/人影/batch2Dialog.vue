@@ -32,10 +32,11 @@
           <el-input-number
             :min="10"
             :max="300"
+            :step="10"
             v-model="applyPointForm.workTimeLen"
           >
             <template #suffix>
-              <span>分钟</span>
+              <span>秒</span>
             </template>
           </el-input-number>
         </el-form-item>

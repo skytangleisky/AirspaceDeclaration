@@ -82,7 +82,6 @@ watch(()=>setting.devtoolsOpen,(val)=>{
   }
 })
 const theme = useTheme()
-const mask = getMask()
 const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(setting, 'devtoolsOpen'), children: [
   {
     label: '主题',
@@ -422,9 +421,9 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
         label: '预警圈范围(km)',
         value: modelRef(setting, '人影.监控.warningCircle'),
         type: 'range',
-        min: 10,
+        min: 20,
         max: 100,
-        arr: Array.from({length: 91}, (_, i: number) => 10 + i)
+        arr: Array.from({length: 9}, (_, i: number) => 20 + 10 * i)
       },
       // {label: '协同作业点', value: modelRef(setting, '人影.监控.synergyZyd'), type: 'checkbox'},
       {label: '导航台', value: modelRef(setting, '人影.监控.navigationStation'), type: 'checkbox'},

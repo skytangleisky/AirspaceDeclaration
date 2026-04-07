@@ -1076,11 +1076,19 @@ function aircraft02(textData:any) {
 function updateTextLayer(textData:any) {
   const data1 = textData.filter((item:any)=>!item.特殊飞机)
   const data2 = textData.filter((item:any)=>item.特殊飞机)
+
+  if(user.strUnitID.startsWith('99')||user.strUnitID.endsWith('0000000')){
+    sys.planeCount = textData.length
+  }else{
+    sys.planeCount = data2.length
+  }
   if(setting.人影.监控.plane){
     if(setting.人影.监控.ryPlane){
       aircraft01([])
     }else{
-      aircraft01(data1)
+      if(user.strUnitID.startsWith('99')||user.strUnitID.endsWith('0000000')){
+        aircraft01(data1)
+      }
     }
     aircraft02(data2)
   }else{
@@ -1755,16 +1763,16 @@ let 批量移除 = () => {
     for(let i=0;i<zydData.length;i++){
       if(item.strID==zydData[i].strID){
         if(['作业申请待批复','作业批准','作业开始'].includes(zydData[i].properties.ubyStatus)){
-          item.properties = zydData[i].properties
-          return true
+          return false
         }
       }
     }
-    return false
+    return true
   })
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  console.log(list)
   let data = list.map(item=>{
-    return {strWorkID:item.properties.strWorkID}
+    return {strWorkID:item.strWorkID}
   })
   if(data.length==0){
     ElMessage({
@@ -2032,8 +2040,6 @@ function 过滤({altitude,ssrCode}){
   }
 }
 function 移除draw绘制的所有图形(){
-  const utterance = new SpeechSynthesisUtterance('收到作业申请');
-  speechSynthesis.speak(utterance);
   if(draw){
     let data = new Array<any>();
     draw.getAll().features.map((v: any) => {
@@ -2253,7 +2259,6 @@ function 处理飞机实时位置2(d:Array<{
     }
   }
   sys.飞机数据.splice(0,sys.飞机数据.length,...data.features)
-  sys.planeCount = data.features.length
   map?.getSource("飞机原数据")?.setData(data);
 }
 function 处理飞机实时位置(d:Array<{
@@ -2280,25 +2285,6 @@ function 处理飞机实时位置(d:Array<{
   "ubyEmitterCat": 5,
   "strCallCode": ""
 }>){
-  const tmp = d.filter(item=>{
-    for(let plane of sys.注册飞机数据){
-      if(item.unSsrCode == Number(plane.iAddress)){
-        return true
-      }
-    }
-    return false
-  })
-  for(let j=0;j<tmp.length;j++){
-    for(let i=0;i<sys.需要重点关注的飞机.length;i++){
-      const item = sys.需要重点关注的飞机[i]
-      if(item.iAddress == tmp[j].unSsrCode){
-        tmp[j].icon = 'airplaneMock'
-      }
-    }
-  }
-
-
-
   d.forEach((item:any)=>{
     const str = [
       item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:''),
@@ -2524,6 +2510,73 @@ function 处理ADSB(d:Array<{
   }
   map?.getSource("adsb原数据")?.setData(data);
 }
+// axios.get('https://opensky-network.org/api/states/all').then(res=>{
+//   res.data.states.map((item:any)=>{
+//     const [
+//       icao24,           // 0 飞机唯一标识（ICAO 24-bit address）
+//       callsign,         // 1 航班号
+//       originCountry,    // 2 注册国家
+//       timePosition,     // 3 位置时间（Unix秒）
+//       lastContact,      // 4 最后更新时间（Unix秒）
+//       longitude,        // 5 经度
+//       latitude,         // 6 纬度
+//       baroAltitude,     // 7 气压高度（m）
+//       onGround,         // 8 是否在地面
+//       trueTrack,        // 9 航向（度）
+//       velocity,         // 10 地速（m/s）
+//       verticalRate,     // 11 垂直速度（m/s）
+//       sensors,          // 12 传感器ID（通常为 null）
+//       geoAltitude,      // 13 几何高度（m）
+//       squawk,           // 14 应答机代码
+//       spi,              // 15 特殊识别（Special Position Indicator）
+//       positionSource    // 16 位置来源（0=ADS-B）
+//     ] = item;
+//     const dest = destination(longitude,latitude,trueTrack,velocity*3.6)
+//     const pos = [dest[0],dest[1],0]
+//     textData.push({
+//       "offset": [
+//         100,
+//         0
+//       ],
+//       "textColor":[255,255,0,255],
+//       "uiTrackNo": 593,
+//       "uiAdsAddress": 0,
+//       "ubyTrackState": 1,
+//       "ubyTrackQuality": 0,
+//       "fLongitude": longitude,
+//       "fLatitude": latitude,
+//       "ubyAltitudeMCValid": 0,
+//       "iAltitudeMC": 0,
+//       "ubyAltitudeADSValid": 1,
+//       "iAltitudeADS": geoAltitude,
+//       "unSsrCode": 202,
+//       "ubyRadarDataType": 2,
+//       "ubySim": 0,
+//       "ubyFixTarget": 0,
+//       "ubySpiFlag": 0,
+//       "ubyEmergencyType": 0,
+//       "fSpeedZ": -11.520557403564453,
+//       "fSpeed": velocity*3.6,
+//       "fHeading": trueTrack,
+//       "ubyFlyingState": 0,
+//       "ubyEmitterCat": 5,
+//       "strCallCode": "",
+//       "trajectory": [
+//         pos,pos
+//       ],
+//       "trail":[pos],
+//       "lastTime": 1763036518493,
+//       "label": "0001\n00005 0018\n120551394E41095547N",
+//       "显示标牌":true,
+//       "显示尾迹":true,
+//       "显示速度矢量线":true,
+//       "显示航迹圈":false,
+//       "显示经纬度":true,
+//       "显示历史轨迹":true,
+//     })
+//     aircraft01(textData)
+//   })
+// })
 const flyTo = (item: any) => {
   try {
     active();

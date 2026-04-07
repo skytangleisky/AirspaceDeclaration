@@ -1,6 +1,10 @@
 <template>
 </template>
 <script lang="ts" setup>
+const 作业申请语句 = new SpeechSynthesisUtterance('收到作业申请');
+const 作业批复语句 = new SpeechSynthesisUtterance('收到作业批复');
+const 作业结束语句 = new SpeechSynthesisUtterance('作业结束');
+const 作业撤销语句 = new SpeechSynthesisUtterance('作业已撤销');
 import { onMounted, onBeforeUnmount } from "vue";
 import { useBus } from "../bus";
 import { eventbus } from "~/eventbus";
@@ -89,6 +93,23 @@ function connect() {
         eventbus.emit('人影-飞机位置',obj.data.aircrafts)
         break;
       case "notify":
+        const data = obj.data
+        if(data.row){
+          if(data.eventName=='writerows'&&data.row.ubyStatus == 72){
+            speechSynthesis.cancel()
+            speechSynthesis.speak(作业申请语句);
+          }else if(data.eventName=='updaterows'&&data.row.before.ubyStatus == 72&&data.row.after.ubyStatus == 75){
+            speechSynthesis.cancel()
+            speechSynthesis.speak(作业批复语句);
+          }else if(data.eventName=='updaterows'&&data.row.before.ubyStatus == 75&&data.row.after.ubyStatus == 100){
+            speechSynthesis.cancel()
+            speechSynthesis.speak(作业结束语句);
+          }else if(data.eventName=='updaterows'&&data.row.before.ubyStatus == 72&&data.row.after.ubyStatus == 74){
+            speechSynthesis.cancel()
+            speechSynthesis.speak(作业撤销语句);
+          }
+          return
+        }
         if(obj.data.tableName=='zyddata'){
           sys.触发作业状态数据查询 = Date.now()
         }else if(obj.data.tableName=='zydhisdata'){

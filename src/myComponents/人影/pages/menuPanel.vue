@@ -17,7 +17,7 @@
                     </el-select>
                 </template> -->
             </GroundCommand>
-            <SecondaryRadar v-if="showSecondaryRadar"></SecondaryRadar>
+            <SecondaryRadar></SecondaryRadar>
             <AirspaceCommand></AirspaceCommand>
         </template>
         <template v-if="setting.人影.监控.是否显示产品面板">
@@ -46,13 +46,8 @@
     import SecondaryRadar from './分布/二次雷达.vue'
     import AirspaceCommand from './分布/空域指挥.vue'
     import {useSettingStore} from '~/stores/setting';
-    import toolMode from './toolMode.vue';
     const setting = useSettingStore();
-    import { getMask } from '~/api/天工'
-    const mask = getMask()
-    const showSecondaryRadar = computed(()=>{
-        return mask=='%%'
-    })
+
 </script>
 <style lang="scss" scoped>
     .toolKitBgClass {

@@ -32,6 +32,7 @@
           <el-input-number
             :min="10"
             :max="300"
+            :step="10"
             v-model="applyPointForm.workTimeLen"
           >
             <template #suffix>
@@ -97,6 +98,7 @@ import moment from "moment";
 import { airspacesApply,airspaceApply } from '../../api/人影';
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
+import { useUserStore } from '~/stores/user';
 const applyPointForm = reactive({
   date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
@@ -210,63 +212,67 @@ function confirm() {
   }).catch(err=>{
     console.log(err)
   })
-  // const data = {
-  //   "workRevID": batchList.value[0]?.strMgrUnit,//作业接收单位
-  //   "applyBeginTime": moment().format('YYYY-MM-DD ')+batchList.value[0]?.beginTime,//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
-  //   "workTimeLen": batchList.value[0]?.workTimeLen * 60,//申请作业时长(单位：秒)
-  //   "workCat": batchList.value[0]?.iWorkType,//作业类型
-  //   "relayID": batchList.value[0]?.strRelayUnit,//作业上报单位
-  //   "lonlatNum": 4,//作业范围经纬度个数
-  //   "lonArea": "115.68973,115.73187,116.01579,115.84223",//作业范围经度数组
-  //   "latArea": "40.55156,40.35536,40.38823,40.57899",//作业范围纬度数组
-  //   "reverse": "",//预留字段
-  //   "zydData": [//数据json字符串
-  //     {
-  //       "zydID": "110108091",
-  //       "longitude": "116.114200",
-  //       "latitude": "39.594600",
-  //       "shootRange": 10001,
-  //       "maxShootHeight": 8001,
-  //       "startShotDirention": "300",
-  //       "endShotDirention": "350",
-  //       "reverse": ""
-  //     },
-  //     {
-  //       "zydID": "110108092",
-  //       "longitude": "116.0454",
-  //       "latitude": "40.0522",
-  //       "shootRange": 10001,
-  //       "maxShootHeight": 8001,
-  //       "startShotDirention": "300",
-  //       "endShotDirention": "350",
-  //       "reverse": ""
-  //     }
-  //   ]
-  // }
-  // data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
-  // data.workTimeLen = applyPointForm.workTimeLen * 60
-  // data.workCat = applyPointForm.workCat
-  // data.zydData.length = 0
-  // batchList.value.forEach((item:any) => {
-  //   const lngLat = fromDMS(item.strPos)
-  //   if(checkedPoints.value.includes(item.strID)){
-  //     data.zydData.push({
-  //       "zydID": item.strID,
-  //       "longitude": lngLat[0].toString(),
-  //       "latitude": lngLat[1].toString(),
-  //       "shootRange": item.iMaxShotRange,
-  //       "maxShootHeight": item.iMaxShotHei,
-  //       "startShotDirention": item.iShortAngelBegin,
-  //       "endShotDirention": item.iShortAngelEnd,
-  //       "reverse": ""
-  //     })
-  //   }
-  // })
-  // pointDialogVisible.value = false
-  // airspacesApply(data).then(res=>{
-  //   pointDialogVisible.value = false
-  //   eventbus.emit('移除draw绘制的所有图形')
-  // })
+  /*
+  const user = useUserStore()
+  const data = {
+    "workRevID": batchList.value[0]?.strMgrUnit,//作业接收单位
+    "applyBeginTime": moment().format('YYYY-MM-DD ')+batchList.value[0]?.beginTime,//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
+    "workTimeLen": applyPointForm.workTimeLen,//申请作业时长(单位：秒)
+    "workCat": applyPointForm.workCat,//作业类型
+    "relayID": user.strUnitID,//作业上报单位
+    "lonlatNum": 4,//作业范围经纬度个数
+    "lonArea": "115.68973,115.73187,116.01579,115.84223",//作业范围经度数组
+    "latArea": "40.55156,40.35536,40.38823,40.57899",//作业范围纬度数组
+    "reverse": "",//预留字段
+    "zydData": [//数据json字符串
+      {
+        "zydID": "110108091",
+        "longitude": "116.114200",
+        "latitude": "39.594600",
+        "shootRange": 10001,
+        "maxShootHeight": 8001,
+        "startShotDirention": "300",
+        "endShotDirention": "350",
+        "reverse": ""
+      },
+      {
+        "zydID": "110108092",
+        "longitude": "116.0454",
+        "latitude": "40.0522",
+        "shootRange": 10001,
+        "maxShootHeight": 8001,
+        "startShotDirention": "300",
+        "endShotDirention": "350",
+        "reverse": ""
+      }
+    ]
+  }
+  data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
+  data.workTimeLen = applyPointForm.workTimeLen
+  data.workCat = applyPointForm.workCat
+  data.zydData.length = 0
+  batchList.value.forEach((item:any) => {
+    const lngLat = fromDMS(item.strPos)
+    console.log(item)
+    if(checkedPoints.value.includes(item.strID)){
+      data.zydData.push({
+        "zydID": item.strID,
+        "longitude": lngLat[0].toString(),
+        "latitude": lngLat[1].toString(),
+        "shootRange": item.iMaxShotRange,
+        "maxShootHeight": item.iMaxShotHei,
+        "startShotDirention": item.iShortAngelBegin.toString(),
+        "endShotDirention": item.iShortAngelEnd.toString(),
+        "reverse": ""
+      })
+    }
+  })
+  pointDialogVisible.value = false
+  airspacesApply(data).then(res=>{
+    pointDialogVisible.value = false
+    eventbus.emit('移除draw绘制的所有图形')
+  })
+  */
 }
 </script>
 <style lang="scss" scoped>

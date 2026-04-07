@@ -149,7 +149,8 @@
                 <div class="item-value">
                     <el-input-number
                         :min="10"
-                        :max="600"
+                        :max="300"
+                        :step="10"
                         v-model="data.duration"
                         size="default"
                         @mousedown.stop
