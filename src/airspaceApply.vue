@@ -1,13 +1,15 @@
 <template>
-  <div class="wstd-container" id="wstd-container">
+  <!-- <div class="wstd-container" id="wstd-container">
       <RgyxWorkPoint />
       <Websocket />
-  </div>
+  </div> -->
+  <RgyxWorkPoint />
 </template>
 <script setup>
+import RgyxWorkPoint from "~/myComponents/cesium/index.vue";
 // import RgyxWorkPoint from "~/components/rgyx-work-point.vue";//示例
-import RgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue"; //空域申请
-import Websocket from "~/myComponents/websocket/websocket.vue";
+// import RgyxWorkPoint from "~/myComponents/人影/pages/synthesis.vue"; //空域申请
+// import Websocket from "~/myComponents/websocket/websocket.vue";
 </script>
 <style>
 .wstd-container {

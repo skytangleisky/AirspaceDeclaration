@@ -1,13 +1,10 @@
 const EARTH_RADIUS = 6371008.8
 export function getDistance( lng1, lat1,  lng2, lat2 ){
-  // var radLng1 = lng1*Math.PI / 180.0
-  // var radLat1 = lat1*Math.PI / 180.0
-  // var radLng2 = lng2*Math.PI / 180.0
-  // var radLat2 = lat2*Math.PI / 180.0
-  // return 2 * Math.asin(Math.sqrt(Math.sin((radLat1-radLat2)/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*(Math.sin((radLng1-radLng2)/2)**2))) * EARTH_RADIUS
-  let xy1 = lngLat2XY(lng1,lat1)
-  let xy2 = lngLat2XY(lng2,lat2)
-  return Math.sqrt((xy2.x-xy1.x)**2+(xy2.y-xy1.y)**2)
+  var radLng1 = lng1*Math.PI / 180.0
+  var radLat1 = lat1*Math.PI / 180.0
+  var radLng2 = lng2*Math.PI / 180.0
+  var radLat2 = lat2*Math.PI / 180.0
+  return 2 * Math.asin(Math.sqrt(Math.sin((radLat1-radLat2)/2)**2 + Math.cos(radLat1)*Math.cos(radLat2)*(Math.sin((radLng1-radLng2)/2)**2))) * EARTH_RADIUS
 }
 
 export function lngLat2Pixel(lng,lat,imgX,imgY,imgScale,TileWidth){
@@ -37,13 +34,13 @@ export function pixel2Lat(y,imgY,imgScale,TileWidth){
 export function lngLat2XY(lng,lat){
   return {
     x: EARTH_RADIUS * lng / 180 * Math.PI,
-    y: EARTH_RADIUS * Math.asinh(Math.tan(lat/180*Math.PI)),
+    y: EARTH_RADIUS * Math.asinh(Math.tan(lat/180*Math.PI)),//<=>EARTH_RADIUS * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2))
   }
 }
 export function XY2LngLat(x,y){
   return {
     lng: x / EARTH_RADIUS / Math.PI * 180,
-    lat: Math.atan(Math.sinh(y/EARTH_RADIUS)) / Math.PI * 180,
+    lat: Math.atan(Math.sinh(y/EARTH_RADIUS)) / Math.PI * 180,//<=>(2 * Math.atan(Math.exp(y / EARTH_RADIUS)) - Math.PI / 2) * 180 / Math.PI
   }
 }
 export function XY2Pixel(x,y,imgX,imgY,imgScale,TileWidth){
@@ -54,9 +51,23 @@ export function pixel2XY(x,y,imgX,imgY,imgScale,TileWidth){
   let {lng,lat} = pixel2LngLat(x,y,imgX,imgY,imgScale,TileWidth)
   return lngLat2XY(lng,lat)
 }
-export function destinationPoint(lon,lat,deg,distance){
-  let {x,y} = lngLat2XY(lon,lat)
-  return XY2LngLat(x+Math.sin(deg/180*Math.PI)*distance,y+Math.cos(deg/180*Math.PI)*distance)
+export function destination(lng1,lat1,deg,distance){
+  const φ1 = lat1 * Math.PI / 180;
+  const λ1 = lng1 * Math.PI / 180;
+  const θ = deg * Math.PI / 180;
+  const δ = distance / EARTH_RADIUS;
+  const φ2 = Math.asin(
+    Math.sin(φ1) * Math.cos(δ) +
+    Math.cos(φ1) * Math.sin(δ) * Math.cos(θ)
+  );
+  const λ2 = λ1 + Math.atan2(
+    Math.sin(θ) * Math.sin(δ) * Math.cos(φ1),
+    Math.cos(δ) - Math.sin(φ1) * Math.sin(φ2)
+  );
+  // 将 λ2, φ2 转换回度数
+  const lat2 = φ2 * 180 / Math.PI;
+  const lng2 = λ2 * 180 / Math.PI;
+  return [lng2, lat2]
 }
 export function windowToCanvas(x,y,canvas) {
   var box = canvas.getBoundingClientRect()

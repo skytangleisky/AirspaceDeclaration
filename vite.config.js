@@ -6,6 +6,7 @@ import inject from '@rollup/plugin-inject'
 import { createSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
+import cesium from 'vite-plugin-cesium'
 import path from "path";
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import { HttpsProxyAgent } from 'https-proxy-agent'
@@ -26,6 +27,7 @@ export default defineConfig({
   base: '/kysq/',
   plugins: [
     vue(),
+    cesium(),
     createSvgIconsPlugin({
       iconDirs: [path.resolve(process.cwd(), "src/assets/icons")],
       symbolId: "icon-[name]",

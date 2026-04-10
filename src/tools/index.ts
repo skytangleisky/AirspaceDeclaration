@@ -6,6 +6,7 @@ import arrowUrl from "~/assets/arrow.svg?url";
 import droneUrl from "~/assets/aircraft.svg?url";
 import { useSettingStore } from '~/stores/setting';
 import { computed, ComputedRef } from 'vue'
+import { destination } from '~/myComponents/map/js/core.js'
 export const modelRef = (obj: object,fields: string)=>computed({get:()=>new Function('obj', `return obj.${fields}`)(obj),set:(val: any)=>new Function('obj', 'val', `obj.${fields} = val`)(obj, val)})
 export function hasPermission(permissions:Array<String>){
   let has = false
@@ -660,6 +661,36 @@ export function calculateCirclePoints(
   points.push(point.geometry.coordinates);
   return points;
 }
+export function calculateFireArea(
+  center: [number, number],
+  radius: number,
+  startAngle: number,
+  endAngle: number,
+  steps: number = 60,
+): [number, number][] {
+  const points: [number, number][] = [];
+
+  let totalAngle = endAngle - startAngle;
+  if (totalAngle <= 0) totalAngle += 360;
+  if (totalAngle >= 360) totalAngle = 360;
+
+  const angleStep = totalAngle / steps;
+
+  for (let i = 0; i <= steps; i++) {
+    const angle = startAngle + i * angleStep;
+    const pt = destination(center[0], center[1], angle, radius) as [number, number];
+    points.push(pt);
+  }
+
+  if (totalAngle < 360) {
+    points.unshift(center);
+    points.push(center);
+  } else {
+    points.push(points[0]);
+  }
+
+  return points;
+}
 export function calculateBlockPoints(
   center: [number, number],
   radius1: number,
@@ -752,4 +783,39 @@ export function wrapKeys<T>(obj: any, predicate: (key: string) => boolean):T {
       v
     ])
   ) as T;
+}
+//限制帧率
+export class Restrictor {
+  then:number;
+  interval:number;
+  constructor(interval:number=0) {
+    this.then = 0;
+    this.interval = interval;
+  }
+  process(timestamp:number,callback:Function){
+    if(timestamp - this.then > this.interval){
+      this.interval > 0 && (this.then = timestamp - ((timestamp - this.then) % this.interval))
+      callback()
+    }
+  }
+}
+//计算帧率
+export class FPSTool{
+  lastTime:number;
+  frames:number;
+  measureTime:number;
+  constructor(measueTime:number=1000) {
+    this.lastTime = 0;
+    this.frames = 0;
+    this.measureTime = measueTime;
+  }
+  measure(timestamp:number,callback:Function){
+    this.frames++
+    if(timestamp - this.lastTime >= this.measureTime){
+      const fps = Math.round((this.frames * 1000) / (timestamp - this.lastTime)*100)/100
+      callback(fps)
+      this.frames = 0;
+      this.lastTime = timestamp;
+    }
+  }
 }
