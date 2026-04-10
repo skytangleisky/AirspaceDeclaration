@@ -1,11 +1,12 @@
 <template>
-  <el-empty v-if="v.length==0"/>
+  <el-empty v-if="v.length ==0" :image-size="64" />
   <div
     class="item-box"
     @click="click(item)"
     v-for="(item, key) in v"
     :key="key"
     @mousedown.stop
+    @contextmenu.prevent="contextmenu($event,item)"
   >
     <div class="item-left">
         <span>{{
@@ -157,6 +158,7 @@
               ) == '作业开始'
             "
           >
+          <div v-if="identity=='当前作业进度'" style="display: flex;">
             (
             <div
               class="item-right-bottom-item"
@@ -166,30 +168,24 @@
                   : 'color:inherit'
               }`"
             >
-              {{
-                Math.floor(
-                  endSeconds(item) / 60
-                ) +
-                ":" +
-                (endSeconds(item) % 60)
-              }}
+              {{ `${endSeconds(item)<0 ? "超时":""}${Math.floor(Math.abs(endSeconds(item)) / 60)}:${(Math.abs(endSeconds(item)) % 60)}` }}
             </div>
-            )结束
+            )
+          </div>
+          结束
           </template>
-          <template v-else>
+          <template v-else-if="item.ubyStatus==100">
             {{
-              "结束" +
+              (item.iEndType==0 ? '正常结束' : item.iEndType==1 ? '强制终止结束' : item.iEndType==2 ? '提前结束' : item.iEndType==3 ? '超时自动结束' : item.iEndType==4 ? '超时人工结束' : `未知状态${item.iEndType}`) +
               (item.tmBeginAnswer
                 ? "(" +
-                  moment(item.tmBeginAnswer)
-                    .add(
-                      item.iAnswerTimeLen,
-                      "s"
-                    )
-                    .format("HH:mm:ss") +
+                  moment(item.tmEnd).format("HH:mm:ss") +
                   ")"
                 : "")
             }}
+          </template>
+          <template v-else>
+            结束
           </template>
         </div>
         <div
@@ -205,11 +201,15 @@
   </div>
 </template>
 <script lang="ts" setup>
-  import { onMounted, onUnmounted, ref, computed } from 'vue'
+  import { onMounted, onUnmounted, ref, computed, nextTick } from 'vue'
   import { eventbus } from '~/eventbus'
   import moment from 'moment';
   import { useStationStore } from '~/stores/station';
   import { 修改作业状态数据 } from '~/api/天工';
+  // iEndType 0 正常结束 1 强制终止结束 2 提前结束 3 超时自动结束 4 超时人工结束
+  const identity = defineModel<'当前作业进度'|'今日作业记录'|''>('identity',{
+    default:''
+  })
   let timer:any
   const now = ref(moment())
   const v = defineModel<{[key:string]:any}>('v',{
@@ -217,6 +217,7 @@
   })
   const station = useStationStore();
   const click = (item: any) => {
+    $('.menu2').css({display:'none'})
     station.人影界面被选中的设备 = item.strZydID;
     eventbus.emit("人影-将站点移动到屏幕中心", { strPos: item.strCurPos });
   };
@@ -233,9 +234,8 @@
   })
   const endSeconds = computed(()=>(item: any)=>{
     let seconds = moment(item.tmBeginAnswer).add(item.iAnswerTimeLen, "s").diff(now.value, "seconds");
-    if(seconds<=0){
-      seconds = 0
-      修改作业状态数据(100,item.strWorkID)
+    if(seconds<0){
+      // 修改作业状态数据(100,item.strWorkID)
     }
     return seconds;
   })
@@ -344,13 +344,32 @@ const 完成 = (item: any) => {
   }
 }
 onMounted(()=>{
-  timer = setInterval(()=>{
-    now.value = moment()
-  },1000)
+  if(identity.value == '当前作业进度'){
+    timer = setInterval(()=>{
+      now.value = moment()
+    },1000)
+  }
 })
 onUnmounted(()=>{
   clearInterval(timer)
 })
+function contextmenu(event: any,item: any){
+  if(identity.value == '当前作业进度'){
+    station.人影界面被选中的设备 = item.strZydID
+    nextTick(()=>{
+      let offset = $(".menu2").parent().offset() || { left: 0, top: 0 };
+      $('.menu1').css({ display: 'none' })
+      $(".menu2")
+          .css({
+              display: "block",
+              left: event.clientX - offset.left + "px",
+              top: event.clientY - offset.top + "px",
+          })
+          .trigger("focus");
+      eventbus.emit('列表右键菜单', item.strZydID)
+    })
+  }
+}
 </script>
 <style scoped lang="scss">
 .item-box {

@@ -42,7 +42,7 @@
           :key="k"
         ></el-option>
       </el-select> -->
-      <div class="menu" ref="stationMenuRef" @mousedown.stop>
+      <div class="menu1" ref="stationMenuRef" @mousedown.stop>
         <ul>
           <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示标牌" v-model="飞机菜单数据.显示标牌"></el-checkbox></li>
           <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示尾迹" v-model="飞机菜单数据.显示尾迹"></el-checkbox></li>
@@ -66,6 +66,8 @@
           <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
+          <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
+          <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
           <!-- <li>查看作业点信息</li> -->
@@ -73,6 +75,20 @@
           <li>人工移除</li>
           <li>手动发结束报</li> -->
         </ul>
+      </div>
+      <div class="menu2" @mousedown.stop style="position:absolute;left:0px;top:0px;">
+          <ul>
+          <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
+          <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
+          <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
+          <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
+          <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
+          <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
+          <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
+          <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
+          <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
+          <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
+          </ul>
       </div>
       <div v-if="hasPermission('3c87e8aa-60cf-4e69-831d-91970add1bd0')" style="position:absolute;bottom:10px;right:10px;font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;display: flex;align-items: center;"><div style="margin-right:10px;">{{ 数据时间 }}</div><Colormap></Colormap></div>
       <left-buttons />
@@ -1103,7 +1119,7 @@ function renderZydLayer(zydData:any){
       new PathLayer({
         visible:true,
         id: 'dashed-path',
-        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界),
+        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界||(activeObject&&item.strID==activeObject.strID)),
         getPath: d => {
           return calculateFireArea([d.fLongitude, d.fLatitude],setting.人影.监控.warningCircle*1000,0,360)
         },
@@ -1127,7 +1143,7 @@ function renderZydLayer(zydData:any){
         {
           visible:true,
         id: 'polygon-layer',
-        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界),
+        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界||(activeObject&&item.strID==activeObject.strID)),
         getPolygon: d => {
           return calculateFireArea([d.fLongitude, d.fLatitude],d.properties.iRange,d.properties.iAngleBegin,d.properties.iAngleEnd)
         },
@@ -1214,7 +1230,7 @@ function renderZydLayer(zydData:any){
               3:'大气污染治理',
               4:'其他',
             }
-            return `${d.strName}--已开始\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n剩余${seconds}秒\n${map[d.properties.iWorkType]}${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+            return `${d.strName}--已开始\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${seconds>0?('剩余'+seconds):('超时'+Math.abs(seconds))}秒\n${map[d.properties.iWorkType]}${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
           }else if(d.ubyStatus=='作业结束'){
             const isAnswer = d.properties.tmBeginAnswer
             if(isAnswer){
@@ -1395,6 +1411,7 @@ async function 烟炉操作(){
   station.currentStoveID = ''
   await nextTick()
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
+  $('.menu2').css({display:'none'})
   const data = $(stationMenuRef.value as HTMLDivElement).data();
   setting.显示烟炉 = true
   station.currentStoveID = data.strStoveID
@@ -1417,13 +1434,16 @@ function 视频会议(){
     metting.value=true
   }
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
 }
 function 语音管理(){
   setting.语音管理 = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
 }
 function 清除形状(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
   移除draw绘制的所有图形()
   draw.changeMode('no_select')
 }
@@ -1576,7 +1596,7 @@ let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据} from '~/api/天工'
+import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -1647,9 +1667,11 @@ let 批量申请 = () => {
   batchList.splice(0,batchList.length,...(list as never[]))
   batchDialogVisible.value = true
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
 }
 function 显示射界(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
   let list = new Array()
   for(let j=0;j<sys.符合条件的作业点数据.length;j++){
     let station = sys.符合条件的作业点数据[j];
@@ -1679,6 +1701,7 @@ function 显示射界(){
 }
 function 隐藏射界(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
   let list = new Array()
   for(let j=0;j<sys.符合条件的作业点数据.length;j++){
     let station = sys.符合条件的作业点数据[j];
@@ -1804,12 +1827,21 @@ let 批量移除 = () => {
 }
 const 人工批复 = () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   emits("update:prevReplyShow", true);
   emits("update:prevReplyData", properties);
 }
+function 手动结束(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
+  let properties = $(stationMenuRef.value as HTMLDivElement).data();
+  作业结束(properties.strWorkID)
+  // 修改作业状态数据(100,properties.strWorkID)
+}
 const 手动移除=async () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   空域申请移除([{strWorkID:properties.strWorkID}]).then(res=>{
     ElMessage({
@@ -1872,6 +1904,7 @@ let 作业申请 = () => {
   setting.人影.监控.是否显示工具面板 = false
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
   emits("update:prevRequestShow", true);
   properties.beginTime = moment().format('HH:mm:ss')
   emits("update:prevRequestData", properties);
@@ -1912,7 +1945,7 @@ type zydparaType = {
   iVersion: 2;
   listenPort: 15;
   iShortAngelBegin: number;
-  iShotAngelEnd: 360;
+  iShortAngelEnd: 360;
   iType: null;
   connectType: 0;
   dataver: 50;
@@ -2012,6 +2045,7 @@ const mousemoveFunc = (e:any)=>{
   mapStatus.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
 const zoomFunc = () => {
+  $('.menu1').css({ display: 'none' })
   mapStatus.zoom = map.getZoom()
 };
 const pitchFunc = () => {
@@ -2042,7 +2076,8 @@ function 过滤({altitude,ssrCode}){
 function 移除draw绘制的所有图形(){
   if(draw){
     let data = new Array<any>();
-    draw.getAll().features.map((v: any) => {
+    const features = draw.getAll().features
+    features.map((v: any) => {
       data.push({ id: v.id });
     });
     console.log(data)
@@ -2057,6 +2092,9 @@ function 移除draw绘制的所有图形(){
             }
           });
           draw.deleteAll()
+          map.fire('draw.delete', {
+            features
+          });
           console.log("删除空域完成");
         }).catch((e) => {
           throw Error("删除空域失败");
@@ -2419,7 +2457,11 @@ function 处理飞机实时位置(d:Array<{
   }
   sys.飞机数据.splice(0,sys.飞机数据.length,...data.features)
   // map?.getSource("飞机原数据")?.setData(data);
+  planeTrackTimeout()//超时清理飞机航迹
 }
+const planeTrackTimeout = debounce(()=>{
+  updateTextLayer([])
+},5e3)
 function 处理ADSB(d:Array<{
 		"aircraft_code": "B788",
 		"airline_iata": "TR",
@@ -3126,16 +3168,12 @@ onMounted(async() => {
         }
       });
       sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
-        if(user.strUnitID.startsWith('99')){
-          return true
-        }else{
-          for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
-            if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
-              return true
-            }
+        for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+          if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+            return true
           }
-          return false
         }
+        return false
       })
       zydFeaturesData.features.length = 0
       for(let i=0;i<sys.符合条件的作业点数据.length;i++){
@@ -3223,6 +3261,9 @@ onMounted(async() => {
               strMgrUnitName:item.strMgrUnitName,
               tags:[],
               tag:setting.人影.监控.zydTag,
+              iRange:item.iMaxShotRange,
+              iAngleBegin:item.iShortAngelBegin,
+              iAngleEnd:item.iShortAngelEnd,
             }),
             now:Date.now(),
           })
@@ -4624,44 +4665,9 @@ onMounted(async() => {
         e.originalEvent.stopPropagation()
         e.originalEvent.preventDefault();
         if(hoverObject){
-          if(hoverObject.type=='作业点'){
-            // menuType.value = '地面作业申请'
-            // marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-            // $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
-            // $(stationMenuRef.value as HTMLDivElement).removeData();
-            // $(stationMenuRef.value as HTMLDivElement).data(hoverObject.properties);
-
-
-
-            activeObject = hoverObject
-            station.人影界面被选中的设备 = hoverObject.strID;
-            marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-            const item = zydData.filter(item=>item.strID==hoverObject.strID)[0]
-            if(item.ubyStatus=='作业申请待批复'){
-              menuType.value = '人工批复'
-            }else if(item.ubyStatus=='作业开始'||item.ubyStatus=='作业批准'||item.ubyStatus=='作业结束'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'||item.ubyStatus=='已撤销'){
-              menuType.value = '默认'
-            }else if(item.ubyStatus=='空闲'||item.ubyStatus==undefined){
-              menuType.value = '地面作业申请'
-            }else{
-              console.log('未处理状态',item.ubyStatus)
-              return
-            }
-            $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
-            $(stationMenuRef.value as HTMLDivElement).removeData();
-            $(stationMenuRef.value as HTMLDivElement).data(item.properties);
-          }else{
-            marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
-            $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
-            menuType.value = '飞机操作'
-            activeObject = hoverObject
-            飞机菜单数据.value.显示标牌 = activeObject.显示标牌
-            飞机菜单数据.value.显示尾迹 = activeObject.显示尾迹
-            飞机菜单数据.value.显示速度矢量线 = activeObject.显示速度矢量线
-            飞机菜单数据.value.显示航迹圈 = activeObject.显示航迹圈
-            飞机菜单数据.value.显示经纬度 = activeObject.显示经纬度
-            飞机菜单数据.value.显示历史轨迹 = activeObject.显示历史轨迹
-          }
+          prepareData()
+          marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+          $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
           return
         }
         const layers = map.getStyle().layers.filter(layer => layer.id.startsWith('gl-draw')).map(layer=>layer.id)
@@ -4680,9 +4686,10 @@ onMounted(async() => {
             lngLat:e.lngLat
           })
         }
-        fs.forEach((item:any)=>{
-          draw.setFeatureProperty(item.properties.id, 'color', '#ff6600')
-        })
+        // 模拟修改空域颜色
+        // fs.forEach((item:any)=>{
+        //   draw.setFeatureProperty(item.properties.id, 'color', '#ff6600')
+        // })
       }
     }
     // if(!map.getLayer("textLayer")){
@@ -4935,8 +4942,10 @@ onMounted(async() => {
     map.on("mousedown", (e:any) => {
       mouseDownEvt = e
       if(hoverObject){
+        activeObject = hoverObject
         hoverObjectOffset = JSON.parse(JSON.stringify(hoverObject.offset))
         station.人影界面被选中的设备 = hoverObject.strID || ''
+        renderZydLayer(zydData.slice())
         e.preventDefault()
       }
       // console.log([e.lngLat.lng,e.lngLat.lat])
@@ -4958,9 +4967,6 @@ onMounted(async() => {
     map.on("mouseup",()=>{
       mouseDownEvt = null
     })
-    active = () => {
-      //激活
-    }
     /*规划航线*/
     // await getPlanPath().then(async(data)=>{
     //   if(!map)return
@@ -5430,19 +5436,19 @@ onMounted(async() => {
           }
         }
         sys.planProps.当前作业进度.splice(0,sys.planProps.当前作业进度.length,...res.data[0]);
-        for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
-          let row = sys.planProps.当前作业进度[i]
-          row.ubySendStatus = 3//发送成功
-          if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
-            row.ubyStatus = 91
-          }
-          if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
-            row.ubyStatus = 100
-          }
-          if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
-            row.ubyStatus = 100
-          }
-        }
+        // for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
+        //   let row = sys.planProps.当前作业进度[i]
+        //   row.ubySendStatus = 3//发送成功
+        //   if(status2value(row.ubyStatus) == '作业批准' && moment(row.tmBeginAnswer).isBefore(moment())){
+        //     row.ubyStatus = 91
+        //   }
+        //   if(status2value(row.ubyStatus) == '作业申请待批复'&&moment(row.tmBeginApply).add(row.iApplyTimeLen+10*60,'s').isBefore(moment())){
+        //     row.ubyStatus = 100
+        //   }
+        //   if(status2value(row.ubyStatus) == '作业开始'&&moment(row.tmBeginAnswer).add(row.iAnswerTimeLen,'s').isBefore(moment())){
+        //     row.ubyStatus = 100
+        //   }
+        // }
         for(let j=0;j<zydData.length;j++){
           let has = false
           for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
@@ -5490,7 +5496,7 @@ onMounted(async() => {
       renderZydLayer(zydData.slice())
     })
     watch(()=>setting.人影.监控.速度矢量线,()=>{
-      aircraft01(textData)
+      updateTextLayer(textData.slice())
     })
     watch(()=>sys.触发作业状态数据查询,()=>{
       work1()
@@ -7205,8 +7211,6 @@ onMounted(async() => {
       .catch((e) => {
         console.log("添加空域失败");
       });
-
-
     map.getCanvas().style.cursor = "default";
   })
   map.on("draw.update", function (e: any) {
@@ -7415,6 +7419,7 @@ onMounted(async() => {
   map.on("mousemove", mousemoveFunc)
   document.addEventListener('mousemove',updateLabelPosittion)
   document.addEventListener('mouseup',cancelUpdateLabelPosition)
+  eventbus.on('列表右键菜单',listRightMenuFunc)
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
   eventbus.on("人影-飞机位置", 处理飞机实时位置);
@@ -7435,6 +7440,7 @@ onBeforeUnmount(() => {
     eventbus.off("人影-地面作业申请-网络上报", 网络上报);
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
     eventbus.off("移除draw绘制的所有图形",移除draw绘制的所有图形)
+    eventbus.off('列表右键菜单',listRightMenuFunc)
     map.off("zoom", zoomFunc);
     map.off("move", moveFunc);
     map.off("pitch", pitchFunc);
@@ -7554,16 +7560,12 @@ watch(()=>setting.人影.监控.selectedRegion,async(newValue,oldValue)=>{
 },{deep:true})
 watch(()=>setting.人影.监控.checkedKeys,(val)=>{
   sys.符合条件的作业点数据 = sys.作业点原始数据.filter((item:any)=>{
-    if(user.strUnitID.startsWith('99')){
-      return true
-    }else{
-      for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
-        if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
-          return true
-        }
+    for(let i=0;i<setting.人影.监控.checkedKeys.length;i++){
+      if(item.strID.startsWith(setting.人影.监控.checkedKeys[i].replace(/(00)+$/, ''))){
+        return true
       }
-      return false
     }
+    return false
   })
   zydFeaturesData.features.length = 0
   zydData.length = 0
@@ -7989,24 +7991,22 @@ watch([()=>setting.人影.监控.飞机高度下限,()=>setting.人影.监控.�
 })
 watch(()=>setting.人影.监控.track,()=>{
   if(setting.人影.监控.track){
-    if(setting.人影.监控.plane){
-      map.setLayoutProperty('track','visibility','visible')
-      map.setLayoutProperty('trackPoint','visibility','visible')
-    }
-    if(setting.人影.监控.adsb){
-      map.setLayoutProperty('adsbTrackLayer','visibility','visible')
-    }
+    map.setLayoutProperty('adsbTrackLayer','visibility','visible')
   }else{
-    map.setLayoutProperty('track','visibility','none')
-    map.setLayoutProperty('trackPoint','visibility','none')
     map.setLayoutProperty('adsbTrackLayer','visibility','none')
   }
 })
 watch(()=>setting.人影.监控.planeLabel,()=>{
-  aircraft01(textData)
+  updateTextLayer(textData.slice())
 })
 watch(()=>setting.人影.监控.plane,()=>{
-  updateTextLayer(textData)
+  updateTextLayer(textData.slice())
+})
+watch(()=>setting.人影.监控.显示航迹圈,()=>{
+  updateTextLayer(textData.slice())
+})
+watch(()=>setting.人影.监控.track,()=>{
+  updateTextLayer(textData.slice())
 })
 watch(()=>setting.人影.监控.trackCount,()=>{
   for(let i=0;i<trackFeatures.length;i++){
@@ -8072,6 +8072,45 @@ watch(
 watch([() => props.zoom, () => props.center], ([zoom, center]) => {
   //无法通过监听变量的变化实时设置地图的视角
 });
+const prepareData = ()=>{
+  if(hoverObject){
+    if(hoverObject.type=='作业点'){
+      // menuType.value = '地面作业申请'
+      // marker.setLngLat([e.lngLat.lng,e.lngLat.lat]);
+      // $(stationMenuRef.value as HTMLDivElement).css({display:'block'});
+      // $(stationMenuRef.value as HTMLDivElement).removeData();
+      // $(stationMenuRef.value as HTMLDivElement).data(hoverObject.properties);
+      activeObject = hoverObject
+      renderZydLayer(zydData.slice())
+      station.人影界面被选中的设备 = hoverObject.strID;
+      const item = hoverObject
+      console.log(item.ubyStatus)
+      if(item.ubyStatus=='作业申请待批复'){
+        menuType.value = '人工批复'
+      }else if(item.ubyStatus=='作业开始'){
+        menuType.value = '手动结束'
+      }else if(item.ubyStatus=='作业批准'||item.ubyStatus=='作业结束'){
+        menuType.value = '默认'
+      }else if(item.ubyStatus=='空闲'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'||item.ubyStatus==undefined){
+        menuType.value = '地面作业申请'
+      }else{
+        console.log('未处理状态',item.ubyStatus)
+        return
+      }
+      $(stationMenuRef.value as HTMLDivElement).removeData();
+      $(stationMenuRef.value as HTMLDivElement).data(item.properties);
+    }else{
+      menuType.value = '飞机操作'
+      activeObject = hoverObject
+      飞机菜单数据.value.显示标牌 = activeObject.显示标牌
+      飞机菜单数据.value.显示尾迹 = activeObject.显示尾迹
+      飞机菜单数据.value.显示速度矢量线 = activeObject.显示速度矢量线
+      飞机菜单数据.value.显示航迹圈 = activeObject.显示航迹圈
+      飞机菜单数据.value.显示经纬度 = activeObject.显示经纬度
+      飞机菜单数据.value.显示历史轨迹 = activeObject.显示历史轨迹
+    }
+  }
+}
 watch(
   () => station.人影界面被选中的设备,
   (strID) => {
@@ -8083,6 +8122,10 @@ watch(
     active();
   }
 );
+function listRightMenuFunc(strID:any){
+  hoverObject = zydData.filter(item=>item.strID==strID)[0]
+  prepareData()
+}
 watch(
   () => props.gridValue,
   (newVal) => {
@@ -8547,7 +8590,7 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   transform:translate(-50%,-50%);
   pointer-events:none;
 }
-.menu {
+.menu1, .menu2 {
   z-index:3;
   width:fit-content;
   display: none;
@@ -8584,7 +8627,7 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   }
 }
 
-.dark .menu {
+.dark .menu1, .dark .menu2 {
   background: #000000b0;
   ul {
     cursor: default;

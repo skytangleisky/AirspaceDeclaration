@@ -92,7 +92,7 @@
                 </Frame>
             </el-tab-pane>
             <el-tab-pane label="当前作业进度" style="width: 100%;height: 100%;">
-                <Work :v="sys.planProps.当前作业进度"></Work>
+                <Work identity="当前作业进度" :v="sys.planProps.当前作业进度"></Work>
             </el-tab-pane>
             <el-tab-pane label="今日作业记录" style="width: 100%;height: 100%;">
                 <Work :v="sys.planProps.今日作业记录"></Work>
@@ -110,7 +110,7 @@ import Work from './work.vue'
 import ZydFilter from './zydFilter.vue'
 import Frame from '~/frames/frame.vue'
 import closeSvg from '~/assets/close.svg?raw'
-import { reactive, onMounted, watch, computed, ref, toRaw} from "vue";
+import { reactive, onMounted, watch, computed, ref, toRaw, onBeforeUnmount} from "vue";
 const show = ref(false)
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
@@ -160,6 +160,23 @@ const bus = useBus();
 //   { code: 276, name: "276", status: "离线", equipment: "火箭", id: "110229045" },
 //   { code: 277, name: "277", status: "离线", equipment: "火箭", id: "110229046" },
 // ]);
+const mousewheelFunc = (event: any) => {
+    $('.menu2').css({ display: 'none' })
+}
+const mousedownFunc = (event: any) => {
+    $('.menu2').css({ display: 'none' })
+}
+onMounted(() => {
+    document.addEventListener('wheel', mousewheelFunc)
+    document.addEventListener('mousedown', mousedownFunc)
+    $('.menuUl').on('focusout', () => {
+        $('.menuUl').css({ display: 'none' })
+    })
+})
+onBeforeUnmount(() => {
+    document.removeEventListener('wheel', mousewheelFunc)
+    document.removeEventListener('mousedown', mousedownFunc)
+})
 onMounted(() => {
     $(".menuUl").on("focusout", () => {
         $(".menuUl").css({ display: "none" });
@@ -185,15 +202,18 @@ watch(
 );
 let currentStation: any;
 const contextmenu = (event: MouseEvent, v: any) => {
-    currentStation = v;
-    // let offset = $(".menuUl").prev().offset() || { left: 0, top: 0 };
-    // $(".menuUl")
-    //   .css({
-    //     display: "flex",
-    //     left: event.clientX - offset.left + "px",
-    //     top: event.clientY - offset.top + "px",
-    //   })
-    //   .trigger("focus");
+    currentStation = v
+    station.人影界面被选中的设备 = v.strID
+    let offset = $(".menu2").parent().offset() || { left: 0, top: 0 };
+    $('.menu1').css({ display: 'none' })
+    $(".menu2")
+        .css({
+            display: "block",
+            left: event.clientX - offset.left + "px",
+            top: event.clientY - offset.top + "px",
+        })
+        .trigger("focus");
+    eventbus.emit('列表右键菜单',v.strID)
 };
 const click = (event: MouseEvent) => {
     eventbus.emit(
@@ -204,6 +224,7 @@ const click = (event: MouseEvent) => {
     $(".menuUl").trigger("blur");
 };
 const flyTo = (event: any, v: any) => {
+    $(".menu2").css({ display: 'none' })
     station.人影界面被选中的设备 = v.strID;
     eventbus.emit("人影-将站点移动到屏幕中心", v);
 };

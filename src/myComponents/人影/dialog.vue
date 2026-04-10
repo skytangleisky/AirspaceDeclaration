@@ -84,16 +84,6 @@
                             </tr>
                             </tbody>
                         </table>
-                        <div class="menu2" @mousedown.stop style="position:absolute;left:0px;top:0px;">
-                            <ul>
-                            <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
-                            <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
-                            <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
-                            <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
-                            <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
-                            <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
-                            </ul>
-                        </div>
                         <div v-if="options.list.length==0" style="width: 100%;flex:1;overflow: hidden;">
                             <div
                                 style="position: relative;width: 100%;height: 100%;display: flex;justify-content: center;align-items: center;">
@@ -145,7 +135,7 @@ const sys = useSysStatusStore()
     import Colormap from './色标.vue'
     import {Close} from "@element-plus/icons-vue";
     import closeSvg from '~/assets/close.svg?raw'
-    import { reactive, onMounted, watch, computed, ref, toRaw } from 'vue'
+    import { reactive, onMounted, watch, computed, ref, toRaw, onBeforeUnmount } from 'vue'
     import { useStationStore } from '~/stores/station'
     import { eventbus } from '~/eventbus'
     import { useSettingStore } from '~/stores/setting'
@@ -205,10 +195,22 @@ const sys = useSysStatusStore()
     //   { code: 276, name: "276", status: "离线", equipment: "火箭", id: "110229045" },
     //   { code: 277, name: "277", status: "离线", equipment: "火箭", id: "110229046" },
     // ]);
+    const mousewheelFunc = (event: any) => {
+        $('.menu2').css({ display: 'none' })
+    }
+    const mousedownFunc = (event: any) => {
+        $('.menu2').css({ display: 'none' })
+    }
     onMounted(() => {
+        document.addEventListener('wheel', mousewheelFunc)
+        document.addEventListener('mousedown', mousedownFunc)
         $('.menuUl').on('focusout', () => {
             $('.menuUl').css({ display: 'none' })
         })
+    })
+    onBeforeUnmount(() => {
+        document.removeEventListener('wheel', mousewheelFunc)
+        document.removeEventListener('mousedown', mousedownFunc)
     })
     const scrolling = () => {
         $('.menuUl').trigger('blur')
@@ -224,9 +226,12 @@ const sys = useSysStatusStore()
     })
     let currentStation: any
     const contextmenu = (event: MouseEvent, v: any) => {
+        event.stopPropagation()
+        event.preventDefault();
         currentStation = v
-        let offset = $(".menu2").prev().offset() || { left: 0, top: 0 };
-        console.log(event)
+        station.人影界面被选中的设备 = v.strID
+        let offset = $(".menu2").parent().offset() || { left: 0, top: 0 };
+        $('.menu1').css({ display: 'none' })
         $(".menu2")
             .css({
                 display: "block",
@@ -234,12 +239,16 @@ const sys = useSysStatusStore()
                 top: event.clientY - offset.top + "px",
             })
             .trigger("focus");
+        eventbus.emit('列表右键菜单', v.strID)
     }
     const click = (event: MouseEvent) => {
+
         eventbus.emit('站点列表菜单点击', currentStation, (event.target as HTMLElement).innerText)
+        console.log(currentStation)
         $('.menuUl').trigger('blur')
     }
     const flyTo = (event: any, v: any) => {
+        $(".menu2").css({ display: 'none' })
         station.人影界面被选中的设备 = v.strID
         eventbus.emit('人影-将站点移动到屏幕中心', toRaw(v))
     }
@@ -318,59 +327,4 @@ const sys = useSysStatusStore()
             }
         }
     }
-.menu2 {
-    position: absolute;
-  z-index:3;
-  width:fit-content;
-  display: none;
-  background: #ffffffb0;
-  border-radius: 10px;
-  border-top-left-radius: 4px;
-  border: 1px solid var(--el-border-color);
-  ul {
-    cursor: default;
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    padding: 5px;
-    box-sizing: border-box;
-    margin-top: 0;
-    margin-bottom: 0;
-    li {
-        white-space: nowrap;
-      cursor: pointer;
-      border-radius: 4px;
-      position: relative;
-      font-size: 16px;
-      list-style: none;
-      padding: 2px;
-      &:hover {
-        background: rgba(62, 110, 197, 1);
-      }
-      &:active {
-        background: inherit;
-      }
-      &:not(:first-child) {
-        margin-top: 2px;
-      }
-    }
-  }
-}
-
-.dark .menu2 {
-  background: #000000b0;
-  ul {
-    cursor: default;
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    padding: 5px;
-    box-sizing: border-box;
-    margin-top: 0;
-    margin-bottom: 0;
-    li:hover {
-      background: rgba(62, 110, 197, 1);
-    }
-  }
-}
 </style>

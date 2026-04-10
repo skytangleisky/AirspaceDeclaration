@@ -42,14 +42,13 @@ export default {
     DrawLineString.onMouseMove.call(this, state, e);
     this._updateDistanceLabels(state, e.lngLat);
   },
-
   onStop(state) {
     // this._removeDistanceLabels();
     DrawLineString.onStop.call(this, state);
   },
   onTrash(state) {
     this._removeDistanceLabels();
-    // DrawLineString.onTrash.call(this, state);
+    DrawLineString.onTrash.call(this, state);
   },
 
   _updateDistanceLabels(state, cursorLngLat) {
@@ -91,14 +90,17 @@ export default {
           "coordinates": [center.lng,center.lat]
         }
       }
-      const rotate = pos1.x-pos2.x==0?0:-Math.atan2(pos1.y-pos2.y,pos1.x-pos2.x)*180/Math.PI+180
+      const dx = pos2.x - pos1.x;
+      const dy = pos2.y - pos1.y;
+      const rotate = -Math.atan2(dy, dx) * 180 / Math.PI;
+      const normalized = rotate > 90 || rotate < -90 ? rotate + 180 : rotate;
       const distance = turf.distance(from, to, { units: 'kilometers' }).toFixed(3)+'km';
       state.distancePoints.push({
         'type': 'Feature',
         'geometry': mid.geometry,
         'properties': {
           'text': distance,
-          rotate,
+          'rotate': normalized,
         }
       })
     }

@@ -122,6 +122,7 @@ export default defineConfig({
       },
       '/ry_api':{//人影接口
         target:'http://127.0.0.1:8080',
+        // target:'http://192.168.0.151:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,

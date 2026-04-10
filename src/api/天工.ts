@@ -4,6 +4,15 @@ import { useSettingStore } from '~/stores/setting'
 import { wrapKeys } from '~/tools'
 import { v4 as uuidv4 } from 'uuid';
 import { useUserStore } from '~/stores/user';
+export function 作业结束(strWorkID:string){
+  return request({
+    url: '/ry_api/scry/workOver',
+    method: 'post',
+    data: {
+      strWorkID
+    }
+  })
+}
 export function 机场(){
   return request({
     url: '/backend/db/default',

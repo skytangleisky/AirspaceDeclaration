@@ -10,7 +10,7 @@ const inactive = [
     'paint': {
       'fill-color': ['coalesce', ['get', 'user_color'], '#3bb2d0'],
       'fill-outline-color': ['coalesce', ['get', 'user_color'], '#3bb2d0'],
-      'fill-opacity': 0.8
+      'fill-opacity': 0.2
     }
   },
   {
@@ -222,21 +222,21 @@ export default [
   ...inactive,
   ...active,
   ...statics,
-  {
-    'id': 'gl-draw-polygon-extrusion-inactive',
-    'type': 'fill-extrusion',
-    'filter': ['all',
-      // ['==', 'active', 'false'],
-      ['==', '$type', 'Polygon'],
-      ['!=', 'mode', 'static_select'],
-    ],
-    'paint': {
-      'fill-extrusion-color': ['get','user_color'],
-      'fill-extrusion-height': 1000,
-      'fill-extrusion-base': 0,
-      'fill-extrusion-opacity': 0.6
-    }
-  },
+  // {
+  //   'id': 'gl-draw-polygon-extrusion-inactive',
+  //   'type': 'fill-extrusion',
+  //   'filter': ['all',
+  //     // ['==', 'active', 'false'],
+  //     ['==', '$type', 'Polygon'],
+  //     ['!=', 'mode', 'static_select'],
+  //   ],
+  //   'paint': {
+  //     'fill-extrusion-color': ['get','user_color'],
+  //     'fill-extrusion-height': 1000,
+  //     'fill-extrusion-base': 0,
+  //     'fill-extrusion-opacity': 0.6
+  //   }
+  // },
   {
     'id': 'gl-draw-polygon-midpoint',
     'type': 'circle',

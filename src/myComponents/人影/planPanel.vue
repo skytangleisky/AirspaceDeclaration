@@ -14,7 +14,7 @@
                         :label="k"
                         v-show="tabActive == k"
                     >
-                        <Work :v="v"/>
+                        <Work :identity="k" :v="v"/>
                     </div>
                     <!-- 空域流转信息 -->
                     <div v-show="tabActive == '空域流转信息'">
@@ -112,7 +112,7 @@
         bottom: $page-padding;
         // top: 300px;
         .wstd-content {
-            width: 840px;
+            width: 900px;
             position: relative;
             margin-bottom: $grid-3;
         }

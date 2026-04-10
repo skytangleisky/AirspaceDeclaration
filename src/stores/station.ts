@@ -155,7 +155,7 @@ export const useStationStore = defineStore('station',{
       })
     }
   },
-  persist: true,
+  persist: false,
 })
 if (import.meta.hot) {
   import.meta.hot.accept(acceptHMRUpdate(useStationStore, import.meta.hot))
