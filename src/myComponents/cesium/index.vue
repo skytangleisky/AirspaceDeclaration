@@ -143,7 +143,7 @@
 
 
 
-    let points = calculateFireArea([116.39, 39.9], 10000, 0, 360, 36).flatMap((item)=>item)
+    let points = calculateFireArea([116.39, 39.9], 10000, 40, 360, 36).flatMap((item)=>item)
 
     const geometry = new Cesium.PolygonGeometry({
       polygonHierarchy: new Cesium.PolygonHierarchy(
@@ -206,8 +206,8 @@
         outlineColor: Cesium.Color.BLACK,
         outlineWidth: 1,
         style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+        // horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        // verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
         pixelOffset: new Cesium.Cartesian2(0, -10),
       },
     });
