@@ -3133,7 +3133,7 @@ onMounted(async() => {
               'interpolate',
               ['linear'],
               ['zoom'],
-              9, 0,   // zoom <= 9 不显示文字
+              6, 0,   // zoom <= 9 不显示文字
               10, 1   // zoom >= 10 显示文字
             ]
           },

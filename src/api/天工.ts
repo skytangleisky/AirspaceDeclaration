@@ -1245,7 +1245,8 @@ export function 组合反射率(){
     const setting = useSettingStore()
     setting.人影.监控.组合反射率时间 = '加载时间列表'
     request({
-      url:'/cdb/api/v1/rada/radarV3Product/findDateList',
+      // url:'/cdb/api/v1/rada/radarV3Product/findDateList',
+      url:'/backend/zcgk/api/v1/rada/radarV3Product/findDateList',
       method:'get',
       params:{
         date:moment().format('YYYYMMDD'),
@@ -1260,7 +1261,8 @@ export function 组合反射率(){
       if(data.data.dateList.length>0){
         setting.人影.监控.组合反射率时间 = '加载雷达数据'
         request({
-          url:'/cdb/api/v1/rada/radarV3Product/getProduct',
+          // url:'/cdb/api/v1/rada/radarV3Product/getProduct',
+          url:'/backend/zcgk/api/v1/rada/radarV3Product/getProduct',
           method:'get',
           params:{
             productType:'RADA_L3_MST_CREF_QC',
