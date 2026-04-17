@@ -191,35 +191,35 @@ const handlePointDialogClose = () => {
 };
 // to do 批量作业申请
 function confirm() {
-  const promiseList:any[] = []
-  batchList.value.forEach((item:any)=>{
-    const promise = new Promise((resolve,reject)=>{
-      item.beginTime = applyPointForm.time
-      item.duration = applyPointForm.workTimeLen
-      item.iWorkType = applyPointForm.workCat
-      airspaceApply(item).then((res:any)=>{
-        resolve(res)
-        pointDialogVisible.value = false
-        eventbus.emit('移除draw绘制的所有图形')
-      }).catch((err:any)=>{
-        reject(err)
-      })
-    })
-    promiseList.push(promise)
-  })
-  Promise.all(promiseList).then(res=>{
-    console.log(res)
-  }).catch(err=>{
-    console.log(err)
-  })
-  /*
+  // const promiseList:any[] = []
+  // batchList.value.forEach((item:any)=>{
+  //   const promise = new Promise((resolve,reject)=>{
+  //     item.beginTime = applyPointForm.time
+  //     item.duration = applyPointForm.workTimeLen
+  //     item.iWorkType = applyPointForm.workCat
+  //     airspaceApply(item).then((res:any)=>{
+  //       resolve(res)
+  //       pointDialogVisible.value = false
+  //       eventbus.emit('移除draw绘制的所有图形')
+  //     }).catch((err:any)=>{
+  //       reject(err)
+  //     })
+  //   })
+  //   promiseList.push(promise)
+  // })
+  // Promise.all(promiseList).then(res=>{
+  //   console.log(res)
+  // }).catch(err=>{
+  //   console.log(err)
+  // })
   const user = useUserStore()
   const data = {
-    "workRevID": batchList.value[0]?.strMgrUnit,//作业接收单位
+    // "workRevID": batchList.value[0]?.strMgrUnit,//作业接收单位
+    "applyUnitID":user.strUnitID,//申请单位
     "applyBeginTime": moment().format('YYYY-MM-DD ')+batchList.value[0]?.beginTime,//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
     "workTimeLen": applyPointForm.workTimeLen,//申请作业时长(单位：秒)
     "workCat": applyPointForm.workCat,//作业类型
-    "relayID": user.strUnitID,//作业上报单位
+    // "relayID": user.strUnitID,//作业上报单位
     "lonlatNum": 4,//作业范围经纬度个数
     "lonArea": "115.68973,115.73187,116.01579,115.84223",//作业范围经度数组
     "latArea": "40.55156,40.35536,40.38823,40.57899",//作业范围纬度数组
@@ -272,7 +272,6 @@ function confirm() {
     pointDialogVisible.value = false
     eventbus.emit('移除draw绘制的所有图形')
   })
-  */
 }
 </script>
 <style lang="scss" scoped>

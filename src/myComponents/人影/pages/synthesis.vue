@@ -230,16 +230,16 @@ const selectorColor = computed({
 })
 const tweakPaneRef = ref<HTMLElement>();
 const confirm = (data: prevRequestDataType) => {
-  eventbus.emit("人影-地面作业申请-网络上报", toRaw(data));
+  eventbus.emit("人影-地面作业申请-网络上报", JSON.parse(JSON.stringify(data)));
 };
 
-function accept(data) {
+function accept(data:any) {
   空域申请批准(data).then((res) => {
     sys.prevPlanReplyShow = false
   })
 }
 
-function reject(data) {
+function reject(data:any) {
   空域申请拒绝(data).then((res) => {
     sys.prevPlanReplyShow = false
   })

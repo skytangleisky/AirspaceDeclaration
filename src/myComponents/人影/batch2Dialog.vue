@@ -86,10 +86,11 @@
 </template>
 <script lang="ts" setup>
 //该组件用于批量批复
+import { useUserStore } from '~/stores/user'
 import {reactive,ref,watch,onMounted, onBeforeUnmount} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
-import {空域申请批准,空域申请拒绝} from '~/api/天工'
+import {空域申请批准,空域申请拒绝,批量批准接口,批量不批准接口} from '~/api/天工'
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
 const applyPointForm = reactive({
@@ -184,41 +185,100 @@ const handlePointDialogClose = () => {
   pointDialogVisible.value = false;
 };
 function accept() {
-  batchList.value.forEach(async(item:any) => {
-    const lngLat = fromDMS(item.strPos)
-    if(checkedPoints.value.includes(item.strID)){
-      item.beginTime = applyPointForm.time
-      item.workTimeLen = applyPointForm.workTimeLen
-      item.iworkType = applyPointForm.workCat
-      await 空域申请批准(item).then(res=>{
-        pointDialogVisible.value = false
-        eventbus.emit('移除draw绘制的所有图形')
-      })
-    }
+  // batchList.value.forEach(async(item:any) => {
+  //   const lngLat = fromDMS(item.strPos)
+  //   if(checkedPoints.value.includes(item.strID)){
+  //     item.beginTime = applyPointForm.time
+  //     item.workTimeLen = applyPointForm.workTimeLen
+  //     item.iworkType = applyPointForm.workCat
+  //     await 空域申请批准(item).then(res=>{
+  //       pointDialogVisible.value = false
+  //       eventbus.emit('移除draw绘制的所有图形')
+  //     })
+  //   }
+  // })
+
+  const user = useUserStore()
+
+  const data = {
+    // "workRevID": "360000000",
+    "replyID": user.strUnitID,
+    "acceptBeginTime": applyPointForm.date+' '+applyPointForm.time,
+    "workTimeLen": applyPointForm.workTimeLen,
+    "zydData": batchList.value.filter((item:any)=>checkedPoints.value.includes(item.strID)).map((item:any)=>{
+      const lngLat = fromDMS(item.strPos)
+      return {
+        "workID": item.strWorkID,
+        "zydID": item.strID,
+        "longitude": lngLat[0],
+        "latitude": lngLat[1],
+        "shootRange": item.iRange,
+        "maxShootHeight": item.iMaxShotHei,
+        "startShotDirention": item.iAngleBegin.toString(),
+        "endShotDirention": item.iAngleEnd.toString(),
+        "reverse": ""
+      }
+    })
+  }
+
+
+
+  批量批准接口(data).then(()=>{
+    pointDialogVisible.value = false
+    eventbus.emit('移除draw绘制的所有图形')
   })
+
+
   pointDialogVisible.value = false
 }
 function reject() {
-  batchList.value.forEach(async(item:any) => {
-    const lngLat = fromDMS(item.strPos)
-    if(checkedPoints.value.includes(item.strID)){
+//   batchList.value.forEach(async(item:any) => {
+//     const lngLat = fromDMS(item.strPos)
+//     if(checkedPoints.value.includes(item.strID)){
 
-console.log(applyPointForm.date+' '+applyPointForm.time)
-      const data = {
-        "strWorkID": item.properties.strWorkID,
-        "strID": item.strID,
-        "replyUnitID": item.strRelayUnit,
-        "workReceiveUnit": item.strID,
-        "workReceiveUser": "",
-        "delayTimeLen": applyPointForm.workTimeLen,
-        "denyCode":0
+// console.log(applyPointForm.date+' '+applyPointForm.time)
+//       const data = {
+//         "strWorkID": item.properties.strWorkID,
+//         "strID": item.strID,
+//         "replyUnitID": item.strRelayUnit,
+//         "workReceiveUnit": item.strID,
+//         "workReceiveUser": "",
+//         "delayTimeLen": applyPointForm.workTimeLen,
+//         "denyCode":0
+//       }
+//       await 空域申请拒绝(data).then(res=>{
+//         pointDialogVisible.value = false
+//         eventbus.emit('移除draw绘制的所有图形')
+//       })
+//     }
+//   })
+
+  const user = useUserStore()
+  const data = {
+    // "workRevID": "360000000",
+    "replyID": user.strUnitID,
+    "delayTimeLen": 600, //默认延迟10分钟
+    "denyCode": 0,
+    "zydData": batchList.value.filter((item:any)=>checkedPoints.value.includes(item.strID)).map((item:any)=>{
+      const lngLat = fromDMS(item.strPos)
+      return {
+        "workID": item.strWorkID,
+        "zydID": item.strID,
+        "longitude": lngLat[0],
+        "latitude": lngLat[1],
+        "shootRange": item.iRange,
+        "maxShootHeight": item.iMaxShotHei,
+        "startShotDirention": item.iAngleBegin.toString(),
+        "endShotDirention": item.iAngleEnd.toString(),
+        "reverse": ""
       }
-      await 空域申请拒绝(data).then(res=>{
-        pointDialogVisible.value = false
-        eventbus.emit('移除draw绘制的所有图形')
-      })
-    }
+    })
+  }
+  批量不批准接口(data).then(()=>{
+    pointDialogVisible.value = false
+    eventbus.emit('移除draw绘制的所有图形')
   })
+
   pointDialogVisible.value = false
 }
 

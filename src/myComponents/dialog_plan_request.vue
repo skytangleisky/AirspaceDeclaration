@@ -174,7 +174,7 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive, onMounted, onBeforeUnmount } from "vue";
+import { reactive, onMounted, onBeforeUnmount, toRaw } from "vue";
 import moment from "moment";
 const weaponOptions = reactive([
     { value: 0, label: "火箭" },
@@ -193,7 +193,7 @@ const workOptions = reactive([
     { value: 4, label: "其他" },
 ]);
 const click = (data: prevRequestDataType) => {
-    emit("click", JSON.parse(JSON.stringify(data)));
+    emit("click", toRaw(data));
 };
 const beginTimeClear = ()=>{
     props.data.beginTime = moment().format('HH:mm:ss')

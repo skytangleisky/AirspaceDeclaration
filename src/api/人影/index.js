@@ -28,7 +28,7 @@ export function airspaceApply(data){
     "workCat": data.iWorkType,
   }
   return request({
-    url: '/ry_api/api/apply/airspace/',
+    url: '/ry_api/api/apply/airspace',
     method: 'post',
     data:targetData
   })
@@ -36,7 +36,7 @@ export function airspaceApply(data){
 
 export function airspacesApply(data){
   return request({
-    url: '/ry_api/api/multi/apply/airspace/',
+    url: '/ry_api/api/multi/apply/airspace',
     method: 'post',
     data
   })

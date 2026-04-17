@@ -56,6 +56,7 @@
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
+          <li v-if="menuType=='人工批复'" @click="取消作业()">取消作业</li>
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
@@ -67,6 +68,7 @@
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
+          <li v-if="menuType=='手动结束'" @click="作业强制终止()">作业强制终止</li>
           <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
@@ -82,11 +84,13 @@
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
+          <li v-if="menuType=='人工批复'" @click="取消作业()">取消作业</li>
           <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
+          <li v-if="menuType=='手动结束'" @click="作业强制终止()">作业强制终止</li>
           <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
           </ul>
       </div>
@@ -1089,6 +1093,25 @@ function aircraft02(textData:any) {
     ]
   })
 }
+function getColor(d:any){
+  switch(d.ubyStatus){
+    case '作业申请待批复':return parseColor('#FFB31A')
+    case '作业批准':return parseColor('#0000FF')
+    case '作业开始':return parseColor('#FF0000')
+    case '已撤销':return parseColor('#BBB')
+    case '作业强制终止':return parseColor('#BBB')
+    case '作业结束':return parseColor('#BBB')
+    case '作业不批准':return parseColor('#BBB')
+    case '空闲':return parseColor('#BBB')
+    case '显示':return parseColor('#BBB')
+    default: return parseColor('#FFF')
+  }
+}
+function getColorWithAlpha(d:any){
+  const color = getColor(d).slice()
+  color[3] = 0x40
+  return color
+}
 function updateTextLayer(textData:any) {
   const data1 = textData.filter((item:any)=>!item.特殊飞机)
   const data2 = textData.filter((item:any)=>item.特殊飞机)
@@ -1119,55 +1142,26 @@ function renderZydLayer(zydData:any){
       new PathLayer({
         visible:true,
         id: 'dashed-path',
-        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界||(activeObject&&item.strID==activeObject.strID)),
+        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示','作业强制终止'].includes(item.ubyStatus)||item.显示射界||(activeObject&&item.strID==activeObject.strID)),
         getPath: d => {
           return calculateFireArea([d.fLongitude, d.fLatitude],setting.人影.监控.warningCircle*1000,0,360)
         },
-        getColor: (d:any) => {
-          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
-            d.ubyStatus=='作业批准'?parseColor('#00f'):
-            d.ubyStatus=='作业开始'?parseColor('#f00'):
-            d.ubyStatus=='作业结束'?parseColor('#BBB'):
-            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
-            d.ubyStatus=='空闲'?parseColor('#BBB'):
-            d.ubyStatus=='显示'?parseColor('#BBB'):
-            parseColor('#fff')
-        },
+        getColor,
         getWidth: 1,
         widthUnits: 'pixels',
         extensions: [new PathStyleExtension({ dash: true })],
         getDashArray: [10, 10],   // 实线10px，空白5px
         dashJustified: false,
       }),
-      new PolygonLayer(
-        {
-          visible:true,
+      new PolygonLayer({
+        visible:true,
         id: 'polygon-layer',
-        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示'].includes(item.ubyStatus)||item.显示射界||(activeObject&&item.strID==activeObject.strID)),
+        data:zydData.filter((item:any)=>['作业申请待批复','作业批准','作业开始','作业结束','作业不批准','显示','作业强制终止'].includes(item.ubyStatus)||item.显示射界||(activeObject&&item.strID==activeObject.strID)),
         getPolygon: d => {
           return calculateFireArea([d.fLongitude, d.fLatitude],d.properties.iRange,d.properties.iAngleBegin,d.properties.iAngleEnd)
         },
-        getFillColor: (d:any) => {
-          return d.ubyStatus=='作业申请待批复'?parseColor('#ffa00040'):
-            d.ubyStatus=='作业批准'?parseColor('#0000ff40'):
-            d.ubyStatus=='作业开始'?parseColor('#ff000040'):
-            d.ubyStatus=='作业结束'?parseColor('#80808040'):
-            d.ubyStatus=='作业不批准'?parseColor('#80808040'):
-            d.ubyStatus=='空闲'?parseColor('#BBB88840'):
-            d.ubyStatus=='显示'?parseColor('#80808040'):
-            parseColor('#fff')
-          // return interpolateColor(parseColor('#ff00ff40'),parseColor('#00ffff40'),Math.sin(d.now/500))
-        },
-        getLineColor: (d:any) => {
-          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
-            d.ubyStatus=='作业批准'?parseColor('#00f'):
-            d.ubyStatus=='作业开始'?parseColor('#f00'):
-            d.ubyStatus=='作业结束'?parseColor('#BBB'):
-            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
-            d.ubyStatus=='空闲'?parseColor('#BBB'):
-            d.ubyStatus=='显示'?parseColor('#BBB'):
-            parseColor('#fff')
-        },
+        getFillColor: d => getColorWithAlpha(d),
+        getLineColor: getColor,
         getLineWidth: 1,
         lineWidthUnits: 'pixels',
         stroked: true,
@@ -1193,16 +1187,7 @@ function renderZydLayer(zydData:any){
         data,
         getSourcePosition: d => [d.fLongitude, d.fLatitude,0],
         getTargetPosition: d => [d.fLongitude+1e-4, d.fLatitude,0],
-        getColor: (d:any) => {
-          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
-            d.ubyStatus=='作业批准'?parseColor('#00f'):
-            d.ubyStatus=='作业开始'?parseColor('#f00'):
-            d.ubyStatus=='作业结束'?parseColor('#BBB'):
-            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
-            d.ubyStatus=='空闲'?parseColor('#BBB88880'):
-            d.ubyStatus=='显示'?parseColor('#BBB'):
-            parseColor('#fff')
-        },
+        getColor,
         getPixelOffset:(d)=>[d.offset[0],d.offset[1]],
         getWidth: 1,
         widthUnits: 'pixels',
@@ -1238,27 +1223,20 @@ function renderZydLayer(zydData:any){
             }else{
               return `${d.strName}--未批复\n${moment(d.properties.tmBeginApply,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')}\n${d.properties.iRange}米\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
             }
+          }else if(d.ubyStatus=='作业强制终止'){
+            return `${d.strName}--强制终止\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iRange}米\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
           }else if(d.ubyStatus=='作业不批准'){
             const time = d.properties.tmBeginAnswer?moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss'):moment(d.properties.tmBeginApply,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')
             return `${d.strName}--不批准\n${time}\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
           }else if(d.ubyStatus=='作业完成'){
             return `${d.strName}--已完成\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
           }else if(d.ubyStatus=='已撤销'){
-            return `${d.strName}--已撤销\n${moment(d.properties.tmBeginAnswer,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iAnswerTimeLen}秒\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
+            return `${d.strName}--已撤销\n${moment(d.properties.tmBeginApply,'YYYY-MM-DD HH:mm:ss').format('HH:mm:ss')} ${d.properties.iApplyTimeLen}秒\n${d.properties.iMaxShotHei}米\n${d.properties.iAngleBegin}-${d.properties.iAngleEnd}(度)\n${toDMS(d.fLongitude,d.fLatitude)}`
           }else{
             return `unknown ${d.ubyStatus}`
           }
         },
-        getColor: (d:any) => {
-          return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
-            d.ubyStatus=='作业批准'?parseColor('#00f'):
-            d.ubyStatus=='作业开始'?parseColor('#f00'):
-            d.ubyStatus=='作业结束'?parseColor('#BBB'):
-            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
-            d.ubyStatus=='空闲'?parseColor('#BBB'):
-            d.ubyStatus=='显示'?parseColor('#BBB'):
-            parseColor('#fff')
-        },
+        getColor,
         getAngle: 0,
         getTextAnchor: 'start',
         getAlignmentBaseline: 'center',
@@ -1279,14 +1257,7 @@ function renderZydLayer(zydData:any){
         border: true,
         getBorderColor: (d:any) => {
           if(d==hoverObject){
-            return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
-            d.ubyStatus=='作业批准'?parseColor('#00f'):
-            d.ubyStatus=='作业开始'?parseColor('#f00'):
-            d.ubyStatus=='作业结束'?parseColor('#BBB'):
-            d.ubyStatus=='作业不批准'?parseColor('#BBB'):
-            d.ubyStatus=='空闲'?parseColor('#BBB'):
-            d.ubyStatus=='显示'?parseColor('#BBB'):
-            parseColor('#fff')
+            return getColor(d)
           }else{
             return [0,0,0,0]
           }
@@ -1339,16 +1310,7 @@ function renderZydLayer(zydData:any){
       //   getPosition: (d:any) => [d.fLongitude, d.fLatitude],
       //   getRadius: (d:any) => 1, // 单位由 radiusUnits 决定
       //   radiusUnits: 'pixels',          // 可省略（默认 meters）
-      //   getFillColor:(d:any) => {
-      //     return d.ubyStatus=='作业申请待批复'?parseColor('#ffb31a'):
-      //       d.ubyStatus=='作业批准'?parseColor('#00f'):
-      //       d.ubyStatus=='作业开始'?parseColor('#f00'):
-      //       d.ubyStatus=='作业结束'?parseColor('#BBB'):
-      //       d.ubyStatus=='作业不批准'?parseColor('#BBB'):
-      //       d.ubyStatus=='空闲'?parseColor('#BBB'):
-      //       d.ubyStatus=='显示'?parseColor('#BBB'):
-      //       parseColor('#fff')
-      //   },
+      //   getFillColor: getColor,
       //   stroked: true,
       //   getLineColor: [255, 255, 255, 255],
       //   lineWidthUnits: 'pixels',
@@ -1596,7 +1558,7 @@ let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束} from '~/api/天工'
+import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束, 取消作业接口,作业终止接口} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -1765,9 +1727,9 @@ let 批量批复 = () => {
 }
 let 批量移除 = () => {
   let list = new Array()
-  for(let j=0;j<sys.符合条件的作业点数据.length;j++){
-    let station = sys.符合条件的作业点数据[j];
-    let targetPos = point(wgs84togcj02(...fromDMS((station as any).strPos)))
+  for(let j=0;j<zydData.length;j++){
+    let station = zydData[j];
+    let targetPos = point(wgs84togcj02(station.fLongitude,station.fLatitude))
     let isInf = false
     for(let i=0;i<draw.getAll().features.length;i++){
       const feature = draw.getAll().features[i];
@@ -1783,19 +1745,14 @@ let 批量移除 = () => {
   }
   //过滤掉处于['作业申请待批复']以外状态的作业点
   list = list.filter((item:any)=>{
-    for(let i=0;i<zydData.length;i++){
-      if(item.strID==zydData[i].strID){
-        if(['作业申请待批复','作业批准','作业开始'].includes(zydData[i].properties.ubyStatus)){
-          return false
-        }
-      }
+    if(['作业申请待批复','作业批准','作业开始'].includes(item.properties.ubyStatus)){
+      return false
     }
     return true
   })
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
-  console.log(list)
   let data = list.map(item=>{
-    return {strWorkID:item.strWorkID}
+    return {strWorkID:item.properties.strWorkID}
   })
   if(data.length==0){
     ElMessage({
@@ -1831,6 +1788,18 @@ const 人工批复 = () => {
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
   emits("update:prevReplyShow", true);
   emits("update:prevReplyData", properties);
+}
+function 取消作业(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
+  let properties = $(stationMenuRef.value as HTMLDivElement).data();
+  取消作业接口(properties.strWorkID,properties.strID)
+}
+function 作业强制终止(){
+  $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
+  $('.menu2').css({display:'none'})
+  let properties = $(stationMenuRef.value as HTMLDivElement).data();
+  作业终止接口(properties.strWorkID)
 }
 function 手动结束(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
@@ -4947,6 +4916,9 @@ onMounted(async() => {
         station.人影界面被选中的设备 = hoverObject.strID || ''
         renderZydLayer(zydData.slice())
         e.preventDefault()
+      }else{
+        activeObject = null
+        renderZydLayer(zydData.slice())
       }
       // console.log([e.lngLat.lng,e.lngLat.lat])
       $(stationMenuRef.value as HTMLDivElement).css({display:'none'});
@@ -8089,11 +8061,12 @@ const prepareData = ()=>{
         menuType.value = '人工批复'
       }else if(item.ubyStatus=='作业开始'){
         menuType.value = '手动结束'
-      }else if(item.ubyStatus=='作业批准'||item.ubyStatus=='作业结束'){
+      }else if(item.ubyStatus=='作业批准'||item.ubyStatus=='作业结束'||item.ubyStatus=='已撤销'||item.ubyStatus=='作业强制终止'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'){
         menuType.value = '默认'
-      }else if(item.ubyStatus=='空闲'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'||item.ubyStatus==undefined){
+      }else if(item.ubyStatus=='空闲'||item.ubyStatus==undefined){
         menuType.value = '地面作业申请'
       }else{
+        menuType.value = '默认'
         console.log('未处理状态',item.ubyStatus)
         return
       }

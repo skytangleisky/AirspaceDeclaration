@@ -4,12 +4,46 @@ import { useSettingStore } from '~/stores/setting'
 import { wrapKeys } from '~/tools'
 import { v4 as uuidv4 } from 'uuid';
 import { useUserStore } from '~/stores/user';
-export function 作业结束(strWorkID:string){
+
+export function 批量不批准接口(data:any){
   return request({
-    url: '/ry_api/scry/workOver',
+    url: 'ry_api/api/work/send/multireject',
+    method: 'post',
+    data
+  })
+}
+export function 批量批准接口(data:any){
+  return request({
+    url: 'ry_api/api/work/send/multiaccept',
+    method: 'post',
+    data
+  })
+}
+export function 作业结束(workID:string){
+  return request({
+    url: '/ry_api/api/work/send/end',
     method: 'post',
     data: {
-      strWorkID
+      workID
+    }
+  })
+}
+export function 作业终止接口(workID:string){
+  return request({
+    url: '/ry_api/api/work/send/stop',
+    method: 'post',
+    data: {
+      workID
+    }
+  })
+}
+export function 取消作业接口(workID:string){
+  console.log(workID)
+  return request({
+    url: '/ry_api/api/work/send/cancel',
+    method: 'post',
+    data: {
+      workID
     }
   })
 }

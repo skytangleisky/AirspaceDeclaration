@@ -174,12 +174,12 @@
           </div>
           结束
           </template>
-          <template v-else-if="item.ubyStatus==100">
+          <template v-else-if="item.ubyStatus==100||item.ubyStatus==93">
             {{
               (item.iEndType==0 ? '正常结束' : item.iEndType==1 ? '强制终止结束' : item.iEndType==2 ? '提前结束' : item.iEndType==3 ? '超时自动结束' : item.iEndType==4 ? '超时人工结束' : `未知状态${item.iEndType}`) +
               (item.tmBeginAnswer
                 ? "(" +
-                  moment(item.tmEnd).format("HH:mm:ss") +
+                  moment(item.tmEnd||item.tmUpdate).format("HH:mm:ss") +
                   ")"
                 : "")
             }}
