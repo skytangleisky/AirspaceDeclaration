@@ -7,13 +7,15 @@
         class="dark:bg-#666 bg-white"
         style="
           position: relative;
-          left: 0;
+          left: 50%;
           top: 0;
-          width: 100%;
+          width: 50%;
           height: 100%;
           line-height: 1;
         "
       ></div>
+      <div ref="cesiumContainerRef" class="cesiumContainer"></div>
+      <cesiumComponents v-model:viewer="viewerRef" style="position: absolute;left:0;top:0;width:50%;height:100%;pointer-events: none;"></cesiumComponents>
       <svg class="center" v-if="setting.人影.监控.准心" width="20" height="20" viewBox="0 0 20 20">
         <path
           d="M10 0 L10 20 M0 10 L20 10"
@@ -88,6 +90,54 @@
   </div>
 </template>
 <script lang="ts" setup>
+import * as Cesium from 'cesium'
+const viewerRef = shallowRef<Cesium.Viewer>()
+const cesiumContainerRef = ref<HTMLDivElement>()
+let imageryProviderViewModels = [
+  // new Cesium.ProviderViewModel({
+  //   name: '谷歌地图',
+  //   iconUrl: 'http://127.0.0.1:3143?x=0&y=0&z=0', // 可以自定义图标
+  //   tooltip: '谷歌地图',
+  //   creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+  //     url: 'http://127.0.0.1:3143?x={x}&y={y}&z={z}',
+  //   }),
+  // }),
+  new Cesium.ProviderViewModel({
+    name: '白板地图',
+    iconUrl: transparentPng,
+    tooltip: '白板地图',
+    creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+      url: transparentPng,
+    }),
+  }),
+  new Cesium.ProviderViewModel({
+    name: '矢量地图',
+    iconUrl: '/tile/xbry/maps/DataServer?T=vec_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x=0&y=0&l=0',
+    tooltip: '矢量地图',
+    creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+      url: '/tile/xbry/maps/DataServer?T=vec_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}',
+    }),
+  }),
+  new Cesium.ProviderViewModel({
+    name: '影像地图',
+    iconUrl: '/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x=0&y=0&l=0',
+    tooltip: '影像地图',
+    creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+      url: '/tile/xbry/maps/DataServer?T=img_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}',
+    }),
+  }),
+  new Cesium.ProviderViewModel({
+    name: '地形地图',
+    iconUrl: '/tile/xbry/maps/DataServer?T=ter_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x=0&y=0&l=0',
+    tooltip: '地形地图',
+    creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+      url: '/tile/xbry/maps/DataServer?T=ter_w&tk=b5c6d22f3ea7a78d2526bcc2552882ef&x={x}&y={y}&l={z}',
+    }),
+  }),
+]
+import { useCesiumStore } from '~/stores/cesium';
+const cesiumStore = useCesiumStore();
+import cesiumComponents from "~/myComponents/cesium/index.vue";
 import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
@@ -1162,6 +1212,32 @@ function load(){
   }
 }
 onMounted(async() => {
+  Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(115, 25, 125, 35);
+  viewerRef.value = new Cesium.Viewer(cesiumContainerRef.value as HTMLElement,{
+    navigationInstructionsInitiallyVisible:false,
+    imageryProviderViewModels,
+    selectedImageryProviderViewModel:imageryProviderViewModels[0],
+    creditContainer:document.createElement("div"),
+    msaaSamples:4,
+    sceneMode: cesiumStore.sceneMode,
+  });
+  let viewer = viewerRef.value as Cesium.Viewer
+  // viewer.imageryLayers.layerAdded.addEventListener((layer, index) => {
+  //   if (index === 0) {
+  //     const idx = imageryProviderViewModels.indexOf(viewer.baseLayerPicker.viewModel.selectedImagery)
+  //     console.log("底图变化（新底图）:", idx);
+  //   }
+  // });
+
+  viewer.sceneModePicker.viewModel.morphTo3D.afterExecute.addEventListener(() => {
+    cesiumStore.sceneMode = Cesium.SceneMode.SCENE3D;
+  });
+  viewer.sceneModePicker.viewModel.morphTo2D.afterExecute.addEventListener(() => {
+    cesiumStore.sceneMode = Cesium.SceneMode.SCENE2D;
+  });
+  viewer.sceneModePicker.viewModel.morphToColumbusView.afterExecute.addEventListener(() => {
+    cesiumStore.sceneMode = Cesium.SceneMode.COLUMBUS_VIEW;
+  });
   // ElMessage({
   //   message: '当前版本为1.1.97',
   //   type: 'info',
@@ -1883,7 +1959,7 @@ onMounted(async() => {
       //   style:"fill:#E14D27;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       // },
       'projectile-blue':{
-        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#2f6ef6;stroke:white;stroke-width:4px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
       'projectile-orange':{
         style:"fill:#fff;stroke:#000;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
@@ -1894,7 +1970,7 @@ onMounted(async() => {
     })
     await loadImage2Map(map,triangleUrl,24,24,{
       'triangle-blue':{
-        style:"fill:#2f6ef6;stroke:black;stroke-width:2px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
+        style:"fill:#2f6ef6;stroke:white;stroke-width:4px;stroke-linejoin:round;stroke-linecap:round;image-rendering: crisp-edges;",
       },
     })
     await loadImage2Map(map,导航台图标,14,14,{
@@ -3033,7 +3109,7 @@ onMounted(async() => {
             visibility: props.zyd ? "visible" : "none",
             "text-field": ["get", "strName"],
             "text-font": ["simkai"],
-            "text-size": 12,
+            "text-size": 16,
             "text-transform": "uppercase",
             // "text-letter-spacing": 0.05,】,
             "text-line-height": 1,
@@ -3054,7 +3130,7 @@ onMounted(async() => {
               'interpolate',
               ['linear'],
               ['zoom'],
-              9, 0,   // zoom <= 9 不显示文字
+              7, 0,   // zoom <= 9 不显示文字
               10, 1   // zoom >= 10 显示文字
             ]
           },
@@ -3099,7 +3175,7 @@ onMounted(async() => {
             "icon-ignore-placement": true,
             "text-field": ["get", "name"],
             "text-font": ["simkai"],
-            "text-size": 12,
+            "text-size": 16,
             "text-transform": "uppercase",
             // "text-letter-spacing": 0.05,】,
             "text-line-height": 1,
@@ -5729,5 +5805,12 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
       fill: #000;
     }
   }
+}
+.cesiumContainer{
+  position: absolute;
+  left:0;
+  top:0;
+  width:50%;
+  height: 100%;
 }
 </style>

@@ -17,8 +17,7 @@ const option = {
   maxSockets: 256,       // 最大并发 socket 数
   maxFreeSockets: 32     // 空闲 socket 上限
 }
-// const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-const agent = new HttpsProxyAgent('http://127.0.0.1:1100',option)
+const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
 // const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
 // const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
 const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
@@ -115,9 +114,9 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        // agent,
-        // target:'http://172.18.7.38:3000',
-        target:'http://192.168.0.141:3000',
+        agent,
+        target:'http://172.18.7.38:3000',
+        // target:'http://192.168.0.141:3000',
         // agent:shanxi_agent,
         // target:'http://127.0.0.1:3000',
         secure:false,
