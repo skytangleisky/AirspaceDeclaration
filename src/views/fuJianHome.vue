@@ -20,7 +20,7 @@
     import { defineAsyncComponent, onMounted, ref } from 'vue'
     import AirspaceApply from '~/airspaceApply.vue'
     import WorkRecord from '~/views/workRecord.vue'
-    import Transport from '~/myComponents/人影/transport.vue'
+    import Transport from '~/views/airspaceTransport.vue'
     import FinishedInfo from '~/myComponents/人影/finishedInfo.vue'
     const activeNav = ref<string>('指挥实施')
     const btnList = [{
