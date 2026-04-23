@@ -14,6 +14,14 @@ import "~/styles/index.scss"
 import 'mapbox-gl_wstd/dist/mapbox-gl.css';
 import "~/styles/element/index.scss";
 import '~/theme'
+
+import Avue from '@smallwei/avue';
+import zhLocale from '@smallwei/avue/lib/locale/lang/zh'
+import '@smallwei/avue/lib/index.css';
+import axios from 'axios'
+
+
+
 const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 pinia.use(piniaReset)
@@ -22,6 +30,10 @@ app.use(ElementPlus, {
   locale: zhCn,
 })
 app.use(pinia)
+app.use(Avue, {
+  axios,
+  locale: zhLocale,
+});
 app.use(VueDOMPurifyHTML)
 app.directive('dragable',dragable)
 app.directive('resize',resize)

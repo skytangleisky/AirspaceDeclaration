@@ -50,15 +50,17 @@
         permission: string;
     }
     
-    const option = reactive<Item[]>([{
-        icon: wechatRaw,
-        content: '信息交互',
-        active: true,
-        permission: '505dd0ac-c6e7-4408-90b4-8afd2cb3baf3',
-        click: (active: boolean) => {
-            console.log('信息交互', active)
-        }
-    }, {
+    const option = reactive<Item[]>([
+        // {
+        //     icon: wechatRaw,
+        //     content: '信息交互',
+        //     active: true,
+        //     permission: '505dd0ac-c6e7-4408-90b4-8afd2cb3baf3',
+        //     click: (active: boolean) => {
+        //         console.log('信息交互', active)
+        //     }
+        // },
+    {
         icon: alarmRaw,
         content: '告警控制',
         permission:'722f756d-765b-4778-801c-02ba7433268a'

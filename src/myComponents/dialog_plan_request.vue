@@ -193,7 +193,7 @@ const workOptions = reactive([
     { value: 4, label: "其他" },
 ]);
 const click = (data: prevRequestDataType) => {
-    emit("click", toRaw(data));
+    emit("click", JSON.parse(JSON.stringify(data)));
 };
 const beginTimeClear = ()=>{
     props.data.beginTime = moment().format('HH:mm:ss')

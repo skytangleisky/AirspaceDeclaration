@@ -735,6 +735,10 @@ const deckOverlay3 = new MapboxOverlay({
 });
 let hoverObject:any;
 let activeObject:any;
+function getLabelColor(d:any) {
+  let color = setting.人影.监控.显示冲突告警?d.specialColor:d.textColor
+  return d==hoverObject?[color[0],color[1],color[2],255]:color
+}
 function aircraft01(textData:any){
   deckOverlay.setProps({
     layers: [
@@ -743,7 +747,7 @@ function aircraft01(textData:any){
         data:textData.filter((d:any)=>d.显示标牌),
         getSourcePosition: d => [d.fLongitude, d.fLatitude,0],
         getTargetPosition: d => [d.fLongitude+1e-4, d.fLatitude,0],
-        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
+        getColor: getLabelColor,
         getPixelOffset:(d)=>[d.offset[0],d.offset[1]],
         getWidth: 1,
         widthUnits: 'pixels',
@@ -850,8 +854,8 @@ function aircraft01(textData:any){
             return first+'\n'+second
           }
         },
-        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
-        getSize: 12,
+        getColor: getLabelColor,
+        getSize: 14,
         getAngle: 0,
         getTextAnchor: 'start',
         getAlignmentBaseline: 'center',
@@ -863,13 +867,17 @@ function aircraft01(textData:any){
         //   size: 6400,
         // },
         fontSettings: {
+          sdf:true,
           characterSet: 'auto', // ✅ 自动扫描数据中的字符
         },
+        fontWeight: 'bold',
+        outlineWidth: 6,
+        outlineColor: [0, 0, 0, 128],
         billboard: true,  // 始终朝向屏幕
         background: true,
         getBackgroundColor: [255, 255, 255, 0],
         border: true,
-        getBorderColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:[0,0,0,0],
+        getBorderColor: d=>d==hoverObject? getLabelColor(d): [0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[0,0],
         backgroundBorderRadius:0,
@@ -913,7 +921,7 @@ function aircraft02(textData:any) {
         getPosition: (d:any) => [d.fLongitude, d.fLatitude],
         getAngle: (d:any) => 0,
         getLength: (d:any) => 10,
-        getColor: (d:any) => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor
+        getColor: getLabelColor
       }),
       new PathLayer({
         visible:setting.人影.监控.track,
@@ -932,7 +940,6 @@ function aircraft02(textData:any) {
         getRadius: 2,        // 米（或像素，见下）
         radiusUnits: 'pixels',
         getFillColor: [0, 180, 255, 160],
-
         pickable: false,
       }),
       new IconLayer({
@@ -983,8 +990,8 @@ function aircraft02(textData:any) {
         pickable: false,
         getPosition: d => [d.fLongitude, d.fLatitude],
         getText: d => d.label,
-        getColor: d => d==hoverObject?[d.textColor[0],d.textColor[1],d.textColor[2],255]:d.textColor,
-        getSize: 12,
+        getColor: getLabelColor,
+        getSize: 14,
         getAngle: 0,
         getTextAnchor: 'start',
         getAlignmentBaseline: 'center',
@@ -995,14 +1002,18 @@ function aircraft02(textData:any) {
         //   buffer: 3,
         //   size: 6400,
         // },
+        fontWeight: 'bold',
+        borderWidth: 2,
+        borderColor: [0, 0, 0, 255],
         fontSettings: {
+          sdf:true,
           characterSet: 'auto', // ✅ 自动扫描数据中的字符
         },
         billboard: true,  // 始终朝向屏幕
         background: false,
         getBackgroundColor: [255,255,255,0.1],
         border: true,
-        getBorderColor: (d:any) => d==hoverObject?d.textColor:[0,0,0,0],
+        getBorderColor: d=>d==hoverObject? getLabelColor(d): [0,0,0,0],
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
@@ -1558,7 +1569,7 @@ let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束, 取消作业接口,作业终止接口} from '~/api/天工'
+import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束, 取消作业接口,作业终止接口,空域申请拒绝} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -2304,24 +2315,29 @@ function 处理飞机实时位置(d:Array<{
         data = textData.splice(i--,1)[0]
       }
     }
-    let textColor = [255,255,255,255]
+    let specialColor = [255,255,255,128]
     zydData.forEach((it:any)=>{
-      const state = it.properties
       if(it.ubyStatus == '作业申请待批复'||it.ubyStatus == '作业批准'||it.ubyStatus == '作业开始'){
         const distance = getDistance(it.fLongitude,it.fLatitude,item.fLongitude,item.fLatitude)
         if(distance<setting.人影.监控.warningCircle*1000){
           str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |PAS0'
-          textColor = [255,255,0,255]
+          specialColor = [255,255,0,200]
         }
       }
     })
-    zydData.forEach((feature:any)=>{
-      const state = feature.properties
+    zydData.forEach(async(feature:any)=>{
       if(feature.ubyStatus == '作业申请待批复'||feature.ubyStatus == '作业批准'||feature.ubyStatus == '作业开始'){
         const tmp = polygon([calculateFireArea([feature.fLongitude, feature.fLatitude],feature.properties.iRange,feature.properties.iAngleBegin,feature.properties.iAngleEnd)])
         if(booleanPointInPolygon([item.fLongitude,item.fLatitude],tmp)){
           str[0] = item.unSsrCode.toString(8).padStart(4,'0')+(item.strCallCode?' '+item.strCallCode:'') + ' |AS'
-          textColor = [255,0,0,255]
+          specialColor = [255,0,0,200]
+          if(setting.人影.监控.作业自动不批准&&feature.properties.ubyStatus == '作业申请待批复'){
+            await 空域申请拒绝(feature.properties).then((res) => {
+              console.log('自动拒绝作业申请')
+            }).catch((err) => {
+              console.log('自动拒绝作业申请失败',err)
+            })
+          }
         }
       }
     })
@@ -2332,7 +2348,7 @@ function 处理飞机实时位置(d:Array<{
     }
     str.push(toDMS(item.fLongitude,item.fLatitude))
     const point = destination(item.fLongitude,item.fLatitude, item.fHeading,item.fSpeed * 60 * 1)
-    const targetData = {...item,trajectory:[[...point,item.iAltitudeADS2]],trail,lastTime:Date.now(),label:str.join('\n'),textColor}
+    const targetData = {...item,trajectory:[[...point,item.iAltitudeADS2]],trail,lastTime:Date.now(),label:str.join('\n'),specialColor}
     for(let i=0;i<sys.需要重点关注的飞机.length;i++){
       const item = sys.需要重点关注的飞机[i]
       if(item.iAddress==targetData.unSsrCode){
@@ -2342,7 +2358,8 @@ function 处理飞机实时位置(d:Array<{
     if(data){
       textData.push(Object.assign(data,targetData))
     }else{
-      textData.push(Object.assign({offset:[40,-30],textColor,...{
+      textData.push(Object.assign({offset:[40,-30],specialColor,...{
+        textColor:[255,255,255,128],
         显示标牌:true,
         显示尾迹:false,
         显示速度矢量线:true,
@@ -2699,6 +2716,9 @@ const 批量操作 = ()=>{
 const 经纬度 = ()=>{
   setting.获取经纬度 = true
 }
+watch(()=>setting.人影.监控.显示冲突告警,()=>{
+  updateTextLayer(textData.slice())
+})
 watch(()=>setting.人影.监控.warningCircle,()=>{
   renderZydLayer(zydData.slice())
 })
@@ -5466,9 +5486,6 @@ onMounted(async() => {
     }
     watch(()=>setting.人影.监控.zyd,()=>{
       renderZydLayer(zydData.slice())
-    })
-    watch(()=>setting.人影.监控.速度矢量线,()=>{
-      updateTextLayer(textData.slice())
     })
     watch(()=>sys.触发作业状态数据查询,()=>{
       work1()
