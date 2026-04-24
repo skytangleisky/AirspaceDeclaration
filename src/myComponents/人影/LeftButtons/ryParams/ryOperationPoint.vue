@@ -22,7 +22,7 @@
 <script setup lang="ts">
     import {reactive, ref} from 'vue'
     import {del, getList, update, add,} from "~/api/人影/ryOperationPoint.ts"
-    import {queryRyUnitList} from "~/api/人影/commonApi.ts"
+    import {queryRyUnitList} from "../api.ts"
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {strWeaponDict,yesNoDict, operationPointTypeDict} from "~/utils/Dict.ts"

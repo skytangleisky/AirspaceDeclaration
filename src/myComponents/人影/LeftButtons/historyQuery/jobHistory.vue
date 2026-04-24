@@ -25,7 +25,7 @@
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {ubyTypeDict, connectTypeDict, yesNoDict} from "~/utils/Dict.ts"
-    import {queryRyUnitList} from "~/api/人影/commonApi.ts"
+    import {queryRyUnitList} from "../api.ts"
     const strMgrDict = ref<Dict[]>([]) //上级单位字典
     
     let tableData = ref<any[]>([]) //表格渲染数据

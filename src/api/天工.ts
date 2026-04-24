@@ -318,7 +318,21 @@ export function 历史作业查询(){
     }
   })
 }
-
+export function 去掉多余的数据(){
+    return request({
+      url: '/backend/transaction',
+      method: 'post',
+      data:{
+        sqls: [
+          `DELETE t1
+          FROM zyddata t1
+          JOIN zyddata t2
+            ON t1.strZydID = t2.strZydID
+          AND t1.tmApplyCreate < t2.tmApplyCreate;`,
+        ],
+      }
+    })
+}
 export function 作业状态数据(signal:AbortSignal){
   const setting = useSettingStore()
   const user = useUserStore()
@@ -329,7 +343,7 @@ export function 作业状态数据(signal:AbortSignal){
       method: 'post',
       data:{
         sqls: [
-          "SELECT z.*,u1.strName as `strAnswerUnitName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strAnswerUnit = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL and z.strATCUnitID = '"+user.strUnitID+"' ORDER BY z.tmBeginApply DESC",
+          "SELECT z.*,u1.strName as `strAnswerUnitName`,u2.strName as `strUpApplyUnitName` FROM `zyddata` z left join `units` u1 on z.strAnswerUnit = u1.strID left join `units` u2 on z.strUpApplyUnit = u2.strID where strApplyUnit IS NOT NULL and z.strATCUnitID = '"+user.strUnitID+"' ORDER BY z.tmApplyRev DESC",
         ],
       }
     })

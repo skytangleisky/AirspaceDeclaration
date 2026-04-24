@@ -11,8 +11,35 @@
     import {connectTypeDict, ubyTypeDict, yesNoDict} from "~/utils/Dict.ts";
     import {Dict} from "~/api/type.ts";
     import { add} from "~/api/人影/ryUnit.ts";
-    import {queryRyUnitList} from "~/api/人影/commonApi.ts"
     import {ElMessage} from "element-plus";
+    import {本地人影接口,queryRyUnitList} from "../api.ts";
+
+//     {
+//   "strID": "990303000",
+//   "strName": "漳州空管",
+//   "strPos": "116203100E25032400N",
+//   "ubyType": 1,
+//   "strMgrID": null,
+//   "strIP": "0",
+//   "iRevPort": 8000,
+//   "strSimNo": "0",
+//   "bReport": 0,
+//   "strPhoneNo": null,
+//   "strAddress": null,
+//   "strMark": null,
+//   "strDKSJCode": "0",
+//   "bMonitor": 1,
+//   "vStrReportZyd": null,
+//   "connectType": null,
+//   "strDutyPerson": null,
+//   "dataver": 1
+// }
+    
+    onMounted(() => {
+        本地人影接口().then(({data}) => {
+            console.log(data)
+        })
+    })
     
     let addForm = reactive({})
     let defaultForm = {
@@ -60,33 +87,40 @@
             type: "select",
             dicData: yesNoDict,
             value: 1,
-        }, {
+        },
+        {
             label: '连接方式',
             prop: 'connectType',
             type: "select",
             dicData: connectTypeDict,
             value: 1,
-        }, {
+        },
+        {
             label: "经纬度",
             prop: 'strPos',
             width: 170,
-        }, {
+        },
+        {
             label: "联系电话",
             prop: 'strPhoneNo',
             hide: true,
-        }, {
+        },
+        {
             label: "负责人",
             prop: 'vStrReportZyd',
             hide: true,
-        }, {
+        },
+        {
             label: "单位地址",
             prop: 'strAddress',
             hide: true,
-        }, {
+        },
+        {
             label: "备注",
             prop: 'strMark',
             hide: true,
-        },]
+        }
+        ]
     })
     
     const handleSubmit = async (form: any, done: any) => {

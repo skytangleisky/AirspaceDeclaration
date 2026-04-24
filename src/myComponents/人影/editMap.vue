@@ -1569,7 +1569,7 @@ let zydFeaturesData: any = {
   type: "FeatureCollection",
   features: [],
 };
-import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束, 取消作业接口,作业终止接口,空域申请拒绝} from '~/api/天工'
+import {华北飞行区域,作业点,机场,当前作业查询,作业状态数据,历史作业状态数据,ADSB,红外云图,组合反射率,CMPAS降水融合3km,睿图雷达,历史作业查询,空域申请移除,基本站,一般站,区域站,getTrack,getPlanPath,真彩图,烟炉数据,作业结束, 取消作业接口,作业终止接口,空域申请拒绝,去掉多余的数据} from '~/api/天工'
 function status2value(key:number){
   let ubyStatus = [
     { key: 0, value: "空闲" },
@@ -5441,19 +5441,22 @@ onMounted(async() => {
         //     row.ubyStatus = 100
         //   }
         // }
-        for(let j=0;j<zydData.length;j++){
-          let has = false
-          for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
-            let row = sys.planProps.当前作业进度[i]
+        // 去掉多余的数据().then(()=>{
+        //   console.log('去掉多余的数据完成')
+        // })
+        for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
+          let row = sys.planProps.当前作业进度[i]
+          for(let j=0;j<zydData.length;j++){
+            let has = false
             if(zydData[j].strID == row.strZydID){
               zydData[j].ubyStatus = status2value(row.ubyStatus)
               Object.assign(zydData[j].properties,row,{ubyStatus:status2value(row.ubyStatus),workBeginTime:moment().format('HH:mm:ss'),iAngleBegin2:row.iAngleBegin,iAngleEnd2:row.iAngleEnd,iWorkType:row.ubyWorkCat})//iAngleBegin2:row.iAngleBegin,iAngleEnd2:row.iAngleEnd用于记录原始的射向
               has = true
               break;
             }
-          }
-          if(!has){
-            zydData[j].ubyStatus = '空闲'
+            if(!has){
+              zydData[j].ubyStatus = '空闲'
+            }
           }
         }
         renderZydLayer(zydData.slice())

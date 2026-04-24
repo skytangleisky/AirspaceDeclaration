@@ -18,24 +18,24 @@
 </template>
 
 <script setup lang="ts">
-    import {computed, defineAsyncComponent, ref, watch, markRaw} from 'vue'
+    import {computed, defineAsyncComponent, ref, watch, markRaw, shallowRef} from 'vue'
     // 异步加载组件（按需加载） 组件定义是静态的，不需要响应式更新
-    const defineMarkedAsyncComponent = (importer: () => Promise<any>) => {
-        return markRaw(defineAsyncComponent(importer))
-    }
+    // const defineMarkedAsyncComponent = (importer: () => Promise<any>) => {
+    //     return markRaw(defineAsyncComponent(importer))
+    // }
     //人影参数相关组件
-    const LocalRy = defineMarkedAsyncComponent(() => import("./ryParams/localRy.vue"))
-    const RyUnit = defineMarkedAsyncComponent(() => import("./ryParams/ryUnit.vue"))
-    const RyOperationPoint = defineMarkedAsyncComponent(() => import("./ryParams/ryOperationPoint.vue"))
+    import LocalRy from './ryParams/localRy.vue'
+    import RyUnit from './ryParams/ryUnit.vue'
+    import RyOperationPoint from './ryParams/ryOperationPoint.vue'
     //辅助管理相关组件
-    const VoiceSet = defineMarkedAsyncComponent(() => import ("./assistantMana/set.vue"))
-    const UserMana = defineMarkedAsyncComponent(() => import ("./assistantMana/userMana.vue"))
-    const RoleMana = defineMarkedAsyncComponent(() => import ("./assistantMana/roleMana.vue"))
+    import VoiceSet from './assistantMana/set.vue'
+    import UserMana from './assistantMana/userMana.vue'
+    import RoleMana from './assistantMana/roleMana.vue'
     //历史查询统计
-    const jobHistory = defineMarkedAsyncComponent(() => import("./historyQuery/jobHistory.vue"))
-    const operationPointStatistics = defineMarkedAsyncComponent(() => import("./historyQuery/operationPointStatistics.vue"))
-    const replyStatistics = defineMarkedAsyncComponent(() => import("./historyQuery/replyStatistics.vue"))
-    const violationRecord = defineMarkedAsyncComponent(() => import("./historyQuery/violationRecord.vue"))
+    import jobHistory from './historyQuery/jobHistory.vue'
+    import operationPointStatistics from './historyQuery/operationPointStatistics.vue'
+    import replyStatistics from './historyQuery/replyStatistics.vue'
+    import violationRecord from './historyQuery/violationRecord.vue'
     
     const props = defineProps({
         activeContent: {
@@ -60,23 +60,23 @@
         title: '人影参数',
         menuList: [{
             label: "本地人影",
-            component: LocalRy
+            component: shallowRef(LocalRy)
         }, {
             label: "人影单位",
-            component: RyUnit
+            component: shallowRef(RyUnit)
         }, {
             label: "人影作业点",
-            component: RyOperationPoint
+            component: shallowRef(RyOperationPoint)
         }],
         defaultIndex: 1
     }, {
         title: '辅助管理',
         menuList: [{
             label: "语音设置",
-            component: VoiceSet
+            component: shallowRef(VoiceSet)
         }, {
             label: "用户管理",
-            component: UserMana
+            component: shallowRef(UserMana)
         },
             //{ label: "角色管理", component: RoleMana }
         ],
@@ -85,16 +85,16 @@
         title: '历史查询统计',
         menuList: [{
             label: "作业历史",
-            component: jobHistory
+            component: shallowRef(jobHistory)
         }, {
             label: "作业点使用统计",
-            component: operationPointStatistics
+            component: shallowRef(operationPointStatistics)
         }, {
             label: "批复率统计",
-            component: replyStatistics
+            component: shallowRef(replyStatistics)
         }, {
             label: "违规记录",
-            component: violationRecord
+            component: shallowRef(violationRecord)
         }],
         defaultIndex: 0
     },]
