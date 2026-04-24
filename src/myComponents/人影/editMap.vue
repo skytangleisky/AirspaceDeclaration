@@ -57,7 +57,7 @@
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
           <li v-if="menuType=='人工批复'" @click="取消作业()">取消作业</li>
-          <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
+          <!-- <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
@@ -66,11 +66,12 @@
           <li v-if="menuType=='批量操作'" @click="隐藏射界()">隐藏射界</li>
           <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
-          <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
+          <!-- <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li> -->
+          <li v-if="menuType=='默认'" @click="作业强制终止()">作业强制终止</li>
+          <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
           <li v-if="menuType=='手动结束'" @click="作业强制终止()">作业强制终止</li>
-          <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
-          <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
+          <!-- <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
           <!-- <li>查看作业点信息</li> -->
           <!-- <li>人工批复</li>
@@ -85,13 +86,14 @@
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
           <li v-if="menuType=='人工批复'" @click="取消作业()">取消作业</li>
-          <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li>
+          <!-- <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
-          <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li>
+          <!-- <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li> -->
+          <li v-if="menuType=='默认'" @click="作业强制终止()">作业强制终止</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
           <li v-if="menuType=='手动结束'" @click="作业强制终止()">作业强制终止</li>
-          <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li>
+          <!-- <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li> -->
           </ul>
       </div>
       <div v-if="hasPermission('3c87e8aa-60cf-4e69-831d-91970add1bd0')" style="position:absolute;bottom:10px;right:10px;font-size: 20px;font-family: Digital-Classic,Menlo,Consolas,Monaco;text-shadow:  2px 2px 8px rgba(0, 0, 0, 1);color:white;margin-left:10px;pointer-events: auto;display: flex;align-items: center;"><div style="margin-right:10px;">{{ 数据时间 }}</div><Colormap></Colormap></div>
@@ -8081,9 +8083,9 @@ const prepareData = ()=>{
         menuType.value = '人工批复'
       }else if(item.ubyStatus=='作业开始'){
         menuType.value = '手动结束'
-      }else if(item.ubyStatus=='作业批准'||item.ubyStatus=='作业结束'||item.ubyStatus=='已撤销'||item.ubyStatus=='作业强制终止'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'){
+      }else if(item.ubyStatus=='作业批准'){
         menuType.value = '默认'
-      }else if(item.ubyStatus=='空闲'||item.ubyStatus==undefined){
+      }else if(item.ubyStatus=='空闲'||item.ubyStatus==undefined||item.ubyStatus=='作业结束'||item.ubyStatus=='已撤销'||item.ubyStatus=='作业强制终止'||item.ubyStatus=='作业不批准'||item.ubyStatus=='作业完成'){
         menuType.value = '地面作业申请'
       }else{
         menuType.value = '默认'
