@@ -8,17 +8,22 @@
             </div>
         </div>
         <div class="box-bottom">
-            <transition name="fade" mode="out-in">
+            <keep-alive>
                 <component
+                    v-if="currentComponent"
                     :is="currentComponent"
-                ></component>
-            </transition>
+                    :key="`${renderTitle}-${activeIndex}`"
+                />
+            </keep-alive>
+            <div v-if="!currentComponent" class="empty">
+                暂无内容
+            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-    import {computed, defineAsyncComponent, ref, watch, markRaw, shallowRef} from 'vue'
+    import {computed, ref, watch, markRaw} from 'vue'
     // 异步加载组件（按需加载） 组件定义是静态的，不需要响应式更新
     // const defineMarkedAsyncComponent = (importer: () => Promise<any>) => {
     //     return markRaw(defineAsyncComponent(importer))
@@ -60,23 +65,23 @@
         title: '人影参数',
         menuList: [{
             label: "本地人影",
-            component: shallowRef(LocalRy)
+            component: markRaw(LocalRy)
         }, {
             label: "人影单位",
-            component: shallowRef(RyUnit)
+            component: markRaw(RyUnit)
         }, {
             label: "人影作业点",
-            component: shallowRef(RyOperationPoint)
+            component: markRaw(RyOperationPoint)
         }],
         defaultIndex: 1
     }, {
         title: '辅助管理',
         menuList: [{
             label: "语音设置",
-            component: shallowRef(VoiceSet)
+            component: markRaw(VoiceSet)
         }, {
             label: "用户管理",
-            component: shallowRef(UserMana)
+            component: markRaw(UserMana)
         },
             //{ label: "角色管理", component: RoleMana }
         ],
@@ -85,16 +90,16 @@
         title: '历史查询统计',
         menuList: [{
             label: "作业历史",
-            component: shallowRef(jobHistory)
+            component: markRaw(jobHistory)
         }, {
             label: "作业点使用统计",
-            component: shallowRef(operationPointStatistics)
+            component: markRaw(operationPointStatistics)
         }, {
             label: "批复率统计",
-            component: shallowRef(replyStatistics)
+            component: markRaw(replyStatistics)
         }, {
             label: "违规记录",
-            component: shallowRef(violationRecord)
+            component: markRaw(violationRecord)
         }],
         defaultIndex: 0
     },]
@@ -104,22 +109,26 @@
     const renderTitle = ref<string>("")
     const activeIndex = ref<number>(0)
     
-    watch(() => props.activeContent, newVal => {
-        const renderIndex = renderData.findIndex(item => {
-            return item.title == newVal
-        })
-        menuList.value = renderData[renderIndex].menuList
-        renderTitle.value = renderData[renderIndex].title
-        activeIndex.value = renderData[renderIndex].defaultIndex
-    }, {immediate: true})
+    watch(
+        () => props.activeContent,
+        (newVal) => {
+            if (!newVal) return
+            const renderItem = renderData.find((item) => item.title === newVal)
+            if (!renderItem) return
+            menuList.value = renderItem.menuList
+            renderTitle.value = renderItem.title
+            activeIndex.value = renderItem.defaultIndex
+        },
+        { immediate: true }
+    )
     
     //获取动态组件
     const currentComponent = computed(() => {
-        if (menuList.value.length === 0) {
-            return
-        } else {
-            return menuList.value[activeIndex.value].component
+        if (menuList.value.length === 0) return
+        if (activeIndex.value < 0 || activeIndex.value >= menuList.value.length) {
+            activeIndex.value = 0
         }
+        return menuList.value[activeIndex.value]?.component
     })
     
     
@@ -152,7 +161,24 @@
     .menu-container {
         width: 6rem;
         
-       
+        .box-bottom {
+            min-height: 2.4rem;
+        }
+        
+        :deep(.page-content) {
+            width: 100%;
+            height: 100%;
+            min-height: 1px;
+        }
+        
+        :deep(.avue-crud) {
+            width: 100%;
+        }
+
+        .empty {
+            padding: $grid-3;
+            color: var(--el-text-color-secondary);
+        }
 
 
         .fade-enter-active,

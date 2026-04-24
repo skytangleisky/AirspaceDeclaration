@@ -13,8 +13,8 @@ import { SocksProxyAgent } from 'socks-proxy-agent'
 const option = {
   keepAlive: true
 }
-const agent = new HttpsProxyAgent('https://127.0.0.1:1100',option)
-const testAgent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
+const agent = new HttpsProxyAgent('https://192.168.0.141:1100',option)
+const testAgent = new HttpsProxyAgent('https://192.168.0.141:4444',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -108,7 +108,7 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        target:'http://127.0.0.1:3000',
+        target:'http://192.168.0.141:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
