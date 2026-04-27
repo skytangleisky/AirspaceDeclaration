@@ -42,7 +42,7 @@
           :key="k"
         ></el-option>
       </el-select> -->
-      <div class="menu1" ref="stationMenuRef" @mousedown.stop>
+      <div class="menu-box menu1" ref="stationMenuRef" @mousedown.stop>
         <ul>
           <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示标牌" v-model="飞机菜单数据.显示标牌"></el-checkbox></li>
           <li v-if="menuType=='飞机操作'"><el-checkbox size="small" label="显示尾迹" v-model="飞机菜单数据.显示尾迹"></el-checkbox></li>
@@ -79,7 +79,7 @@
           <li>手动发结束报</li> -->
         </ul>
       </div>
-      <div class="menu2" @mousedown.stop style="position:absolute;left:0px;top:0px;">
+      <div class="menu-box menu2" @mousedown.stop style="position:absolute;left:0px;top:0px;">
           <ul>
           <li v-if="menuType=='地面作业申请'" @click="作业申请()">地面作业申请</li>
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
@@ -8585,58 +8585,42 @@ watch(()=>setting.人影.监控.ryAirspaces.labelOpacity,(newVal)=>{
   transform:translate(-50%,-50%);
   pointer-events:none;
 }
-.menu1, .menu2 {
-  z-index:3;
-  width:fit-content;
-  display: none;
-  background: #ffffffb0;
-  border-radius: 10px;
-  border-top-left-radius: 4px;
-  border: 1px solid var(--el-border-color);
-  ul {
-    cursor: default;
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    padding: 5px;
-    box-sizing: border-box;
-    margin-top: 0;
-    margin-bottom: 0;
-    li {
-      cursor: pointer;
-      border-radius: 4px;
-      position: relative;
-      font-size: 16px;
-      list-style: none;
-      padding: 2px;
-      &:hover {
-        background: rgba(62, 110, 197, 1);
-      }
-      &:active {
-        background: inherit;
-      }
-      &:not(:first-child) {
-        margin-top: 2px;
-      }
+.menu-box {
+    z-index:3;
+    width:fit-content;
+    display: none;
+    background: var(--el-bg-color-page);
+    border-radius:$border-radius-1;
+    border: 1px solid var(--el-border-color);
+    opacity: 1 !important;
+    ul {
+        cursor: default;
+        display: flex;
+        position: relative;
+        flex-direction: column;
+        padding:$grid-1;
+        box-sizing: border-box;
+        margin-top: 0;
+        margin-bottom: 0;
+        li {
+            cursor: pointer;
+            //border-radius: 4px;
+            position: relative;
+            font-size: 16px;
+            list-style: none;
+            padding:$grid-1;
+            &:hover {
+                background-color: var(--el-color-primary);
+                color:#fff;
+            }
+            &:active {
+                background: inherit;
+            }
+            &:not(:first-child) {
+                margin-top: 2px;
+            }
+        }
     }
-  }
-}
-
-.dark .menu1, .dark .menu2 {
-  background: #000000b0;
-  ul {
-    cursor: default;
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    padding: 5px;
-    box-sizing: border-box;
-    margin-top: 0;
-    margin-bottom: 0;
-    li:hover {
-      background: rgba(62, 110, 197, 1);
-    }
-  }
 }
 
 .mapboxgl-ctrl-bottom-left {

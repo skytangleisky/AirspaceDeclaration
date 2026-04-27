@@ -286,13 +286,13 @@ const 申请 = (item: any) => {
     case "作业结束":
       return "background-color:#3D5E86";
     case "作业申请待批复":
-      return "background-color:#3ac8a5";
+      return "background-color:var(--el-color-success)";
     case "作业不批准":
       return "background-color:#3D5E86";
     case "作业批准":
-      return "background-color:#3ac8a5";
+      return "background-color:var(--el-color-success)";
     case "作业开始":
-      return "background-color:#3ac8a5";
+      return "background-color:var(--el-color-success)";
     default:
       return "background-color:#1E3148";
   }
@@ -304,9 +304,9 @@ const 批复 = (item: any) => {
     case "作业不批准":
       return "background-color:#3D5E86";
     case "作业批准":
-      return "background-color:#3ac8a5";
+      return "background-color:var(--el-color-success)";
     case "作业开始":
-      return "background-color:#3ac8a5";
+      return "background-color:var(--el-color-success)";
     default:
       return "background-color:#1E3148";
   }
@@ -316,9 +316,9 @@ const 开始 = (item: any) => {
     case "作业结束":
       return "background-color:#3D5E86";
     case "作业不批准":
-      return "background-color:#f56c6c";
+      return "background-color:var(--el-color-danger)";
     case "作业开始":
-      return "background-color:#3ac8a5";
+      return "background-color:var(--el-color-success)";
     default:
       return "background-color:#1E3148";
   }
@@ -328,7 +328,7 @@ const 结束 = (item: any) => {
     case "作业结束":
       return "background-color:#3D5E86";
     case "作业不批准":
-      return "background-color:#f56c6c";
+      return "background-color:var(--el-color-danger)";
     default:
       return "background-color:#1E3148";
   }
@@ -336,9 +336,9 @@ const 结束 = (item: any) => {
 const 完成 = (item: any) => {
   switch (工作状态格式化(item.ubyStatus)) {
     case "作业结束":
-      return "backgournd-color:#3D5E86";
+      return "background-color:#3D5E86";
     case "作业不批准":
-      return "background-color:#f56c6c";
+      return "background-color:var(--el-color-danger)";
     default:
       return "background-color:#1E3148";
   }
@@ -374,7 +374,7 @@ function contextmenu(event: any,item: any){
 <style scoped lang="scss">
 .item-box {
   min-width: calc(100% - $scrollbar-width);
-  height: 80px;
+  height: .8rem;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color);
 
@@ -402,7 +402,7 @@ function contextmenu(event: any,item: any){
     }
   }
 
-  $item-left-width: 120px;
+  $item-left-width:1.2rem;
   .item-left {
     padding: $grid-1;
     border-right: 1px solid var(--el-border-color);
@@ -411,7 +411,7 @@ function contextmenu(event: any,item: any){
     justify-content: center;
     width: $item-left-width;
   }
-  $item-right-bottom-height: 40px;
+  $item-right-bottom-height: .4rem;
   .item-right {
     width: calc(100% - $item-left-width);
     height: 100%;
@@ -426,14 +426,14 @@ function contextmenu(event: any,item: any){
         justify-content: center;
         padding: 0 $grid-1;
         color: var(--el-text-color-secondary);
-        font-size: 12px;
+        font-size: .12rem;
         &:not(:last-child) {
           border-right: 1px solid var(--el-border-color);
         }
         .top-item-value {
           color: var(--el-text-color-primary);
           // font-weight: 600;
-          font-size: 14px;
+          font-size:.14rem;
         }
       }
     }
@@ -447,11 +447,12 @@ function contextmenu(event: any,item: any){
       .item-right-bottom-item {
         padding: 0 $grid-1;
         color: #fff;
+        //background-color:var(--el-fill-color);
         &:first-child {
-          border-radius: 40px 0 0 40px;
+          border-radius:  $item-right-bottom-height 0 0  $item-right-bottom-height;
         }
         &:last-child {
-          border-radius: 0 40px 40px 0;
+          border-radius: 0 $item-right-bottom-height $item-right-bottom-height 0;
         }
         &:not(:last-child) {
           border-right: 1px solid var(--el-border-color);

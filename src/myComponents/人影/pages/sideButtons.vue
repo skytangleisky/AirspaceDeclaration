@@ -187,18 +187,5 @@
             }
         }
     }
-    
-    .dark .sideButtonGroup {
-        background-color: #273347;
-        
-        .sideButton {
-            color: lightblue;
-        }
-        
-        .list-outer .list {
-            .sideButton {
-                color: #ddd;
-            }
-        }
-    }
+
 </style>
