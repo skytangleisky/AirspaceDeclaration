@@ -25,7 +25,7 @@
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {ubyTypeDict, connectTypeDict, yesNoDict} from "~/utils/Dict.ts"
-    import {queryRyUnitList} from "../api.ts"
+    import {queryRyUnitList} from "../ryParams/localRyApi.ts"
     const strMgrDict = ref<Dict[]>([]) //上级单位字典
     
     let tableData = ref<any[]>([]) //表格渲染数据
@@ -37,6 +37,7 @@
         layout: "total,prev, pager, next,jumper",
     })
     const avueOption = reactive({
+        emptyBtn:false,
         addBtn:false,
         refreshBtn: false, //表格顶部右侧刷新数据按钮
         columnBtn: false, //表格顶部右侧表格列操作按钮

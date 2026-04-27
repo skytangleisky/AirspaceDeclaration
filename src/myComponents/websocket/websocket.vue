@@ -5,11 +5,14 @@ const 作业申请语句 = new SpeechSynthesisUtterance('收到作业申请');
 const 作业批复语句 = new SpeechSynthesisUtterance('收到作业批复');
 const 作业结束语句 = new SpeechSynthesisUtterance('作业结束');
 const 作业撤销语句 = new SpeechSynthesisUtterance('作业已撤销');
-import { onMounted, onBeforeUnmount } from "vue";
+import { onMounted, onBeforeUnmount,watch } from "vue";
+import {useVoiceStore} from '~/stores/voice'
+const voice = useVoiceStore()
 import { useBus } from "../bus";
 import { eventbus } from "~/eventbus";
 import Sleeper from "../zrender/sleeper";
 import {useSysStatusStore} from '~/stores/sysStatus'
+import { use } from "echarts";
 let countdown = 0
 const sys = useSysStatusStore();
 let sleeper = new Sleeper();
@@ -192,6 +195,22 @@ onMounted(() => {
   connect();
   window.addEventListener("beforeunload", dispose);
 });
+watch(voice,()=>{
+  作业申请语句.pitch = voice.pitch
+  作业申请语句.rate = voice.rate
+  作业申请语句.volume = voice.volume
+  作业批复语句.pitch = voice.pitch
+  作业批复语句.rate = voice.rate
+  作业批复语句.volume = voice.volume
+  作业结束语句.pitch = voice.pitch
+  作业结束语句.rate = voice.rate
+  作业结束语句.volume = voice.volume
+  作业撤销语句.pitch = voice.pitch
+  作业撤销语句.rate = voice.rate
+  作业撤销语句.volume = voice.volume
+},{
+  immediate: true
+})
 function dispose() {
   clearTimeout(timer)
   sleeper.abort();

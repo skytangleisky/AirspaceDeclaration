@@ -14,15 +14,14 @@
             @search-reset="searchReset"
             @on-load="getDataList"
         >
-        
         </avue-crud>
     </div>
 </template>
 
 <script setup lang="ts">
     import {reactive, ref} from 'vue'
-    import {del, getList, update, add,} from "~/api/人影/ryOperationPoint.ts"
-    import {queryRyUnitList} from "../api.ts"
+    import {del, getList, update, add,} from "./ryOperationPointApi.ts"
+    import {queryRyUnitList} from "./localRyApi.ts"
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {strWeaponDict,yesNoDict, operationPointTypeDict} from "~/utils/Dict.ts"
@@ -38,6 +37,7 @@
         layout: "total,prev, pager, next,jumper",
     })
     const avueOption = reactive({
+        emptyBtn:false,
         refreshBtn: false, //表格顶部右侧刷新数据按钮
         columnBtn: false, //表格顶部右侧表格列操作按钮
         searchShowBtn: false, //表格顶部右侧表格搜索显隐按钮
@@ -58,6 +58,7 @@
             label: 'ID',
             prop: 'strID', //display: false,//弹窗中隐藏
             hide: true,
+            editDisabled: true,
         }, {
             label: '代码',
             prop: 'strCode', //display: false,//弹窗中隐藏
@@ -68,6 +69,7 @@
             label: '名称',
             prop: 'strName',
             search: true,
+            width:200,
         }, {
             label: '海拔高度',
             prop: 'iAltitude',
@@ -87,21 +89,23 @@
         }, {
             label: "经纬度",
             prop: 'strPos',
-            width: 170,
+            width: 200,
         }, {
             label: '类型',
             prop: 'iType', //search: true,
             type: 'select',
             slot: true,
             dicData: operationPointTypeDict,
-            value: 0
+            value: 0,
+            width:100,
         }, {
             label: '作业工具',
             prop: 'strWeapon', //search: true,
             type: 'select',
             slot: true,
             dicData: strWeaponDict,
-            value: 0
+            value: 0,
+            width:100,
         }, {
             label: '最大射高',
             prop: 'iMaxShotHei',
@@ -169,37 +173,44 @@
      * @params
      */
     const handleAdd = async (row: any, done: any) => {
-        let params = {...row}
-        try {
-            
-            await add(params)
+        getList({
+            query:{strID:row.strID},
+            pageSize: pageData.pageSize,
+            currentPage: pageData.currentPage
+        }).then(async(res)=>{
+            if(res.data.results.length>0){
+                ElMessage.error("人影作业点已存在")
+                done()
+            }else{
+                await add(row).then(async()=>{
+                    done()
+                    ElMessage.success('新增成功')
+                    await getStrMgrDict()
+                    await getDataList()
+                }).catch((err)=>{
+                    ElMessage.error("新增失败",err.message)
+                })
+            }
+        }).catch(()=>{
             done()
-            ElMessage.success('新增成功')
-            await getStrMgrDict()
-            await getDataList()
-        } catch (err) {
-            ElMessage.error("新增失败" + err)
-        }
+            ElMessage.error('判断作业点是否已经存在失败')
+        })
     }
-    
-    
     /**
      * @author yhl 2025/12/10 16:55
      * @description 删除
      * @params
      */
     const handleDel = async (row: any, index: number, done: any) => {
-        ElMessageBox.confirm(`确认要删除（${row.strName}）吗？`, "提示", {}).then(async () => {
-            let params = {strID: row.strID}
-            try {
-                await del(params)
+        ElMessageBox.confirm(`确认要删除人影作业点（${row.strName}）吗？`, "提示", {}).then(async () => {
+            await del([{strID: row.strID}]).then(()=>{
                 done()
                 ElMessage.success('删除成功')
-                await getDataList()
-            } catch (err) {
-                ElMessage.error("删除失败" + err)
-            }
-            
+                getDataList()
+            }).catch(()=>{
+                ElMessage.error("删除失败")
+                done()
+            })
         }).catch(() => {
             ElMessage({
                 type: 'info',
@@ -207,7 +218,6 @@
             })
         })
     }
-    
     /**
      * @author yhl 2025/12/10 17:01
      * @description 查询
@@ -232,13 +242,9 @@
      * @params
      */
     const handleUpdate = async (row: any, index: number, done: any) => {
-        row['[strID]'] = row.strID
-        delete row.strID
-        delete row.strMgrIDname
-        let params = {...row}
-        console.log("update", params)
+        const {strID,strMgrIDname,...remain} = row
         try {
-            await update(params)
+            await update({'[strID]':strID,...remain})
             ElMessage.success("编辑成功")
             done()
             await getDataList()
@@ -265,11 +271,11 @@
      */
     const getDataList = async () => {
         let params = {
-            ...searchForm,
+            query:searchForm,
             pageSize: pageData.pageSize,
             currentPage: pageData.currentPage
         }
-        console.log("getDataList", params)
+        console.log("getDataList1", params)
         const res: any = await getList(params)
         const data = res.data
         tableData.value = data.results

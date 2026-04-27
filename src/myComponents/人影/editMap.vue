@@ -1630,7 +1630,7 @@ let 批量申请 = () => {
   }
   //过滤掉处于['作业申请待批复','作业批准','作业开始']状态作业点
   list = list.filter((item:any)=>{
-    for(let i=0;i<zydData.length;i++){
+    for(let i=zydData.length-1;i<zydData.length;i++){
       if(item.strID==zydData[i].properties.strID){
         if(['作业申请待批复','作业批准','作业开始'].includes(zydData[i].properties.ubyStatus)){
           return false
@@ -5447,18 +5447,18 @@ onMounted(async() => {
         //   console.log('去掉多余的数据完成')
         // })
         for(let i=sys.planProps.当前作业进度.length-1;i>=0;i--){
-          let row = sys.planProps.当前作业进度[i]
+          let has = false
           for(let j=0;j<zydData.length;j++){
-            let has = false
+            let row = sys.planProps.当前作业进度[i]
             if(zydData[j].strID == row.strZydID){
               zydData[j].ubyStatus = status2value(row.ubyStatus)
               Object.assign(zydData[j].properties,row,{ubyStatus:status2value(row.ubyStatus),workBeginTime:moment().format('HH:mm:ss'),iAngleBegin2:row.iAngleBegin,iAngleEnd2:row.iAngleEnd,iWorkType:row.ubyWorkCat})//iAngleBegin2:row.iAngleBegin,iAngleEnd2:row.iAngleEnd用于记录原始的射向
               has = true
               break;
             }
-            if(!has){
-              zydData[j].ubyStatus = '空闲'
-            }
+          }
+          if(!has){
+            zydData[j].ubyStatus = '空闲'
           }
         }
         renderZydLayer(zydData.slice())

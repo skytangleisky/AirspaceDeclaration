@@ -45,6 +45,7 @@
   <script src="index.umd.js"></script>
   <script type="module">
     const {SmokeStove, RgyxWorkPoint, SvgIcon, resize, dragable} = index;
+    const {Avue, zhLocale, axios} = index;
     const {createPinia} = Pinia;
     const {createApp} = Vue;
     const { createPersistedState } = piniaPluginPersistedstate;
@@ -67,6 +68,10 @@
     const pinia = createPinia();
     pinia.use(createPersistedState());
     app.use(pinia);
+    app.use(Avue, {
+      axios,
+      locale: zhLocale,
+    });
     app.directive('resize',resize)
     app.directive('dragable',dragable)
     app.component('svg-icon',SvgIcon)

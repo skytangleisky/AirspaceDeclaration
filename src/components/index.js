@@ -6,6 +6,7 @@ import resize from '~/directive/resize'
 import 'virtual:svg-icons-register'
 import SvgIcon from "~/myComponents/SvgIcon.vue";
 // import RgyxWorkPoint from "~/airspaceApply.vue"
+import '@smallwei/avue/lib/index.css';
 const RgyxWorkPoint = defineAsyncComponent(() => import("~/airspaceApply.vue"))
 import SmokeStove from "~/myComponents/smokeStove/smokeStove.vue"
 import {useSettingStore} from "~/stores/setting";
@@ -17,6 +18,10 @@ import "~/style.css"
 import "~/styles/index.scss"
 import "~/styles/element/index.scss"
 import 'mapbox-gl_wstd/dist/mapbox-gl.css'
+
+import Avue from '@smallwei/avue';
+import zhLocale from '@smallwei/avue/lib/locale/lang/zh'
+import axios from 'axios'
 // const coms = [rgyxWorkPoint]; // 将来如果有其它组件,都可以写到这个数组里
 // export default {
 //   install(Vue) {
@@ -28,6 +33,9 @@ import 'mapbox-gl_wstd/dist/mapbox-gl.css'
 //   ...coms, // 展开数组应该也是可以的
 // };
 export {
+  axios,
+  Avue,
+  zhLocale,
   isDark,
   useTheme,
   resize,

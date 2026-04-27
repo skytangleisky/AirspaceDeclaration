@@ -14,15 +14,14 @@
             @search-reset="searchReset"
             @on-load="getDataList"
         >
-        
         </avue-crud>
     </div>
 </template>
 
 <script setup lang="ts">
     import {reactive, ref} from 'vue'
-    import {del, getList, update, add} from "~/api/人影/ryUnit.ts"
-    import {queryRyUnitList} from "../api.ts"
+    import {del, getList, update, add} from "./ryUnit.ts"
+    import {queryRyUnitList} from "./localRyApi.ts"
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {ubyTypeDict, connectTypeDict, yesNoDict} from "~/utils/Dict.ts"
@@ -38,6 +37,7 @@
         layout: "total,prev, pager, next,jumper",
     })
     const avueOption = reactive({
+        emptyBtn:false,
         refreshBtn: false, //表格顶部右侧刷新数据按钮
         columnBtn: false, //表格顶部右侧表格列操作按钮
         searchShowBtn: false, //表格顶部右侧表格搜索显隐按钮
@@ -50,7 +50,7 @@
         searchMenuSpan: 8, // 搜索按钮长度(搜索和清空按钮长度，两按钮居中)
         searchSpan: 8, // 搜索框长度最大长度24（每项搜索内容长度，包括字段名+文本框）
         searchGutter: 0,//搜索项间隔
-        searchLabelWidth: 60,
+        searchLabelWidth: 0,
         labelWidth:120, //menuWidth: 300,//操作栏宽度
         menuFixed: false, // 操作栏是否固定
         page: true,
@@ -59,7 +59,8 @@
             prop: 'strID', //display: false,//弹窗中隐藏
             //hide: true,
             search: true,
-            width: 100,
+            width: 120,
+            editDisabled: true,
         }, {
             label: '名称',
             prop: 'strName',
@@ -92,28 +93,26 @@
         }, {
             label: "经纬度",
             prop: 'strPos',
-            width: 170,
+            width: 200,
         }, {
             label: "联系电话",
             prop: 'strPhoneNo',
-            hide: true,
+            hide: false,
         }, {
             label: "负责人",
             prop: 'vStrReportZyd',
-            hide: true,
+            hide: false,
         }, {
             label: "单位地址",
             prop: 'strAddress',
-            hide: true,
+            hide: false,
         }, {
             label: "备注",
             prop: 'strMark',
-            hide: true,
+            hide: false,
         },]
     })
     let searchForm = reactive({})
-    
-    
     /**
      * @author yhl 2025/12/10 16:48
      * @description 新增
@@ -121,26 +120,25 @@
      */
     const handleAdd = async (row: any, done: any) => {
         let params = {...row}
-        try {
-            
-            await add(params)
+        let res:any = await getList({query:{strID:params.strID}})
+        if(res.data.results.length > 0){
+            ElMessage.error(`单位代码${params.strID}已存在`)
             done()
-            ElMessage.success('新增成功')
-            await getStrMgrDict()
-            await getDataList()
-        } catch (err) {
-            ElMessage.error("新增失败" + err)
+            return
         }
+        await add(params)
+        done()
+        ElMessage.success('新增成功')
+        await getStrMgrDict()
+        await getDataList()
     }
-    
-    
     /**
      * @author yhl 2025/12/10 16:55
      * @description 删除
      * @params
      */
     const handleDel = async (row: any, index: number, done: any) => {
-        ElMessageBox.confirm(`确认要删除（${row.strName}）吗？`, "提示", {}).then(async () => {
+        ElMessageBox.confirm(`确认要删除单位（${row.strName}）吗？`, "提示", {}).then(async () => {
             let params = {strID: row.strID}
             try {
                 await del(params)
@@ -150,7 +148,6 @@
             } catch (err) {
                 ElMessage.error("删除失败" + err)
             }
-            
         }).catch(() => {
             ElMessage({
                 type: 'info',
@@ -183,13 +180,8 @@
      * @params
      */
     const handleUpdate = async (row: any, index: number, done: any) => {
-        row['[strID]'] = row.strID
-        delete row.strID
-        delete row.strMgrIDname
-        let params = {...row}
-        console.log("update", params)
         try {
-            await update(params)
+            await update(row)
             ElMessage.success("编辑成功")
             done()
             await getDataList()
@@ -216,7 +208,7 @@
      */
     const getDataList = async () => {
         let params = {
-            ...searchForm,
+            query:searchForm,
             pageSize: pageData.pageSize,
             currentPage: pageData.currentPage
         }

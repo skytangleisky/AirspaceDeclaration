@@ -1,10 +1,9 @@
 import request from '~/utils/request'
-import {RyOperationOpintQuery} from "~/api/type.ts"
 
 const url = "/backend/db/default"
 const tableName = 'zydpara'
 
-export async function add(data: any) {
+export function add(data: any) {
     return request({
         url,
         method: 'PUT',
@@ -15,18 +14,18 @@ export async function add(data: any) {
     })
 }
 
-export async function del(data: any) {
+export function del(data: any) {
     return request({
         url,
         method: 'DELETE',
-        data: [data],
+        data,
         headers: {
             table: tableName
         }
     })
 }
 
-export async function update(data: any) {
+export function update(data: any) {
     return request({
         url,
         method: 'PUT',
@@ -38,7 +37,18 @@ export async function update(data: any) {
 }
 
 //分页查询
-export async function getList(data: RyOperationOpintQuery) {
+export function getList(data: any) {
+    const where:any = []
+    if(data.query){
+        for(let key in data.query){
+            where.push({
+                relation:"and",
+                field:`zydpara.${key}`,
+                relationship:"like",
+                condition:`%${data.query[key]}%`,
+            })
+        }
+    }
     const offset = data.currentPage * data.pageSize - data.pageSize
     return request({
         url,
@@ -47,19 +57,7 @@ export async function getList(data: RyOperationOpintQuery) {
             offset: offset,
             limit: data.pageSize,
             //orderby:["strID desc"],
-            where:[
-                {
-                    relation:"and",
-                    field:"u1.strCode",
-                    relationship:"like",
-                    condition:`%${data?.strCode?data.strCode:''}%`,
-                },{
-                    relation:"or",
-                    field:"u1.strName",
-                    relationship:"like",
-                    condition:`%${data?.strName?data.strName:''}%`,
-                },
-            ]
+            where,
         },
         headers: {
             table:tableName

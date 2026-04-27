@@ -30,7 +30,7 @@
     import {ElMessage, ElMessageBox} from 'element-plus'
     import {Dict} from "~/api/type.ts"
     //import {getDict} from "~/api/人影/role.ts";
-    import {del, getList, update, add} from "~/api/人影/user.ts"
+    import {del, getList, update, add} from "./userManaApi"
     
     const permission = ref({});
     //用户组字典
@@ -48,6 +48,7 @@
         layout: "total,prev, pager, next,jumper",
     })
     const avueOption = reactive({
+        emptyBtn:false,
         refreshBtn: false, //表格顶部右侧刷新数据按钮
         columnBtn: false, //表格顶部右侧表格列操作按钮
         searchShowBtn: false, //表格顶部右侧表格搜索显隐按钮
@@ -231,7 +232,7 @@
      */
     const getDataList = async () => {
         let params = {
-            ...searchForm,
+            query:searchForm,
             pageSize: pageData.pageSize,
             currentPage: pageData.currentPage
         }

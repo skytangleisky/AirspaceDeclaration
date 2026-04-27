@@ -73,7 +73,7 @@
             label: "人影作业点",
             component: markRaw(RyOperationPoint)
         }],
-        defaultIndex: 1
+        defaultIndex: 0
     }, {
         title: '辅助管理',
         menuList: [{

@@ -1,8 +1,6 @@
 <template>
     <div class="localRy">
-        <avue-form :option=avueOption v-model="addForm" @submit="handleSubmit">
-        
-        </avue-form>
+        <avue-form :option=avueOption v-model="addForm" @submit="handleSubmit"></avue-form>
     </div>
 </template>
 
@@ -10,11 +8,12 @@
     import {reactive, onMounted, ref} from 'vue';
     import {connectTypeDict, ubyTypeDict, yesNoDict} from "~/utils/Dict.ts";
     import {Dict} from "~/api/type.ts";
-    import { add} from "~/api/人影/ryUnit.ts";
     import {ElMessage} from "element-plus";
-    import {本地人影接口,queryRyUnitList} from "../api.ts";
+    import {本地人影数据接口,queryRyUnitList,更新本地人影数据接口} from "./localRyApi.ts";
 
-//     {
+
+
+// {
 //   "strID": "990303000",
 //   "strName": "漳州空管",
 //   "strPos": "116203100E25032400N",
@@ -34,16 +33,8 @@
 //   "strDutyPerson": null,
 //   "dataver": 1
 // }
-    
-    onMounted(() => {
-        本地人影接口().then(({data}) => {
-            console.log(data)
-        })
-    })
-    
-    let addForm = reactive({})
-    let defaultForm = {
-        strID:'',
+    let addForm = reactive({
+        strID:'123',
         strName:'',
         ubyType:0,
         strMgrID:'',
@@ -54,9 +45,10 @@
         vStrReportZyd:'',
         strAddress:'',
         strMark:'',
-    }
+    })
     const strMgrDict = ref<Dict[]>([]) //上级单位字典
     const avueOption = reactive({
+        emptyBtn:false,
         labelWidth: 120, //menuWidth: 300,//操作栏宽度
         column: [{
             label: '代码',
@@ -124,17 +116,16 @@
     })
     
     const handleSubmit = async (form: any, done: any) => {
-        try {
-            console.log("submit", form)
-            await add(form)
+        更新本地人影数据接口(form).then((res)=>{
+            ElMessage.success('更新成功')
+            本地人影数据接口().then(({data}) => {
+                Object.assign(addForm, data.results[0])
+            })
             done()
-            ElMessage.success('新增成功')
-            Object.assign(addForm,defaultForm)
-            await getStrMgrDict()
-        } catch (err) {
-            ElMessage.error("新增失败" + err)
+        }).catch((err)=>{
+            ElMessage.error('更新失败' + err)
             done()
-        }
+        })
     }
     
     /**
@@ -159,7 +150,9 @@
     }
     const initData = async () => {
         await getStrMgrDict()
-        Object.assign(addForm,defaultForm)
+        本地人影数据接口().then(({data}) => {
+            Object.assign(addForm, data.results[0])
+        })
     }
     initData()
 </script>

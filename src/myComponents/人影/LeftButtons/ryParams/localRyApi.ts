@@ -1,6 +1,6 @@
 import { useUserStore } from '~/stores/user'
 import request from '~/utils/request'
-export function 本地人影接口(){
+export function 本地人影数据接口(){
   const user = useUserStore()
   return request({
     headers: {
@@ -19,6 +19,20 @@ export function 本地人影接口(){
         }
       ]
     }
+  })
+}
+export function 更新本地人影数据接口(data:any){
+  const {strID,...remain} = data
+  return request({
+    headers: {
+      'table': 'units',
+    },
+    url: '/backend/db/default',
+    method: 'put',
+    data: [{
+      "[strID]": strID,
+      ...remain,
+    }]
   })
 }
 export async function queryRyUnitList() {

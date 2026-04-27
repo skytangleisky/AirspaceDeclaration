@@ -35,7 +35,7 @@
                         <el-button link type="primary">
                             <el-icon v-html="editRaw"></el-icon>
                         </el-button>
-                        <el-button link type="primary">
+                        <!-- <el-button link type="primary">
                             <el-icon v-html="appendRaw"></el-icon>
                         </el-button>
                         <el-button link type="primary">
@@ -46,7 +46,7 @@
                         </el-button>
                         <el-button link type="primary">
                             <el-icon v-html="moveDownRaw"></el-icon>
-                        </el-button>
+                        </el-button> -->
                     </div>
                 </div>
             </template>
@@ -129,7 +129,8 @@
             }
         }),
         children: [{
-            label: '作业点图层'
+            label: '作业点图层',
+
         }, {
             label: '区县显示图层'
         }, {
@@ -138,7 +139,15 @@
             label: '航迹显示图层'
         }]
     }, {
-        label: '天气雷达图层'
+        label: '组合反射率图层',
+        hide:computed({
+            get() {
+                return !setting.人影.监控.组合反射率
+            },
+            set(val: boolean) {
+                setting.人影.监控.组合反射率 = !val
+            }
+        })
     }])
 </script>
 <style lang="scss" scoped>
