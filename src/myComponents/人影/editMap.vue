@@ -61,16 +61,16 @@
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
           <li v-if="menuType=='批量操作'" @click="批量批复()">批量批复</li>
-          <li v-if="menuType=='批量操作'" @click="批量移除()">批量移除</li>
+          <!-- <li v-if="menuType=='批量操作'" @click="批量移除()">批量移除</li> -->
           <li v-if="menuType=='批量操作'" @click="显示射界()">显示射界</li>
           <li v-if="menuType=='批量操作'" @click="隐藏射界()">隐藏射界</li>
           <li v-if="menuType=='批量操作'" @click="批量烟炉操作()">烟炉操作</li>
           <li v-if="menuType=='批量操作'" @click="清除形状()">清除形状</li>
           <!-- <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li> -->
-          <li v-if="menuType=='默认'" @click="作业强制终止()">作业强制终止</li>
+          <li v-if="menuType=='默认'&&user.strUnitID.startsWith('99')" @click="作业强制终止()">作业强制终止</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
-          <li v-if="menuType=='手动结束'" @click="作业强制终止()">作业强制终止</li>
+          <li v-if="menuType=='手动结束'&&user.strUnitID.startsWith('99')" @click="作业强制终止()">作业强制终止</li>
           <!-- <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='烟炉操作'" @click="烟炉操作()">烟炉操作</li>
           <!-- <li>查看作业点信息</li> -->
@@ -89,10 +89,10 @@
           <!-- <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <!-- <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li> -->
-          <li v-if="menuType=='默认'" @click="作业强制终止()">作业强制终止</li>
+          <li v-if="menuType=='默认'&&user.strUnitID.startsWith('99')" @click="作业强制终止()">作业强制终止</li>
           <li v-if="menuType=='默认'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='手动结束'" @click="手动结束()">手动结束</li>
-          <li v-if="menuType=='手动结束'" @click="作业强制终止()">作业强制终止</li>
+          <li v-if="menuType=='手动结束'&&user.strUnitID.startsWith('99')" @click="作业强制终止()">作业强制终止</li>
           <!-- <li v-if="menuType=='手动结束'" @click="手动移除()">手动移除</li> -->
           </ul>
       </div>
