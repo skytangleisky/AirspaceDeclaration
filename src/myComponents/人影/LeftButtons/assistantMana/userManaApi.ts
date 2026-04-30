@@ -1,4 +1,5 @@
 import request from '~/utils/request'
+import { useUserStore } from '~/stores/user';
 
 const url = "/backend/db/default"
 const tableName = 'subusers'
@@ -29,7 +30,7 @@ export function update(data: any) {
     return request({
         url,
         method: 'PUT',
-        data: [data],
+        data,
         headers: {
             table: tableName
         }
@@ -38,7 +39,21 @@ export function update(data: any) {
 
 //分页查询
 export function getList(data: any) {
-    const where:any = []
+    const user = useUserStore()
+    let where:any = [{
+        relation:"and",
+        field:`subusers.strUnitID`,
+        relationship:"like",
+        condition:user.strUnitID.substring(0,2)+'%',
+    }]
+    if(user.strUnitID.startsWith('99')){
+        where = [{
+            relation:"and",
+            field:`subusers.strUnitID`,
+            relationship:"like",
+            condition:user.strUnitID,
+        }]
+    }
     if(data.query){
         for(let key in data.query){
             where.push({
@@ -56,6 +71,7 @@ export function getList(data: any) {
         data: {
             offset: offset,
             limit: data.pageSize,
+            where,
         },
         headers: {
             table:tableName

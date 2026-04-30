@@ -961,3 +961,22 @@ export function interpolateColor(A:number[], B:number[], t:number):[number,numbe
     lerp(A[3], B[3], u),
   ];
 }
+export function encrypt(str:string){
+  let result = str
+  for (let i = 0; i < 20; i++) {
+    const bytes = new TextEncoder().encode(result)
+    let binary = ''
+    bytes.forEach(b => binary += String.fromCharCode(b))
+    result =  btoa(binary)
+  }
+  return result
+}
+export function decrypt(str:string) {
+  let result = str
+  for (let i = 0; i < 20; i++) {
+    const binary = atob(result)
+    const bytes = Uint8Array.from(binary, c => c.charCodeAt(0))
+    result = new TextDecoder().decode(bytes)
+  }
+  return result
+}

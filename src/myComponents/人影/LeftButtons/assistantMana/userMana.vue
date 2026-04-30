@@ -26,19 +26,26 @@
 </template>
 
 <script setup lang="ts">
-    import {reactive, ref} from 'vue'
+    import {reactive, ref, computed} from 'vue'
     import {ElMessage, ElMessageBox} from 'element-plus'
     import {Dict} from "~/api/type.ts"
     //import {getDict} from "~/api/人影/role.ts";
     import {del, getList, update, add} from "./userManaApi"
+    import {encrypt, decrypt} from "~/tools"
     
     const permission = ref({});
     //用户组字典
     let rolesDict = ref<Dict[]>([{
         value: "admin",
-        label: '超级管理员'
+        label: 'admin'
+    },{
+        value: "分区",
+        label: '分区'
+    },{
+        value: "人影",
+        label: '人影'
     }])
-    let tableData = ref<any[]>([]) //表格渲染数据
+    let tableData = reactive(new Array()) //表格渲染数据
     let form = reactive({})
     
     let pageData = reactive({
@@ -47,6 +54,28 @@
         currentPage: 1,
         layout: "total,prev, pager, next,jumper",
     })
+
+
+const tmp = {
+  "strUnitID": "510000000",
+  "strCode": "SCRY01",
+  "strName": "四川省人影办",
+  "binPwd": "Vm0wd2QyUXlVWGxWV0d4V1YwZDRWMVl3WkRSV01WbDNXa1JTVjAxV2JETlhhMUpUVmpBeFYySkVUbGhoTVVwVVZtcEJlRll5U2tWVWJHaG9UVlZ3VlZadGNFSmxSbGw1VTJ0V1ZXSkhhRzlVVmxaM1ZsWmFjVkZ0UmxSTmJFcEpWbTEwYTFkSFNrZGpTRUpYWVRGd2FGcFdXbUZrUjFaSFYyMTRVMkpIZHpGV2EyUXdZekpHYzFOdVVtaFNlbXhXVm0weGIxSkdXbGRYYlhSWFRWaENSbFpYZUZOVWJVWTJVbFJDVjAxdVVuWlZha1pYWkVaT2NscEdhR2xTTW1ob1YxWlNTMkl4U2tkWGJHUllZbGhTV0ZSV2FFTlNiRnBZWlVaT1ZXSlZXVEpWYkZKRFZqQXhkVlZ1V2xaaGExcFlXa1ZhVDJOc2NFZGhSMnhUVFcxb2IxWXhXbE5UTWtsNFUydGtXR0pIVWxsWmJGWmhZMVphZEdSSFJrNVNiRm93V2xWYVQxWlhTbFpYVkVwV1lrWktTRlpxUm1GU2JVbDZXa1prYUdFeGNHOVdha0poVkRKT2RGSnJhR2hTYXpWeldXeG9iMWRHV25STldHUlZUVlpHTTFSVmFHOWhiRXB6WTBac1dtSkdXbWhaTW5oWFkxWkdWVkpzVGs1WFJVcElWbXBLTkZReFdsaFRhMlJxVW14d1dGbHNhRk5OTVZweFUydDBWMVpyY0ZwWGExcHJZVWRGZUdOR2JGaGhNVnBvVmtSS1RtVkdjRWxVYldoVFRXNW9WVlpHWTNoaU1XUnpWMWhvWVZKR1NuQlVWM1J6VGxaYWRFNVZPVmRpVlhCSVZqSjRVMWR0U2tkWGJXaGFUVlp3YUZwRlpGTlRSa3B5VGxaT2FWSnRPVE5XTW5oWFdWWlJlRmRzYUZSaVJuQnhWV3hrVTFsV1VsWlhiVVpPVFZad2VGVXlkREJXTVZweVkwWndXR0V4Y0ROWmEyUkdaV3hHY21KR2FGaFRSVXBKVm10U1MxVXhXWGhYYmxaVllrZG9jRlpxVG05V1ZscEhXVE5vYVUxWFVraFdNalZUVkd4YVJsTnNhRlZXTTJoSVZHeGFZVmRGTlZaUFYyaHBVbGhCZDFac1pEUmpNV1IwVTJ0a1dHSlhhR0ZVVnpWdlYwWnNObEpzWkdwaVNFSklWbGN4YzFVd01IbGhSbXhYWWxoQ1RGUnJXbEpsUm1SellVWlNhRTFzU25oV1Z6QjRUa2RHUjFaWVpHaFNWVFZWVlcxNGQyVkdWWGxrUjBacFVteHdlbFl5ZUhkWFIwVjRZMFJPV21FeVVrZGFWM2hIWTIxS1IxcEhiRmhTVlhCS1ZtMTBVMU14VlhoWFdHaFlZbXhhVmxsclpHOWpSbHB4VkcwNVYxWnNjRWhYVkU1dllWVXhXRlZyYUZkTmFsWlVWa2Q0WVZKc1RuTmhSbFpYWWxaRmQxWnFRbUZaVm1SSVZXdG9hMUp0YUZSVVZWcGFUVlphYzFwRVVtcE5WMUl3VlRKMGExZEhTbGhoUjBaVlZteHdNMVpyV21GalZrcDBaRWQwVjJKclNraFdSM2hoVkRKR1YxTnVVbEJXUlRWWVZGYzFiMWRHYkZWUldHaFRUVmRTZWxsVldsTmhSVEZ6VTI1b1YxWXpVbGhYVmxwYVpVWmtkVkpzVm1sV1IzaDVWMWQwWVdReVZrZFdibEpyVWtWS2IxbFljRWRsVmxKelZtMDVXR0pHY0ZoWk1HaExWMnhhV0ZWclpHRldNMmhJV1RJeFMxSXhjRWRhUms1WFYwVktNbFp0Y0VkWlYwVjRWbGhvV0ZkSGFGWlpiWGhoVm14c2NsZHJkR3BTYkZwNFZXMTBNRll4V25OalJXaFhWak5TVEZsVVFYaFNWa3B6Vkd4YVUySkZXWHBXVlZwR1QxWkNVbEJVTUQwPQ==",
+  "strPhoneNum": null,
+  "tmCreate": null,
+  "iPower": 7287,
+  "lstUserRole": "0",
+  "lstUserAccess": "0",
+  "strMachineCode": null,
+  "roles": [
+    "admin"
+  ],
+  "permission_tree": null,
+  "$cellEdit": false,
+  "$index": 1,
+  "$roles": "超级管理员"
+}
+    
     const avueOption = reactive({
         emptyBtn:false,
         refreshBtn: false, //表格顶部右侧刷新数据按钮
@@ -75,7 +104,9 @@
                 required: true,
                 message: "请输入账号",
                 trigger: "blur",
-            }]
+            }],
+            editDisabled:true,
+            width:120,
         }, {
             label: "用户名",
             prop: 'strName',
@@ -84,14 +115,15 @@
                 required: true,
                 message: "请输入姓名",
                 trigger: "blur",
-            }]
+            }],
+            width:100,
         }, {
             label: '联系电话',
             prop: 'strPhoneNum',
             hide: true,
         }, {
             label: '密码',
-            prop: 'password',
+            prop: 'pwd',
             hide: true,
             value: '',
             viewDisplay: false,
@@ -111,24 +143,24 @@
                 required: true,
                 message: "请选择角色",
                 trigger: "change",
-            }]
+            }],
+            width:200,
         },]
     })
     let searchForm = reactive({})
-    
-    
     /**
      * @author yhl 2025/12/25 11:16
      * @description 转译角色
      * @params
      */
     const getRoleName = (val: string | number) => {
-        if (!val) return
-        const index = rolesDict.value.findIndex(item => {
-            return item.value === val
-        })
-        if(index === -1) return
-        return rolesDict.value[index].label
+        // if (!val) return
+        // const index = rolesDict.value.findIndex(item => {
+        //     return item.value === val
+        // })
+        // if(index === -1) return
+        // return rolesDict.value[index].label
+        return val
     }
     
     //点击查看按钮
@@ -191,20 +223,15 @@
      * @description 点击编辑按钮 编辑数据
      */
     const handleUpdate = async (row: any, index: number, done: any) => {
-        row['[strID]'] = row.strID
-        delete row.strID
-        let params = {...row}
-        console.log("update", params)
-        try {
-            await update(params)
+        const {strUnitID,strCode,binPwd,pwd, ...rest} = row
+        update([{'[strUnitID]':strUnitID,'[strCode]':strCode,binPwd:encrypt(pwd),...rest}]).then(()=>{
             ElMessage.success("编辑成功")
             done()
-            await getDataList()
-        } catch (err) {
-            ElMessage.error("编辑失败" + err)
-        }
+            getDataList()
+        }).catch((err)=>{
+            ElMessage.error("编辑失败",err)
+        })
     }
-    
     /**
      * @author yhl 2025/8/20 10:43
      * @description 搜索
@@ -238,8 +265,10 @@
         }
         const res: any = await getList(params)
         const data = res.data
-        console.log("getDataList", data)
-        tableData.value = data.results
+        tableData.length = 0
+        data.results.forEach((item:any) => {
+            tableData.push({...item,pwd:decrypt(item.binPwd)})
+        })
         pageData.total = data.total
     }
     //初始化页面所需数据

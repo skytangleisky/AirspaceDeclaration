@@ -56,12 +56,13 @@ export default defineConfig({
       fileName: (format) => `index.${format}.js`,
     },
     rollupOptions: {
-      external: ["vue","pinia","element-plus"],
+      external: ["vue","pinia","element-plus",'@smallwei/avue'],
       output: {
         globals: {
           vue: "Vue",
           pinia: "Pinia",
           'element-plus': 'ElementPlus',
+          '@smallwei/avue': 'Avue',
         },
       },
     },
