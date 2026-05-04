@@ -7,15 +7,15 @@
         class="dark:bg-#666 bg-white"
         style="
           position: relative;
-          left: 50%;
+          left: 0%;
           top: 0;
-          width: 50%;
+          width: 100%;
           height: 100%;
           line-height: 1;
         "
       ></div>
-      <div ref="cesiumContainerRef" class="cesiumContainer"></div>
-      <cesiumComponents v-model:viewer="viewerRef" style="position: absolute;left:0;top:0;width:50%;height:100%;pointer-events: none;"></cesiumComponents>
+      <!-- <div ref="cesiumContainerRef" class="cesiumContainer"></div> -->
+      <!-- <cesiumComponents v-model:viewer="viewerRef" style="position: absolute;left:0;top:0;width:50%;height:100%;pointer-events: none;"></cesiumComponents> -->
       <svg class="center" v-if="setting.人影.监控.准心" width="20" height="20" viewBox="0 0 20 20">
         <path
           d="M10 0 L10 20 M0 10 L20 10"
@@ -73,8 +73,11 @@
       <Tool-Box />
     </div>
     <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
+      <!-- <template v-for="item in 视频列表" :key="item.strWorkID">
+        <VideoIframe :item="item" v-if="item.visible"></VideoIframe>
+      </template> -->
       <template v-for="item in 视频列表" :key="item.strWorkID">
-        <Video :item="item" v-if="item.visible"></Video>
+        <VideoIframe :item="item" v-if="item.visible"></VideoIframe>
       </template>
     </div>
     <!-- <div v-dragable class="meeting" v-if="metting">
@@ -90,18 +93,19 @@
   </div>
 </template>
 <script lang="ts" setup>
-import * as Cesium from 'cesium'
-const viewerRef = shallowRef<Cesium.Viewer>()
+/*
+// import * as Cesium from 'cesium'
+// const viewerRef = shallowRef<Cesium.Viewer>()
 const cesiumContainerRef = ref<HTMLDivElement>()
 let imageryProviderViewModels = [
-  // new Cesium.ProviderViewModel({
-  //   name: '谷歌地图',
-  //   iconUrl: 'http://127.0.0.1:3143?x=0&y=0&z=0', // 可以自定义图标
-  //   tooltip: '谷歌地图',
-  //   creationFunction: () => new Cesium.UrlTemplateImageryProvider({
-  //     url: 'http://127.0.0.1:3143?x={x}&y={y}&z={z}',
-  //   }),
-  // }),
+  new Cesium.ProviderViewModel({
+    name: '谷歌地图',
+    iconUrl: 'http://127.0.0.1:3143?x=0&y=0&z=0', // 可以自定义图标
+    tooltip: '谷歌地图',
+    creationFunction: () => new Cesium.UrlTemplateImageryProvider({
+      url: 'http://127.0.0.1:3143?x={x}&y={y}&z={z}',
+    }),
+  }),
   new Cesium.ProviderViewModel({
     name: '白板地图',
     iconUrl: transparentPng,
@@ -138,6 +142,7 @@ let imageryProviderViewModels = [
 import { useCesiumStore } from '~/stores/cesium';
 const cesiumStore = useCesiumStore();
 import cesiumComponents from "~/myComponents/cesium/index.vue";
+*/
 import Frame from '~/frames/frame.vue'
 import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
 import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
@@ -223,7 +228,7 @@ let threeMinutesTimer:any;
 let adsbTimer:any;
 let fpsTimer:any;
 const decoder = new TextDecoder('gbk')
-import Video from './pages/video.vue'
+import VideoIframe from './pages/videoIframe.vue'
 import ToolBox from './pages/toolBox.vue'
 import custom_draw_line_with_distance from './CustomDrawLineWithDistance.js'
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
@@ -1212,6 +1217,7 @@ function load(){
   }
 }
 onMounted(async() => {
+  /*
   Cesium.Camera.DEFAULT_VIEW_RECTANGLE = Cesium.Rectangle.fromDegrees(115, 25, 125, 35);
   viewerRef.value = new Cesium.Viewer(cesiumContainerRef.value as HTMLElement,{
     navigationInstructionsInitiallyVisible:false,
@@ -1239,9 +1245,10 @@ onMounted(async() => {
     cesiumStore.sceneMode = Cesium.SceneMode.COLUMBUS_VIEW;
   });
   // ElMessage({
-  //   message: '当前版本为1.1.97',
+  //   message: '当前版本为1.95.0',
   //   type: 'info',
   // })
+  */
 
   // 视频会议结束
   window.addEventListener('message', (event) => {
