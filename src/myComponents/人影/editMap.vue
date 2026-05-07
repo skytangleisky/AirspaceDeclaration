@@ -1630,7 +1630,7 @@ let 批量申请 = () => {
   }
   //过滤掉处于['作业申请待批复','作业批准','作业开始']状态作业点
   list = list.filter((item:any)=>{
-    for(let i=zydData.length-1;i<zydData.length;i++){
+    for(let i=zydData.length-1;i>=0;i--){
       if(item.strID==zydData[i].properties.strID){
         if(['作业申请待批复','作业批准','作业开始'].includes(zydData[i].properties.ubyStatus)){
           return false
@@ -1724,7 +1724,7 @@ let 批量批复 = () => {
   }
   //过滤掉处于['作业申请待批复']以外状态的作业点
   list = list.filter((item:any)=>{
-    for(let i=0;i<zydData.length;i++){
+    for(let i=zydData.length-1;i>=0;i--){
       if(item.strID==zydData[i].properties.strID){
         if(['作业申请待批复'].includes(zydData[i].properties.ubyStatus)){
           item.properties = zydData[i].properties
