@@ -25,7 +25,9 @@ code {
     // border: 1px solid var(--el-border-color);
     border-radius: 10px;
 }
-
+::-webkit-scrollbar-corner {
+    background-color: transparent;
+}
 //容器
 .wstd-container {
     .map-btn {

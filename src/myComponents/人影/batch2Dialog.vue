@@ -14,8 +14,8 @@
       <el-form-item label="当前日期">
         <el-date-picker
           v-model="applyPointForm.date"
-          format-value="yyyy-MM-DD"
-          value-format="yyyy-MM-DD"
+          format-value="YYYY-MM-DD"
+          value-format="YYYY-MM-DD"
           type="date"
           disabled
         />
