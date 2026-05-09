@@ -407,7 +407,7 @@ export const useSettingStore = defineStore('setting',{
         作业自动不批准:false,
         warningCircle:20,//预警圈范围(km)
         tmpZydData:new Array<{name:string,value:string}>(),//作业点数据
-        selectedRegion:new Array<string>('350000','360000'),//需要在地图上显示的行政区,陕西610000
+        selectedRegion:new Array<string>(),//需要在地图上显示的行政区,陕西610000,福建350000，江西360000
         checkedKeys:new Array<string>(),//用于作业点过滤
         色标:new Array<{value:number,color:string}>(),
         规划航线:true,

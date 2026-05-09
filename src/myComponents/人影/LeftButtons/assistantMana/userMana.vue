@@ -32,7 +32,7 @@
     //import {getDict} from "~/api/人影/role.ts";
     import {del, getList, update, add} from "./userManaApi"
     import {encrypt, decrypt} from "~/tools"
-    
+    import { useUserStore } from '~/stores/user'
     const permission = ref({});
     //用户组字典
     let rolesDict = ref<Dict[]>([{
@@ -47,7 +47,7 @@
     }])
     let tableData = reactive(new Array()) //表格渲染数据
     let form = reactive({})
-    
+
     let pageData = reactive({
         total: 0,
         pageSize: 5,
@@ -55,27 +55,6 @@
         layout: "total,prev, pager, next,jumper",
     })
 
-
-const tmp = {
-  "strUnitID": "510000000",
-  "strCode": "SCRY01",
-  "strName": "四川省人影办",
-  "binPwd": "Vm0wd2QyUXlVWGxWV0d4V1YwZDRWMVl3WkRSV01WbDNXa1JTVjAxV2JETlhhMUpUVmpBeFYySkVUbGhoTVVwVVZtcEJlRll5U2tWVWJHaG9UVlZ3VlZadGNFSmxSbGw1VTJ0V1ZXSkhhRzlVVmxaM1ZsWmFjVkZ0UmxSTmJFcEpWbTEwYTFkSFNrZGpTRUpYWVRGd2FGcFdXbUZrUjFaSFYyMTRVMkpIZHpGV2EyUXdZekpHYzFOdVVtaFNlbXhXVm0weGIxSkdXbGRYYlhSWFRWaENSbFpYZUZOVWJVWTJVbFJDVjAxdVVuWlZha1pYWkVaT2NscEdhR2xTTW1ob1YxWlNTMkl4U2tkWGJHUllZbGhTV0ZSV2FFTlNiRnBZWlVaT1ZXSlZXVEpWYkZKRFZqQXhkVlZ1V2xaaGExcFlXa1ZhVDJOc2NFZGhSMnhUVFcxb2IxWXhXbE5UTWtsNFUydGtXR0pIVWxsWmJGWmhZMVphZEdSSFJrNVNiRm93V2xWYVQxWlhTbFpYVkVwV1lrWktTRlpxUm1GU2JVbDZXa1prYUdFeGNHOVdha0poVkRKT2RGSnJhR2hTYXpWeldXeG9iMWRHV25STldHUlZUVlpHTTFSVmFHOWhiRXB6WTBac1dtSkdXbWhaTW5oWFkxWkdWVkpzVGs1WFJVcElWbXBLTkZReFdsaFRhMlJxVW14d1dGbHNhRk5OTVZweFUydDBWMVpyY0ZwWGExcHJZVWRGZUdOR2JGaGhNVnBvVmtSS1RtVkdjRWxVYldoVFRXNW9WVlpHWTNoaU1XUnpWMWhvWVZKR1NuQlVWM1J6VGxaYWRFNVZPVmRpVlhCSVZqSjRVMWR0U2tkWGJXaGFUVlp3YUZwRlpGTlRSa3B5VGxaT2FWSnRPVE5XTW5oWFdWWlJlRmRzYUZSaVJuQnhWV3hrVTFsV1VsWlhiVVpPVFZad2VGVXlkREJXTVZweVkwWndXR0V4Y0ROWmEyUkdaV3hHY21KR2FGaFRSVXBKVm10U1MxVXhXWGhYYmxaVllrZG9jRlpxVG05V1ZscEhXVE5vYVUxWFVraFdNalZUVkd4YVJsTnNhRlZXTTJoSVZHeGFZVmRGTlZaUFYyaHBVbGhCZDFac1pEUmpNV1IwVTJ0a1dHSlhhR0ZVVnpWdlYwWnNObEpzWkdwaVNFSklWbGN4YzFVd01IbGhSbXhYWWxoQ1RGUnJXbEpsUm1SellVWlNhRTFzU25oV1Z6QjRUa2RHUjFaWVpHaFNWVFZWVlcxNGQyVkdWWGxrUjBacFVteHdlbFl5ZUhkWFIwVjRZMFJPV21FeVVrZGFWM2hIWTIxS1IxcEhiRmhTVlhCS1ZtMTBVMU14VlhoWFdHaFlZbXhhVmxsclpHOWpSbHB4VkcwNVYxWnNjRWhYVkU1dllWVXhXRlZyYUZkTmFsWlVWa2Q0WVZKc1RuTmhSbFpYWWxaRmQxWnFRbUZaVm1SSVZXdG9hMUp0YUZSVVZWcGFUVlphYzFwRVVtcE5WMUl3VlRKMGExZEhTbGhoUjBaVlZteHdNMVpyV21GalZrcDBaRWQwVjJKclNraFdSM2hoVkRKR1YxTnVVbEJXUlRWWVZGYzFiMWRHYkZWUldHaFRUVmRTZWxsVldsTmhSVEZ6VTI1b1YxWXpVbGhYVmxwYVpVWmtkVkpzVm1sV1IzaDVWMWQwWVdReVZrZFdibEpyVWtWS2IxbFljRWRsVmxKelZtMDVXR0pHY0ZoWk1HaExWMnhhV0ZWclpHRldNMmhJV1RJeFMxSXhjRWRhUms1WFYwVktNbFp0Y0VkWlYwVjRWbGhvV0ZkSGFGWlpiWGhoVm14c2NsZHJkR3BTYkZwNFZXMTBNRll4V25OalJXaFhWak5TVEZsVVFYaFNWa3B6Vkd4YVUySkZXWHBXVlZwR1QxWkNVbEJVTUQwPQ==",
-  "strPhoneNum": null,
-  "tmCreate": null,
-  "iPower": 7287,
-  "lstUserRole": "0",
-  "lstUserAccess": "0",
-  "strMachineCode": null,
-  "roles": [
-    "admin"
-  ],
-  "permission_tree": null,
-  "$cellEdit": false,
-  "$index": 1,
-  "$roles": "超级管理员"
-}
-    
     const avueOption = reactive({
         emptyBtn:false,
         refreshBtn: false, //表格顶部右侧刷新数据按钮
@@ -173,9 +152,17 @@ const tmp = {
      * @description 添加用户
      */
     async function rowSave(row: any, done: any) {
-        let params = {...row}
+        const { pwd,...rest } = row
+        const user = useUserStore()
+        let params = {...rest,strUnitID:user.strUnitID,binPwd:encrypt(pwd)}
         try {
-            await add(params)
+            const res = await getList({query:{strUnitID:user.strUnitID,strCode:row.strCode},pageSize:1,currentPage:1})
+            if(res.data.results.length>0){
+                ElMessage.warning(`账号${row.strCode}已存在`)
+                done()
+                return
+            }
+            await add([params])
             done()
             ElMessage.success('新增成功')
             await getDataList()
@@ -193,7 +180,7 @@ const tmp = {
         ElMessageBox.confirm(`确认要删除（${row.strName}）吗？`, "提示", {}).then(async () => {
             let params = {strID: row.strID}
             try {
-                await del(params)
+                await del([{strUnitID:row.strUnitID,strCode:row.strCode}])
                 done()
                 ElMessage.success('删除成功')
                 await getDataList()

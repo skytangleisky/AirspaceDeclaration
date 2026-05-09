@@ -254,77 +254,77 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   //     },
   //   ]
   // },
-  {
-    label: '江西行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.sichuanOptionsOpened'), children: [
-      {
-        label: '填充',
-        type: 'folder',
-        opened: modelRef(setting, '人影.监控.sichuanOptions.districtOpened'),
-        children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.district'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtFillColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.sichuanOptions.districtFillOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-        ]
-      },
-      {
-        label: '底线',
-        type: 'folder',
-        opened: modelRef(setting, '人影.监控.sichuanOptions.districtBaseOpened'),
-        children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.districtBase'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-          {
-            label: '宽度',
-            value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseWidth'),
-            type: 'range',
-            min: 0,
-            max: 5,
-            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
-          },
-        ]
-      },
-      {
-        label: '界线',
-        type: 'folder',
-        opened: modelRef(setting, '人影.监控.sichuanOptions.districtLineOpened'),
-        children: [
-          {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.districtLine'), type: 'checkbox'},
-          {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtLineColor'), type: 'color'},
-          {
-            label: '透明度',
-            value: modelRef(setting, '人影.监控.sichuanOptions.districtLineOpacity'),
-            type: 'range',
-            min: 0,
-            max: 1,
-            arr: Array.from({length: 101}, (_, i: number) => i / 100)
-          },
-          {
-            label: '宽度',
-            value: modelRef(setting, '人影.监控.sichuanOptions.districtLineWidth'),
-            type: 'range',
-            min: 0,
-            max: 5,
-            arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
-          },
-        ]
-      },
-    ]
-  },
+  // {
+  //   label: '江西行政区划', type: 'folder', opened: modelRef(setting, '人影.监控.sichuanOptionsOpened'), children: [
+  //     {
+  //       label: '填充',
+  //       type: 'folder',
+  //       opened: modelRef(setting, '人影.监控.sichuanOptions.districtOpened'),
+  //       children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.district'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtFillColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.sichuanOptions.districtFillOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '底线',
+  //       type: 'folder',
+  //       opened: modelRef(setting, '人影.监控.sichuanOptions.districtBaseOpened'),
+  //       children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.districtBase'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //         {
+  //           label: '宽度',
+  //           value: modelRef(setting, '人影.监控.sichuanOptions.districtBaseWidth'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 5,
+  //           arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+  //         },
+  //       ]
+  //     },
+  //     {
+  //       label: '界线',
+  //       type: 'folder',
+  //       opened: modelRef(setting, '人影.监控.sichuanOptions.districtLineOpened'),
+  //       children: [
+  //         {label: '显示', value: modelRef(setting, '人影.监控.sichuanOptions.districtLine'), type: 'checkbox'},
+  //         {label: '颜色', value: modelRef(setting, '人影.监控.sichuanOptions.districtLineColor'), type: 'color'},
+  //         {
+  //           label: '透明度',
+  //           value: modelRef(setting, '人影.监控.sichuanOptions.districtLineOpacity'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 1,
+  //           arr: Array.from({length: 101}, (_, i: number) => i / 100)
+  //         },
+  //         {
+  //           label: '宽度',
+  //           value: modelRef(setting, '人影.监控.sichuanOptions.districtLineWidth'),
+  //           type: 'range',
+  //           min: 0,
+  //           max: 5,
+  //           arr: Array.from({length: 101}, (_, i: number) => 5 * i / 100)
+  //         },
+  //       ]
+  //     },
+  //   ]
+  // },
   // {
   //   label: '华北飞行区域', type: 'folder', opened: modelRef(setting, '人影.监控.ryAirspacesOpened'), children: [
   //     {
@@ -550,18 +550,30 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
     },]
   },
   {
+    label: '临时图层',
+    type: 'folder',
+    opened: modelRef(setting, '人影.监控.tempLayerOpened'),
+    children: [
+      {
+        label: '添加图层', type: 'button', click() {
+          alert('开发中')
+        }
+      },
+    ]
+  },
+  {
     label: '系统信息', type: 'folder', opened: modelRef(setting, '人影.监控.systemInfoOpened'), children: [
       {label: '在线人数', value: modelRef(sys, '在线人数'), type: 'text'},
       {label: '网络状态', value: modelRef(sys, '网络状态'), type: 'text'},
       {label: '内存占用', value: modelRef(sys, '内存占用'), type: 'text'},
       {
         label: '当前经度',
-        value:computed(()=>mapStatus.currentPos[0].toFixed(6)),
+        value:computed(()=>mapStatus.currentPos[0].toFixed(6).padStart(11,' ')),
         type:'text'
       },
       {
         label: '当前纬度',
-        value:computed(()=>mapStatus.currentPos[1].toFixed(6)),
+        value:computed(()=>mapStatus.currentPos[1].toFixed(6).padStart(11,' ')),
         type:'text'
       },
       {
@@ -575,9 +587,9 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
         }),
         type: 'text'
       },
-      {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6)), type: 'text'},
-      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6)), type: 'text'},
-      {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6)), type: 'text'},
+      {label: '中心经度', value: computed(()=>mapStatus.center[0].toFixed(6).padStart(11,' ')), type: 'text'},
+      {label: '中心纬度', value: computed(()=>mapStatus.center[1].toFixed(6).padStart(11,' ')), type: 'text'},
+      {label: '缩放等级', value: computed(()=>mapStatus.zoom.toFixed(6).padStart(11,' ')), type: 'text'},
       {label: '帧率', value: computed(()=>sys.fps), type: 'text'},
       {label: '帧率曲线',value:{
         fps: {
@@ -612,11 +624,11 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   //     setting.显示烟炉 = true
   //   }
   // },
-  {
-    label: '火箭架配置', type: 'button', click() {
-      setting.火箭架配置 = true
-    }
-  },
+  // {
+  //   label: '火箭架配置', type: 'button', click() {
+  //     setting.火箭架配置 = true
+  //   }
+  // },
   {
     label: '批复率统计', type: 'button', click() {
       setting.批复率统计 = true
@@ -627,21 +639,21 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
       setting.网络信息 = true
     }
   },
-  {
-    label: '飞行活动', type: 'button', click() {
-      setting.飞行活动 = true
-    }
-  },
-  {
-    label: '电子围栏', type: 'button', click() {
-      setting.电子围栏 = true
-    }
-  },
-  {
-    label: '无人机空域', type: 'button', click() {
-      setting.无人机空域 = true
-    }
-  },
+  // {
+  //   label: '飞行活动', type: 'button', click() {
+  //     setting.飞行活动 = true
+  //   }
+  // },
+  // {
+  //   label: '电子围栏', type: 'button', click() {
+  //     setting.电子围栏 = true
+  //   }
+  // },
+  // {
+  //   label: '无人机空域', type: 'button', click() {
+  //     setting.无人机空域 = true
+  //   }
+  // },
   // {
   //   label: '弹药概况', type: 'button', click() {
   //     setting.弹药概况 = true

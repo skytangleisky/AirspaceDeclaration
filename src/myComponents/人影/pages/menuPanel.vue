@@ -58,7 +58,7 @@
         border-radius: $border-radius-2;
         top: 0;
         left: 0;
-        width: 7rem;
+        width: 8.5rem;
         border: 1px solid var(--el-border-color);
         background-color: var(--el-bg-color-opacity-8);
         padding: $grid-3;

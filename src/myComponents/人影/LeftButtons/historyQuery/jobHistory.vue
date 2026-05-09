@@ -14,20 +14,18 @@
             @search-reset="searchReset"
             @on-load="getDataList"
         >
-        
         </avue-crud>
     </div>
 </template>
 
 <script setup lang="ts">
     import {reactive, ref} from 'vue'
-    import {del, getList, update, add, } from "~/api/人影/jobHistory.ts"
+    import {del, getList, update, add, } from "./jobHistoryApi.ts"
     import {ElMessage, ElMessageBox} from "element-plus";
     import {Dict} from "~/api/type.ts";
     import {ubyTypeDict, connectTypeDict, yesNoDict} from "~/utils/Dict.ts"
     import {queryRyUnitList} from "../ryParams/localRyApi.ts"
     const strMgrDict = ref<Dict[]>([]) //上级单位字典
-    
     let tableData = ref<any[]>([]) //表格渲染数据
     let form = reactive({})
     let pageData = reactive({
@@ -51,67 +49,53 @@
         searchMenuSpan: 8, // 搜索按钮长度(搜索和清空按钮长度，两按钮居中)
         searchSpan: 8, // 搜索框长度最大长度24（每项搜索内容长度，包括字段名+文本框）
         searchGutter: 0,//搜索项间隔
-        searchLabelWidth: 60,
+        searchLabelWidth: 80,
         labelWidth:120, //menuWidth: 300,//操作栏宽度
         menuFixed: false, // 操作栏是否固定
         menu:false,
         page: true,
         column: [{
-            label: '代码',
-            prop: 'strID', //display: false,//弹窗中隐藏
+            label: '作业点名称',
+            prop: 'strName', //display: false,//弹窗中隐藏
             //hide: true,
             search: true,
-            width: 100,
+            width: 240,
         }, {
-            label: '名称',
-            prop: 'strName',
-            search: true,
+            label: '申请作业时间',
+            prop: 'tmBeginApply',
+            search: false,
+            width:200
         }, {
-            label: '类型',
-            prop: 'ubyType', //search: true,
-            type: 'select',
-            slot: true,
-            dicData: ubyTypeDict,
-            value: 0
+            label: '申请时长',
+            prop: 'iApplyTimeLen',
+            width:100
         }, {
-            label: "上级单位",
-            prop: 'strMgrID',
-            type: 'select',
-            dicData: strMgrDict.value,
-            width: 120
+            label: '批复单位',
+            prop: 'strUpApplyUnitName',
         }, {
-            label: "通报",
-            prop: 'bReport', //search: true,
-            type: "select",
-            dicData: yesNoDict,
-            value: 1,
+            label: '批复类型',
+            prop: 'ubyProcStatus',
         }, {
-            label: '连接方式',
-            prop: 'connectType',
-            type: "select",
-            dicData: connectTypeDict,
-            value: 1,
-        }, {
-            label: "经纬度",
-            prop: 'strPos',
-            width: 170,
-        }, {
-            label: "联系电话",
-            prop: 'strPhoneNo',
-            hide: true,
-        }, {
-            label: "负责人",
-            prop: 'vStrReportZyd',
-            hide: true,
-        }, {
-            label: "单位地址",
-            prop: 'strAddress',
-            hide: true,
-        }, {
-            label: "备注",
-            prop: 'strMark',
-            hide: true,
-        },]
+            label: '批准作业时间',
+            prop: 'tmBeginAnswer',
+            width:200
+        },{
+            label: '批准作业时长',
+            prop: 'iAnswerTimeLen',
+            width:120
+        },{
+            label: '作业开始时间',
+            prop: 'tmBeginActing',
+            width:200
+        },{
+            label: '作业结束时间',
+            prop: 'tmEnd',
+            width:200
+        },{
+            label: '状态流程',
+            prop: 'vecProcess',
+            width:1000
+        }]
     })
     let searchForm = reactive({})
     
@@ -218,7 +202,7 @@
      */
     const getDataList = async () => {
         let params = {
-            ...searchForm,
+            query:searchForm,
             pageSize: pageData.pageSize,
             currentPage: pageData.currentPage
         }

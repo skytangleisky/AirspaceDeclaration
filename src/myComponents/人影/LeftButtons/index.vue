@@ -76,18 +76,21 @@
         icon: historyRaw,
         content: '历史查询统计',
         permission:'a6ad4781-2b57-4da9-9fe6-cbbf1da87944'
-    }, {
-        icon: statisticsRaw,
-        content: '查询统计',
-        permission:'52dca185-d4be-4eb8-a51a-0d7ec9bac220'
-    }, {
-        icon: routeRaw,
-        content: '航迹回放',
-        permission:'92cf967e-0d04-42b5-b1d0-930ba129822a',
-        click() {
-            console.log('航迹回放')
-        }
-    }, {
+    },
+    // {
+    //     icon: statisticsRaw,
+    //     content: '查询统计',
+    //     permission:'52dca185-d4be-4eb8-a51a-0d7ec9bac220'
+    // },
+    // {
+    //     icon: routeRaw,
+    //     content: '航迹回放',
+    //     permission:'92cf967e-0d04-42b5-b1d0-930ba129822a',
+    //     click() {
+    //         console.log('航迹回放')
+    //     }
+    // },
+    {
         icon: configureRaw,
         active: modelRef(setting, 'showBusinessLayer'),
         content: '显示设置',

@@ -88,19 +88,22 @@
         defaultIndex: 0
     }, {
         title: '历史查询统计',
-        menuList: [{
-            label: "作业历史",
-            component: markRaw(jobHistory)
-        }, {
-            label: "作业点使用统计",
-            component: markRaw(operationPointStatistics)
-        }, {
-            label: "批复率统计",
-            component: markRaw(replyStatistics)
-        }, {
-            label: "违规记录",
-            component: markRaw(violationRecord)
-        }],
+        menuList: [
+            {
+                label: "作业历史",
+                component: markRaw(jobHistory)
+            }, {
+                label: "作业点使用统计",
+                component: markRaw(operationPointStatistics)
+            }, {
+                label: "批复率统计",
+                component: markRaw(replyStatistics)
+            },
+            // {
+            //     label: "违规记录",
+            //     component: markRaw(violationRecord)
+            // }
+        ],
         defaultIndex: 0
     },]
     

@@ -155,7 +155,7 @@
         padding: $grid-2;
         z-index: 1;
         border-radius: $border-radius-1;
-        //width:3.2rem;
+        width:280px;
         //height: 1.8rem;
         position: absolute;
         display: flex;

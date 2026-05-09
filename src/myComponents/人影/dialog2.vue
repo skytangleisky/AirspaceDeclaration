@@ -98,12 +98,13 @@
                 <Work :v="sys.planProps.今日作业记录"></Work>
             </el-tab-pane>
             <el-tab-pane label="飞行计划">
-                <el-empty></el-empty>
+                <flight-plan></flight-plan>
             </el-tab-pane>
         </el-tabs>
     </div>
 </template>
 <script lang="ts" setup>
+import flightPlan from './飞行计划/flightPlan.vue'
 import { useSysStatusStore } from "~/stores/sysStatus";
 const sys = useSysStatusStore()
 import Work from './work.vue'

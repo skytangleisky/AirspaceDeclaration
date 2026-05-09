@@ -121,11 +121,12 @@
     <ConfigrueFlightActivity></ConfigrueFlightActivity>
     <ConfigrueUAVAirspace></ConfigrueUAVAirspace>
     <ConfigureEnclosure></ConfigureEnclosure>
+    <FlightPlanView></FlightPlanView>
     <!-- <Overview></Overview> -->
   </div>
 </template>
 <script lang="ts" setup>
-
+import {getList} from './飞行计划/flightPlan.js'
 let aid = 0;
 const setting = useSettingStore();
 let enclosureList = new Array<any>();
@@ -143,6 +144,7 @@ const 数据时间 = computed(()=>{
   }
   return ''
 })
+import FlightPlanView from './飞行计划/查看/index.vue'
 import {hasPermission,debounce,parseColor,interpolateColor} from '~/tools/index'
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
@@ -711,6 +713,140 @@ const 飞机菜单数据 = ref<any>({
   "显示航迹圈":true,
   "显示经纬度":true,
   "显示历史轨迹":true,
+})
+import { useSysStatusStore } from "~/stores/sysStatus"
+const sys = useSysStatusStore()
+let map: any;
+const flightPlanPositionFunc = (row:any)=>{
+  if(map){
+    const tempAirspace = row.uavFlightPlan.tempAirspace
+    let airspace_shape = tempAirspace.airspace_shape
+    let airspace_data = tempAirspace.airspace_data
+    let temp_airspace_id = tempAirspace.temp_airspace_id
+    let pts = new Array()
+    if(airspace_shape==2){
+      const [lng,lat,radius] = airspace_data.split(',')
+      pts = calculateFireArea([lng,lat],radius,0,360)
+    }else if(airspace_shape==1){
+      airspace_data.split('|').map((item:string)=>{
+        const [lng,lat] = item.split(',')
+        pts.push([Number(lng),Number(lat)])
+      })
+    }
+    const bounds = new mapboxgl.LngLatBounds();
+    pts.forEach(pt=>{
+      bounds.extend(pt)
+    })
+    map.fitBounds(bounds, {
+      pitch: map.getPitch(),
+      padding: {
+        top:0,
+        bottom:0,
+        left:0,
+        right:0,
+      }
+    });
+  }
+}
+watch(()=>sys.触发飞行计划数据查询,()=>{
+  getList().then((data:any)=>{
+    sys.飞行计划数据.splice(0,sys.飞行计划数据.length,...data)
+  })
+})
+watch(sys.飞行计划数据,()=>{
+  if(map){
+    console.log('------->',sys.飞行计划数据)
+    sys.飞行计划数据.forEach(item=>{
+      const tempAirspace = item.uavFlightPlan.tempAirspace
+      let airspace_shape = tempAirspace.airspace_shape
+      let airspace_data = tempAirspace.airspace_data
+      let temp_airspace_id = tempAirspace.temp_airspace_id
+      let bottom_height = tempAirspace.bottom_height
+      let top_height = tempAirspace.top_height
+      const operate_type = item.operate_type
+      let pts = new Array()
+      let color = '#00ffff'
+      switch(operate_type){
+        case 1:
+          color = '#808080'//待申报
+          break;
+        case 2:
+          color = '#fa0'//申请中
+          break;
+        case 3:
+          color = '#00f'//审批通过
+          break;
+        case 4:
+          color = '#808080'//审批驳回
+          break;
+        case 5:
+          color = '#f00'//执行中
+          break;
+        case 6:
+          color = '#0f0'//已完成
+          break;
+        default:
+          console.log(`未知状态${operate_type}`)
+          break;
+      }
+      if(airspace_shape==2){//圆形
+        const [lng,lat,radius] = airspace_data.split(',')
+        pts = calculateFireArea([lng,lat],radius,0,360)
+      }else if(airspace_shape==1){
+        airspace_data.split('|').map((item:string)=>{
+          const [lng,lat] = item.split(',')
+          pts.push([Number(lng),Number(lat)])
+        })
+      }
+      const data = {
+        type: 'Feature',
+        properties:{
+          color
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [pts]
+        }
+      }
+      if(map.getSource(`polygon-source_${temp_airspace_id}`)){
+        map.getSource(`polygon-source_${temp_airspace_id}`).setData(data);
+      }else{
+        map.addSource(`polygon-source_${temp_airspace_id}`, {
+          type: 'geojson',
+          data,
+        });
+        map.addLayer({
+          id: `polygon-outline_${temp_airspace_id}`,
+          type: 'line',
+          source: `polygon-source_${temp_airspace_id}`,
+          paint: {
+            'line-color': '#fff',
+            'line-width': 1,
+          }
+        });
+        map.addLayer({
+          id: `polygon-fill_${temp_airspace_id}`,
+          type: 'fill',
+          source: `polygon-source_${temp_airspace_id}`,
+          paint: {
+            'fill-color': '#000',
+            'fill-opacity': 0.4,
+          }
+        });
+        map.addLayer({
+          id: `polygon-3d_${temp_airspace_id}`,
+          type: 'fill-extrusion',
+          source: `polygon-source_${temp_airspace_id}`,
+          paint: {
+            'fill-extrusion-color': ['get','color'],
+            'fill-extrusion-height': top_height,
+            'fill-extrusion-base': bottom_height,
+            'fill-extrusion-opacity': 0.6
+          }
+        });
+      }
+    })
+  }
 })
 watch(()=>飞机菜单数据,()=>{
   activeObject.显示标牌 = 飞机菜单数据.value.显示标牌
@@ -1513,8 +1649,6 @@ const station = useStationStore();
 import {useUserStore} from "~/stores/user";
 const user = useUserStore()
 import { useSettingStore,formatUrl } from "~/stores/setting.js";
-import { useSysStatusStore } from "~/stores/sysStatus"
-const sys = useSysStatusStore()
 import { useMapStatusStore } from "~/stores/mapStatus"
 const mapStatus = useMapStatusStore()
 import * as turf from "@turf/turf";
@@ -1939,7 +2073,6 @@ type stationData = {
   strMgrUnit: string;
   strMgrUnitName: string;
 } & zydparaType;
-let map: any;
 const resize = () => {
   map && map.resize();
 };
@@ -2998,6 +3131,9 @@ onMounted(async() => {
   let lastFrameCounter = 0
   map.on("load", async () => {
     if(!map)return;
+    getList().then((data:any)=>{
+      sys.飞行计划数据.splice(0,sys.飞行计划数据.length,...data)
+    })
     if(!user.strUnitID.startsWith('99')){
       const adcode = user.strUnitID.substring(0,6)
       await axios.get(`/backend/region/${adcode+(adcode.endsWith('00')?'_full.json':'.json')}`).then(res=>{
@@ -7416,6 +7552,7 @@ onMounted(async() => {
   map.on("mousemove", mousemoveFunc)
   document.addEventListener('mousemove',updateLabelPosittion)
   document.addEventListener('mouseup',cancelUpdateLabelPosition)
+  eventbus.on('飞行计划定位',flightPlanPositionFunc)
   eventbus.on('列表右键菜单',listRightMenuFunc)
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
   eventbus.on("人影-地面作业申请-网络上报", 网络上报);
@@ -7433,6 +7570,7 @@ onBeforeUnmount(() => {
     clearInterval(fifteenMinutesTimer);
     clearInterval(threeMinutesTimer);
     clearInterval(fpsTimer);
+    eventbus.off("飞行计划定位", flightPlanPositionFunc);
     eventbus.off("人影-将站点移动到屏幕中心", flyTo);
     eventbus.off("人影-地面作业申请-网络上报", 网络上报);
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
