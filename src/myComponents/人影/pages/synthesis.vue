@@ -38,6 +38,7 @@
   <!-- <control-pane style="top:10px;right:10px;" :list="list" :theme="isDark?'default':'light'"></control-pane> -->
 </template>
 <script lang="ts" setup>
+import {ElMessage} from 'element-plus'
 import {useSysStatusStore} from "~/stores/sysStatus";
 const sys = useSysStatusStore();
 import {空域申请批准, 空域申请拒绝} from '~/api/天工.ts';
@@ -235,12 +236,22 @@ const confirm = (data: prevRequestDataType) => {
 
 function accept(data:any) {
   空域申请批准(data).then((res) => {
+    if(res.data.code=='200'){
+      console.log('空域申请成功')
+    }else if(res.data.code=='500'){
+      ElMessage.error(res.data.data.error||'接口调用失败')
+    }
     sys.prevPlanReplyShow = false
   })
 }
 
 function reject(data:any) {
   空域申请拒绝(data).then((res) => {
+    if(res.data.code=='200'){
+      console.log('空域申请成功')
+    }else if(res.data.code=='500'){
+      ElMessage.error(res.data.data.error||'接口调用失败')
+    }
     sys.prevPlanReplyShow = false
   })
 }

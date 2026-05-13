@@ -13,7 +13,7 @@
     >
       <el-form-item label="当前日期">
         <el-date-picker
-          v-model="applyPointForm.date"
+          v-model="date"
           format-value="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           type="date"
@@ -91,21 +91,22 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
+import {ElMessage} from 'element-plus'
 //该组件用于批量申请
-import {reactive,ref,watch,onMounted, onBeforeUnmount} from 'vue'
+import {reactive,ref,watch,onMounted, onBeforeUnmount,computed} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
 import { airspacesApply,airspaceApply } from '../../api/人影';
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
 import { useUserStore } from '~/stores/user';
+const date = computed(()=>moment().format('YYYY-MM-DD'))
 const applyPointForm = reactive({
-  date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
   workTimeLen: 60,
   workCat: 1,
 });
-let timer
+let timer:any
 onMounted(()=>{
   timer = setInterval(()=>{
     if(moment(moment().format('YYYY-MM-DD ')+applyPointForm.time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
@@ -114,6 +115,7 @@ onMounted(()=>{
   },1000)
 })
 onBeforeUnmount(()=>{
+  applyPointForm.time = '00:00:00'
   clearInterval(timer)
 })
 // 作业目的配置项
@@ -247,7 +249,7 @@ function confirm() {
       }
     ]
   }
-  data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
+  data.applyBeginTime = `${date.value} ${applyPointForm.time}`
   data.workTimeLen = applyPointForm.workTimeLen
   data.workCat = applyPointForm.workCat
   data.zydData.length = 0
@@ -269,6 +271,11 @@ function confirm() {
   })
   pointDialogVisible.value = false
   airspacesApply(data).then(res=>{
+    if(res.data.code=='200'){
+      console.log('空域申请成功')
+    }else if(res.data.code=='500'){
+      ElMessage.error(res.data.data.error||'接口调用失败')
+    }
     pointDialogVisible.value = false
     eventbus.emit('移除draw绘制的所有图形')
   })

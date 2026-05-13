@@ -24,6 +24,15 @@
         <el-descriptions-item label="是否涉及以下活动">{{ sys.当前飞行计划数据.uavFlightPlan.has_special_activity }}</el-descriptions-item>
       </el-descriptions>
     </w-Module-box>
+    <w-Module-box title="飞手信息">
+      <el-descriptions>
+        <el-descriptions-item label="飞手名称">{{ sys.当前飞行计划数据.uavFlightPlan.pilot.pilot_name }}</el-descriptions-item>
+        <el-descriptions-item label="身份证号码">{{ sys.当前飞行计划数据.uavFlightPlan.pilot.id_no }}</el-descriptions-item>
+        <el-descriptions-item label="联系电话">{{ sys.当前飞行计划数据.uavFlightPlan.pilot.contact_phone }}</el-descriptions-item>
+        <el-descriptions-item label="创建时间">{{ sys.当前飞行计划数据.uavFlightPlan.pilot.created_time.replace(/.\d{6}$/,'') }}</el-descriptions-item>
+        <el-descriptions-item label="修改时间">{{ sys.当前飞行计划数据.uavFlightPlan.pilot.modified_time.replace(/.\d{6}$/,'') }}</el-descriptions-item>
+      </el-descriptions>
+    </w-Module-box>
     <w-Module-box title="航空器信息">
       <el-descriptions>
         <el-descriptions-item label="实名登记标志">{{ sys.当前飞行计划数据.uavFlightPlan.uav.real_name_reg_id }}</el-descriptions-item>
@@ -34,11 +43,11 @@
         <el-descriptions-item label="产品序列号（SN）">{{ sys.当前飞行计划数据.uavFlightPlan.uav.product_serial_no }}</el-descriptions-item>
       </el-descriptions>
     </w-Module-box>
-    <w-Module-box title="航空器信息">
-      <el-descriptions title="临时空域信息">
+    <w-Module-box title="空域信息">
+      <el-descriptions>
         <el-descriptions-item label="空域名称">{{ sys.当前飞行计划数据.uavFlightPlan.tempAirspace.temp_airspace_name }}</el-descriptions-item>
-        <el-descriptions-item label="空域底高">{{ sys.当前飞行计划数据.uavFlightPlan.tempAirspace.bottom_height }}</el-descriptions-item>
-        <el-descriptions-item label="空域顶高">{{ sys.当前飞行计划数据.uavFlightPlan.tempAirspace.top_height }}</el-descriptions-item>
+        <el-descriptions-item label="空域底高">{{ sys.当前飞行计划数据.uavFlightPlan.tempAirspace.bottom_height }}米</el-descriptions-item>
+        <el-descriptions-item label="空域顶高">{{ sys.当前飞行计划数据.uavFlightPlan.tempAirspace.top_height }}米</el-descriptions-item>
         <el-descriptions-item label="空域形状">{{ formatAirspaceShape(sys.当前飞行计划数据.uavFlightPlan.tempAirspace.airspace_shape) }}</el-descriptions-item>
         <el-descriptions-item label="空域数据">
           <el-input

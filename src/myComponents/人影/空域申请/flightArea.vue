@@ -1,5 +1,5 @@
 <template>
-  <el-table :data="sys.飞行计划数据" style="width: 100%">
+  <el-table :data="sys.空域申请数据" style="width: 100%">
     <el-table-column prop="operate_type" label="计划状态" width="100">
       <template #default="{row}">
         <el-tag :color="getColor(row)" style="color:white">{{ formatOperateType(row) }}</el-tag>
@@ -13,34 +13,39 @@
         <el-button size="small" style="color:cyan" @click="handleReply(row)">审批</el-button>
       </template>
     </el-table-column>
-    <el-table-column prop="uavFlightPlan.plan_type" label="计划名称" width="180" :formatter="(row:any)=>row.uavFlightPlan.plan_name" />
-      <el-table-column prop="uavFlightPlan.start_time" label="开始时间" width="200">
+    <el-table-column prop="tempAirspace.created_time" label="创建时间" width="200">
       <template #default="{ row }">
-        {{ row.uavFlightPlan.start_time.replace(/.000000$/,'') }}
+        {{ row.tempAirspace.created_time.replace(/.\d{6}$/,'') }}
       </template>
     </el-table-column>
-    <el-table-column prop="uavFlightPlan.end_time" label="结束时间" width="200">
+    <el-table-column prop="tempAirspace.temp_airspace_name" label="空域名称" width="180"/>
+    <el-table-column prop="tempAirspace.plan_nature" label="计划性质" width="120" :formatter="(row:any)=>formatPlanNature(row.tempAirspace.plan_nature)"/>
+    <el-table-column prop="tempAirspace.start_time" label="开始时间" width="200">
       <template #default="{ row }">
-        {{ row.uavFlightPlan.end_time.replace(/.000000$/,'') }}
+        {{ row.tempAirspace.start_time.replace(/.\d{6}$/,'') }}
       </template>
     </el-table-column>
-    <el-table-column prop="uavFlightPlan.plan_type" label="计划类型" width="150" :formatter="(row:any)=>formatPlanType(row.uavFlightPlan.plan_type)" />
-    <el-table-column prop="uavFlightPlan.plan_nature" label="计划性质" width="120" :formatter="(row:any)=>formatPlanNature(row.uavFlightPlan.plan_nature)"/>
-    <el-table-column prop="uavFlightPlan.control_mode" label="操作模式" width="100" :formatter="(row:any)=>formatControlMode(row.uavFlightPlan.control_mode)"/>
-    <el-table-column prop="uavFlightPlan.flight_mode" label="飞行模式" width="100" :formatter="(row:any)=>formatFlightMode(row.uavFlightPlan.flight_mode)"/>
+    <el-table-column prop="tempAirspace.end_time" label="结束时间" width="200">
+      <template #default="{ row }">
+        {{ row.tempAirspace.end_time.replace(/.\d{6}$/,'') }}
+      </template>
+    </el-table-column>
+    <el-table-column prop="tempAirspace.airspace_shape" label="空域形状" width="180" :formatter="(row:any)=>formatAirspaceShape(row.tempAirspace.airspace_shape)"/>
+    <el-table-column prop="tempAirspace.bottom_height" label="底高" width="100"/>
+    <el-table-column prop="tempAirspace.top_height" label="顶高" width="120"/>
   </el-table>
 </template>
 
 <script lang="ts" setup>
-import {formatOperateType,formatControlMode,formatFlightMode,formatPlanType,formatPlanNature} from './utils'
+import {formatOperateType,formatControlMode,formatFlightMode,formatPlanType,formatPlanNature,formatAirspaceShape} from './utils'
 import { useSettingStore } from '~/stores/setting'
 import { useSysStatusStore } from '~/stores/sysStatus'
 import { eventbus } from '~/eventbus'
 const setting = useSettingStore()
 const sys = useSysStatusStore()
 function handleReply(row:any){
-  sys.当前飞行计划数据 = row
-  sys.显示飞行计划 = true
+  sys.当前空域申请数据 = row
+  sys.显示空域申请 = true
 }
 function handlePosition(row:any){
   console.log(row)

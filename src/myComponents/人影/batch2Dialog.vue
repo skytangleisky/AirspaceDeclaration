@@ -13,7 +13,7 @@
     >
       <el-form-item label="当前日期">
         <el-date-picker
-          v-model="applyPointForm.date"
+          v-model="date"
           format-value="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           type="date"
@@ -85,22 +85,23 @@
   </el-dialog>
 </template>
 <script lang="ts" setup>
+import {ElMessage} from 'element-plus'
 //该组件用于批量批复
 import { useUserStore } from '~/stores/user'
-import {reactive,ref,watch,onMounted, onBeforeUnmount} from 'vue'
+import {reactive,ref,watch,onMounted, onBeforeUnmount,computed} from 'vue'
 import type { CheckboxValueType } from "element-plus";
 import moment from "moment";
 import {空域申请批准,空域申请拒绝,批量批准接口,批量不批准接口} from '~/api/天工'
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
+const date = computed(()=>moment().format('YYYY-MM-DD'))
 const applyPointForm = reactive({
-  date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
   workTimeLen: 60,
   workCat: 1,
 });
 
-let timer
+let timer:any
 onMounted(()=>{
   timer = setInterval(()=>{
     if(moment(moment().format('YYYY-MM-DD ')+applyPointForm.time,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
@@ -109,6 +110,7 @@ onMounted(()=>{
   },1000)
 })
 onBeforeUnmount(()=>{
+  applyPointForm.time = '00:00:00'
   clearInterval(timer)
 })
 // 作业目的配置项
@@ -203,7 +205,7 @@ function accept() {
   const data = {
     // "workRevID": "360000000",
     "replyID": user.strUnitID,
-    "acceptBeginTime": applyPointForm.date+' '+applyPointForm.time,
+    "acceptBeginTime": date.value+' '+applyPointForm.time,
     "workTimeLen": applyPointForm.workTimeLen,
     "zydData": batchList.value.filter((item:any)=>checkedPoints.value.includes(item.strID)).map((item:any)=>{
       const lngLat = fromDMS(item.strPos)
@@ -223,7 +225,12 @@ function accept() {
 
 
 
-  批量批准接口(data).then(()=>{
+  批量批准接口(data).then((res)=>{
+    if(res.data.code=='200'){
+      console.log('空域申请成功')
+    }else if(res.data.code=='500'){
+      ElMessage.error(res.data.data.error||'接口调用失败')
+    }
     pointDialogVisible.value = false
     eventbus.emit('移除draw绘制的所有图形')
   })
@@ -274,7 +281,12 @@ function reject() {
       }
     })
   }
-  批量不批准接口(data).then(()=>{
+  批量不批准接口(data).then((res)=>{
+    if(res.data.code=='200'){
+      console.log('空域申请成功')
+    }else if(res.data.code=='500'){
+      ElMessage.error(res.data.data.error||'接口调用失败')
+    }
     pointDialogVisible.value = false
     eventbus.emit('移除draw绘制的所有图形')
   })

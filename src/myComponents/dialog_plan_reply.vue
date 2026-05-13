@@ -370,7 +370,7 @@ const data = defineModel<any>('data',{
         iShortAngelEnd: 1000,
         duration: 60,
         unitName: "",
-        beginTime: moment().format('HH:mm:ss'),
+        beginTime: '00:00:00',
         workTimeLen: 60,
     }
 })
@@ -378,7 +378,7 @@ const emit = defineEmits(["update:show", "accept", "reject"]);
 const cancel = () => {
     emit("update:show", false);
 };
-let timer;
+let timer:any;
 onMounted(() => {
     timer = setInterval(()=>{
         if(moment(moment().format('YYYY-MM-DD ') + data.value.beginTime,'YYYY-MM-DD HH:mm:ss').isBefore(moment())){
@@ -387,6 +387,7 @@ onMounted(() => {
     },1000)
 });
 onBeforeUnmount(() => {
+    data.value.beginTime = '00:00:00'
     clearInterval(timer)
 });
 </script>

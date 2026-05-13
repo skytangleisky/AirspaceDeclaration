@@ -233,7 +233,7 @@ const props = withDefaults(
             iWorkType: 1,
             iShortAngelBegin: 0,
             iShortAngelEnd: 1000,
-            beginTime: moment().format('HH:mm:ss'),
+            beginTime: '00:00:00',
             duration: 60,
             unitName: "",
         }),
@@ -252,6 +252,7 @@ onMounted(() => {
     },1000)
 });
 onBeforeUnmount(() => {
+    props.data.beginTime = '00:00:00'
     clearInterval(timer)
 });
 </script>

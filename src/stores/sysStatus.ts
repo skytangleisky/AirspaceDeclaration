@@ -3,6 +3,7 @@ import moment from 'moment'
 import { shallowReactive } from 'vue'
 export const useSysStatusStore = defineStore('sysStatus',{
   state: () => ({
+    触发空域申请数据查询:Date.now(),
     触发飞行计划数据查询:Date.now(),
     触发系统菜单数据查询:Date.now(),
     触发作业状态数据查询:Date.now(),
@@ -25,8 +26,11 @@ export const useSysStatusStore = defineStore('sysStatus',{
     注册飞机数据:shallowReactive<any[]>([]),
     需要重点关注的飞机:shallowReactive<any[]>([]),
     显示飞行计划:false,
+    显示空域申请:false,
     飞行计划数据:shallowReactive<any[]>([]),
+    空域申请数据:shallowReactive<any[]>([]),
     当前飞行计划数据:shallowReactive<any>({}),
+    当前空域申请数据:shallowReactive<any>({}),
     prevPlanRequestShow:false,
     prevPlanRequestData:{
       strID: "",

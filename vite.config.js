@@ -129,6 +129,12 @@ export default defineConfig({
         changeOrigin:true,
         ws:true,
       },
+      '/ads-b':{
+        target:'https://opensky-network.org/api/states/all',
+        rewrite:path=>path.replace(/^\/ads-b/,''),
+        secure:false,
+        changeOrigin:true,
+      },
       '/adsb':{
         agent,
         target:'http://10.225.3.150:18185',

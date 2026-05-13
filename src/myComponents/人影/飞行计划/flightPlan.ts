@@ -1,4 +1,3 @@
-import { nextTick } from 'vue'
 import request from '~/utils/request'
 const url = "/backend/db/flightPlan"
 export function getList(){
@@ -141,7 +140,7 @@ function getUavPilot(pilot_id:string){
 }
 export function 批准(plan_id:string){
   return request({
-    url:'/ry_api/api/insert/DKAnswer',
+    url:'/ry_api/api/insert/DK_flight_plan_answer',
     method: 'POST',
     data: {
       "plan_id": plan_id,
@@ -151,7 +150,7 @@ export function 批准(plan_id:string){
 }
 export function 驳回(plan_id:string){
   return request({
-    url:'/ry_api/api/insert/DKAnswer',
+    url:'/ry_api/api/insert/DK_flight_plan_answer',
     method: 'POST',
     data: {
       "plan_id": plan_id,

@@ -97,6 +97,9 @@
             <el-tab-pane label="今日作业记录" style="width: 100%;height: 100%;">
                 <Work :v="sys.planProps.今日作业记录"></Work>
             </el-tab-pane>
+            <el-tab-pane label="空域申请">
+                <flight-area-apply></flight-area-apply>
+            </el-tab-pane>
             <el-tab-pane label="飞行计划">
                 <flight-plan></flight-plan>
             </el-tab-pane>
@@ -104,6 +107,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+import flightAreaApply from './空域申请/flightArea.vue';
 import flightPlan from './飞行计划/flightPlan.vue'
 import { useSysStatusStore } from "~/stores/sysStatus";
 const sys = useSysStatusStore()

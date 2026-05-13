@@ -2,7 +2,7 @@
 </template>
 <script lang="ts" setup>
 const 作业申请语句 = new SpeechSynthesisUtterance('收到作业申请');
-const 作业批复语句 = new SpeechSynthesisUtterance('作业已批复');
+const 作业批复语句 = new SpeechSynthesisUtterance('作业已批准');
 const 作业结束语句 = new SpeechSynthesisUtterance('作业结束');
 const 作业撤销语句 = new SpeechSynthesisUtterance('作业已撤销');
 import { onMounted, onBeforeUnmount,watch } from "vue";
@@ -34,6 +34,7 @@ function connect() {
     sys.触发完成信息查询 = Date.now()
     sys.触发网络信息查询 = Date.now()
     sys.触发飞行计划数据查询 = Date.now()
+    sys.触发空域申请数据查询 = Date.now()
     sys.网络状态 = "已连接"
     ws.send(JSON.stringify({ type: "login", content: Date.now()}));
     const loop = async () => {
@@ -85,6 +86,7 @@ function connect() {
         break;
       case "808定位数据":
         bus.uavData = obj;
+        eventbus.emit('人影-无人机定位数据',obj.data)
         break;
       case "808终端离线":
         bus.uavOffline = obj;
@@ -127,8 +129,11 @@ function connect() {
           sys.触发网络信息查询 = Date.now()
         }else if(obj.data.tableName=='subusers'){
           sys.触发系统菜单数据查询 = Date.now()
-        }else if(obj.data.tableName=='t_uav_flight_plan_log')
+        }else if(obj.data.tableName=='t_uav_flight_plan_log'){
           sys.触发飞行计划数据查询 = Date.now()
+        }else if(obj.data.tableName=='t_temp_airspace_log'){
+          sys.触发空域申请数据查询 = Date.now()
+        }
         break;
       default:
         // console.log(obj)

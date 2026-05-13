@@ -56,7 +56,7 @@
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
-          <li v-if="menuType=='人工批复'" @click="取消作业()">取消作业</li>
+          <li v-if="menuType=='人工批复'&&!user.strUnitID.startsWith('99')" @click="取消作业()">取消作业</li>
           <!-- <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <li v-if="menuType=='批量操作'" @click="批量申请()">批量申请</li>
@@ -85,7 +85,7 @@
           <li v-if="menuType=='地面作业申请'" @click="视频会议()">语音视频会议</li>
           <li v-if="menuType=='地面作业申请'" @click="语音管理()">语音数据管理</li>
           <li v-if="menuType=='人工批复'" @click="人工批复()">人工批复</li>
-          <li v-if="menuType=='人工批复'" @click="取消作业()">取消作业</li>
+          <li v-if="menuType=='人工批复'&&!user.strUnitID.startsWith('99')" @click="取消作业()">取消作业</li>
           <!-- <li v-if="menuType=='人工批复'" @click="手动移除()">手动移除</li> -->
           <li v-if="menuType=='人工批复'" @click="语音管理()">语音管理</li>
           <!-- <li v-if="menuType=='默认'" @click="手动移除()">手动移除</li> -->
@@ -122,11 +122,14 @@
     <ConfigrueUAVAirspace></ConfigrueUAVAirspace>
     <ConfigureEnclosure></ConfigureEnclosure>
     <FlightPlanView></FlightPlanView>
+    <AirspaceView></AirspaceView>
     <!-- <Overview></Overview> -->
   </div>
 </template>
 <script lang="ts" setup>
+import { ElMessageBox } from 'element-plus'
 import {getList} from './飞行计划/flightPlan.js'
+import {getList as getListAirspace} from './空域申请/flightArea.js'
 let aid = 0;
 const setting = useSettingStore();
 let enclosureList = new Array<any>();
@@ -145,6 +148,7 @@ const 数据时间 = computed(()=>{
   return ''
 })
 import FlightPlanView from './飞行计划/查看/index.vue'
+import AirspaceView from './空域申请/查看/index.vue'
 import {hasPermission,debounce,parseColor,interpolateColor} from '~/tools/index'
 import {获取净空区,获取飞行区,updateData,saveData,deleteData} from './api'
 import rocketUrl from '~/assets/rocket.svg'
@@ -469,48 +473,70 @@ function getUavBearing(route, traveled) {
 
 const dest = destination(115.692733,28.758183,110.392822265625,5)
 const pos = [dest[0],dest[1],0]
-const textData = new Array(
-  // {
-  //   "offset": [
-  //     100,
-  //     0
-  //   ],
-  //   "textColor":[255,255,0,255],
-  //   "uiTrackNo": 593,
-  //   "uiAdsAddress": 0,
-  //   "ubyTrackState": 1,
-  //   "ubyTrackQuality": 0,
-  //   "fLongitude": 115.692733,
-  //   "fLatitude": 28.758183,
-  //   "ubyAltitudeMCValid": 0,
-  //   "iAltitudeMC": 0,
-  //   "ubyAltitudeADSValid": 1,
-  //   "iAltitudeADS": 2000,
-  //   "unSsrCode": 202,
-  //   "ubyRadarDataType": 2,
-  //   "ubySim": 0,
-  //   "ubyFixTarget": 0,
-  //   "ubySpiFlag": 0,
-  //   "ubyEmergencyType": 0,
-  //   "fSpeedZ": -11.520557403564453,
-  //   "fSpeed": 5,
-  //   "fHeading": 110.392822265625,
-  //   "ubyFlyingState": 0,
-  //   "ubyEmitterCat": 5,
-  //   "strCallCode": "",
-  //   "trajectory": [
-  //     pos,pos
-  //   ],
-  //   "trail":[pos],
-  //   "lastTime": 1763036518493,
-  //   "label": "0001\n00005 0018\n120551394E41095547N",
-  //   "显示标牌":true,
-  //   "显示尾迹":true,
-  //   "显示速度矢量线":true,
-  //   "显示航迹圈":true,
-  //   "显示经纬度":true,
-  //   "显示历史轨迹":true,
-  // }
+const textData = new Array()
+const uavData = new Array(
+// {
+//   "offset": [
+//     40,
+//     -30
+//   ],
+//   "specialColor": [
+//     255,
+//     255,
+//     255,
+//     128
+//   ],
+//   "textColor": [
+//     255,
+//     255,
+//     255,
+//     128
+//   ],
+//   "显示标牌": true,
+//   "显示尾迹": false,
+//   "显示速度矢量线": true,
+//   "显示航迹圈": false,
+//   "显示经纬度": true,
+//   "显示历史轨迹": false,
+//   "uiTrackNo": 6054,
+//   "uiAdsAddress": 0,
+//   "ubyTrackState": 6,
+//   "ubyTrackQuality": 0,
+//   "fLongitude": 113.54227447509766,
+//   "fLatitude": 28.66118621826172,
+//   "ubyAltitudeMCValid": 0,
+//   "iAltitudeMC": 0,
+//   "ubyAltitudeADSValid": 1,
+//   "iAltitudeADS": 11920,
+//   "unSsrCode": 3030,
+//   "ubyRadarDataType": 3,
+//   "ubySim": 0,
+//   "ubyFixTarget": 0,
+//   "ubySpiFlag": 0,
+//   "ubyEmergencyType": 0,
+//   "fSpeedZ": 0,
+//   "fSpeed": 248.33334350585938,
+//   "fHeading": 6.673991680145264,
+//   "ubyFlyingState": 0,
+//   "ubyEmitterCat": 5,
+//   "strCallCode": "",
+//   "trajectory": [
+//     [
+//       113.56004502340747,
+//       28.79427575653417,
+//       null
+//     ]
+//   ],
+//   "trail": [
+//     [
+//       113.54227447509766,
+//       28.66118621826172,
+//       null
+//     ]
+//   ],
+//   "lastTime": 1778323537065,
+//   "label": "5726\n11920 0894\n113323218E28394027N"
+// }
 )
 let position1:[number,number] = [116.692733,29.5]
 let position2:[number,number] = [116.692733,29]
@@ -717,9 +743,100 @@ const 飞机菜单数据 = ref<any>({
 import { useSysStatusStore } from "~/stores/sysStatus"
 const sys = useSysStatusStore()
 let map: any;
+const 处理无人机定位数据 = (data:any)=>{
+  const targetData = {
+    "offset": [
+      40,
+      -30
+    ],
+    "specialColor": [
+      255,
+      255,
+      255,
+      128
+    ],
+    "textColor": [
+      255,
+      255,
+      255,
+      128
+    ],
+    "显示标牌": true,
+    "显示尾迹": false,
+    "显示速度矢量线": true,
+    "显示航迹圈": false,
+    "显示经纬度": true,
+    "显示历史轨迹": false,
+    "uiTrackNo": 6054,
+    "uiAdsAddress": 0,
+    "ubyTrackState": 6,
+    "ubyTrackQuality": 0,
+    "fLongitude": 113.54227447509766,
+    "fLatitude": 28.66118621826172,
+    "ubyAltitudeMCValid": 0,
+    "iAltitudeMC": 0,
+    "ubyAltitudeADSValid": 1,
+    "iAltitudeADS": 11920,
+    "unSsrCode": 3030,
+    "ubyRadarDataType": 3,
+    "ubySim": 0,
+    "ubyFixTarget": 0,
+    "ubySpiFlag": 0,
+    "ubyEmergencyType": 0,
+    "fSpeedZ": 0,
+    "fSpeed": 248.33334350585938,
+    "fHeading": 6.673991680145264,
+    "ubyFlyingState": 0,
+    "ubyEmitterCat": 5,
+    "strCallCode": "",
+    properties:{},
+    "trajectory": [
+      [
+        113.56004502340747,
+        28.79427575653417,
+        null
+      ]
+    ],
+    "trail": [
+      [
+        113.54227447509766,
+        28.66118621826172,
+        null
+      ]
+    ],
+    "lastTime": 1778323537065,
+    "label": "5726\n11920 0894\n113323218E28394027N"
+  }
+  targetData.label=`${data.terminalID}\n${data.altitude/100} ${(data.speed/100).toFixed(2)}\n${toDMS(data.lng,data.lat)}`
+  const results = uavData.filter(item=>item.properties.terminalID==data.terminalID)
+  if(results.length>0){
+    const targetData = results[0]
+    targetData.fLongitude = data.lng
+    targetData.fLatitude = data.lat
+    const point = destination(data.lng,data.lat, data.direction,data.speed/100 * 1)
+    targetData.trajectory = [
+      // point
+    ]
+    targetData.trail.push([data.lng,data.lat,null])
+    Object.assign(targetData.properties,data)
+  }else{
+    Object.assign(targetData.properties,data)
+    targetData.fLongitude = data.lng
+    targetData.fLatitude = data.lat
+    const point = destination(data.lng,data.lat, data.direction,data.speed/100 * 1)
+    targetData.trajectory = [
+      // point
+    ]
+    targetData.trail = [
+      [data.lng,data.lat,null]
+    ]
+    uavData.push(targetData)
+  }
+  updateUavLayer(uavData.slice())
+}
 const flightPlanPositionFunc = (row:any)=>{
   if(map){
-    const tempAirspace = row.uavFlightPlan.tempAirspace
+    const tempAirspace = row.uavFlightPlan?row.uavFlightPlan.tempAirspace:row.tempAirspace
     let airspace_shape = tempAirspace.airspace_shape
     let airspace_data = tempAirspace.airspace_data
     let temp_airspace_id = tempAirspace.temp_airspace_id
@@ -753,9 +870,108 @@ watch(()=>sys.触发飞行计划数据查询,()=>{
     sys.飞行计划数据.splice(0,sys.飞行计划数据.length,...data)
   })
 })
+watch(()=>sys.触发空域申请数据查询,()=>{
+  getListAirspace().then((data:any)=>{
+    sys.空域申请数据.splice(0,sys.空域申请数据.length,...data)
+  })
+})
+watch(sys.空域申请数据,()=>{
+  if(map){
+    sys.空域申请数据.forEach(item=>{
+      const tempAirspace = item.tempAirspace
+      let airspace_shape = tempAirspace.airspace_shape
+      let airspace_data = tempAirspace.airspace_data
+      let temp_airspace_id = tempAirspace.temp_airspace_id
+      let bottom_height = tempAirspace.bottom_height
+      let top_height = tempAirspace.top_height
+      const operate_type = item.operate_type
+      let pts = new Array()
+      let color = '#00ffff'
+      switch(operate_type){
+        case 1:
+          color = '#808080'//待申报
+          break;
+        case 2:
+          color = '#fa0'//申请中
+          break;
+        case 3:
+          color = '#00f'//审批通过
+          break;
+        case 4:
+          color = '#808080'//审批驳回
+          break;
+        case 5:
+          color = '#f00'//执行中
+          break;
+        case 6:
+          color = '#0f0'//已完成
+          break;
+        default:
+          console.log(`未知状态${operate_type}`)
+          break;
+      }
+      if(airspace_shape==2){//圆形
+        const [lng,lat,radius] = airspace_data.split(',')
+        pts = calculateFireArea([lng,lat],radius,0,360)
+      }else if(airspace_shape==1){
+        airspace_data.split('|').map((item:string)=>{
+          const [lng,lat] = item.split(',')
+          pts.push([Number(lng),Number(lat)])
+        })
+        pts.push(pts[0])//闭合
+      }
+      const data = {
+        type: 'Feature',
+        properties:{
+          color
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [pts]
+        }
+      }
+      if(map.getSource(`polygon-source_${temp_airspace_id}`)){
+        map.getSource(`polygon-source_${temp_airspace_id}`).setData(data);
+      }else{
+        map.addSource(`polygon-source_${temp_airspace_id}`, {
+          type: 'geojson',
+          data,
+        });
+        map.addLayer({
+          id: `polygon-outline_${temp_airspace_id}`,
+          type: 'line',
+          source: `polygon-source_${temp_airspace_id}`,
+          paint: {
+            'line-color': '#fff',
+            'line-width': 1,
+          }
+        });
+        map.addLayer({
+          id: `polygon-fill_${temp_airspace_id}`,
+          type: 'fill',
+          source: `polygon-source_${temp_airspace_id}`,
+          paint: {
+            'fill-color': ['get','color'],
+            'fill-opacity': 0.4,
+          }
+        });
+        // map.addLayer({
+        //   id: `polygon-3d_${temp_airspace_id}`,
+        //   type: 'fill-extrusion',
+        //   source: `polygon-source_${temp_airspace_id}`,
+        //   paint: {
+        //     'fill-extrusion-color': ['get','color'],
+        //     'fill-extrusion-height': top_height,
+        //     'fill-extrusion-base': bottom_height,
+        //     'fill-extrusion-opacity': 0.6
+        //   }
+        // });
+      }
+    })
+  }
+})
 watch(sys.飞行计划数据,()=>{
   if(map){
-    console.log('------->',sys.飞行计划数据)
     sys.飞行计划数据.forEach(item=>{
       const tempAirspace = item.uavFlightPlan.tempAirspace
       let airspace_shape = tempAirspace.airspace_shape
@@ -829,21 +1045,21 @@ watch(sys.飞行计划数据,()=>{
           type: 'fill',
           source: `polygon-source_${temp_airspace_id}`,
           paint: {
-            'fill-color': '#000',
+            'fill-color': ['get','color'],
             'fill-opacity': 0.4,
           }
         });
-        map.addLayer({
-          id: `polygon-3d_${temp_airspace_id}`,
-          type: 'fill-extrusion',
-          source: `polygon-source_${temp_airspace_id}`,
-          paint: {
-            'fill-extrusion-color': ['get','color'],
-            'fill-extrusion-height': top_height,
-            'fill-extrusion-base': bottom_height,
-            'fill-extrusion-opacity': 0.6
-          }
-        });
+        // map.addLayer({
+        //   id: `polygon-3d_${temp_airspace_id}`,
+        //   type: 'fill-extrusion',
+        //   source: `polygon-source_${temp_airspace_id}`,
+        //   paint: {
+        //     'fill-extrusion-color': ['get','color'],
+        //     'fill-extrusion-height': top_height,
+        //     'fill-extrusion-base': bottom_height,
+        //     'fill-extrusion-opacity': 0.6
+        //   }
+        // });
       }
     })
   }
@@ -868,6 +1084,11 @@ const deckOverlay2 = new MapboxOverlay({
 });
 // 用于作业点标牌显示控制
 const deckOverlay3 = new MapboxOverlay({
+  interleaved: false, // 性能优化
+  layers: [],
+});
+// 无人机显示控制图层
+const deckOverlay4 = new MapboxOverlay({
   interleaved: false, // 性能优化
   layers: [],
 });
@@ -1090,14 +1311,14 @@ function aircraft02(textData:any) {
           marker: {
             x: 0,
             y: 0,
-            width: 443,
+            width: 500,
             height: 174,
             mask: false,
           },
           active: {
             x: 0,
             y: 174,
-            width: 443,
+            width: 500,
             height: 174,
             mask: false,
           }
@@ -1155,7 +1376,7 @@ function aircraft02(textData:any) {
         getBorderWidth: 1,
         backgroundPadding:[4,4],
         backgroundBorderRadius:0,
-        getPixelOffset:(d:any) => [d.offset[0]+10,d.offset[1]],
+        getPixelOffset:(d:any) => [d.offset[0],d.offset[1]],
         parameters: {
           // 关闭深度测试
           depthTest: false,
@@ -1470,6 +1691,200 @@ function renderZydLayer(zydData:any){
   })
 }
 renderZydLayer(zydData)
+function updateUavLayer(textData:any) {
+  deckOverlay4.setProps({
+    layers: [
+      new ScreenLineLayer({
+        // visible:setting.人影.监控.planeLabel,
+        id: 'screen-line',
+        data: textData.filter((d:any) => d.显示标牌),
+        getPosition: (d:any) => [d.fLongitude, d.fLatitude],
+        getAngle: (d:any) => 0,
+        getLength: (d:any) => 10,
+        getColor: getLabelColor
+      }),
+      new PathLayer({
+        // visible:setting.人影.监控.track,
+        id: 'path-trail',
+        data:textData.filter((d:any) => d.显示历史轨迹),
+        getPath: (d:any) => d.trail,
+        getColor: (d:any) => d==hoverObject?[255,255,0,255]:[255, 255, 255],
+        getWidth: 0.1,
+        widthUnits: 'pixels',
+      }),
+      new ScatterplotLayer({
+        // visible:setting.人影.监控.track,
+        id: 'path-trail-points',
+        data:textData.filter((d:any) => d.显示尾迹).flatMap((d:any) => d.trail),
+        getPosition: (d:any) => d,
+        getRadius: 2,        // 米（或像素，见下）
+        radiusUnits: 'pixels',
+        getFillColor: [0, 180, 255, 160],
+        pickable: false,
+      }),
+      new IconLayer({
+        // visible:setting.人影.监控.planeLabel,
+        id: 'billboard-layer',
+        pickable:true,
+        data: textData.filter((item:any) => item.显示标牌),
+        iconAtlas:billboardUrl,
+        iconMapping:{
+          marker: {
+            x: 0,
+            y: 0,
+            width: 500,
+            height: 174,
+            mask: false,
+          },
+          active: {
+            x: 0,
+            y: 174,
+            width: 500,
+            height: 174,
+            mask: false,
+          }
+        },
+        getPixelOffset: (d:any) => [d.offset[0]+80,d.offset[1]],
+        getIcon: (d:any) => d==hoverObject?'active':'marker',
+        getPosition: (d:any) => [d.properties.lng, d.properties.lat],
+        getSize: 152,
+        sizeScale: 0.45,
+        billboard: true,
+        sizeUnits: 'pixels',
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateUavLayer(textData.slice())
+          }
+        },
+        updateTriggers:{
+          getPixelOffset: textData.map((d:any) => d.offset),
+          getBorderColor: hoverObject,
+        },
+      }),
+      new TextLayer({
+        // visible:setting.人影.监控.planeLabel,
+        id: 'text-layer',
+        getWidth:500,
+        data:textData.filter((item:any) => item.显示标牌),
+        pickable: false,
+        getPosition: d => [d.properties.lng, d.properties.lat],
+        getText: d => d.label,
+        getColor: getLabelColor,
+        getSize: 14,
+        getAngle: 0,
+        getTextAnchor: 'start',
+        getAlignmentBaseline: 'center',
+        // fontFamily: '"PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif',
+        // fontSettings: {
+        //   sdf: false,
+        //   // 防止生成 atlas 过慢，可限制生成大小
+        //   buffer: 3,
+        //   size: 6400,
+        // },
+        fontWeight: 'bold',
+        borderWidth: 2,
+        borderColor: [0, 0, 0, 255],
+        fontSettings: {
+          sdf:true,
+          characterSet: 'auto', // ✅ 自动扫描数据中的字符
+        },
+        billboard: true,  // 始终朝向屏幕
+        background: false,
+        getBackgroundColor: [255,255,255,0.1],
+        border: true,
+        getBorderColor: d=>d==hoverObject? getLabelColor(d): [0,0,0,0],
+        getBorderWidth: 1,
+        backgroundPadding:[4,4],
+        backgroundBorderRadius:0,
+        getPixelOffset:(d:any) => [d.offset[0],d.offset[1]],
+        parameters: {
+          // 关闭深度测试
+          depthTest: false,
+          // 明确 source-over 混合
+          blend: true,
+          blendColorSrcFactor: 'src-alpha',
+          blendColorDstFactor: 'one-minus-src-alpha',
+          blendAlphaSrcFactor: 'one',
+          blendAlphaDstFactor: 'one-minus-src-alpha'
+        }
+      }),
+      new PathLayer({
+        // visible:setting.人影.监控.速度矢量线,
+        id: 'path-layer',
+        data:textData.filter((d:any) => d.显示速度矢量线),
+        getPath: (d:any) => [[d.fLongitude, d.fLatitude],...d.trajectory],
+        getColor: (d:any) => d==hoverObject?[255,255,255,255]:[255,255,255,255],
+        getWidth: 1,
+        widthUnits: 'pixels',
+      }),
+      new IconLayer({
+        pickable:true,
+        id: 'icon-layer2',
+        data: textData,
+        getIcon: (d:any) => ({
+          url: uavImageData.uavYellow,
+          width: 32,
+          height: 32,
+        }),
+        getAngle: (d:any) => -d.properties.direction,
+        getPosition: (d:any) => [d.properties.lng, d.properties.lat],
+        getSize: (d:any) => 24,
+        sizeScale: 1,
+        billboard: false,
+        onHover(info,evt){
+          if(!mouseDownEvt){
+            hoverObject = info.object
+            updateUavLayer(textData.slice())
+          }
+        },
+      }),
+      new ScatterplotLayer({
+        // visible: setting.人影.监控.显示航迹圈,
+        id: 'circles',
+        data: textData.filter((d:any) => d.显示航迹圈),
+        pickable: false,
+        getPosition: (d:any) => [d.properties.lng, d.properties.lat],
+        getRadius: (d:any) => 10e3, // 单位由 radiusUnits 决定
+        radiusUnits: 'meters',          // 可省略（默认 meters）
+        getFillColor: [0, 0, 0, 0],
+        stroked: true,
+        getLineColor: d=>d==hoverObject?[255, 255, 255, 255]:d.textColor,
+        lineWidthUnits: 'pixels',
+        getLineWidth: 1,
+        radiusMinPixels: 2,
+      }),
+      // new IconLayer({
+      //   id: 'icon-layer',
+      //   data: textData,
+      //   getIcon: d => ({
+      //     url: squareImageData.airplane,
+      //     width: 8,
+      //     height: 8,
+      //   }),
+      //   getPosition: d => [d.fLongitude, d.fLatitude],
+      //   getSize: d => 8,
+      //   sizeScale: 1,
+      //   billboard: false,
+      // }),
+      // new ScatterplotLayer({
+      //   id: 'circles',
+      //   data: textData,
+      //   pickable: false,
+      //   getPosition: d => [d.fLongitude, d.fLatitude],
+      //   getRadius: d => 10e3, // 单位由 radiusUnits 决定
+      //   radiusUnits: 'meters',          // 可省略（默认 meters）
+      //   getFillColor: [0, 0, 0, 0],
+      //   stroked: true,
+      //   getLineColor: [255, 255, 255, 255],
+      //   lineWidthUnits: 'pixels',
+      //   getLineWidth: 1,
+      //   radiusMinPixels: 2,
+      // })
+    ]
+  })
+}
+updateUavLayer(uavData.slice())
 import Frame from '~/frames/frame.vue'
 import { destination,getDistance } from '~/myComponents/map/js/core.js'
 import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
@@ -1566,6 +1981,7 @@ import MYJCurl from '~/assets/MYJC.png?url'
 import JYJCurl from '~/assets/JYJC.png?url'
 import upUrl from '~/assets/up.svg?url'
 import 地标Url from '~/assets/地标.svg?url'
+import uavUrl from '~/assets/uav.svg?url'
 let sixMinutesTimer:any;
 let fifteenMinutesTimer:any;
 let threeMinutesTimer:any;
@@ -1771,6 +2187,7 @@ let 批量申请 = () => {
         }
       }
     }
+    item.beginTime = moment().format('HH:mm:ss')
     return true
   })
   batchList.splice(0,batchList.length,...(list as never[]))
@@ -1862,6 +2279,7 @@ let 批量批复 = () => {
       if(item.strID==zydData[i].properties.strID){
         if(['作业申请待批复'].includes(zydData[i].properties.ubyStatus)){
           item.properties = zydData[i].properties
+          item.properties.beginTime = moment().format('HH:mm:ss')
           return true
         }
       }
@@ -1933,6 +2351,7 @@ const 人工批复 = () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   $('.menu2').css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
+  properties.beginTime = moment().format('HH:mm:ss');
   emits("update:prevReplyShow", true);
   emits("update:prevReplyData", properties);
 }
@@ -1940,7 +2359,7 @@ function 取消作业(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   $('.menu2').css({display:'none'})
   let properties = $(stationMenuRef.value as HTMLDivElement).data();
-  取消作业接口(properties.strWorkID,properties.strID)
+  取消作业接口(properties.strWorkID)
 }
 function 作业强制终止(){
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
@@ -2022,7 +2441,7 @@ let 作业申请 = () => {
   $(stationMenuRef.value as HTMLDivElement).css({display:'none'})
   $('.menu2').css({display:'none'})
   emits("update:prevRequestShow", true);
-  properties.beginTime = moment().format('HH:mm:ss')
+  properties.beginTime = moment().format('HH:mm:ss');
   emits("update:prevRequestData", properties);
 };
 import { calculateFireArea } from "~/tools/index.ts";
@@ -2148,6 +2567,7 @@ const updateLabelPosittion = (e:MouseEvent)=>{
       hoverObject.offset = [offsetX,offsetY]
       updateTextLayer(textData.slice())
       renderZydLayer(zydData.slice())
+      updateUavLayer(uavData.slice())
     }
   }else if(!hoverObject){
     hoverObject = null
@@ -2160,6 +2580,7 @@ const mousemoveFunc = (e:any)=>{
   mapStatus.经纬度 = toDMS(e.lngLat.lng,e.lngLat.lat)
 }
 const zoomFunc = () => {
+  mouseDownEvt = null
   $('.menu1').css({ display: 'none' })
   mapStatus.zoom = map.getZoom()
 };
@@ -2176,7 +2597,11 @@ const moveFunc = () => {
 };
 function 网络上报(data:prevRequestDataType){
   airspaceApply(data).then((res:any)=>{
-    console.log('空域申请成功')
+    if(res.data.code=='200'){
+      console.log('空域申请成功')
+    }else if(res.data.code=='500'){
+      ElMessage.error(res.data.data.error||'接口调用失败')
+    }
   })
   emits('update:prevRequestShow',false)//关闭弹窗
 }
@@ -2673,7 +3098,8 @@ function 处理ADSB(d:Array<{
   }
   map?.getSource("adsb原数据")?.setData(data);
 }
-// axios.get('https://opensky-network.org/api/states/all').then(res=>{
+// axios.get('/ads-b').then(res=>{
+//   console.log(res.data.states)
 //   res.data.states.map((item:any)=>{
 //     const [
 //       icao24,           // 0 飞机唯一标识（ICAO 24-bit address）
@@ -2879,15 +3305,13 @@ watch(()=>setting.海岸线,()=>{
   map.setLayoutProperty('海岸线图层','visibility',setting.海岸线?'visible':'none')
 })
 watch(()=>setting.省界,()=>{
-  map.setLayoutProperty('省界-fill','visibility',setting.省界?'visible':'none')
-  map.setLayoutProperty('省界-outline','visibility',setting.省界?'visible':'none')
+  加载省界()
 })
 watch(()=>setting.县界,()=>{
-  map.setLayoutProperty('县界-fill','visibility',setting.县界?'visible':'none')
-  map.setLayoutProperty('县界-outline','visibility',setting.县界?'visible':'none')
+  加载县界()
 })
 watch(()=>setting.地标点,()=>{
-  map.setLayoutProperty('四级地标图层','visibility',setting.地标点?'visible':'none')
+  加载地标数据()
 })
 watch(()=>setting.机场管制区,()=>{
   map.setLayoutProperty('polygons-fill','visibility',setting.机场管制区?'visible':'none')
@@ -2915,11 +3339,10 @@ watch(()=>setting.飞行管制区,()=>{
   map.setLayoutProperty('飞行管制区图层','visibility',setting.飞行管制区?'visible':'none')
 })
 watch(()=>setting.障碍物,()=>{
-  map.setLayoutProperty('障碍物图层','visibility',setting.障碍物?'visible':'none')
+  加载障碍物()
 })
 watch(()=>setting.人影.监控.糖果图,()=>{
-  map?.setLayoutProperty('净空区','visibility',setting.人影.监控.糖果图?'visible':'none')
-  map?.setLayoutProperty('净空区_line','visibility',setting.人影.监控.糖果图?'visible':'none')
+  加载糖果图()
 })
 watch(()=>setting.人影.监控.tileOpacity,(opacity)=>{
   map.setPaintProperty('simple-tiles','raster-opacity',opacity)
@@ -3038,7 +3461,415 @@ import { parse } from 'ol/expr/expression.js';
 let squareImageData:any = null
 let planeImageData:any = null
 let rocketImageData:any = null
+let uavImageData:any = null
 let extrapolationImageData:any = null
+function 加载障碍物(){
+  if(!map.getLayer('障碍物图层')){
+    if(setting.障碍物){
+      障碍物().then((res:any)=>{
+        const features = res.data.results.map((item:any)=>{
+          return {
+            type: 'Feature',
+            properties: { color: '#BBB',name:item.name },
+            geometry: {
+              type: 'Point',
+              coordinates: fromDMS(item.pos)
+            }
+          }
+        })
+        map.addSource("障碍物", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features,
+          },
+        });
+        map.addLayer({
+          id: "障碍物图层",
+          type: "symbol",
+          source: "障碍物",
+          layout: {
+            "icon-image": "up",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            visibility: setting.障碍物 ? 'visible' : 'none',
+            "text-pitch-alignment": "map",
+            "text-field": ["get", "name"],
+            "text-font": ["simkai"],
+            'icon-size': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              4, 0.25,
+              5, 0.25,
+              8, 0.6,
+              15, 1.0
+            ],
+            'text-size':10,
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "left",
+            "text-line-height": 1,
+            "text-justify": "left",
+            "text-offset": [1, 0],
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "icon-opacity": 1,
+            "text-color": "white",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+          },
+        });
+      })
+    }
+  }else{
+    map.setLayoutProperty('障碍物图层','visibility',setting.障碍物?'visible':'none')
+  }
+
+}
+function 加载糖果图(){
+  if(!map.getLayer('净空区')){
+    if(setting.人影.监控.糖果图){
+      // 形状00线形;01矩形;02多边形;03圆形,04扇形,05椭圆
+      获取净空区().then((res) => {
+        let a = {
+          type: "FeatureCollection",
+          features: new Array(),
+        };
+        // console.log(res.data.results);
+        for (let i = 0; i < res.data.results.length; i++) {
+          let v = res.data.results[i];
+          let strLngLatList = v.points.match(
+            RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
+          );
+          let list = strLngLatList.map((item: any) => [
+            Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
+            Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
+          ]);
+          if (list.length > 2) {
+            const feature = {
+              id: v.id,
+              type: "Feature",
+              properties: {
+                color: v.standby2,
+              },
+              geometry: {
+                type: "Polygon",
+                coordinates: [list],
+              },
+            }
+            a.features.push(feature);
+          } else {
+            console.error("v.enclosure_type == 02," + "list.length=" + list.length);
+          }
+          // if (v.enclosure_type == "06") {
+          //   return;
+          //   a.features.push({
+          //     id: v.id,
+          //     type: "Feature",
+          //     properties: {
+          //       color: v.standby2,
+          //     },
+          //     geometry: {
+          //       type: "Point",
+          //       coordinates: list[0],
+          //     },
+          //   } as never);
+          // } else if (v.enclosure_type == "00") {
+          //   return;
+          //   a.features.push({
+          //     id: v.id,
+          //     type: "Feature",
+          //     properties: {
+          //       color: v.standby2,
+          //     },
+          //     geometry: {
+          //       type: "LineString",
+          //       coordinates: list,
+          //     },
+          //   } as never);
+          // } else if (v.enclosure_type == "02"&&v.standby1 == "S") {
+          // } else if (v.enclosure_type == "03") {
+          //   return;
+          //   if (v.circle_center) {
+          //     let center = v.circle_center
+          //       .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
+          //       .split(",")
+          //       .map((v: any) => Number(v));
+          //     a.features.push({
+          //       id: v.id,
+          //       type: "Feature",
+          //       properties: {
+          //         isCircle: true,
+          //         center,
+          //         radiusInKm: v.radius / 1000,
+          //         color: v.standby2,
+          //       },
+          //       geometry: {
+          //         type: "Polygon",
+          //         coordinates: [list],
+          //       },
+          //     } as never);
+          //   } else {
+          //     console.error("v.circle_center=" + v.circle_center);
+          //   }
+          // }
+        }
+        map.addLayer({
+          'id': '净空区',
+          'type': 'fill',
+          'source': {
+            "type":"geojson",
+            "data": a
+          },
+          'layout': {
+            'visibility':setting.人影.监控.糖果图?'visible':'none',
+          },
+          'paint': {
+            'fill-color':'#f00',
+            'fill-opacity':0.3,
+            'fill-outline-color':'transparent'
+          }
+        })
+        map.addLayer({
+          'id': '净空区_line',
+          'type': 'line',
+          'source': {
+            "type":"geojson",
+            "data": a
+          },
+          'layout': {
+            'visibility':setting.人影.监控.糖果图?'visible':'none',
+          },
+          'paint': {
+            'line-color':'#f00',
+            'line-opacity':0.5,
+            'line-width':2,
+          }
+        })
+      });
+    }
+  }else{
+    map?.setLayoutProperty('净空区','visibility',setting.人影.监控.糖果图?'visible':'none')
+    map?.setLayoutProperty('净空区_line','visibility',setting.人影.监控.糖果图?'visible':'none')
+  }
+}
+function 加载县界(){
+  if(!map.getLayer('县界-fill')){
+    if(setting.县界){
+      县界().then(res=>{
+        const featureCollectionData = {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+        res.data.results.forEach((item:any)=>{
+          const feature = {
+            type: 'Feature',
+            properties: { color: '#BBB' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: new Array()
+            }
+          }
+          const arr = item.points.split(' ')
+          const points = arr.map((item:string)=>fromDMS(item))
+          if(arr[0]!==arr[arr.length - 1]){
+            points.push(points[0])
+          }
+          feature.geometry.coordinates.push(points)
+          featureCollectionData.features.push(feature)
+        })
+        map.addSource('县界', {
+          type: 'geojson',
+          data: featureCollectionData
+        });
+
+        map.addLayer({
+          id: '县界-fill',
+          type: 'fill',
+          source: '县界',
+          layout:{
+            visibility:setting.县界?'visible':'none'
+          },
+          paint: {
+            'fill-color': ['get', 'color'],
+            'fill-opacity': 0.2
+          }
+        });
+        map.addLayer({
+          id: '县界-outline',
+          type: 'line',
+          source: '县界',
+          layout:{
+            visibility:setting.县界?'visible':'none'
+          },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 2
+          }
+        });
+
+      })
+    }
+  }else{
+    map.setLayoutProperty('县界-fill','visibility',setting.县界?'visible':'none')
+    map.setLayoutProperty('县界-outline','visibility',setting.县界?'visible':'none')
+  }
+}
+function 加载省界(){
+  if(!map.getLayer('省界-outline')){
+    if(setting.省界){
+      省界().then(res=>{
+        const featureCollectionData = {
+          type: 'FeatureCollection',
+          features: new Array()
+        }
+        res.data.results.forEach((item:any)=>{
+          const feature = {
+            type: 'Feature',
+            properties: { color: '#BBB' },
+            geometry: {
+              type: 'Polygon',
+              coordinates: new Array()
+            }
+          }
+          const arr = item.points.split(' ')
+          const points = arr.map((item:string)=>fromDMS(item))
+          if(arr[0]!==arr[arr.length - 1]){
+            points.push(points[0])
+          }
+          feature.geometry.coordinates.push(points)
+          featureCollectionData.features.push(feature)
+        })
+        map.addSource('省界', {
+          type: 'geojson',
+          data: featureCollectionData
+        });
+
+        map.addLayer({
+          id: '省界-fill',
+          type: 'fill',
+          source: '省界',
+          layout:{
+            visibility:setting.省界?'visible':'none'
+          },
+          paint: {
+            'fill-color': ['get', 'color'],
+            'fill-opacity': 0.2
+          }
+        });
+        map.addLayer({
+          id: '省界-outline',
+          type: 'line',
+          source: '省界',
+          layout:{
+            visibility:setting.省界?'visible':'none'
+          },
+          paint: {
+            'line-color': ['get', 'color'],
+            'line-width': 2
+          }
+        });
+
+      })
+    }
+  }else{
+    map.setLayoutProperty('省界-fill','visibility',setting.省界?'visible':'none')
+    map.setLayoutProperty('省界-outline','visibility',setting.省界?'visible':'none')
+  }
+}
+function 加载地标数据(){
+  if(!map.getLayer("四级地标图层")){
+    if(setting.地标点){
+      地标('四级地标').then(res=>{
+        const features = res.data.results.map((item:any)=>{
+          return {
+            type: 'Feature',
+            properties: { color: '#BBB',name:item.name },
+            geometry: {
+              type: 'Point',
+              coordinates: fromDMS(item.pos)
+            }
+          }
+        })
+        map.addSource("四级地标", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features,
+          },
+        });
+        map.addLayer({
+          id: "四级地标图层",
+          type: "symbol",
+          source: "四级地标",
+          minzoom:7,
+          layout: {
+            "visibility":setting.地标点?'visible':'none',
+            "icon-image": "地标",
+            // "icon-size": {
+            //   base: 1,
+            //   stops: [
+            //     [0, 0.5],
+            //     [22, 1],
+            //   ],
+            // },
+            "icon-rotation-alignment": "map",
+            "icon-allow-overlap": true,
+            "icon-ignore-placement": true,
+            "text-pitch-alignment": "map",
+            "text-field": ["get", "name"],
+            "text-font": ["simkai"],
+            "text-transform": "uppercase",
+            // "text-letter-spacing": 0.05,
+            "text-anchor": "left",
+            "text-line-height": 1,
+            "text-justify": "left",
+            "text-offset": [1, 0],
+            "text-size":10,
+            "text-ignore-placement": true,
+            "text-allow-overlap": true,
+            "text-rotation-alignment": "map",
+            "text-max-width": 400,
+          },
+          paint: {
+            "text-color": "gray",
+            "text-halo-color": "black",
+            "text-halo-width": 1,
+            'text-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              7, 0,   // zoom <= 9 不显示文字
+              10, 1   // zoom >= 10 显示文字
+            ],
+            'icon-opacity': [
+              'interpolate',
+              ['linear'],
+              ['zoom'],
+              7, 0,   // zoom <= 9 不显示文字
+              10, 1   // zoom >= 10 显示文字
+            ],
+          },
+        });
+      })
+    }
+  }else{
+    map.setLayoutProperty('四级地标图层','visibility',setting.地标点?'visible':'none')
+  }
+}
 onMounted(async() => {
   squareImageData = await loadImage(squareUrl,8,8,{
     airplane:{
@@ -3046,6 +3877,20 @@ onMounted(async() => {
     },
     airplaneMock:{
       style: 'opacity:1.0;fill:#ffffff',
+    },
+  },true)
+  uavImageData = await loadImage(uavUrl,32,32,{
+    uavGreen:{
+      style: 'opacity:1.0;fill:#0f0',
+    },
+    uavYellow:{
+      style: 'opacity:1.0;fill:#ff0',
+    },
+    uavRed:{
+      style: 'opacity:1.0;fill:#f00',
+    },
+    uavNormal:{
+      style: 'opacity:1.0;fill:#88ff88',
     },
   },true)
   planeImageData = await loadImage(planeUrl,24,24,{
@@ -3111,6 +3956,7 @@ onMounted(async() => {
   map.addControl(deckOverlay)
   map.addControl(deckOverlay2)
   map.addControl(deckOverlay3)
+  map.addControl(deckOverlay4)
   map.getCanvas().style.cursor = 'default';
   const GISTYPE={
     GIS_POINT: 1,
@@ -3133,6 +3979,9 @@ onMounted(async() => {
     if(!map)return;
     getList().then((data:any)=>{
       sys.飞行计划数据.splice(0,sys.飞行计划数据.length,...data)
+    })
+    getListAirspace().then((data:any)=>{
+      sys.空域申请数据.splice(0,sys.空域申请数据.length,...data)
     })
     if(!user.strUnitID.startsWith('99')){
       const adcode = user.strUnitID.substring(0,6)
@@ -3373,7 +4222,7 @@ onMounted(async() => {
               iMaxShotHei: item.iMaxShotHei,
               iWeapon: Number(item.strWeapon),
               iWorkType: 1,
-              beginTime: moment().format("HH:mm:ss"),
+              beginTime: '00:00:00',
               unitName: item.unitName,
               duration: 60,
               "icon-image": item.iType == 1 ? "my-rocket" : "my-rocket",
@@ -6366,184 +7215,11 @@ onMounted(async() => {
         }
       });
     })
-    省界().then(res=>{
-      const featureCollectionData = {
-        type: 'FeatureCollection',
-        features: new Array()
-      }
-      res.data.results.forEach((item:any)=>{
-        const feature = {
-          type: 'Feature',
-          properties: { color: '#BBB' },
-          geometry: {
-            type: 'Polygon',
-            coordinates: new Array()
-          }
-        }
-        const arr = item.points.split(' ')
-        const points = arr.map((item:string)=>fromDMS(item))
-        if(arr[0]!==arr[arr.length - 1]){
-          points.push(points[0])
-        }
-        feature.geometry.coordinates.push(points)
-        featureCollectionData.features.push(feature)
-      })
-      map.addSource('省界', {
-        type: 'geojson',
-        data: featureCollectionData
-      });
-
-      map.addLayer({
-        id: '省界-fill',
-        type: 'fill',
-        source: '省界',
-        layout:{
-          visibility:setting.省界?'visible':'none'
-        },
-        paint: {
-          'fill-color': ['get', 'color'],
-          'fill-opacity': 0.2
-        }
-      });
-      map.addLayer({
-        id: '省界-outline',
-        type: 'line',
-        source: '省界',
-        layout:{
-          visibility:setting.省界?'visible':'none'
-        },
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': 2
-        }
-      });
-
-    })
-    县界().then(res=>{
-      const featureCollectionData = {
-        type: 'FeatureCollection',
-        features: new Array()
-      }
-      res.data.results.forEach((item:any)=>{
-        const feature = {
-          type: 'Feature',
-          properties: { color: '#BBB' },
-          geometry: {
-            type: 'Polygon',
-            coordinates: new Array()
-          }
-        }
-        const arr = item.points.split(' ')
-        const points = arr.map((item:string)=>fromDMS(item))
-        if(arr[0]!==arr[arr.length - 1]){
-          points.push(points[0])
-        }
-        feature.geometry.coordinates.push(points)
-        featureCollectionData.features.push(feature)
-      })
-      map.addSource('县界', {
-        type: 'geojson',
-        data: featureCollectionData
-      });
-
-      map.addLayer({
-        id: '县界-fill',
-        type: 'fill',
-        source: '县界',
-        layout:{
-          visibility:setting.县界?'visible':'none'
-        },
-        paint: {
-          'fill-color': ['get', 'color'],
-          'fill-opacity': 0.2
-        }
-      });
-      map.addLayer({
-        id: '县界-outline',
-        type: 'line',
-        source: '县界',
-        layout:{
-          visibility:setting.县界?'visible':'none'
-        },
-        paint: {
-          'line-color': ['get', 'color'],
-          'line-width': 2
-        }
-      });
-
-    })
-    地标('四级地标').then(res=>{
-      const features = res.data.results.map((item:any)=>{
-        return {
-          type: 'Feature',
-          properties: { color: '#BBB',name:item.name },
-          geometry: {
-            type: 'Point',
-            coordinates: fromDMS(item.pos)
-          }
-        }
-      })
-      map.addSource("四级地标", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features,
-        },
-      });
-      map.addLayer({
-        id: "四级地标图层",
-        type: "symbol",
-        source: "四级地标",
-        minzoom:7,
-        layout: {
-          "visibility":setting.地标点?'visible':'none',
-          "icon-image": "地标",
-          // "icon-size": {
-          //   base: 1,
-          //   stops: [
-          //     [0, 0.5],
-          //     [22, 1],
-          //   ],
-          // },
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          "text-pitch-alignment": "map",
-          "text-field": ["get", "name"],
-          "text-font": ["simkai"],
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "left",
-          "text-line-height": 1,
-          "text-justify": "left",
-          "text-offset": [1, 0],
-          "text-size":10,
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "text-color": "gray",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-          'text-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            7, 0,   // zoom <= 9 不显示文字
-            10, 1   // zoom >= 10 显示文字
-          ],
-          'icon-opacity': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            7, 0,   // zoom <= 9 不显示文字
-            10, 1   // zoom >= 10 显示文字
-          ],
-        },
-      });
-    })
+    加载地标数据()
+    加载省界()
+    加载县界()
+    加载糖果图()
+    加载障碍物()
     机场管制区().then(res=>{
       const featureCollectionData = {
         type: 'FeatureCollection',
@@ -6894,73 +7570,6 @@ onMounted(async() => {
         }
       });
     })
-    障碍物().then((res:any)=>{
-      const features = res.data.results.map((item:any)=>{
-        return {
-          type: 'Feature',
-          properties: { color: '#BBB',name:item.name },
-          geometry: {
-            type: 'Point',
-            coordinates: fromDMS(item.pos)
-          }
-        }
-      })
-      map.addSource("障碍物", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features,
-        },
-      });
-      map.addLayer({
-        id: "障碍物图层",
-        type: "symbol",
-        source: "障碍物",
-        layout: {
-          "icon-image": "up",
-          // "icon-size": {
-          //   base: 1,
-          //   stops: [
-          //     [0, 0.5],
-          //     [22, 1],
-          //   ],
-          // },
-          "icon-rotation-alignment": "map",
-          "icon-allow-overlap": true,
-          "icon-ignore-placement": true,
-          visibility: setting.障碍物 ? 'visible' : 'none',
-          "text-pitch-alignment": "map",
-          "text-field": ["get", "name"],
-          "text-font": ["simkai"],
-          'icon-size': [
-            'interpolate',
-            ['linear'],
-            ['zoom'],
-            4, 0.25,
-            5, 0.25,
-            8, 0.6,
-            15, 1.0
-          ],
-          'text-size':10,
-          "text-transform": "uppercase",
-          // "text-letter-spacing": 0.05,
-          "text-anchor": "left",
-          "text-line-height": 1,
-          "text-justify": "left",
-          "text-offset": [1, 0],
-          "text-ignore-placement": true,
-          "text-allow-overlap": true,
-          "text-rotation-alignment": "map",
-          "text-max-width": 400,
-        },
-        paint: {
-          "icon-opacity": 1,
-          "text-color": "white",
-          "text-halo-color": "black",
-          "text-halo-width": 1,
-        },
-      });
-    })
     // map.addLayer(plane)
     // map.addLayer(CustomLayer)
     // map.addLayer(new PointLayer())
@@ -7072,124 +7681,6 @@ onMounted(async() => {
 
 
 
-    // 形状00线形;01矩形;02多边形;03圆形,04扇形,05椭圆
-    获取净空区().then((res) => {
-      let a = {
-        type: "FeatureCollection",
-        features: new Array(),
-      };
-      // console.log(res.data.results);
-      for (let i = 0; i < res.data.results.length; i++) {
-        let v = res.data.results[i];
-        let strLngLatList = v.points.match(
-          RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g)
-        );
-        let list = strLngLatList.map((item: any) => [
-          Number(item.match(RegExp(/(\-|\+)?\d+(\.\d+)?(?=,)/))[0]),
-          Number(item.match(RegExp(/(?<=,)(\-|\+)?\d+(\.\d+)?/))[0]),
-        ]);
-        if (list.length > 2) {
-          const feature = {
-            id: v.id,
-            type: "Feature",
-            properties: {
-              color: v.standby2,
-            },
-            geometry: {
-              type: "Polygon",
-              coordinates: [list],
-            },
-          }
-          a.features.push(feature);
-        } else {
-          console.error("v.enclosure_type == 02," + "list.length=" + list.length);
-        }
-        // if (v.enclosure_type == "06") {
-        //   return;
-        //   a.features.push({
-        //     id: v.id,
-        //     type: "Feature",
-        //     properties: {
-        //       color: v.standby2,
-        //     },
-        //     geometry: {
-        //       type: "Point",
-        //       coordinates: list[0],
-        //     },
-        //   } as never);
-        // } else if (v.enclosure_type == "00") {
-        //   return;
-        //   a.features.push({
-        //     id: v.id,
-        //     type: "Feature",
-        //     properties: {
-        //       color: v.standby2,
-        //     },
-        //     geometry: {
-        //       type: "LineString",
-        //       coordinates: list,
-        //     },
-        //   } as never);
-        // } else if (v.enclosure_type == "02"&&v.standby1 == "S") {
-        // } else if (v.enclosure_type == "03") {
-        //   return;
-        //   if (v.circle_center) {
-        //     let center = v.circle_center
-        //       .match(RegExp(/(\-|\+)?\d+(\.\d+)?,(\-|\+)?\d+(\.\d+)?/g))[0]
-        //       .split(",")
-        //       .map((v: any) => Number(v));
-        //     a.features.push({
-        //       id: v.id,
-        //       type: "Feature",
-        //       properties: {
-        //         isCircle: true,
-        //         center,
-        //         radiusInKm: v.radius / 1000,
-        //         color: v.standby2,
-        //       },
-        //       geometry: {
-        //         type: "Polygon",
-        //         coordinates: [list],
-        //       },
-        //     } as never);
-        //   } else {
-        //     console.error("v.circle_center=" + v.circle_center);
-        //   }
-        // }
-      }
-      map.addLayer({
-        'id': '净空区',
-        'type': 'fill',
-        'source': {
-          "type":"geojson",
-          "data": a
-        },
-        'layout': {
-          'visibility':setting.人影.监控.糖果图?'visible':'none',
-        },
-        'paint': {
-          'fill-color':'#f00',
-          'fill-opacity':0.3,
-          'fill-outline-color':'transparent'
-        }
-      })
-      map.addLayer({
-        'id': '净空区_line',
-        'type': 'line',
-        'source': {
-          "type":"geojson",
-          "data": a
-        },
-        'layout': {
-          'visibility':setting.人影.监控.糖果图?'visible':'none',
-        },
-        'paint': {
-          'line-color':'#f00',
-          'line-opacity':0.5,
-          'line-width':2,
-        }
-      })
-    });
 
     获取飞行区().then((res) => {
       let a = {
@@ -7552,6 +8043,7 @@ onMounted(async() => {
   map.on("mousemove", mousemoveFunc)
   document.addEventListener('mousemove',updateLabelPosittion)
   document.addEventListener('mouseup',cancelUpdateLabelPosition)
+  eventbus.on('人影-无人机定位数据',处理无人机定位数据)
   eventbus.on('飞行计划定位',flightPlanPositionFunc)
   eventbus.on('列表右键菜单',listRightMenuFunc)
   eventbus.on("人影-将站点移动到屏幕中心", flyTo);
@@ -7576,6 +8068,7 @@ onBeforeUnmount(() => {
     eventbus.off("人影-飞机位置", 处理飞机实时位置);
     eventbus.off("移除draw绘制的所有图形",移除draw绘制的所有图形)
     eventbus.off('列表右键菜单',listRightMenuFunc)
+    eventbus.off('人影-无人机定位数据',处理无人机定位数据)
     map.off("zoom", zoomFunc);
     map.off("move", moveFunc);
     map.off("pitch", pitchFunc);
@@ -7774,7 +8267,7 @@ watch(()=>setting.人影.监控.checkedKeys,(val)=>{
           iMaxShotHei: item.iMaxShotHei,
           iWeapon: Number(item.strWeapon),
           iWorkType: 1,
-          beginTime: moment().format("HH:mm:ss"),
+          beginTime: '00:00:00',
           unitName: item.unitName,
           duration: 60,
           "icon-image": item.iType == 1 ? "my-rocket" : "my-rocket",
