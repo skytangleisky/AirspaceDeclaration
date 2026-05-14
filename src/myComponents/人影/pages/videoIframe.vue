@@ -10,6 +10,27 @@ import closeUrl from '~/assets/close.svg?raw'
 import { onMounted, ref,computed, onBeforeUnmount } from 'vue';
 const videoRef = ref()
 import {所有站点的视频信息,m3u8} from '~/api/天工'
+function getIframeOffset() {
+  let x = 0;
+  let y = 0;
+
+  let win:any = window;
+
+  while (win !== win.top) {
+    const iframe = win.frameElement;
+
+    if (!iframe) break;
+
+    const rect = iframe.getBoundingClientRect();
+
+    x += rect.left + win.parent.scrollX;
+    y += rect.top + win.parent.scrollY;
+
+    win = win.parent;
+  }
+
+  return { x, y };
+}
 const item = defineModel('item',{
   default:{strZydID:""}
 })
@@ -19,8 +40,7 @@ const left = computed(()=>{
   trigger.value
   if(iframeRef.value){
     let rect = iframeRef.value.getBoundingClientRect()
-    let left = rect.left
-    return left
+    return getIframeOffset().x + rect.left
   }else{
     return 0
   }
@@ -29,7 +49,7 @@ const top = computed(()=>{
   trigger.value
   if(iframeRef.value){
     const rect = iframeRef.value.getBoundingClientRect()
-    return rect.top
+    return getIframeOffset().y + rect.top
   }else{
     return 0
   }
