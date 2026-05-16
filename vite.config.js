@@ -104,7 +104,7 @@ export default defineConfig({
     // },
     // open:'http://localhost:5173',
     host:true,
-    port:5173,
+    port:4173,
     strictPort:true,
     allowedHosts:true,
     proxy:{
@@ -122,8 +122,8 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        // target:'http://192.168.0.117:8007',
-        target:'http://192.168.0.151:8007',
+        target:'http://192.168.0.117:8080',
+        // target:'http://192.168.0.151:8007',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,

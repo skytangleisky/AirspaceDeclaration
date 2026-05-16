@@ -387,7 +387,6 @@ onMounted(() => {
     },1000)
 });
 onBeforeUnmount(() => {
-    data.value.beginTime = '00:00:00'
     clearInterval(timer)
 });
 </script>

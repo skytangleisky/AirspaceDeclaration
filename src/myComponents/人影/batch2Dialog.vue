@@ -13,7 +13,7 @@
     >
       <el-form-item label="当前日期">
         <el-date-picker
-          v-model="date"
+          v-model="applyPointForm.date"
           format-value="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           type="date"
@@ -94,8 +94,8 @@ import moment from "moment";
 import {空域申请批准,空域申请拒绝,批量批准接口,批量不批准接口} from '~/api/天工'
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
-const date = computed(()=>moment().format('YYYY-MM-DD'))
 const applyPointForm = reactive({
+  date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
   workTimeLen: 60,
   workCat: 1,
@@ -110,7 +110,6 @@ onMounted(()=>{
   },1000)
 })
 onBeforeUnmount(()=>{
-  applyPointForm.time = '00:00:00'
   clearInterval(timer)
 })
 // 作业目的配置项
@@ -149,6 +148,7 @@ const batchList = defineModel<Array<any>>('batchList',{
 });
 watch(pointDialogVisible,(val)=>{
   if(val){
+    applyPointForm.date = moment().format('YYYY-MM-DD')
     applyPointForm.time = moment().format('HH:mm:ss')
   }
 })
@@ -205,7 +205,7 @@ function accept() {
   const data = {
     // "workRevID": "360000000",
     "replyID": user.strUnitID,
-    "acceptBeginTime": date.value+' '+applyPointForm.time,
+    "acceptBeginTime": applyPointForm.date+' '+applyPointForm.time,
     "workTimeLen": applyPointForm.workTimeLen,
     "zydData": batchList.value.filter((item:any)=>checkedPoints.value.includes(item.strID)).map((item:any)=>{
       const lngLat = fromDMS(item.strPos)

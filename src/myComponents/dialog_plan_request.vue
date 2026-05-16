@@ -252,7 +252,6 @@ onMounted(() => {
     },1000)
 });
 onBeforeUnmount(() => {
-    props.data.beginTime = '00:00:00'
     clearInterval(timer)
 });
 </script>

@@ -13,7 +13,7 @@
     >
       <el-form-item label="当前日期">
         <el-date-picker
-          v-model="date"
+          v-model="applyPointForm.date"
           format-value="YYYY-MM-DD"
           value-format="YYYY-MM-DD"
           type="date"
@@ -100,8 +100,8 @@ import { airspacesApply,airspaceApply } from '../../api/人影';
 import { fromDMS } from '~/tools/index'
 import { eventbus } from '~/eventbus'
 import { useUserStore } from '~/stores/user';
-const date = computed(()=>moment().format('YYYY-MM-DD'))
 const applyPointForm = reactive({
+  date: moment().format('YYYY-MM-DD'),
   time: moment().format('HH:mm:ss'),
   workTimeLen: 60,
   workCat: 1,
@@ -115,7 +115,6 @@ onMounted(()=>{
   },1000)
 })
 onBeforeUnmount(()=>{
-  applyPointForm.time = '00:00:00'
   clearInterval(timer)
 })
 // 作业目的配置项
@@ -154,6 +153,7 @@ const batchList = defineModel<Array<any>>('batchList',{
 });
 watch(pointDialogVisible,(val)=>{
   if(val){
+    applyPointForm.date = moment().format('YYYY-MM-DD')
     applyPointForm.time = moment().format('HH:mm:ss')
   }
 })
@@ -218,7 +218,7 @@ function confirm() {
   const data = {
     // "workRevID": batchList.value[0]?.strMgrUnit,//作业接收单位
     "applyUnitID":user.strUnitID,//申请单位
-    "applyBeginTime": moment().format('YYYY-MM-DD ')+batchList.value[0]?.beginTime,//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
+    "applyBeginTime": `${applyPointForm.date} ${applyPointForm.time}`,//申请开始作业的时间(格式：yyyy-MM-dd hh:mm:ss)
     "workTimeLen": applyPointForm.workTimeLen,//申请作业时长(单位：秒)
     "workCat": applyPointForm.workCat,//作业类型
     // "relayID": user.strUnitID,//作业上报单位
@@ -249,7 +249,7 @@ function confirm() {
       }
     ]
   }
-  data.applyBeginTime = `${date.value} ${applyPointForm.time}`
+  data.applyBeginTime = `${applyPointForm.date} ${applyPointForm.time}`
   data.workTimeLen = applyPointForm.workTimeLen
   data.workCat = applyPointForm.workCat
   data.zydData.length = 0
