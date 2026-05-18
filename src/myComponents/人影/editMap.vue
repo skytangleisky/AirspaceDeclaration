@@ -4240,6 +4240,7 @@ onMounted(async() => {
               iRange:item.iMaxShotRange,
               iAngleBegin:item.iShortAngelBegin,
               iAngleEnd:item.iShortAngelEnd,
+              iRanage:item.iMaxShotRange,
             }),
             now:Date.now(),
           })
@@ -8282,6 +8283,9 @@ watch(()=>setting.人影.监控.checkedKeys,(val)=>{
           strMgrUnitName:item.strMgrUnitName,
           tags:[],
           tag:setting.人影.监控.zydTag,
+          iAngleBegin:item.iShortAngelBegin,
+          iAngleEnd:item.iShortAngelEnd,
+          iRanage:item.iMaxShotRange,
         }),
         now:Date.now(),
       })
