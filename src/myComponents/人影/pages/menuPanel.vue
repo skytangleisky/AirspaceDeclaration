@@ -1,42 +1,47 @@
 <template>
     <div class="toolKitBgClass">
-        <Dialog
-            v-if="setting.人影.监控.是否显示作业面板"
-            v-model:menus="sys.符合条件的作业点数据"
-        ></Dialog>
-        <template v-if="setting.人影.监控.是否显示分布面板">
-            <GroundCommand>
-                <!-- <template v-slot:select>
-                    <el-select v-model="value" size="small" placeholder="请选择" style="width: 120px">
-                        <el-option
-                            v-for="item in options"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                        />
-                    </el-select>
-                </template> -->
-            </GroundCommand>
-            <SecondaryRadar></SecondaryRadar>
-            <AirspaceCommand></AirspaceCommand>
-        </template>
-        <template v-if="setting.人影.监控.是否显示产品面板">
-            <SatelliteProduct></SatelliteProduct>
-            <ZydProduct></ZydProduct>
-            <!-- <tool-mode :key="2":render-dict="zdzDic" title="自动站雨量" @change="changeVal" v-model="form.自动站雨量"></tool-mode> -->
-        </template>
-        <template v-if="setting.人影.监控.是否显示工具面板">
-            <BaseLayer v-model="setting.人影.监控.tile"></BaseLayer>
-            <MapTool></MapTool>
-            <!-- <DrawTool></DrawTool> -->
-        </template>
+        <div class="long-box" v-if="setting.人影.监控.是否显示作业面板">
+            <Dialog
+                
+                v-model:menus="sys.符合条件的作业点数据"
+            ></Dialog>
+        </div>
+        <div class="short-box">
+            <template v-if="setting.人影.监控.是否显示分布面板">
+                <GroundCommand>
+                    <!-- <template v-slot:select>
+                        <el-select v-model="value" size="small" placeholder="请选择" style="width: 120px">
+                            <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            />
+                        </el-select>
+                    </template> -->
+                </GroundCommand>
+                <SecondaryRadar></SecondaryRadar>
+                <AirspaceCommand></AirspaceCommand>
+            </template>
+            <template v-if="setting.人影.监控.是否显示产品面板">
+                <SatelliteProduct></SatelliteProduct>
+                <ZydProduct></ZydProduct>
+                <!-- <tool-mode :key="2":render-dict="zdzDic" title="自动站雨量" @change="changeVal" v-model="form.自动站雨量"></tool-mode> -->
+            </template>
+            <template v-if="setting.人影.监控.是否显示工具面板">
+                <BaseLayer v-model="setting.人影.监控.tile"></BaseLayer>
+                <MapTool></MapTool>
+                <!-- <DrawTool></DrawTool> -->
+            </template>
+        </div>
     </div>
 </template>
 <script lang="ts" setup>
-    import { useSysStatusStore } from '~/stores/sysStatus';
-    const sys = useSysStatusStore();
+    import { useSysStatusStore } from '~/stores/sysStatus'
+    
+    const sys = useSysStatusStore()
     import Dialog from '../dialog2.vue'
-    import {computed} from 'vue'
+    import { computed } from 'vue'
     import BaseLayer from './工具/基础底图.vue'
     import MapTool from './工具/地图工具.vue'
     // import DrawTool from './工具/标绘工具.vue'
@@ -45,31 +50,43 @@
     import GroundCommand from './分布/地面指挥.vue'
     import SecondaryRadar from './分布/二次雷达.vue'
     import AirspaceCommand from './分布/空域指挥.vue'
-    import {useSettingStore} from '~/stores/setting';
-    const setting = useSettingStore();
+    import { useSettingStore } from '~/stores/setting'
+    
+    const setting = useSettingStore()
 
 </script>
 <style lang="scss" scoped>
     .toolKitBgClass {
         position: relative;
-        display: flex;
-        flex-direction: column;
+        
         box-sizing: border-box;
         border-radius: $border-radius-2;
         top: 0.06rem;
         left: 0;
-        width: 3.6rem;
+        width: fit-content;
         border: 1px solid var(--el-border-color);
         background-color: var(--el-bg-color-opacity-8);
         padding: $grid-3;
         pointer-events: auto;
-        gap: $grid-2;
-        flex:1;
-        max-height: fit-content;
+        flex: 1;
+        overflow-y: auto;
+        .long-box {
+            width:7.6rem;
+        }
+        
+        .short-box {
+            width: 3.6rem;
+            
+            display: flex;
+            flex-direction: column;
+            gap: $grid-3;
+            
+        }
+        
         :deep(.toolMode) {
-            background-color: var(--el-bg-color);
-            border-radius: $border-radius-1;
-            padding: $grid-2;
+            //background-color: var(--el-bg-color);
+            //border-radius: $border-radius-1;
+            //padding: $grid-2;
             
             .tool-mode-title {
                 display: flex;
@@ -81,6 +98,7 @@
                     align-items: center;
                     font-weight: 600;
                 }
+                
                 .svg-icon {
                     font-size: .2rem;
                     //margin-right: $grid-1;
@@ -101,16 +119,19 @@
                     line-height: .32rem;
                     border: 1px solid var(--el-border-color);
                 }
+                
                 .radio-item {
                     cursor: pointer;
                     user-select: none;;
                     text-align: center;
                     border-radius: $border-radius-1;
-                    padding:0 10px;
+                    padding: 0 10px;
+                    
                     &:hover {
                         border-color: var(--el-color-primary);
                     }
                 }
+                
                 .radio-item.active {
                     background-color: var(--el-color-primary);
                     border-color: var(--el-color-primary);
