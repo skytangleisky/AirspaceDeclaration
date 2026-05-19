@@ -13,8 +13,8 @@ import { SocksProxyAgent } from 'socks-proxy-agent'
 const option = {
   keepAlive: true
 }
-const agent = new HttpsProxyAgent('https://127.0.0.1:1100',option)
-const testAgent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
+const agent = new HttpsProxyAgent('https://192.168.0.141:1100',option)
+const testAgent = new HttpsProxyAgent('https://192.168.0.141:4444',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -109,7 +109,7 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        target:'http://127.0.0.1:3000',
+        target:'http://192.168.0.141:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
@@ -210,31 +210,31 @@ export default defineConfig({
       },
       '/maps0':{
         agent:testAgent,
-        target:'http://127.0.0.1:3140',
+        target:'http://192.168.0.141:3140',
         changeOrigin:true,
         secure:false,
       },
       '/maps1':{
         agent:testAgent,
-        target:'http://127.0.0.1:3141',
+        target:'http://192.168.0.141:3141',
         changeOrigin:true,
         secure:false,
       },
       '/maps2':{
         agent:testAgent,
-        target:'http://127.0.0.1:3142',
+        target:'http://192.168.0.141:3142',
         changeOrigin:true,
         secure:false,
       },
       '/maps3':{
         agent:testAgent,
-        target:'http://127.0.0.1:3143',
+        target:'http://192.168.0.141:3143',
         changeOrigin:true,
         secure:false,
       },
       '/maps4':{
         agent:testAgent,
-        target:'http://127.0.0.1:3144',
+        target:'http://192.168.0.141:3144',
         changeOrigin:true,
         secure:false,
       },

@@ -56,9 +56,9 @@
         flex-direction: column;
         box-sizing: border-box;
         border-radius: $border-radius-2;
-        top: 0;
+        top: 0.06rem;
         left: 0;
-        width: 8.5rem;
+        width: 3.6rem;
         border: 1px solid var(--el-border-color);
         background-color: var(--el-bg-color-opacity-8);
         padding: $grid-3;
@@ -93,7 +93,7 @@
                 width: 100%;
                 gap: $grid-1;
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 
                 .tool-mode-item {
                     box-sizing: border-box;

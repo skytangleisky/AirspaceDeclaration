@@ -20,7 +20,7 @@ export const useUserStore = defineStore({
     strUnitID: '350000000',
     strCode: 'FJRY',
     strName: '福建省',
-    roles:new Array<string>('admin','人影'),
+    roles:new Array<string>('admin','人影','分区'),
     // strUnitID: '990303000',
     // strCode: '990303000',
     // strName: '漳州分区',
@@ -29,6 +29,7 @@ export const useUserStore = defineStore({
     // strCode: '990301000',
     // strName: '福建分区',
     // roles:new Array<string>('admin','分区'),
+
     isAdmin: true,
     token: '',
     avatar: '',

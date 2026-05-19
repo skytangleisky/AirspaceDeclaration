@@ -1,7 +1,7 @@
 <template>
     <div class="left-container">
         <template v-for="item in option">
-            <div class="left-button" v-if="hasPermission(item.permission)" :style="{zIndex: item.zIndex}">
+            <div class="left-button" :class="themeStore.themeStyle" v-if="hasPermission(item.permission)" :style="{zIndex: item.zIndex}">
                 <div :class="`map-tool-btn ${item.active ? 'active' : ''}`" @click="handleClick(item)">
                     <el-tooltip
                         class="box-item"
@@ -9,7 +9,9 @@
                         placement="right"
                         :show-after="500"
                     >
-                        <el-icon v-html="item.icon"></el-icon>
+                        <div class="tool-btn-inside">
+                            <svg-icon :name="item.icon" :width="iconSize" :height="iconSize"></svg-icon>
+                        </div>
                     </el-tooltip>
                 </div>
                 <div v-if="!item.click && item.active" class="menu-out-box" @click.stop>
@@ -26,21 +28,14 @@
 <script setup lang="ts">
     import { hasPermission } from '~/tools'
     import {reactive} from 'vue'
-    import wechatRaw from './wechat.svg?raw'
-    import alarmRaw from './alarm.svg?raw'
-    import regulationRaw from './regulation.svg?raw'
-    import assistantRaw from './assistant.svg?raw'
-    import historyRaw from './history.svg?raw'
-    import statisticsRaw from './statistics.svg?raw'
-    import routeRaw from './route.svg?raw'
-    import configureRaw from './configure.svg?raw'
     import Alarm from './告警控制/index.vue'
     import menuContainer from './menuContainer.vue'
     import {modelRef} from '~/tools'
     import {useSettingStore} from '~/stores/setting'
-    
+    import {useThemeStore} from '~/stores/theme.ts'
+    const themeStore = useThemeStore()
     const setting = useSettingStore()
-    
+    const iconSize = '24px'
     interface Item {
         active?: any;
         zIndex?: number;
@@ -52,7 +47,7 @@
     
     const option = reactive<Item[]>([
         // {
-        //     icon: wechatRaw,
+        //     icon: "wechat",
         //     content: '信息交互',
         //     active: true,
         //     permission: '505dd0ac-c6e7-4408-90b4-8afd2cb3baf3',
@@ -61,29 +56,29 @@
         //     }
         // },
     {
-        icon: alarmRaw,
+        icon: "alarm",
         content: '告警控制',
         permission:'722f756d-765b-4778-801c-02ba7433268a'
     }, {
-        icon: regulationRaw,
+        icon: "regulation",
         content: '人影参数',
         permission:'1f27715c-90ea-488b-a1b2-2d85b4f53160'
     }, {
-        icon: assistantRaw,
+        icon: "assistant",
         content: '辅助管理',
         permission:'522394cc-7331-4681-9531-a812838a5148'
     }, {
-        icon: historyRaw,
+        icon: "history",
         content: '历史查询统计',
         permission:'a6ad4781-2b57-4da9-9fe6-cbbf1da87944'
     },
     // {
-    //     icon: statisticsRaw,
+    //     icon: "statistics",
     //     content: '查询统计',
     //     permission:'52dca185-d4be-4eb8-a51a-0d7ec9bac220'
     // },
     // {
-    //     icon: routeRaw,
+    //     icon: "route",
     //     content: '航迹回放',
     //     permission:'92cf967e-0d04-42b5-b1d0-930ba129822a',
     //     click() {
@@ -91,7 +86,7 @@
     //     }
     // },
     {
-        icon: configureRaw,
+        icon: "configure",
         active: modelRef(setting, 'showBusinessLayer'),
         content: '显示设置',
         permission:'550fe8a1-9cc0-44c2-9604-03f4a24f07c8',

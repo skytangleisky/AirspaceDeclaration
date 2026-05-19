@@ -39,12 +39,7 @@
 
 <style scoped lang="scss">
     .toolMode {
-        
-        .tool-mode-content {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr) !important;
-        }
-        
+    
     }
     .飞机{
         background-position: -330px 0;
