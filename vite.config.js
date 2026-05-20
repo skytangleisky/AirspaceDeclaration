@@ -13,14 +13,9 @@ import { HttpsProxyAgent } from 'https-proxy-agent'
 import { SocksProxyAgent } from 'socks-proxy-agent'
 const option = {
   keepAlive: true,       // 开启长连接
-  keepAliveMsecs: 1000,  // TCP 空闲连接存活时间（默认 1000ms，可调大）
-  maxSockets: 256,       // 最大并发 socket 数
-  maxFreeSockets: 32     // 空闲 socket 上限
 }
 const agent = new HttpsProxyAgent('http://172.18.7.38:4444',option)
-// const agent = new HttpsProxyAgent('https://127.0.0.1:4444',option)
-// const agent = new SocksProxyAgent('socks5://127.0.0.1:4444')
-const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
+// const shanxi_agent = new HttpsProxyAgent('http://127.0.0.1:2222',option)
 // https://vitejs.dev/config/
 export default defineConfig({
   base: '/kysq/',
@@ -114,11 +109,7 @@ export default defineConfig({
     allowedHosts:true,
     proxy:{
       '/backend':{
-        agent,
-        target:'http://172.18.7.38:3000',
-        // target:'http://192.168.0.141:3000',
-        // agent:shanxi_agent,
-        // target:'http://127.0.0.1:3000',
+        target:'http://192.168.0.114:3000',
         secure:false,
         changeOrigin:true,
         // rewrite:path=>path.replace(/^\/backend/,''),
@@ -131,11 +122,7 @@ export default defineConfig({
         rewrite:path=>path.replace(/^\/test/,''),
       },
       '/ry_api':{//人影接口
-        agent,
-        target:'http://172.18.7.38:8080',
-        // target:'http://192.168.0.135:8080',
-        // agent:shanxi_agent,
-        // target:'http://127.0.0.1:8080',
+        target:'http://192.168.0.135:8080',
         rewrite:path=>path.replace(/^\/ry_api/,''),
         secure:false,
         changeOrigin:true,
