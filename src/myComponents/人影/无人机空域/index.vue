@@ -1,5 +1,5 @@
 <template>
-  <frame title="无人机空域" v-model:render="setting.无人机空域">
+  <frame title="无人机空域" v-bind:render="true">
     <Configure></Configure>
   </frame>
 </template>

@@ -1,32 +1,35 @@
 <template>
-  <div class="zydFilter" @mousedown.stop>
-    <el-input
-      class="filter-input"
-      v-model="filterText"
-      clearable
-      highlight-current
-      placeholder="请输入过滤条件"
-    />
-    <el-tree
-      ref="treeRef"
-      class="filter-tree"
-      :data="data"
-      :props="defaultProps"
-      :default-expand-all="false"
-      :filter-node-method="filterNode"
-      show-checkbox
-      @check="handleCheck"
-      node-key="id"
-      :check-strictly="false"
-    >
-      <template #default="{ node, data }">
-        <span>{{ data.name }}</span><div :style="{color:data.cnt>0?'var(--el-color-success)':'var(--el-text-color-secondary)'}">{{data.cnt}}</div>
-      </template>
-    </el-tree>
-  </div>
+  <Frame title="作业点过滤" v-bind:render="true" width="500px" height="300px">
+    <div class="zydFilter" @mousedown.stop>
+      <el-input
+        class="filter-input"
+        v-model="filterText"
+        clearable
+        highlight-current
+        placeholder="请输入过滤条件"
+      />
+      <el-tree
+        ref="treeRef"
+        class="filter-tree"
+        :data="data"
+        :props="defaultProps"
+        :default-expand-all="false"
+        :filter-node-method="filterNode"
+        show-checkbox
+        @check="handleCheck"
+        node-key="id"
+        :check-strictly="false"
+      >
+        <template #default="{ node, data }">
+          <span>{{ data.name }}</span><div :style="{color:data.cnt>0?'var(--el-color-success)':'var(--el-text-color-secondary)'}">{{data.cnt}}</div>
+        </template>
+      </el-tree>
+    </div>
+  </Frame>
 </template>
 
 <script lang="ts" setup>
+import Frame from '~/frames/frame.vue'
 import { useSysStatusStore } from '~/stores/sysStatus'
 const sys = useSysStatusStore()
 import { useUserStore } from '~/stores/user'

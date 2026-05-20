@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from "pinia"
 import moment from 'moment'
-import { shallowReactive } from 'vue'
+import { shallowReactive,shallowRef } from 'vue'
 export const useSysStatusStore = defineStore('sysStatus',{
   state: () => ({
     触发空域申请数据查询:Date.now(),
@@ -25,8 +25,6 @@ export const useSysStatusStore = defineStore('sysStatus',{
     飞机数据:shallowReactive<any[]>([]),
     注册飞机数据:shallowReactive<any[]>([]),
     需要重点关注的飞机:shallowReactive<any[]>([]),
-    显示飞行计划:false,
-    显示空域申请:false,
     飞行计划数据:shallowReactive<any[]>([]),
     空域申请数据:shallowReactive<any[]>([]),
     当前飞行计划数据:shallowReactive<any>({}),
@@ -67,7 +65,8 @@ export const useSysStatusStore = defineStore('sysStatus',{
     planProps: {
       当前作业进度: shallowReactive(new Array()),
       今日作业记录: shallowReactive(new Array()),
-    }
+    },
+    singleDialog:shallowRef()
   }),
   persist: false,
 })

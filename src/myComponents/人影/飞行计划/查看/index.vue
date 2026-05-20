@@ -1,5 +1,5 @@
 <template>
-  <frame title="计划审批" v-model:render="sys.显示飞行计划" width="1200px" height="760px">
+  <frame title="计划审批" v-bind:render="true" width="1200px" height="760px">
     <Configure></Configure>
   </frame>
 </template>

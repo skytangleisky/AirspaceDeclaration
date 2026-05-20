@@ -1,5 +1,5 @@
 <template>
-  <frame title="配置区划" v-model:render="setting.显示全国行政区划配置" width="500px" height="300px">
+  <frame title="配置区划" v-bind:render="true" width="500px" height="300px">
     <Configure></Configure>
   </frame>
 </template>

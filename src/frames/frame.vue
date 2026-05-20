@@ -9,6 +9,8 @@
   </teleport>
 </template>
 <script setup lang="ts">
+import { useSysStatusStore } from '~/stores/sysStatus'
+const sys = useSysStatusStore()
 const wstdContainerRendered = inject('wstdContainerRendered',{
   default:false,
   type:Boolean
@@ -18,12 +20,13 @@ const title = defineModel('title',{
 })
 import {inject, nextTick, onMounted, ref, watch} from 'vue'
 function close(){
-  if(once.value){
-    IF.value=false
-  }else{
-    SHOW.value=false
-  }
-  render.value = false
+  // if(once.value){
+  //   IF.value=false
+  // }else{
+  //   SHOW.value=false
+  // }
+  // render.value = false
+  sys.singleDialog = null
 }
 const SHOW = ref(true)
 const IF = ref(true)

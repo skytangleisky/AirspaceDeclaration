@@ -30,7 +30,7 @@
                         v-model="options.value"
                         clearable
                     />
-                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="()=>show=true"/>
+                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="openZydFilter"/>
                 </div>
                 <div class="contain" @mousedown.stop>
                     <div
@@ -120,14 +120,14 @@
                 </div>
             </div>
         </div>
-        <Frame title="作业点过滤" v-model:render="show" width="500px" height="300px">
-            <ZydFilter></ZydFilter>
-        </Frame>
     </div>
 </template>
 <script lang="ts" setup>
 import {useSysStatusStore} from '~/stores/sysStatus'
 const sys = useSysStatusStore()
+function openZydFilter(){
+    sys.singleDialog = ZydFilter
+}
 
     const menuType = ref('地面作业申请')
     import ZydFilter from './zydFilter.vue'
@@ -144,7 +144,6 @@ const sys = useSysStatusStore()
         sys.prevPlanReplyShow = true
         sys.prevPlanReplyData = currentStation.value
     }
-    const show = ref(false)
     const setting = useSettingStore()
     const 数据时间 = computed(() => {
         if (setting.人影.监控.红外云图) {

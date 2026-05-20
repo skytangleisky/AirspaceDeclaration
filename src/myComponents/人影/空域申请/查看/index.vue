@@ -1,5 +1,5 @@
 <template>
-  <frame title="空域审批" v-model:render="sys.显示空域申请" width="1200px" height="400px">
+  <frame title="空域审批" v-bind:render="true" width="1200px" height="400px">
     <Configure></Configure>
   </frame>
 </template>

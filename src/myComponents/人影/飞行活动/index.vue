@@ -1,5 +1,5 @@
 <template>
-  <frame title="飞行活动" v-model:render="setting.飞行活动">
+  <frame title="飞行活动" v-bind:render="true">
     <Configure></Configure>
   </frame>
 </template>

@@ -38,6 +38,7 @@
 
 <script lang="ts" setup>
 import {formatOperateType,formatControlMode,formatFlightMode,formatPlanType,formatPlanNature,formatAirspaceShape} from './utils'
+import AirspaceView from '~/myComponents/人影/空域申请/查看/index.vue'
 import { useSettingStore } from '~/stores/setting'
 import { useSysStatusStore } from '~/stores/sysStatus'
 import { eventbus } from '~/eventbus'
@@ -45,7 +46,7 @@ const setting = useSettingStore()
 const sys = useSysStatusStore()
 function handleReply(row:any){
   sys.当前空域申请数据 = row
-  sys.显示空域申请 = true
+  sys.singleDialog = AirspaceView
 }
 function handlePosition(row:any){
   console.log(row)

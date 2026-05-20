@@ -36,11 +36,12 @@ import {formatOperateType,formatControlMode,formatFlightMode,formatPlanType,form
 import { useSettingStore } from '~/stores/setting'
 import { useSysStatusStore } from '~/stores/sysStatus'
 import { eventbus } from '~/eventbus'
+import FlightPlanView from '~/myComponents/人影/飞行计划/查看/index.vue'
 const setting = useSettingStore()
 const sys = useSysStatusStore()
 function handleReply(row:any){
   sys.当前飞行计划数据 = row
-  sys.显示飞行计划 = true
+  sys.singleDialog = FlightPlanView
 }
 function handlePosition(row:any){
   console.log(row)

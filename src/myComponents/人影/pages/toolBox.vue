@@ -50,6 +50,14 @@
     </div>
 </template>
 <script lang="ts" setup>
+import ConfigureRegion from '~/myComponents/人影/配置区划/index.vue'
+import ConfigureReplyRate from '~/myComponents/人影/批复率统计/index.vue'
+import ConfigrueNetwork from '~/myComponents/人影/网络信息/index.vue'
+import ConfigrueUAVAirspace from '~/myComponents/人影/无人机空域/index.vue'
+import ConfigrueFlightActivity from '~/myComponents/人影/飞行活动/index.vue'
+import ConfigureEnclosure from '~/myComponents/人影/电子围栏/index.vue'
+import ConfigureRocket from '~/myComponents/人影/火箭架控制/index.vue'
+import ConfigureSmokeStove from '~/myComponents/人影/烟炉/index.vue'
 import {useUserStore} from '~/stores/user'
 import { useThemeStore} from '~/stores/theme.ts'
 const themeStore = useThemeStore()
@@ -642,44 +650,44 @@ const list = reactive([{label: '工具箱', type: 'folder', opened: modelRef(set
   },
   {
     label: '全国行政区划', type: 'button', click() {
-      setting.显示全国行政区划配置 = true
+      sys.singleDialog = ConfigureRegion
     }
   },
-  // {
-  //   label: '烟炉控制', type: 'button', click() {
-  //     setting.显示烟炉 = true
-  //   }
-  // },
-  // {
-  //   label: '火箭架配置', type: 'button', click() {
-  //     setting.火箭架配置 = true
-  //   }
-  // },
+  {
+    label: '烟炉控制', type: 'button', click() {
+      sys.singleDialog = ConfigureSmokeStove
+    }
+  },
+  {
+    label: '火箭架配置', type: 'button', click() {
+      sys.singleDialog = ConfigureRocket
+    }
+  },
   {
     label: '批复率统计', type: 'button', click() {
-      setting.批复率统计 = true
+      sys.singleDialog = ConfigureReplyRate
     }
   },
   {
     label: '网络信息', type: 'button', click() {
-      setting.网络信息 = true
+      sys.singleDialog = ConfigrueNetwork
     }
   },
-  // {
-  //   label: '飞行活动', type: 'button', click() {
-  //     setting.飞行活动 = true
-  //   }
-  // },
-  // {
-  //   label: '电子围栏', type: 'button', click() {
-  //     setting.电子围栏 = true
-  //   }
-  // },
-  // {
-  //   label: '无人机空域', type: 'button', click() {
-  //     setting.无人机空域 = true
-  //   }
-  // },
+  {
+    label: '飞行活动', type: 'button', click() {
+      sys.singleDialog = ConfigrueFlightActivity
+    }
+  },
+  {
+    label: '电子围栏', type: 'button', click() {
+      sys.singleDialog = ConfigureEnclosure
+    }
+  },
+  {
+    label: '无人机空域', type: 'button', click() {
+      sys.singleDialog = ConfigrueUAVAirspace
+    }
+  },
   // {
   //   label: '弹药概况', type: 'button', click() {
   //     setting.弹药概况 = true

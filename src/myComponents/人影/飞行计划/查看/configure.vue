@@ -74,11 +74,11 @@ import WModuleBox from './WModuleBox.vue'
 import {批准,驳回} from '../flightPlan'
 function reject(){
   驳回(sys.当前飞行计划数据.plan_id)
-  sys.显示飞行计划 = false
+  sys.singleDialog = null
 }
 function accept(){
   批准(sys.当前飞行计划数据.plan_id)
-  sys.显示飞行计划 = false
+  sys.singleDialog = null
 }
 const sys = useSysStatusStore()
 </script>

@@ -16,7 +16,7 @@
                         v-model="options.value"
                         clearable
                     />
-                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="()=>show=true"/>
+                    <el-button v-if="计算权限" :icon="Filter" circle style="margin:0 10px; font-size:20px;" @click="()=>sys.singleDialog = ZydFilter"/>
                 </div>
                 <div
                     @scroll="scrolling"
@@ -87,9 +87,6 @@
                         />查看详细数据
                     </li>
                 </ul>
-                <Frame title="作业点过滤" v-model:render="show" width="500px" height="400px">
-                    <ZydFilter></ZydFilter>
-                </Frame>
             </el-tab-pane>
             <el-tab-pane label="当前作业进度" style="width: 100%;height: 100%;">
                 <Work identity="当前作业进度" :v="sys.planProps.当前作业进度"></Work>
@@ -116,7 +113,6 @@ import ZydFilter from './zydFilter.vue'
 import Frame from '~/frames/frame.vue'
 import closeSvg from '~/assets/close.svg?raw'
 import { reactive, onMounted, watch, computed, ref, toRaw, onBeforeUnmount} from "vue";
-const show = ref(false)
 import { useStationStore } from "~/stores/station";
 import { eventbus } from "~/eventbus";
 import { useSettingStore } from '~/stores/setting'

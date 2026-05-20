@@ -1,5 +1,5 @@
 <template>
-  <frame v-model:render="setting.显示烟炉" :width="1820" :height="870">
+  <frame v-bind:render="true" width="1820px" height="870px">
     <smokeStove></smokeStove>
   </frame>
 </template>

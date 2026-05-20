@@ -1,5 +1,5 @@
 <template>
-  <frame title="电子围栏" v-model:render="setting.电子围栏" width="1200px" height="600px">
+  <frame title="电子围栏" v-bind:render="true" width="1200px" height="600px">
     <Configure></Configure>
   </frame>
 </template>
