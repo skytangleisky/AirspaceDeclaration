@@ -72,14 +72,11 @@
       </div>
       <Tool-Box />
     </div>
-    <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
-      <!-- <template v-for="item in 视频列表" :key="item.strWorkID">
-        <VideoIframe :item="item" v-if="item.visible"></VideoIframe>
-      </template> -->
+    <!-- <div v-if="视频列表.filter(it=>it.visible).length>0" style="position:relative;width:500px;overflow: auto;">
       <template v-for="item in 视频列表" :key="item.strWorkID">
         <VideoIframe :item="item" v-if="item.visible"></VideoIframe>
       </template>
-    </div>
+    </div> -->
     <!-- <div v-dragable class="meeting" v-if="metting">
       <div class="close-btn" @click="metting=false" @mousedown.stop><el-icon v-html="closeUrl"></el-icon></div>
     </div> -->
